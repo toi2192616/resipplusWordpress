@@ -1,0 +1,443 @@
+/* Bien dich tay tu component-source/compare.less - xem file do de biet ly do tung quyet dinh CSS
+   (transform conflict voi animation scaleUp/scaleDown, top+bottom tuong minh...). GIU DONG BO khi
+   sua 1 trong 2 file. */
+
+/* Icon mui ten trong nut "So sanh" tren the (parts/office-card.php .viewdetail) - ".viewdetail" +
+   ".viewdetail.active" (nen xanh/chu trang) da co san tu truoc trong
+   assets/officebase/style/layout.css (dong 1813-1839, KHONG duoc sua truc tiep file vendor do -
+   xem feedback_vendor_css_removal_risk), nhung rieng icon mui ten (i svg) van giu mau XANH ca luc
+   active (fill/stroke ke thua tu rule goc ".viewdetail i svg"), khien icon "an mat" tren nen xanh
+   moi. File nay load SAU layout.css trong hang doi enqueue (functions.php) nen chi can khai bao
+   lai voi cung do dac ta la thang the. */
+.item-office .item-content .viewdetail.active i svg {
+  fill: #ffffff;
+  stroke: #ffffff;
+}
+
+#modal-compare-list .modal,
+#modal-compare-table .modal {
+  position: fixed;
+  top: 5vh;
+  bottom: 5vh;
+  left: 15px;
+  right: 15px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  background: #FFFFFF;
+  overflow: hidden;
+  width: auto;
+  height: auto;
+}
+@media only screen and (max-width: 800px) {
+  #modal-compare-list .modal,
+  #modal-compare-table .modal {
+    top: 3vh;
+    bottom: 3vh;
+    left: 8px;
+    right: 8px;
+  }
+}
+#modal-compare-list .modal {
+  max-width: 615px;
+}
+/* Toi da 4 san pham/lan so sanh - can du rong de nhin thay het 4 cot tren 1 man hinh ngang, khong
+   phai cuon. Khop dung cach Angular goc lam (product-compare.component.less: ".modal-dialog {
+   width: calc(100% - 20px); max-width:100%; }" - modal gan nhu full vien man hinh, KHONG gioi han
+   o 1 con so co dinh nho nhu 1100px). "max-width:1800px" o day chi la 1 tran an toan (man hinh
+   thuc te hiem khi rong hon), "left/right:10px" (duoi) moi la gioi han THAT SU quyet dinh do rong. */
+#modal-compare-table .modal {
+  max-width: 1800px;
+  left: 10px;
+  right: 10px;
+}
+
+.modal-container-compare .modal-header {
+  padding: 18px 55px;
+  background: #F5F4F5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+}
+@media only screen and (max-width: 800px) {
+  .modal-container-compare .modal-header {
+    padding: 15px 20px;
+  }
+}
+.modal-container-compare .modal-header .modal-title {
+  font-family: 'Helvetica Neue';
+  font-size: 24px;
+  font-weight: 500;
+  color: #23182B;
+}
+@media only screen and (max-width: 800px) {
+  .modal-container-compare .modal-header .modal-title {
+    font-size: 18px;
+  }
+}
+.modal-container-compare .modal-header .pull-right {
+  display: flex;
+  align-items: center;
+}
+.modal-container-compare .modal-header .btn-pdf {
+  margin-right: 10px;
+}
+.modal-container-compare .modal-body {
+  padding: 40px 55px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+@media only screen and (max-width: 800px) {
+  .modal-container-compare .modal-body {
+    padding: 20px;
+  }
+}
+.modal-container-compare .btn {
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 8px 18px;
+  border: 1px solid transparent;
+}
+.modal-container-compare .btn-primary {
+  background: #3E5FB4;
+  color: #FFFFFF;
+  border-color: #3E5FB4;
+}
+.modal-container-compare .btn-primary img {
+  width: 18px;
+  margin-right: 5px;
+  margin-top: -3px;
+}
+.modal-container-compare .btn-outline-primary {
+  background: #FFFFFF;
+  color: #3E5FB4;
+  border-color: #3E5FB4;
+}
+.modal-container-compare .btn-outline-success {
+  background: #FFFFFF;
+  color: #61A2D8;
+  border-color: #61A2D8;
+}
+
+/* ===== #modal-compare-list (buoc 1: danh sach mini) ===== */
+.list-compare .item-compare {
+  position: relative;
+  margin-bottom: 24px;
+  display: flex;
+}
+.list-compare .item-compare img {
+  width: 190px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.22);
+}
+@media only screen and (max-width: 800px) {
+  .list-compare .item-compare img {
+    width: 110px;
+  }
+}
+.list-compare .item-compare .item-content-m {
+  width: calc(100% - 210px);
+}
+@media only screen and (max-width: 800px) {
+  .list-compare .item-compare .item-content-m {
+    width: calc(100% - 130px);
+    margin-top: -5px;
+  }
+}
+.list-compare .item-compare .item-content-m .item-content {
+  min-height: 85px;
+  position: relative;
+  padding: 5px 0px 5px 15px;
+}
+.list-compare .item-compare .item-content-m .item-content .RateTing {
+  width: 100%;
+  display: inline-block;
+}
+.list-compare .item-compare .item-content-m .item-content .RateTing .RateTingContent {
+  background: #DEE8FF;
+  border-radius: 8px;
+  text-align: center;
+  color: #7292E0;
+  font-size: 14px;
+  padding: 4px 20px;
+  margin-bottom: 5px;
+  float: left;
+}
+.list-compare .item-compare .item-content-m .item-content .RateTing .RateTingContent.classA { color: #CB2A2A; }
+.list-compare .item-compare .item-content-m .item-content .RateTing .RateTingContent.classB { color: #E61DEA; }
+.list-compare .item-compare .item-content-m .item-content .RateTing .RateTingContent.classC { color: #3E5FB4; }
+.list-compare .item-compare .item-content-m .item-content .item-name {
+  clear: both;
+  font-size: 16px;
+  color: #23182B;
+  font-weight: 500;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+.list-compare .item-compare .item-content-m .item-content .item-address {
+  font-size: 14px;
+  color: #000000;
+  min-height: 35px;
+  margin-bottom: 5px;
+}
+.list-compare .item-compare .item-content-m .item-content .item-price {
+  font-size: 18px;
+  font-weight: 500;
+  color: #000000;
+}
+@media only screen and (max-width: 800px) {
+  .list-compare .item-compare .item-content-m .item-content .item-price {
+    display: none;
+  }
+}
+.list-compare .item-compare .item-dislike {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: #51505059;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  padding: 3px 5px;
+  transition: 0.3s;
+  cursor: pointer;
+  width: 45px;
+  height: 40px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.list-compare .item-compare .item-dislike svg {
+  fill: #C4C4C400;
+  stroke: #FFFFFFC2;
+  transition: 0.3s;
+  width: 20px;
+  height: 22px;
+}
+.list-compare .item-compare .item-dislike:hover {
+  background-color: #00000073;
+}
+.list-compare .item-compare .item-dislike:hover svg {
+  fill: #C4C4C400;
+  stroke: #3E5FB4;
+}
+#pplus-compare-open-table {
+  width: 100%;
+}
+
+/* ===== #modal-compare-table (buoc 2: bang so sanh day du) ===== */
+/* Luoi CSS Grid THAT SU DUY NHAT cho toan bang - cot nhan (".inforThongSo") va tung cot san pham
+   (".inforCompare-data", JS render) deu la "display:contents" (duoi) nen con cua chung (header +
+   14 tieu chi, moi o mang san "grid-row"/"grid-column" tuong minh tu PHP/JS) tro thanh con TRUC
+   TIEP cua luoi nay - nho vay trinh duyet TU canh chieu cao TUNG HANG rieng biet khop nhau giua
+   nhan va MOI cot (hang nao co 1 o noi dung dai thi CA HANG do cao ra, hang nao ca khoi ngan thi
+   HEP LAI), thay vi phai ep 1 chieu cao co dinh chung cho toan bang (cach lam TRUOC DAY, gay lang
+   phi khoang trong o da so hang chi co noi dung ngan - dung y kien nguoi dung phan hoi).
+   "grid-template-columns" phan cot ITEM (repeat(N,...)) duoc JS ghi de qua inline style moi lan
+   render (compare.js renderTableModal(), N = so luong dang so sanh) vi so cot la DONG, PHP luc
+   render trang KHONG biet truoc se so sanh bao nhieu toa. */
+.container-compare .container-compare-data {
+  display: grid;
+  grid-template-columns: 220px;
+  border-radius: 10px;
+  border: 0.5px solid #DAD6DD;
+  /* Cuon ngang bat ky luc nao noi dung (toi da 4 cot) rong hon modal, khong chi tren mobile -
+     modal da duoc mo rong gan full man hinh (xem #modal-compare-table .modal o tren) nhung man
+     hinh laptop nho van co the khong du 4 cot, an toan hon la de bi cat mat (".modal" bao ngoai co
+     "overflow:hidden"). */
+  overflow-x: auto;
+}
+@media only screen and (max-width: 800px) {
+  .container-compare .container-compare-data {
+    grid-template-columns: 170px;
+  }
+}
+.container-compare .inforThongSo,
+.container-compare .list-inforCompare,
+.container-compare .list-inforCompare .inforCompare-data {
+  display: contents;
+}
+/* "height" O DAY PHAI KHOP CHINH XAC voi ".list-inforCompare .inforCompare-data .header-data-1"
+   (duoi) o CA 2 breakpoint - xem giai thich day du trong component-source/compare.less (bug thuc
+   te: header anh cao hon header logo tren mobile khien moi dong du lieu bi lech len 1 hang). */
+.container-compare .inforThongSo .header-data-1 {
+  height: 210px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+@media only screen and (max-width: 800px) {
+  .container-compare .inforThongSo .header-data-1 {
+    height: 150px;
+  }
+}
+.container-compare .inforThongSo .header-data-1 .div-img-header {
+  text-align: center;
+}
+.container-compare .inforThongSo .header-data-1 .div-img-header img {
+  width: 90px;
+}
+.container-compare .inforThongSo .header-data-1 h3 {
+  font-size: 20px;
+  font-weight: 500;
+  text-align: center;
+  margin: 15px 10px 0px 10px;
+}
+@media only screen and (max-width: 800px) {
+  .container-compare .inforThongSo .header-data-1 h3 {
+    font-size: 16px;
+  }
+}
+.container-compare .inforThongSo .inforComapre {
+  display: grid;
+  grid-template-columns: 30px repeat(1, minmax(0, 1fr));
+  align-items: center;
+  padding: 12px 15px;
+  /* "min-height" gio AN TOAN (khac ban truoc): moi o o day la 1 grid-item THAT SU cua luoi
+     ".container-compare-data" (xem "display:contents" + "grid-row" o tren), nen trinh duyet TU
+     canh chieu cao hang nay khop voi o cung hang o MOI cot san pham - khong con can ep "height" co
+     dinh thu cong nua. */
+  min-height: 48px;
+  box-sizing: border-box;
+}
+.container-compare .inforThongSo .inforComapre .div-img img {
+  width: 22px;
+}
+.container-compare .inforThongSo .inforComapre label {
+  font-size: 15px;
+  font-weight: 500;
+}
+.container-compare .inforThongSo .inforComapre.inforComapre-address label {
+  height: auto;
+}
+.container-compare .inforThongSo .inforComapre:nth-child(2n+1) {
+  background: #F8FAFF;
+}
+.container-compare .list-inforCompare .inforCompare-data .header-data-1 {
+  height: 210px;
+  box-sizing: border-box;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media only screen and (max-width: 800px) {
+  .container-compare .list-inforCompare .inforCompare-data .header-data-1 {
+    height: 150px;
+  }
+}
+.container-compare .list-inforCompare .inforCompare-data .header-data-1 .photo-data {
+  position: relative;
+  width: 100%;
+  max-width: 180px;
+  margin: 0 auto;
+}
+@media only screen and (max-width: 800px) {
+  .container-compare .list-inforCompare .inforCompare-data .header-data-1 .photo-data {
+    max-width: 130px;
+  }
+}
+.container-compare .list-inforCompare .inforCompare-data .header-data-1 .photo-data img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.container-compare .list-inforCompare .inforCompare-data .header-data-1 .photo-data .item-dislike {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: #51505059;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  padding: 3px 5px;
+  transition: 0.3s;
+  cursor: pointer;
+  width: 45px;
+  height: 40px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.container-compare .list-inforCompare .inforCompare-data .header-data-1 .photo-data .item-dislike svg {
+  fill: #C4C4C400;
+  stroke: #FFFFFFC2;
+  width: 20px;
+  height: 22px;
+}
+.container-compare .list-inforCompare .inforCompare-data .header-data-1 .photo-data .item-dislike:hover {
+  background-color: #3B383859;
+}
+.container-compare .list-inforCompare .inforCompare-data .header-data-1 .photo-data .name-office {
+  background: linear-gradient(90deg, #2449A8 12.5%, rgba(49, 51, 141, 0.873) 46%, rgba(129, 122, 207, 0.439) 79.5%, rgba(255, 255, 255, 0) 100%);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 10px;
+  position: absolute;
+  width: 100%;
+  bottom: 0px;
+  color: #FFFEFF;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+.container-compare .list-inforCompare .inforCompare-data .inforComapre {
+  font-size: 15px;
+  font-weight: 400;
+  padding: 12px 15px;
+  /* "min-height" gio AN TOAN (xem ghi chu day du o ".inforThongSo .inforComapre" - moi o la 1
+     grid-item THAT SU, trinh duyet tu canh chieu cao theo cung 1 hang grid). */
+  min-height: 48px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+.container-compare .list-inforCompare .inforCompare-data .inforComapre label {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  max-height: 60px;
+}
+.container-compare .list-inforCompare .inforCompare-data .inforComapre .lable-Price {
+  font-size: 16px;
+  font-weight: 500;
+  color: #DE9C27;
+}
+
+/* Trang thai "Dang tai" cua bang so sanh day du - xem showTableLoading() trong compare.js: mo
+   modal NGAY, thay vi doi 2 REST call (ensureCorrectLang/ensureParkFees, backend .NET co the mat
+   vai giay) xong moi mo, de nut "So sanh" tren thanh cong cu khong con nhu "khong phan hoi gi". */
+.pplus-compare-loading {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 15px;
+}
+.pplus-compare-loading::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 3px solid #dee8ff;
+  border-top-color: #3E5FB4;
+  border-radius: 50%;
+  animation: pplusCompareSpin 0.8s linear infinite;
+}
+@keyframes pplusCompareSpin {
+  to { transform: rotate(360deg); }
+}
+.container-compare .list-inforCompare .inforCompare-data .inforComapre:nth-child(2n+1) {
+  background: #F8FAFF;
+}

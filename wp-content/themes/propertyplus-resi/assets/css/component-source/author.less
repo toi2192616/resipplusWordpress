@@ -1,0 +1,194 @@
+.main-tacgia {
+    padding: 15px;
+    background-color: #3e5fb4;
+    border-radius: 3px;
+
+    .contac-tacgia {
+        display: flex;
+
+        .img-avata {
+            img {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                border: 2px solid white;
+            }
+        }
+
+        .des-tac-gia {
+            color: white;
+            font-size: 16px;
+            padding: 0px 15px;
+
+            .title-name-tacgia {
+                font-size: 24px;
+                margin-bottom: 8px;
+                display: block;
+                color: white;
+            }
+
+            .data-tacgia {
+            }
+        }
+    }
+
+    .solical-tacgia {
+        display: flex;
+        background-color: white;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 6px;
+
+        .solical-item {
+            color: #3e5fb4;
+            margin-right: 25px;
+            font-size: 20px;
+            cursor: pointer;
+
+            i {
+                padding: 5px 6px;
+            }
+
+            .fa-facebook {
+                border: 1px solid #3e5fb4;
+                padding: 4px 4px;
+                border-radius: 5px;
+            }
+
+            .fa-envelope {
+                background-color: #f38d51;
+                border-radius: 50%;
+                color: white;
+            }
+
+            .fa-twitter {
+                background-color: #5c82e3;
+                border-radius: 50%;
+                color: white;
+            }
+
+            .fa-phone {
+                background-color: red;
+                border-radius: 50%;
+                color: white;
+                padding: 5px 7px;
+            }
+
+            .fa-linkedin {
+                background-color: #5c82e3;
+                border-radius: 50%;
+                color: white;
+            }
+        }
+    }
+}
+
+.blog-list-tacgia {
+    margin-top: 40px;
+
+    .title-list {
+        font-size: 24px;
+        padding-bottom: 15px;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #3e5fb4;
+        font-weight: 500;
+    }
+
+
+    .blog-item-list-rs {
+        margin-top: 30px;
+        grid-template-columns: repeat(4,minmax(0,1fr));
+        column-gap: 20px;
+        display: grid;
+
+        @media only screen and (max-width: 760px) and (min-width: 0px) {
+            grid-template-columns: repeat(1,minmax(0,1fr));
+        }
+
+        .customer-item {
+            border: 1px solid #D7D7D7;
+            box-sizing: border-box;
+            border-radius: 14px;
+            margin-bottom: 15px;
+            box-shadow: 0px 7px 18px #f3f1f1;
+            transition: 0.3s all;
+
+            &:hover {
+                box-shadow: 0px 7px 18px #c9c7c7;
+            }
+
+            img {
+                width: 100%;
+                aspect-ratio: 4/3;
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .content-title {
+                font-style: normal;
+                font-weight: bold;
+                font-size: 15px;
+                color: #000000;
+                margin-bottom: 8px;
+            }
+
+            .content-des {
+                font-style: normal;
+                font-weight: 500;
+                font-size: 15px;
+                color: #000000;
+                opacity: 0.7;
+                margin-bottom: 8px;
+            }
+
+            .btn-read {
+                font-style: normal;
+                font-weight: 500;
+                font-size: 16px;
+                color: #3E5FB4;
+            }
+        }
+    }
+}
+
+// Muc Luc (#bg-toc) - dung chung style voi blog-detail.less (xem ghi chu o do), B4 cung co
+// khoi table-of-contents giong het B3 (detai-tacgia.component.html dong 51-56).
+.post-navigation-left {
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    box-shadow: 1px 0px 10px 0px #0000001C;
+
+    .nav-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #000000;
+    }
+
+    .toc ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .toc li {
+        margin-bottom: 8px;
+    }
+
+    .toc a {
+        font-size: 16px;
+        line-height: 24px;
+        color: #3E5FB4;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

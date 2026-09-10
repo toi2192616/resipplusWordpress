@@ -1,0 +1,915 @@
+.main {
+    @media (min-width: 0px) and (max-width: 880px) {
+        margin-top: 55px;
+    }
+}
+
+// Trang con /ve-chung-toi/{alias} (page-about-subpage.php, about-new.component.less) dung LAI
+// toan bo file nay (cung ".datalist"/".data-content"/".content-1"/".header-right" voi B3) - chi
+// rieng ".about-new" (wrapper ngoai cung) can rule nay.
+.about-new {
+    margin-top: 0px;
+}
+
+.datalist {
+    float: left;
+    width: 100%;
+
+    .data-content {
+        padding: 0px 15px;
+        font-family: 'SF Pro Display';
+
+        @media (min-width: 0px) and (max-width: 880px) {
+            padding: 0px 0px;
+            margin: 0px -5px;
+        }
+
+        h1 {
+            font-size: 32px !important;
+        }
+
+        h2 {
+            font-size: 24px !important;
+            color: #000000;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+
+        h3 {
+            margin-top: 10px;
+            font-size: 20px !important;
+        }
+
+
+        h4,
+        h5,
+        h6,
+        a,
+        li,
+        p,
+        span,
+        b,
+        i {
+            font-size: 16px !important;
+            line-height: 25px;
+        }
+
+
+        table {
+            max-width: 100%;
+            margin: auto;
+            margin-bottom: 10px !important;
+
+            th {
+                background-color: #000;
+                color: white;
+                width: 50%;
+            }
+
+            td,
+            th {
+                padding: 5px 10px;
+                border: 1px solid #000;
+            }
+
+            tr:first-child td {
+                background: #3E5FB4;
+                color: white;
+            }
+        }
+
+        img {
+            width: 80% !important;
+            height: auto !important;
+            max-width: 800px !important;
+            margin: auto;
+            display: block;
+
+            @media (min-width: 0px) and (max-width: 880px) {
+                width: 100% !important;
+                height: auto !important;
+            }
+        }
+
+        .content-1 {
+            margin: 0px;
+            margin-top: 30px;
+
+            @media (min-width: 1024px) and (max-width: 1380px) {
+                margin-top: 15px;
+            }
+        }
+
+        blockquote {
+            position: relative;
+            padding-left: 20px;
+            padding-right: 10px;
+            font-style: italic;
+            margin-top: 20px;
+            margin-left: 10px;
+            background-color: #f2f2f2;
+            padding-top: 10px;
+            padding-bottom: 5px;
+            box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.2);
+
+            :before {
+                content: "";
+                position: absolute;
+                width: 3px;
+                height: 100%;
+                left: 0;
+                top: 0;
+                background-image: linear-gradient(to bottom, #7ed858, #e7838b, #737aa0, #5270fb);
+            }
+        }
+    }
+
+    @media (min-width: 1024px) and (max-width: 1380px) {
+        .container {
+            width: 1250px !important;
+        }
+    }
+
+    .data-title {
+        font-family: 'SF Pro Display';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 49px;
+        text-align: left;
+        color: #000000;
+        opacity: 0.8;
+        float: left;
+    }
+
+    .data-title-2 {
+        font-family: SF Pro Display;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 16px;
+        text-align: center;
+        color: #000000;
+        opacity: 0.7;
+    }
+
+    #myTab {
+        border-bottom: none;
+        text-align: center;
+        margin-bottom: 40px;
+
+        li {
+            float: none;
+            display: inline-block;
+            font-size: 16px;
+            width: 100%;
+            text-align: left;
+
+            button {
+                padding: 10px;
+                background: none;
+                font-family: 'SF Pro Display';
+                font-style: normal;
+                font-weight: 500;
+                font-size: 16px;
+                line-height: 30px;
+                border: none !important;
+                color: #000000a6;
+
+                i {
+                    margin-right: 10px;
+                    position: relative;
+                    top: -2px;
+
+                    svg {
+                        fill: #000000a6;
+                    }
+                }
+
+                &.active {
+                    color: #3E5FB4;
+
+                    i {
+                        svg {
+                            fill: #3E5FB4;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .list-suggest {
+        .slick-slide {
+            margin: 0 10px;
+        }
+
+        ._data-item {
+            position: relative;
+            border-radius: 10px;
+
+            ._data-img {
+                width: 100%;
+                border-radius: 10px !important;
+                height: 230px;
+                margin: auto;
+                transition: 0.3s ease-in;
+                box-shadow: 0px 5px 3px -3px rgb(0 0 0 / 31%);
+                border-radius: 10px;
+            }
+
+            ._data-item-title {
+                border-bottom-right-radius: 10px !important;
+                border-bottom-left-radius: 10px !important;
+                padding: 10px 5px;
+                position: absolute;
+                bottom: 0px;
+                height: auto;
+                color: white;
+                background-color: #00000052;
+                width: calc(100%);
+                font-family: UTM Times;
+                font-style: normal;
+                font-weight: bold;
+                font-size: 16px;
+            }
+        }
+    }
+}
+
+
+.content-question {
+    grid-template-columns: repeat(1, 200px) minmax(0, 1fr);
+    column-gap: 20px;
+    display: grid;
+    width: 100%;
+}
+
+.list-question {
+    ._question-item {
+        .card {
+            background: #FFFFFF;
+            border: 1px solid #D6D6D6;
+            box-sizing: border-box;
+            box-shadow: 0px 5px 52px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: none;
+            border-right: none;
+
+            .card-header {
+                font-family: SF Pro Display;
+                font-style: normal;
+                font-weight: bold;
+                font-size: 16px;
+                color: #000000;
+                opacity: 0.7;
+                position: relative;
+                cursor: pointer;
+                border-bottom: none;
+
+                .collapse-button {
+                    padding: 15px;
+                }
+
+                .icon {
+                    position: absolute;
+                    right: 17px;
+                    top: 17px;
+                }
+            }
+
+            .fa-plus {
+                display: block;
+            }
+
+            .fa-minus {
+                display: none;
+            }
+
+            .card-body {
+                overflow: hidden;
+                height: 1px;
+                transition: 0.3s;
+                padding: 0px;
+
+                .card-body-content {
+                    padding: 15px 15px 15px 30px;
+                    font-family: 'SF Pro Display';
+                    font-style: normal;
+                    font-weight: 400;
+                    font-size: 14px;
+                    line-height: 23px;
+                    text-align: justify;
+                    color: #000000;
+                }
+            }
+
+            &.show {
+                .card-body {
+                    height: auto;
+                }
+
+                .fa-plus {
+                    display: none;
+                }
+
+                .fa-minus {
+                    display: block;
+                }
+            }
+        }
+    }
+}
+
+
+.contact-us {
+    width: 100%;
+
+    @media(min-width: 576px) {
+        float: right;
+        max-width: calc(100% - 40px);
+        position: sticky;
+        top: 10px;
+    }
+
+    padding: 35px 25px 25px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    margin-top: 35px;
+    box-shadow: 1px 0px 10px 0px #0000001C;
+    // Angular goc KHONG khai bao background cho .contact-us trong file .less nay - o production
+    // no van hien khung trang vi co the ke thua tu 1 class global khac ngoai component nay.
+    // Ben WP khong co class do nen phai khai bao thang de ra dung khung the (kiem tra thuc te
+    // qua DevTools tren production: nen trang).
+    background: #ffffff;
+
+    .title {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .name {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 28px;
+        margin-bottom: 22px;
+        color: rgba(43, 43, 43, 1);
+
+    }
+
+    .form-control {
+        font-size: 16px;
+        padding: 15px 20px;
+        border-radius: 8px;
+
+        &::placeholder {
+            color: rbg(0, 0, 0, 0.35);
+            font-weight: 400;
+        }
+    }
+
+    .form-check {
+        .form-check-label {
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 26px;
+        }
+
+        input {
+            position: relative;
+            top: 4px;
+        }
+    }
+
+    // icon-from-search: khong co CSS rieng ben Angular (chi co class tren <img>, style thua
+    // huong tu global) - viet moi cho khop kich thuoc icon 20px canh giua dong text ben canh.
+    p {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 16px;
+        margin-bottom: 12px;
+        color: rgba(43, 43, 43, 1);
+
+        // Kich thuoc do truc tiep tren production that (DevTools: img.icon-from-search 29x24),
+        // KHONG ep vuong 20x20 - anh nguon khong vuong, ep vuong se lam meo hinh.
+        .icon-from-search {
+            width: 29px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+    }
+
+
+
+    .btn {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+        font-weight: 500;
+        text-align: center;
+        border-radius: 10px;
+        font-family: 'SF Pro Display';
+        font-style: normal;
+
+
+        &.btn-primary {
+            box-shadow: 0px 12px 29px 0px #00000014;
+            background: #3e5fb4;
+            border: none;
+
+            &:hover {
+                background: linear-gradient(146.25deg, #b574d8 0%, #5291c5 102.37%);
+            }
+        }
+
+        &.btn-default {
+            color: #000000;
+            opacity: 0.8;
+        }
+    }
+
+
+
+    a.btn-default {
+        border: 1px solid #E7E7E7;
+        display: block;
+    }
+}
+
+.header-right {
+    float: left;
+    padding: 0px 15px;
+    background-color: white;
+    width: 100%;
+
+    @media (min-width: 0px) and (max-width: 880px) {
+        padding-left: 0px;
+        display: inline-grid;
+    }
+
+    .data-title {
+        float: left;
+
+        h1 {
+            font-weight: 700;
+            font-size: 21px;
+            color: #000000;
+        }
+
+        .text-1 {
+            font-style: normal;
+            font-weight: 400;
+            font-size: 14px;
+            color: #000000;
+            opacity: 0.5;
+            float: left;
+        }
+    }
+}
+
+
+//Fix riêng trang tin tức
+.box-content {
+    border-top: 0px solid #DDDDDD;
+    margin-top: 0px !important;
+    margin-bottom: 15px;
+
+    @media (min-width: 0px) and (max-width: 880px) {
+        margin-top: 0px !important;
+    }
+
+    .box-list {
+        box-shadow: none;
+        padding: 10px;
+
+        @media (min-width: 0px) and (max-width: 880px) {
+            position: relative;
+            height: auto;
+        }
+
+
+        .show-first {
+            height: 450px;
+            overflow: hidden;
+
+            .list-product-office {
+                .item-office {
+                    margin-bottom: 20px;
+                }
+            }
+        }
+
+        .box-list-body .list-product-office {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .result-box {
+            margin-bottom: 50px;
+        }
+    }
+}
+
+//Css bài viết liên quan
+.blog-list-orther {
+    margin-left: 40px;
+
+    @media (min-width: 0px) and (max-width: 880px) {
+        margin-left: 0px;
+        margin-top: 30px;
+    }
+
+    .title-list {
+        font-size: 24px;
+        padding-bottom: 15px;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #3e5fb4;
+        font-weight: 500;
+    }
+
+    .blog-item-list {
+
+        @media (min-width: 0px) and (max-width: 880px) {
+            width: 100%;
+            overflow: auto !important;
+        }
+
+        .blog-item-list-rs {
+            @media (min-width: 0px) and (max-width: 880px) {
+                display: flex;
+                width: fit-content;
+                flex-direction: row;
+            }
+        }
+
+        .blog-item {
+            box-sizing: border-box;
+
+            &:last-child {
+                border-bottom: 0px;
+            }
+
+            @media (min-width: 0px) and (max-width: 880px) {
+                width: 260px;
+                margin-right: 15px;
+            }
+
+            .blog-body {
+                display: inline-flex;
+                width: 100%;
+                border: 1px solid #D7D7D7;
+                box-sizing: border-box;
+                border-radius: 14px;
+                margin-bottom: 15px;
+                transition: 0.3s all;
+
+                &:hover {
+                    box-shadow: 0px 7px 18px #c9c7c7;
+                }
+
+                @media (min-width: 0px) and (max-width: 880px) {
+                    display: initial;
+                }
+            }
+
+            img {
+                width: 180px;
+                aspect-ratio: 4/3;
+                border-radius: 6px;
+                transition: 0.3s all;
+
+                @media (min-width: 0px) and (max-width: 880px) {
+                    width: 100%;
+                }
+            }
+
+            &:hover {
+                img {
+                    box-shadow: 0px 7px 18px #c9c7c7;
+                }
+            }
+
+            .content {
+                padding: 6px 8px 0px 15px;
+                width: calc(100% - 180px);
+                position: relative;
+
+                @media (min-width: 0px) and (max-width: 880px) {
+                    width: 100%;
+                    padding: 15px 0px 15px 0px;
+                }
+            }
+
+            .content-title {
+                font-style: normal;
+                font-weight: bold;
+                font-size: 15px;
+                color: #000000;
+                margin-bottom: 8px;
+                display: block;
+                width: 100%;
+
+                @media only screen and (max-width: 760px) and (min-width: 0px) {
+                    min-height: 90px;
+                }
+            }
+
+            .content-des {
+                font-style: normal;
+                font-weight: 500;
+                font-size: 15px;
+                color: #000000;
+                opacity: 0.7;
+                margin-bottom: 8px;
+            }
+
+            .btn-read {
+                border-radius: 4px;
+                margin-top: 10px;
+                cursor: pointer;
+                transition: 0.3s ease-in-out;
+                border: 1px solid #61A2D8;
+                padding: 5px;
+                width: 110px;
+                color: #61A2D8;
+                position: absolute;
+                bottom: 6px;
+
+                &:hover {
+                    background-color: #eeeeee;
+                    color: #589dd6;
+                }
+            }
+        }
+    }
+
+
+    .blog-item-list::-webkit-scrollbar {
+        display: none
+    }
+}
+
+#ShowMore {
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+.box-content .box-map {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+.url-content {
+    padding-left: 0px;
+}
+
+.data-title-3 {
+    font-family: 'SF Pro Display';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 49px;
+    color: #000000;
+    opacity: 0.8;
+}
+
+.data-title-4 {
+    font-family: 'SF Pro Display';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 49px;
+    color: #000000;
+    opacity: 0.8;
+}
+
+.main-tacgia {
+    margin-top: 75px;
+    padding: 40px 60px;
+    box-shadow: 0px 7px 18px #c9c7c7;
+    border-top: 4px solid #B581DB;
+    position: relative;
+
+    // Ca Angular goc lan ban port truoc day deu chua co breakpoint mobile cho khoi tac gia nay -
+    // padding 40px+60px cong voi ".contac-tacgia{display:flex}" (avatar co dinh 100px + chu ben
+    // canh) khien cot chu con lai duoi 375px chi con ~135px, chu bi be dan tung tu mot (bug thuc
+    // te). Duoi 600px: giam padding va xep avatar/chu THEO CHIEU DOC thay vi canh nhau.
+    @media (max-width: 600px) {
+        margin-top: 40px;
+        padding: 24px 20px;
+    }
+
+    .contac-tacgia {
+        display: flex;
+
+        @media (max-width: 600px) {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .img-avata {
+            img {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+            }
+        }
+
+        .des-tac-gia {
+            font-size: 16px;
+            padding: 0px 15px 0px 25px;
+
+            @media (max-width: 600px) {
+                padding: 15px 0px 0px 0px;
+            }
+
+            .title-1 {
+                font-size: 16px;
+                font-weight: 400;
+                line-height: 24px;
+                color: #7F7E80;
+            }
+
+            .title-name-tacgia {
+                font-size: 20px;
+                font-weight: 500;
+                line-height: 30px;
+
+            }
+
+            .data-tacgia {}
+        }
+    }
+
+    .solical-tacgia {
+        display: flex;
+        position: absolute;
+        top: 30px;
+        right: 50px;
+
+        .solical-item {
+            color: #3e5fb4;
+            margin-right: 13px;
+            font-size: 25px;
+            cursor: pointer;
+
+            i {
+                padding: 5px 6px;
+                border-radius: 10px;
+            }
+
+            .fa-facebook {
+                background: linear-gradient(106.04deg, #6AA0DA 0%, #BE7FE1 100%);
+                color: white;
+                padding: 5px 10px;
+            }
+
+            .fa-envelope {
+                background: linear-gradient(106.04deg, #6AA0DA 0%, #BE7FE1 100%);
+                color: white;
+            }
+
+            .fa-twitter {
+                background: linear-gradient(106.04deg, #6AA0DA 0%, #BE7FE1 100%);
+                color: white;
+            }
+
+            .fa-phone {
+                background: linear-gradient(106.04deg, #6AA0DA 0%, #BE7FE1 100%);
+                color: white;
+                padding: 5px 7px;
+            }
+
+            .fa-linkedin {
+                background: linear-gradient(106.04deg, #6AA0DA 0%, #BE7FE1 100%);
+                color: white;
+            }
+        }
+    }
+}
+
+.blog-list-tacgia {
+    margin-top: 40px;
+
+    .title-list {
+        font-size: 24px;
+        padding-bottom: 15px;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #3e5fb4;
+        font-weight: 500;
+    }
+
+
+    .blog-item-list-rs {
+        margin-top: 30px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        column-gap: 20px;
+        display: grid;
+
+        @media only screen and (max-width: 760px) and (min-width: 0px) {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+
+        .customer-item {
+            border: 1px solid #D7D7D7;
+            box-sizing: border-box;
+            border-radius: 14px;
+            margin-bottom: 15px;
+            box-shadow: 0px 7px 18px #f3f1f1;
+            transition: 0.3s all;
+
+            &:hover {
+                box-shadow: 0px 7px 18px #c9c7c7;
+            }
+
+            img {
+                width: 100%;
+                aspect-ratio: 4/3;
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .content-title {
+                font-style: normal;
+                font-weight: bold;
+                font-size: 15px;
+                color: #000000;
+                margin-bottom: 8px;
+            }
+
+            .content-des {
+                font-style: normal;
+                font-weight: 500;
+                font-size: 15px;
+                color: #000000;
+                opacity: 0.7;
+                margin-bottom: 8px;
+            }
+
+            .btn-read {
+                font-style: normal;
+                font-weight: 500;
+                font-size: 16px;
+                color: #3E5FB4;
+            }
+        }
+    }
+}
+
+.blog-header {
+    margin: 0px 0px 10px 0px;
+
+
+    .data-title-header {
+        font-weight: 700;
+        font-size: 23px;
+        color: #000000;
+    }
+}
+
+// Muc Luc (#bg-toc) - table-of-contents.component.less ben Angular RONG (component chi render
+// qua JS luc runtime, khong co CSS rieng) - CSS nay la moi, viet them cho ban port server-render.
+.post-navigation-left {
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    box-shadow: 1px 0px 10px 0px #0000001C;
+
+    .nav-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #000000;
+    }
+
+    .toc ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .toc li {
+        margin-bottom: 8px;
+    }
+
+    .toc a {
+        font-size: 16px;
+        line-height: 24px;
+        color: #3E5FB4;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

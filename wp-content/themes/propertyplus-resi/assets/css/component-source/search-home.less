@@ -1,0 +1,113 @@
+
+.box-search {
+    position: relative;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+
+    [class^="col-md-"]+[class^="col-md-"]:not(:last-child) {
+        border-left: 1px solid #ECECEC;
+
+        @media (min-width: 0px) and (max-width: 880px) {
+            border-left: 0px solid #ECECEC;
+        }
+    }
+}
+
+// Icon tren dau moi o (Thanh pho/Dia diem/Loai van phong/Muc gia/Hang) - Angular goc dat img
+// truc tiep trong ".control" (khong bao ".icon"), KHONG co CSS rieng ben Angular (do kich thuoc
+// that tren production: 29x24, xem blog-detail.less). Dung ">" (con truc tiep) de KHONG anh
+// huong icon cua bang loc (office-filter-panel.php boc icon trong <i class="icon">, la chau
+// chu khong phai con truc tiep cua ".control" nen khong khop selector nay).
+//
+// KHONG dat width/height o day (bug thuc te nguoi dung bao cao 22/8/2026, doi chieu truc tiep
+// production: img.icon-from-search o do KHONG co width/height CSS nao ca, render dung kich
+// thuoc goc cua file anh) - truoc day tung ep width:20px trai voi chinh ghi chu tren (29x24), lam
+// icon nho hon ban goc. De HTML width/height attribute (da co san tren <img>, dung dung kich
+// thuoc that tung icon: Group.png 29x24, Group-3.png 29x26, Group-4.png 29x18) tu quyet dinh.
+.control > .icon-from-search {
+    display: block;
+    margin: 0 auto 6px;
+}
+
+.office-type-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 8px;
+    display: grid;
+    margin-top: 10px;
+
+    input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .item-class {
+        background: #d3e6ff;
+        padding: 8px;
+        border-radius: 8px;
+        transition: 0.5s all;
+        width: 100%;
+        cursor: pointer;
+        text-align: center;
+        align-content: center;
+        margin-bottom: 10px;
+    }
+    input[type="radio"]:checked + label {
+        background: #1e44a7;
+        color: #fff;
+    }
+}
+
+// Popup rieng cho tung o (Loai van phong/Muc gia/Hang) trong thanh tim kiem trang chu - Angular
+// dieu khien an/hien qua CSS/JS rieng (focusFunction()) khong duoc port day du o Phase 0, nen
+// viet moi hoan toan. Mac dinh AN, hien khi co class ".pplus-popup-open" (xem assets/js/main.js).
+.pplus-popup-field {
+    position: relative;
+}
+.focus-popup {
+    display: none;
+    position: absolute;
+    top: 100%;
+    // header.less co san 1 rule ".focus-popup" khac (dropdown khong con dung o dau, xem
+    // header.php - khong con cho nao dung class nay) voi "opacity: 0; bottom: 5360px;" - vi
+    // cung ten class (trung ten nhu bug ".box-search" da gap truoc do trong file nay), 2 thuoc
+    // tinh nay KHONG duoc rule cua ta ghi de (truoc day chua khai bao) nen van con hieu luc,
+    // lam popup dua ra "display:block" nhung van opacity:0 (vo hinh hoan toan) - phai reset
+    // lai ca opacity VA bottom o day.
+    opacity: 1;
+    bottom: auto;
+    left: 0;
+    z-index: 1000;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 15px;
+    margin-top: 8px;
+    min-width: 280px;
+
+    &.pplus-popup-open {
+        display: block;
+    }
+}
+.pplus-popup-trigger {
+    cursor: pointer;
+    background-color: #ffffff !important;
+}
+// Toan bo ".control" (nhan label + input) deu bam mo popup duoc (xem assets/js/main.js) -
+// nhan label truoc day khong co con tro pointer nen nguoi dung khong biet bam duoc vao do.
+.pplus-popup-field .control {
+    cursor: pointer;
+}
+
+// header-component.css (ul.building-class-list) yeu cau dung input[name=RatingLevelCheck]
+// (ten noi bo Angular) + type=radio de hien mau ":checked" - o day dung THANG ten field GET
+// that (rating_level) + type=checkbox (cho hieu ung bam-lai-de-bo-chon), nen phai bo sung rule
+// rieng, khop dung selector .building-class thay vi dua vao rule co san (khong khop).
+.building-class-list input[name="rating_level"]:checked + .building-class {
+    background: #3e5fb4 !important;
+    color: #ffffff;
+
+    .class-name {
+        color: #ffffff;
+    }
+}

@@ -1,0 +1,113 @@
+﻿/*@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 100;
+    src: url("ultralight.eot");*/ /* IE9*/
+    /*src: url("ultralight.eot") format("embedded-opentype"),*/ /* IE6-IE8 */
+    /*url("ultralight.woff2") format("woff2"),*/ /* chrome、firefox */
+    /*url("ultralight.woff") format("woff"),*/ /* chrome、firefox */
+    /*url("ultralight.ttf") format("truetype"),*/ /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    /*url("ultralight.svg#SFProDisplay-Ultralight") format("svg");*/ /* iOS 4.1- */
+/*}*/
+
+/*@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 200;
+    src: url("thin.eot");*/ /* IE9*/
+    /*src: url("thin.eot?#iefix") format("embedded-opentype"),*/ /* IE6-IE8 */
+    /*url("thin.woff2") format("woff2"),*/ /* chrome、firefox */
+    /*url("thin.woff") format("woff"),*/ /* chrome、firefox */
+    /*url("thin.ttf") format("truetype"),*/ /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    /*url("thin.svg#SFProDisplay-Thin") format("svg");*/ /* iOS 4.1- */
+/*}*/
+
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 300;
+    src: url("light.eot"); /* IE9*/
+    src: url("light.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("light.woff2") format("woff2"), /* chrome、firefox */
+    url("light.woff") format("woff"), /* chrome、firefox */
+    url("light.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    url("light.svg#SFProDisplay-Light") format("svg"); /* iOS 4.1- */
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 400;
+    src: url("regular.eot"); /* IE9*/
+    src: url("regular.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("regular.woff2") format("woff2"), /* chrome、firefox */
+    url("regular.woff") format("woff"), /* chrome、firefox */
+    url("regular.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    url("regular.svg#SFProDisplay-Regular") format("svg"); /* iOS 4.1- */
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 500;
+    src: url("medium.eot"); /*IE9*/
+    src: url("medium.eot?#iefix") format("embedded-opentype"), /*IE6-IE8*/
+    url("medium.woff2") format("woff2"), /*chrome、firefox*/
+    url("medium.woff") format("woff"), /*chrome、firefox*/
+    url("medium.ttf") format("truetype"), /*chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    url("medium.svg#SFProDisplay-Medium") format("svg"); /*iOS 4.1-*/
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 600;
+    src: url("semibold.eot"); /* IE9*/
+    src: url("semibold.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("semibold.woff2") format("woff2"), /* chrome、firefox */
+    url("semibold.woff") format("woff"), /* chrome、firefox */
+    url("semibold.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    url("semibold.svg#SFProDisplay-Semibold") format("svg"); /* iOS 4.1- */
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 700;
+    src: url("bold.eot"); /* IE9*/
+    src: url("bold.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("bold.woff2") format("woff2"), /* chrome、firefox */
+    url("bold.woff") format("woff"), /* chrome、firefox */
+    url("bold.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    url("bold.svg#SFProDisplay-Bold") format("svg"); /* iOS 4.1- */
+    font-display: swap;
+}
+
+/*@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 800;
+    src: url("heavy.eot");*/ /* IE9*/
+    /*src: url("heavy.eot?#iefix") format("embedded-opentype"),*/ /* IE6-IE8 */
+    /*url("heavy.woff2") format("woff2"),*/ /* chrome、firefox */
+    /*url("heavy.woff") format("woff"),*/ /* chrome、firefox */
+    /*url("heavy.ttf") format("truetype"),*/ /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    /*url("heavy.svg#SFProDisplay-Heavy") format("svg");*/ /* iOS 4.1- */
+/*}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 800;
+    src: url("black.eot");*/ /* IE9*/
+    /*src: url("black.eot?#iefix") format("embedded-opentype"),*/ /* IE6-IE8 */
+    /*url("black.woff2") format("woff2"),*/ /* chrome、firefox */
+    /*url("black.woff") format("woff"),*/ /* chrome、firefox */
+    /*url("black.ttf") format("truetype"),*/ /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    /*url("black.svg#SFProDisplay-Black") format("svg");*/ /* iOS 4.1- */
+/*}*/

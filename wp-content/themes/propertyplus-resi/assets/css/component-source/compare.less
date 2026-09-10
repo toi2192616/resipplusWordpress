@@ -1,0 +1,486 @@
+// Port tu src/app/partials/list-compare/list-compare.component.less +
+// src/app/partials/product-compare/product-compare.component.less.
+//
+// Angular dung ng-bootstrap NgbModal (".modal-list-compare"/".modal-product-compare" la
+// windowClass rieng cua tung modal, bao ngoai boi ".modal-dialog" chuan Bootstrap). WP dung lai he
+// thong modal co san cua theme (".modal-container-ppus > .modal-background > .modal", xem
+// footer-component.less + parts/footer.php) nen goc scope o day la "#modal-compare-list"/
+// "#modal-compare-table .modal" thay vi ng-bootstrap class.
+//
+// QUAN TRONG: ".modal-container-ppus .modal-background .modal" (rule goc, footer-component.less)
+// co san 1 CSS animation dung "transform" (@keyframes scaleUp/scaleDown) - se GHI DE bat ky
+// "transform" tinh nao khai bao them (2 nguon transform khong cong don). Vi vay canh giua modal O
+// DAY dung "left/right + margin:0 auto" (KHONG dung "left:50%+transform:translateX(-50%)"), giong
+// huong fix da dung cho #modal-container6 (chat popup) - xem ghi chu trong footer-component.less.
+// Tuong tu, phai khai bao ca "top" LAN "bottom" TUONG MINH (khong de 1 ben "auto" ngam dinh) de
+// tranh bug chieu cao phinh to (position:fixed trong .modal-background la display:table-cell).
+
+// Icon mui ten trong nut "So sanh" tren the (parts/office-card.php .viewdetail) - ".viewdetail" +
+// ".viewdetail.active" (nen xanh/chu trang) da co san tu truoc trong
+// assets/officebase/style/layout.css (KHONG duoc sua truc tiep file vendor do), nhung rieng icon
+// mui ten (i svg) van giu mau xanh ca luc active (ke thua rule goc), an mat tren nen xanh moi.
+.item-office .item-content .viewdetail.active i svg {
+    fill: #ffffff;
+    stroke: #ffffff;
+}
+
+#modal-compare-list .modal,
+#modal-compare-table .modal {
+    position: fixed;
+    top: 5vh;
+    bottom: 5vh;
+    left: 15px;
+    right: 15px;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    background: #FFFFFF;
+    overflow: hidden;
+    width: auto;
+    height: auto;
+
+    @media only screen and (max-width: 800px) {
+        top: 3vh;
+        bottom: 3vh;
+        left: 8px;
+        right: 8px;
+    }
+}
+
+#modal-compare-list .modal {
+    max-width: 615px;
+}
+
+// Toi da 4 san pham/lan so sanh - can du rong de nhin thay het 4 cot tren 1 man hinh ngang, khong
+// phai cuon. Khop dung cach Angular goc lam (product-compare.component.less: ".modal-dialog {
+// width: calc(100% - 20px); max-width:100%; }" - modal gan nhu full vien man hinh, KHONG gioi han
+// o 1 con so co dinh nho nhu 1100px). "max-width:1800px" o day chi la 1 tran an toan (man hinh
+// thuc te hiem khi rong hon), "left/right:10px" moi la gioi han THAT SU quyet dinh do rong.
+#modal-compare-table .modal {
+    max-width: 1800px;
+    left: 10px;
+    right: 10px;
+}
+
+.modal-container-compare {
+    .modal-header {
+        padding: 18px 55px;
+        background: #F5F4F5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex: 0 0 auto;
+
+        @media only screen and (max-width: 800px) {
+            padding: 15px 20px;
+        }
+
+        .modal-title {
+            font-family: 'Helvetica Neue';
+            font-size: 24px;
+            font-weight: 500;
+            color: #23182B;
+
+            @media only screen and (max-width: 800px) {
+                font-size: 18px;
+            }
+        }
+
+        .pull-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-pdf {
+            margin-right: 10px;
+        }
+    }
+
+    .modal-body {
+        padding: 40px 55px;
+        overflow-y: auto;
+        flex: 1 1 auto;
+
+        @media only screen and (max-width: 800px) {
+            padding: 20px;
+        }
+    }
+
+    .btn {
+        cursor: pointer;
+        border-radius: 8px;
+        font-size: 16px;
+        padding: 8px 18px;
+        border: 1px solid transparent;
+    }
+
+    .btn-primary {
+        background: #3E5FB4;
+        color: #FFFFFF;
+        border-color: #3E5FB4;
+
+        img {
+            width: 18px;
+            margin-right: 5px;
+            margin-top: -3px;
+        }
+    }
+
+    .btn-outline-primary {
+        background: #FFFFFF;
+        color: #3E5FB4;
+        border-color: #3E5FB4;
+    }
+
+    .btn-outline-success {
+        background: #FFFFFF;
+        color: #61A2D8;
+        border-color: #61A2D8;
+    }
+}
+
+// ===== #modal-compare-list (buoc 1: danh sach mini) =====
+.list-compare {
+    .item-compare {
+        position: relative;
+        margin-bottom: 24px;
+        display: flex;
+
+        img {
+            width: 190px;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.22);
+
+            @media only screen and (max-width: 800px) {
+                width: 110px;
+            }
+        }
+
+        .item-content-m {
+            width: calc(100% - 210px);
+
+            @media only screen and (max-width: 800px) {
+                width: calc(100% - 130px);
+                margin-top: -5px;
+            }
+
+            .item-content {
+                min-height: 85px;
+                position: relative;
+                padding: 5px 0px 5px 15px;
+
+                .RateTing {
+                    width: 100%;
+                    display: inline-block;
+
+                    .RateTingContent {
+                        background: #DEE8FF;
+                        border-radius: 8px;
+                        text-align: center;
+                        color: #7292E0;
+                        font-size: 14px;
+                        padding: 4px 20px;
+                        margin-bottom: 5px;
+                        float: left;
+
+                        &.classA { color: #CB2A2A; }
+                        &.classB { color: #E61DEA; }
+                        &.classC { color: #3E5FB4; }
+                    }
+                }
+
+                .item-name {
+                    clear: both;
+                    font-size: 16px;
+                    color: #23182B;
+                    font-weight: 500;
+                    margin-bottom: 5px;
+                    margin-top: 5px;
+                }
+
+                .item-address {
+                    font-size: 14px;
+                    color: #000000;
+                    min-height: 35px;
+                    margin-bottom: 5px;
+                }
+
+                .item-price {
+                    font-size: 18px;
+                    font-weight: 500;
+                    color: #000000;
+
+                    @media only screen and (max-width: 800px) {
+                        display: none;
+                    }
+                }
+            }
+        }
+
+        .item-dislike {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            background-color: #51505059;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            padding: 3px 5px;
+            transition: 0.3s;
+            cursor: pointer;
+            width: 45px;
+            height: 40px;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+                fill: #C4C4C400;
+                stroke: #FFFFFFC2;
+                transition: 0.3s;
+                width: 20px;
+                height: 22px;
+            }
+
+            &:hover {
+                background-color: #00000073;
+
+                svg {
+                    fill: #C4C4C400;
+                    stroke: #3E5FB4;
+                }
+            }
+        }
+    }
+}
+
+#pplus-compare-open-table {
+    width: 100%;
+}
+
+// ===== #modal-compare-table (buoc 2: bang so sanh day du) =====
+// Luoi CSS Grid THAT SU DUY NHAT cho toan bang - cot nhan (".inforThongSo") va tung cot san pham
+// (".inforCompare-data", JS render) deu la "display:contents" (duoi) nen con cua chung (header +
+// 14 tieu chi, moi o mang san "grid-row"/"grid-column" tuong minh tu PHP/JS - xem
+// parts/compare-modal.php + assets/js/compare.js) tro thanh con TRUC TIEP cua luoi nay - nho vay
+// trinh duyet TU canh chieu cao TUNG HANG rieng biet khop nhau giua nhan va MOI cot (hang nao co 1
+// o noi dung dai thi CA HANG do cao ra, hang nao ca khoi ngan thi HEP LAI), thay vi phai ep 1
+// chieu cao co dinh chung cho toan bang (cach lam TRUOC DAY, gay lang phi khoang trong o da so
+// hang chi co noi dung ngan - dung y kien nguoi dung phan hoi).
+// "grid-template-columns" phan cot ITEM (repeat(N,...)) duoc JS ghi de qua inline style moi lan
+// render (compare.js renderTableModal(), N = so luong dang so sanh) vi so cot la DONG.
+.container-compare {
+    .container-compare-data {
+        display: grid;
+        grid-template-columns: 220px;
+        border-radius: 10px;
+        border: 0.5px solid #DAD6DD;
+        // Cuon ngang bat ky luc nao noi dung (toi da 4 cot) rong hon modal, khong chi tren mobile -
+        // modal da duoc mo rong gan full man hinh nhung man hinh laptop nho van co the khong du 4
+        // cot, an toan hon la de bi cat mat (".modal" bao ngoai co "overflow:hidden").
+        overflow-x: auto;
+
+        @media only screen and (max-width: 800px) {
+            grid-template-columns: 170px;
+        }
+    }
+
+    .inforThongSo,
+    .list-inforCompare,
+    .list-inforCompare .inforCompare-data {
+        display: contents;
+    }
+
+    .inforThongSo {
+        // "height" O DAY PHAI KHOP CHINH XAC voi ".list-inforCompare .inforCompare-data
+        // .header-data-1" (duoi) o CA 2 breakpoint - ca 2 deu la grid-item o "grid-row:1" nen
+        // trinh duyet se lay max cua ca 2, nhung van nen khop san de tranh khoang trong thua.
+        .header-data-1 {
+            height: 210px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            @media only screen and (max-width: 800px) {
+                height: 150px;
+            }
+
+            .div-img-header {
+                text-align: center;
+
+                img { width: 90px; }
+            }
+
+            h3 {
+                font-size: 20px;
+                font-weight: 500;
+                text-align: center;
+                margin: 15px 10px 0px 10px;
+
+                @media only screen and (max-width: 800px) {
+                    font-size: 16px;
+                }
+            }
+        }
+
+        .inforComapre {
+            display: grid;
+            grid-template-columns: 30px repeat(1, minmax(0, 1fr));
+            align-items: center;
+            padding: 12px 15px;
+            // "min-height" gio AN TOAN (khac ban truoc): moi o o day la 1 grid-item THAT SU cua
+            // luoi ".container-compare-data" (xem "display:contents" + "grid-row" o tren), nen
+            // trinh duyet TU canh chieu cao hang nay khop voi o cung hang o MOI cot san pham -
+            // khong con can ep "height" co dinh thu cong nua.
+            min-height: 48px;
+            box-sizing: border-box;
+
+            .div-img img { width: 22px; }
+
+            label {
+                font-size: 15px;
+                font-weight: 500;
+            }
+
+            &.inforComapre-address label { height: auto; }
+
+            &:nth-child(2n+1) { background: #F8FAFF; }
+        }
+    }
+
+    .list-inforCompare {
+        .inforCompare-data {
+            .header-data-1 {
+                height: 210px;
+                box-sizing: border-box;
+                padding: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                @media only screen and (max-width: 800px) {
+                    height: 150px;
+                }
+
+                .photo-data {
+                    position: relative;
+                    width: 100%;
+                    max-width: 180px;
+                    margin: 0 auto;
+
+                    @media only screen and (max-width: 800px) {
+                        max-width: 130px;
+                    }
+
+                    img {
+                        width: 100%;
+                        aspect-ratio: 4 / 3;
+                        object-fit: cover;
+                        border-radius: 8px;
+                    }
+
+                    .item-dislike {
+                        position: absolute;
+                        top: 0px;
+                        left: 0px;
+                        background-color: #51505059;
+                        border-top-right-radius: 8px;
+                        border-bottom-right-radius: 8px;
+                        padding: 3px 5px;
+                        transition: 0.3s;
+                        cursor: pointer;
+                        width: 45px;
+                        height: 40px;
+                        z-index: 3;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        svg {
+                            fill: #C4C4C400;
+                            stroke: #FFFFFFC2;
+                            width: 20px;
+                            height: 22px;
+                        }
+
+                        &:hover { background-color: #3B383859; }
+                    }
+
+                    .name-office {
+                        background: linear-gradient(90deg, #2449A8 12.5%, rgba(49, 51, 141, 0.873) 46%, rgba(129, 122, 207, 0.439) 79.5%, rgba(255, 255, 255, 0) 100%);
+                        font-size: 15px;
+                        font-weight: 500;
+                        padding: 8px 10px;
+                        position: absolute;
+                        width: 100%;
+                        bottom: 0px;
+                        color: #FFFEFF;
+                        border-bottom-right-radius: 8px;
+                        border-bottom-left-radius: 8px;
+                    }
+                }
+            }
+
+            .inforComapre {
+                font-size: 15px;
+                font-weight: 400;
+                padding: 12px 15px;
+                // "min-height" gio AN TOAN (xem ghi chu day du o ".inforThongSo .inforComapre" -
+                // moi o la 1 grid-item THAT SU, trinh duyet tu canh chieu cao theo cung 1 hang grid).
+                min-height: 48px;
+                box-sizing: border-box;
+                display: flex;
+                align-items: center;
+
+                label {
+                    overflow: hidden;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 3;
+                    -webkit-box-orient: vertical;
+                    max-height: 60px;
+                }
+
+                .lable-Price {
+                    font-size: 16px;
+                    font-weight: 500;
+                    color: #DE9C27;
+                }
+
+                &:nth-child(2n+1) { background: #F8FAFF; }
+            }
+        }
+    }
+}
+
+// Trang thai "Dang tai" cua bang so sanh day du - xem showTableLoading() trong compare.js: mo
+// modal NGAY, thay vi doi 2 REST call (ensureCorrectLang/ensureParkFees, backend .NET co the mat
+// vai giay) xong moi mo, de nut "So sanh" tren thanh cong cu khong con nhu "khong phan hoi gi".
+.pplus-compare-loading {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 20px;
+    color: #666;
+    font-size: 15px;
+
+    &::before {
+        content: '';
+        width: 20px;
+        height: 20px;
+        border: 3px solid #dee8ff;
+        border-top-color: #3E5FB4;
+        border-radius: 50%;
+        animation: pplusCompareSpin 0.8s linear infinite;
+    }
+}
+@keyframes pplusCompareSpin {
+    to { transform: rotate(360deg); }
+}

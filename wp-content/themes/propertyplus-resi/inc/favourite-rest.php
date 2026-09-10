@@ -1,0 +1,156 @@
+<?php
+/**
+ * REST proxy cho Danh sach yeu thich (JS pplus-favourite.js goi). Vi du lieu yeu thich nam o
+ * localStorage (client), server khong biet truoc id nao - JS gui len danh sach projectId, cac
+ * endpoint duoi proxy sang API .NET that (giu nguyen guard API base + chuan hoa URL anh ve domain
+ * qua pplus_admin_asset_url, KHONG lo port noi bo ra trinh duyet khach - xem inc/api-client.php).
+ *
+ * Doi chieu office.service.ts:
+ *   GetOfficesInputDto(ids)      -> POST {lang}/Office/_GetOfficesInputDto?isdislike=1&inputstring={ids}
+ *   OfficeMarkerByInputDto(ids)  -> POST {lang}/Office/_OfficeMarkerByInputDto?isdislike=1&inputstring={ids}
+ *   DowloadPdfFavourite(data)    -> POST {lang}/Favourite/DowloadPdf  (body JsonInput, tra ve blob PDF)
+ */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+add_action('rest_api_init', function () {
+    register_rest_route('pplus/v1', '/offices-by-ids', [
+        'methods'             => 'GET',
+        'callback'            => 'pplus_rest_offices_by_ids',
+        'permission_callback' => '__return_true',
+        'args'                => [
+            'ids'  => ['required' => true],
+            'lang' => ['default' => 'vi'],
+        ],
+    ]);
+
+    register_rest_route('pplus/v1', '/office-markers-by-ids', [
+        'methods'             => 'GET',
+        'callback'            => 'pplus_rest_office_markers_by_ids',
+        'permission_callback' => '__return_true',
+        'args'                => [
+            'ids'  => ['required' => true],
+            'lang' => ['default' => 'vi'],
+        ],
+    ]);
+
+    register_rest_route('pplus/v1', '/favourite-pdf', [
+        'methods'             => 'POST',
+        'callback'            => 'pplus_rest_favourite_pdf',
+        'permission_callback' => '__return_true',
+    ]);
+});
+
+/** Chuan hoa "1,2,3" -> chi giu so + dau phay, chong injection vao query string API. */
+function pplus_sanitize_id_list($raw): string {
+    $ids = array_filter(array_map('intval', explode(',', (string) $raw)), fn($n) => $n > 0);
+    return implode(',', array_unique($ids));
+}
+
+function pplus_favourite_lang($request): string {
+    $lang = strtolower((string) $request->get_param('lang'));
+    return $lang === 'en' ? 'en' : 'vi';
+}
+
+/**
+ * POST {lang}/Office/_GetOfficesInputDto?isdislike=1&inputstring={ids} (body rong, giong Angular).
+ * Tra ve listOffice DA gan PhotoListBaSE (URL anh dai day du tro domain public).
+ */
+function pplus_rest_offices_by_ids(WP_REST_Request $request) {
+    $ids = pplus_sanitize_id_list($request->get_param('ids'));
+    if ($ids === '') {
+        return new WP_REST_Response(['listOffice' => []], 200);
+    }
+    $lang = pplus_favourite_lang($request);
+    $url  = pplus_api_base_url() . '/' . $lang . '/Office/_GetOfficesInputDto?isdislike=1&inputstring=' . rawurlencode($ids);
+
+    $response = wp_remote_post($url, [
+        'timeout' => 12,
+        'headers' => ['Accept' => 'application/json', 'Content-Type' => 'application/json; charset=utf-8'],
+        'body'    => '',
+    ]);
+    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) >= 400) {
+        return new WP_REST_Response(['listOffice' => [], 'error' => 'upstream'], 200);
+    }
+    $body    = json_decode(wp_remote_retrieve_body($response), true);
+    $offices = $body['result']['listOffice'] ?? [];
+
+    // Chuan hoa URL anh ve domain public (KHONG de lo port noi bo) - xem pplus_admin_asset_url.
+    foreach ($offices as &$o) {
+        $first = $o['photoList'][0] ?? '';
+        $o['PhotoListBaSE'] = $first !== '' ? pplus_admin_asset_url($first) : '';
+    }
+    unset($o);
+
+    return new WP_REST_Response(['listOffice' => $offices], 200);
+}
+
+/** POST {lang}/Office/_OfficeMarkerByInputDto?isdislike=1&inputstring={ids} -> markers (lat/lng...). */
+function pplus_rest_office_markers_by_ids(WP_REST_Request $request) {
+    $ids = pplus_sanitize_id_list($request->get_param('ids'));
+    if ($ids === '') {
+        return new WP_REST_Response(['markers' => []], 200);
+    }
+    $lang = pplus_favourite_lang($request);
+    $url  = pplus_api_base_url() . '/' . $lang . '/Office/_OfficeMarkerByInputDto?isdislike=1&inputstring=' . rawurlencode($ids);
+
+    $response = wp_remote_post($url, [
+        'timeout' => 12,
+        'headers' => ['Accept' => 'application/json', 'Content-Type' => 'application/json; charset=utf-8'],
+        'body'    => '',
+    ]);
+    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) >= 400) {
+        return new WP_REST_Response(['markers' => [], 'error' => 'upstream'], 200);
+    }
+    $body    = json_decode(wp_remote_retrieve_body($response), true);
+    $markers = $body['result'] ?? [];
+    foreach ($markers as &$m) {
+        $img = $m['img'] ?? ($m['photoList'][0] ?? '');
+        if ($img !== '') {
+            $m['imgUrl'] = pplus_admin_asset_url($img);
+        }
+    }
+    unset($m);
+
+    return new WP_REST_Response(['markers' => $markers], 200);
+}
+
+/**
+ * POST {lang}/Favourite/DowloadPdf (body {JsonInput}) -> tra ve blob PDF. Proxy nguyen binary ve
+ * cho trinh duyet tai. JS gui { name, ids } -> ta dung lai dung format Angular:
+ * JsonInput = JSON.stringify({ Obj: { FavouriteName }, Ids }).
+ */
+function pplus_rest_favourite_pdf(WP_REST_Request $request) {
+    $params = $request->get_json_params();
+    $name   = sanitize_text_field($params['name'] ?? 'Văn phòng yêu thích');
+    $ids    = pplus_sanitize_id_list($params['ids'] ?? '');
+    if ($ids === '') {
+        return new WP_REST_Response(['error' => 'no-ids'], 400);
+    }
+    $lang = (strtolower((string) ($params['lang'] ?? 'vi')) === 'en') ? 'en' : 'vi';
+
+    $json_input = wp_json_encode([
+        'Obj' => ['FavouriteName' => $name],
+        'Ids' => $ids,
+    ]);
+    $url = pplus_api_base_url() . '/' . $lang . '/Favourite/DowloadPdf';
+
+    $response = wp_remote_post($url, [
+        'timeout' => 30,
+        'headers' => ['Content-Type' => 'application/json; charset=utf-8'],
+        'body'    => wp_json_encode(['JsonInput' => $json_input]),
+    ]);
+    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) >= 400) {
+        return new WP_REST_Response(['error' => 'upstream'], 502);
+    }
+
+    $pdf = wp_remote_retrieve_body($response);
+    // Tra binary PDF truc tiep (khong qua JSON) de JS tao blob tai file.
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="favourite.pdf"');
+    header('Content-Length: ' . strlen($pdf));
+    echo $pdf;
+    exit;
+}

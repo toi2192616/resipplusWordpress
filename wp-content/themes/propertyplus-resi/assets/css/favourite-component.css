@@ -1,0 +1,888 @@
+/* ============================================================
+   Yeu thich / So sanh - CSS
+   Phan 1: he thong modal tu viet (thay ng-bootstrap) + tweak
+   Phan 2: port tu favourite/create-farourite/list-farourite/list-compare .less
+           (Angular), da strip ::ng-deep.
+   ============================================================ */
+.pplus-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+}
+.pplus-modal.open {
+  display: block;
+}
+.pplus-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+.pplus-modal .modal-dialog {
+  position: relative;
+  z-index: 1;
+  margin: 8vh auto;
+  max-width: 92vw;
+  background: #fff;
+  border-radius: 12px;
+  /* Bootstrap (assets/officebase/assets/boostrap-5.1.3/bootstrap.min.css, nap toan site) co san
+     ".modal-dialog { pointer-events: none }" (trung ten class voi he thong modal tu viet nay) -
+     Bootstrap tu "mo" lai qua ".modal-content" (pointer-events:auto) ben trong, nhung khung modal
+     tu viet o day khong co ".modal-content" nen thua huong nguyen "pointer-events:none", khien MOI
+     nut/input ben trong (vd "Bo suu tap moi", "Them vao") click chuot that KHONG AN DUOC (click
+     "xuyen qua" toi .pplus-modal-backdrop phia sau) - bug thuc te: bam "Bo suu tap moi" nhu khong
+     co gi xay ra. document.elementFromPoint() xac nhan dung nguyen nhan nay (JS .click() lap trinh
+     khong bi anh huong vi khong qua hit-test that, nen de bo sot khi test bang script). */
+  pointer-events: auto;
+}
+body.pplus-modal-active {
+  overflow: hidden;
+}
+.pplus-modal-x {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  border: none;
+  background: none;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  color: #999;
+  z-index: 3;
+}
+.pplus-addfa-empty {
+  padding: 12px;
+  color: #888;
+  font-size: 14px;
+  text-align: center;
+}
+.btn-action-dropdow-group {
+  position: relative;
+  display: inline-block;
+}
+.fa-dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 6px 0;
+  z-index: 5;
+  min-width: 160px;
+}
+.fa-dropdown-menu.open {
+  display: block;
+}
+.fa-dropdown-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  text-align: left;
+}
+.fa-dropdown-menu button:hover {
+  background: #f5f5f5;
+}
+.fa-dropdown-menu button i img {
+  width: 16px;
+  height: 16px;
+}
+.item-office.pplus-liked .item-like svg path {
+  fill: #e0245e;
+}
+/* Da BO ".item-compare"/".item-compare img"/".ic-name"/".ic-remove" (CSS cua ban "So sanh" GOC
+   cua Dev A, da xoa JS/HTML luc merge - xem parts/office-card.php) - ".item-compare img
+   { width:56px; height:44px }" KHONG scope van con nam day, TRUNG TEN CLASS voi markup Dev B
+   (assets/js/compare.js) nen ca 2 rule "width/height" tron lan nhau theo TUNG THUOC TINH (khong
+   theo CA RULE): width 190px thang (compare-component.css specificity cao hon) nhung height 44px
+   van thang (chi 1 noi dinh nghia height) - ra o anh 190x44 (ep dep) thay vi 190x142.5 (dung ty le
+   4:3 dinh) - bug thuc te: anh trong modal "So sanh thong tin toa nha" bi bop det. Doan CSS con
+   scope sau hon ".modal-list-compare .modal-dialog..." (ban goc Dev A) van con trong file nay
+   nhung KHONG con class "modal-list-compare" nao trong DOM nua nen that su chet han, khong gay
+   xung dot - de danh cho dot don CSS chet rieng sau nay. */
+.item-favourite {
+  display: block;
+  padding: 6px 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+/* ===== Phan 2: port Angular ===== */
+/* --- favourite.component.less --- */
+.content-favourite .favourite {
+  width: 100%;
+  display: flex;
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite {
+    display: inline-block;
+    margin-top: 0px;
+    padding: 20px;
+  }
+}
+.content-favourite .favourite .list-favourite {
+  float: left;
+  width: 340px;
+  padding: 15px;
+  background: #E9E4F4;
+  min-height: calc(100vh - 160px);
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite .list-favourite {
+    width: 100%;
+    margin-bottom: 15px;
+    min-height: calc(300px);
+    margin-left: 0px;
+    margin-top: 0px;
+  }
+}
+.content-favourite .favourite .list-favourite .title-1 {
+  font-weight: 500;
+  font-size: 22px;
+  text-align: left;
+  color: #545455;
+}
+.content-favourite .favourite .list-favourite input {
+  height: 42px;
+  background: #ECEFF5;
+  border-radius: 6px;
+}
+.content-favourite .favourite .list-favourite .list-content {
+  margin-top: 30px;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list {
+  column-gap: 10px;
+  display: grid;
+  grid-template-columns: 60px repeat(1, minmax(0, 1fr));
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: 0.3s;
+  cursor: pointer;
+  position: relative;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .item-img img {
+  width: 100%;
+  border-radius: 4px;
+  aspect-ratio: 4 / 3;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .item-content {
+  cursor: pointer;
+  padding-right: 15px;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .item-content label {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  color: #23182B;
+  width: 100%;
+  cursor: pointer;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .item-content span {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  color: #7F7E80;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list:hover,
+.content-favourite .favourite .list-favourite .list-content .item-list.active {
+  background: #F5F4F5;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .action-item {
+  width: 30px;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .action-item .btn-action-dropdow {
+  background: #FFFFFF;
+  border-radius: 8px;
+  line-height: 8px;
+  padding: 0px 2px;
+  min-width: 22px;
+  color: #7b6f8187;
+  font-size: 10px;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .action-item .btn-action-dropdow i {
+  line-height: 6px;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .action-item .btn-action-dropdow::after {
+  display: none;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .action-item .btn-action-dropdow-group .dropdown-menu {
+  padding: 0px;
+  display: none;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .action-item .btn-action-dropdow-group .dropdown-menu.show {
+  display: block;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .action-item .btn-action-dropdow-group .dropdown-item {
+  font-size: 14px;
+  color: #545455;
+  padding: 15px;
+  border-bottom: 1px solid #DAD6DD;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .action-item .btn-action-dropdow-group .dropdown-item i img {
+  width: 15px;
+  margin-right: 10px;
+  margin-top: -3px;
+}
+.content-favourite .favourite .list-favourite .list-content .item-list .action-item .btn-action-active {
+  border: 1px solid #BE7EE1;
+  color: #BE7EE1;
+  padding: 4px 6px;
+  line-height: 8px;
+  font-size: 10px;
+  margin-top: 10px;
+}
+.content-favourite .favourite .list-favourite .action-favourite {
+  margin-top: 18px;
+  cursor: pointer;
+}
+.content-favourite .favourite .list-favourite .action-favourite i {
+  background: #3e5fb4;
+  padding: 7px 8px;
+  border-radius: 6px;
+  color: white;
+  font-weight: 100;
+  font-size: 10px;
+  margin-right: 10px;
+  transition: 0.3s ease-in;
+}
+.content-favourite .favourite .list-favourite .action-favourite label {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 27px;
+  color: #23182B;
+  cursor: pointer;
+  transition: 0.3s ease-in;
+}
+.content-favourite .favourite .list-favourite .action-favourite:hover i {
+  background: linear-gradient(146.25deg, #b165da 0%, #4a96d4 102.37%);
+}
+.content-favourite .favourite .list-favourite .action-favourite:hover label {
+  color: #140c1a;
+}
+.content-favourite .favourite .detail-favourite {
+  float: left;
+  width: calc(100% - 355px);
+  padding: 20px;
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite .detail-favourite {
+    width: calc(100%);
+    margin-left: 0px;
+    padding: 0px;
+  }
+}
+.content-favourite .favourite .detail-favourite .header-f {
+  height: 230px;
+  /* File nay o "assets/css/favourite-component.css" (2 cap toi theme root) - component-source/
+     favourite.less o SAU hon 1 cap ("assets/css/component-source/") nen dung dung "../../../"
+     (3 cap). Duong dan nay bi chep nguyen tu .less khi "bien dich tay" ma khong tru bot 1 cap,
+     thanh "../../../" (4 cap tu day, ra ngoai ca theme "propertyplus/") - anh 404, banner
+     "Van phong yeu thich" mat nen (bug thuc te: banner trang /office-favourite thieu anh so voi
+     ban chinh). */
+  background-image: url('../../assets/officebase/Common/Images/Rectangle 3268.png');
+  position: relative;
+  border-radius: 10px;
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite .detail-favourite .header-f {
+    height: 160px;
+  }
+}
+.content-favourite .favourite .detail-favourite .header-f .header-f-right {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite .detail-favourite .header-f .header-f-right {
+    display: none;
+    bottom: 80px;
+  }
+}
+.content-favourite .favourite .detail-favourite .header-f .header-f-right h1 {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 22px;
+  color: #FFFFFF;
+  margin-bottom: 0px;
+}
+.content-favourite .favourite .detail-favourite .header-f .header-f-right span {
+  font-family: SF Pro Display;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 15px;
+  color: #FFFFFF;
+}
+.content-favourite .favourite .detail-favourite .header-f .header-f-left {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite .detail-favourite .header-f .header-f-left {
+    right: 0px;
+    left: 0px;
+    padding: 10px;
+    text-align: center;
+    bottom: 5px;
+  }
+}
+.content-favourite .favourite .detail-favourite .header-f .header-f-left .see-map-favorite {
+  background: #FFFFFF;
+  font-weight: 500;
+  height: 40px;
+  font-size: 14px;
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite .detail-favourite .header-f .header-f-left .see-map-favorite {
+    margin-bottom: 10px;
+  }
+}
+.content-favourite .favourite .detail-favourite .header-f .header-f-left .export-favorite {
+  background: #FFFFFF;
+  font-weight: 500;
+  height: 40px;
+  font-size: 14px;
+  margin-right: 5px;
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite .detail-favourite .header-f .header-f-left .export-favorite {
+    margin-bottom: 10px;
+  }
+}
+.content-favourite .favourite .detail-favourite .header-f .header-f-left .share-link {
+  background: #FFFFFF;
+  font-weight: 500;
+  height: 40px;
+  font-size: 14px;
+  padding: 8px;
+  margin-right: 5px;
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite .detail-favourite .header-f .header-f-left .share-link {
+    margin-bottom: 10px;
+  }
+}
+.content-favourite .favourite .detail-favourite .content-f {
+  margin-top: 25px;
+}
+.content-favourite .favourite .detail-favourite .content-f .list-product-office {
+  margin: 0 !important;
+  position: relative;
+  margin-top: -20px !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  column-gap: 10px;
+  display: grid;
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite .detail-favourite .content-f .list-product-office {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+@media only screen and (max-width: 1200px) and (min-width: 900px) {
+  .content-favourite .favourite .detail-favourite .content-f .list-product-office {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media only screen and (max-width: 1620px) and (min-width: 1220px) {
+  .content-favourite .favourite .detail-favourite .content-f .list-product-office {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.content-favourite .favourite .detail-favourite:not(.fullContent) {
+  width: 320px;
+}
+@media only screen and (max-width: 4000px) and (min-width: 1000px) {
+  .content-favourite .favourite .detail-favourite:not(.fullContent) {
+    height: calc(100vh - 225px);
+    overflow: auto;
+  }
+}
+.content-favourite .favourite .detail-favourite:not(.fullContent) .list-product-office {
+  grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+}
+.content-favourite .favourite .detail-favourite:not(.fullContent) .header-f {
+  display: none;
+}
+.content-favourite .favourite .detail-favourite .no-list {
+  text-align: center;
+  margin: auto;
+}
+.content-favourite .favourite .detail-favourite .no-list .text-1 {
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 37.5px;
+  text-align: center;
+  color: #545455;
+  margin-top: 100px;
+  margin-bottom: 35px;
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite .detail-favourite .no-list .text-1 {
+    margin-top: 20px;
+  }
+}
+.content-favourite .favourite .detail-favourite .no-list img {
+  max-width: 100%;
+}
+.content-favourite .favourite .box-map {
+  position: sticky;
+  z-index: 2;
+  top: 0px;
+  right: 0px;
+  width: calc(100% - 290px - 370px);
+  height: calc(100vh - 225px);
+  opacity: 1;
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite .box-map {
+    width: 100vw;
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    min-height: -webkit-fill-available;
+    z-index: 5;
+  }
+}
+.content-favourite .favourite .box-map #mapfarourite {
+  width: 100%;
+  height: 100%;
+}
+@media only screen and (max-width: 800px) and (min-width: 0px) {
+  .content-favourite .favourite .box-map #mapfarourite {
+    right: 0px;
+  }
+}
+.content-favourite .favourite .box-map.hidden-map {
+  opacity: 0;
+  z-index: -1;
+  position: absolute;
+  left: 0px;
+}
+.content-favourite .favourite .box-map .action-show-off-map {
+  position: absolute;
+  top: 100px;
+  left: -15px;
+  z-index: 999;
+}
+@media only screen and (max-width: 800px) {
+  .content-favourite .favourite .box-map .action-show-off-map {
+    display: none;
+  }
+}
+.content-favourite .favourite .box-map .action-show-off-map .btn-show-off-map {
+  background: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 10px;
+  box-shadow: 3px 3px 1px #c0baba;
+  cursor: pointer;
+}
+.content-favourite .favourite .box-map .action-show-off-map .btn-show-off-map svg {
+  transition: 0.5s;
+  transform: rotate(180deg);
+}
+.content-favourite .favourite .box-map .action-show-off-map .btn-show-off-map.showoff svg {
+  transform: rotate(180deg);
+}
+.content-favourite .favourite .box-map.show-resi-web {
+  width: 100%;
+}
+.content-favourite .favourite .box-map.show-resi-web #mapfarourite {
+  right: 0px;
+}
+.content-favourite .favourite .box-map.show-resi-web .off-map-favorite {
+  right: 10px;
+}
+.content-favourite .favourite .box-map.show-resi-web .action-show-off-map {
+  left: 15px;
+}
+.content-favourite .favourite .toggleTopGroup {
+  display: none;
+  z-index: 999;
+  left: 0px;
+}
+@media (max-width: 768px) {
+  .content-favourite .favourite .toggleTopGroup {
+    display: block;
+    position: fixed;
+    width: 100%;
+    bottom: 65px;
+  }
+}
+.content-favourite .favourite .toggleTopGroup .toggleTop {
+  position: relative;
+  font-family: SF Pro Display;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 19px;
+  letter-spacing: 0.01em;
+  color: #2D5185;
+  text-align: center;
+  padding-bottom: 20px;
+  padding-top: 25px;
+  user-select: none;
+  background-color: white;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+}
+.content-favourite .favourite .toggleTopGroup .toggleTop:before {
+  content: ' ';
+  width: 44px;
+  height: 2px;
+  background: #DED5D5;
+  border: 1px solid #DED5D5;
+  border-radius: 10px;
+  position: absolute;
+  top: 7px;
+  left: calc(50% - 22px);
+}
+.content-favourite .btn-action-search {
+  border: 1px solid #DAD6DD;
+  padding: 8px;
+  border-radius: 8px;
+  color: #545455;
+  font-size: 16px;
+  margin-right: 10px;
+  cursor: pointer;
+  box-shadow: 0px 0px 6px 0px #0000001F;
+  min-width: 140px;
+  margin-top: 5px;
+}
+.content-favourite .btn-action-search i {
+  margin-right: 6px;
+  position: relative;
+  top: -3px;
+}
+.content-favourite .btn-action-search i img {
+  width: 20px;
+}
+.content-favourite .btn-action-search:hover {
+  background-color: #be7ee11f;
+}
+.marker-content .item-office {
+  min-width: 295px;
+  display: inherit;
+}
+.office-marker.open .marker-content {
+  display: inline-block;
+  z-index: 2;
+}
+/* Gioi han trong #mapfarourite (ban do trang Yeu thich) - selector khong scope truoc day de
+   ".office-marker .marker-title" (0,2,0) thang ".marker-title { display:none }" (0,1,0, layout.css)
+   tren MOI trang co ban do (bug thuc te: nhan ten toa nha hien het thay vi chi hien khi hover).
+   PHAI dung "flex" (khong phai "block") - dung "display:flex" ma main.css dung cho 3 trang thai
+   :hover/:focus/.active-hover (xem ghi chu chi tiet o do): o "block", ".class-label" (badge hang)
+   van float:left ep "<p>" (ten du an) vao 1 Block Formatting Context rieng nen bi CO HEP lai, VA
+   margin mac dinh cua "<p>" khong con collapse duoc vao ".marker-title" nhu luc block, day chu
+   TRAN xuong duoi khung cao co dinh 24px - dung bug thuc te: "chưa hiện tên dự án" (chu that ra co
+   render, chi bi day/co hep ra ngoai vung nhin thay cua khung trang). */
+#mapfarourite .office-marker .marker-title {
+  display: flex;
+}
+.ripple {
+  margin-top: -22px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  background: rgba(0, 8, 255, 0.103);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple-animation 2s ease-out infinite;
+  z-index: 0;
+}
+@keyframes ripple-animation {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3);
+    /* to hơn, lan ra xa */
+    opacity: 0;
+  }
+}
+/* --- create-farourite.component.less --- */
+.modal-create .modal-dialog {
+  width: 370px;
+  margin-top: 30vh;
+}
+.modal-create .modal-dialog .modal-header {
+  justify-content: normal;
+}
+.modal-create .modal-dialog .modal-header .icon-create-office {
+  background: #3E5FB4;
+  border-radius: 4px;
+  padding: 6px 6px;
+  margin-right: 10px;
+  font-size: 14px;
+}
+.modal-create .modal-dialog .modal-header .icon-create-office i {
+  padding: 4px;
+  font-size: 10px;
+  border-radius: 50%;
+  background-color: #fff;
+  position: relative;
+  top: 0px;
+  margin-right: 0px;
+}
+.modal-create .modal-dialog .modal-header .modal-title {
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 17px;
+  color: #000000;
+}
+.modal-create .modal-dialog .modal-body .input-create {
+  height: 42px;
+  border: 1px solid #E7E7E7;
+  box-sizing: border-box;
+  border-radius: 8px;
+}
+.modal-create .modal-dialog .btn {
+  width: 100%;
+  height: 42px;
+  font-size: 14px;
+}
+.modal-create .modal-dialog .btn-create-favourite {
+  background: #F4F7FF;
+  border-radius: 8px;
+  height: 50px;
+}
+/* --- list-farourite.component.less --- */
+.modal-create .modal-dialog {
+  width: 370px;
+}
+.modal-create .modal-dialog .modal-header {
+  justify-content: normal;
+}
+.modal-create .modal-dialog .modal-header i {
+  background: #3E5FB4;
+  border-radius: 4px;
+  padding: 1px 3px;
+  margin-right: 10px;
+  color: white;
+}
+.modal-create .modal-dialog .modal-header .modal-title {
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 17px;
+  color: #000000;
+}
+.modal-create .modal-dialog .btn {
+  width: 100%;
+  font-size: 14px;
+}
+.modal-create .modal-dialog .btn-create-favourite {
+  background: #F4F7FF;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+.modal-create .modal-dialog .btn-create-favourite:hover {
+  background: #bbbbbb;
+}
+.modal-create .modal-dialog .list-favourite {
+  margin-top: 15px;
+}
+.modal-create .modal-dialog .list-favourite .item-favourite {
+  border: 1px solid #E7E7E7;
+  box-sizing: border-box;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  padding: 15px;
+  font-weight: bold;
+  font-size: 12px;
+  color: #000000;
+  display: inline-flex;
+  width: 100%;
+}
+.modal-create .modal-dialog .list-favourite .item-favourite .input-check {
+  margin-right: 10px;
+}
+/* --- list-compare.component.less --- */
+.modal-list-compare .modal-dialog {
+  width: 615px;
+  max-width: 100%;
+  margin-top: 10vh;
+}
+@media only screen and (max-width: 800px) {
+  .modal-list-compare .modal-dialog {
+    width: auto;
+  }
+}
+.modal-list-compare .modal-dialog .modal-header {
+  padding: 18px 55px;
+  background: #F5F4F5;
+}
+@media only screen and (max-width: 800px) {
+  .modal-list-compare .modal-dialog .modal-header {
+    padding: 18px 25px;
+  }
+}
+.modal-list-compare .modal-dialog .modal-header .modal-title {
+  font-family: Helvetica Neue;
+  font-size: 24px;
+  font-weight: 500;
+  color: #23182B;
+}
+@media only screen and (max-width: 800px) {
+  .modal-list-compare .modal-dialog .modal-header .modal-title {
+    font-size: 20px;
+  }
+}
+.modal-list-compare .modal-dialog .modal-body {
+  padding: 40px 55px;
+}
+@media only screen and (max-width: 800px) {
+  .modal-list-compare .modal-dialog .modal-body {
+    padding: 25px 25px;
+  }
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare {
+  position: relative;
+  margin-bottom: 28px;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare img {
+  width: 190px;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.22);
+}
+@media only screen and (max-width: 800px) {
+  .modal-list-compare .modal-dialog .modal-body .list-compare .item-compare img {
+    width: 120px;
+  }
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m {
+  width: calc(100% - 210px);
+  float: right;
+}
+@media only screen and (max-width: 800px) {
+  .modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m {
+    width: calc(100% - 140px);
+    margin-top: -5px;
+  }
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content {
+  min-height: 85px;
+  position: relative;
+  padding: 5px 0px;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .RateTing {
+  width: 100%;
+  display: inline-block;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .RateTing .RateTingContent {
+  background: #dee8ff;
+  border-radius: 8px;
+  text-align: center;
+  color: #7292e0;
+  font-size: 14px;
+  padding: 4px  20px;
+  margin-bottom: 5px;
+  float: left;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .RateTing .RateTingContent.classA {
+  color: #CB2A2A;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .RateTing .RateTingContent.classB {
+  color: #E61DEA;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .RateTing .RateTingContent.classC {
+  color: #3E5FB4;
+}
+@media only screen and (max-width: 800px) {
+  .modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .RateTing .RateTingContent {
+    margin-top: 0px;
+  }
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .item-name {
+  font-size: 16px;
+  color: #23182b;
+  font-weight: 500;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .item-address {
+  font-size: 14px;
+  color: #000000;
+  min-height: 35px;
+  margin-bottom: 5px;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .item-areas {
+  font-size: 14px;
+  color: #000000;
+  opacity: 0.8;
+  margin-bottom: 5px;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .item-price {
+  font-size: 18px;
+  font-weight: 500;
+  color: #000000;
+}
+@media only screen and (max-width: 800px) {
+  .modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .item-price {
+    display: none;
+  }
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-dislike {
+  position: absolute;
+  top: 17px;
+  left: 0px;
+  background-color: #51505059;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  padding: 3px 5px;
+  transition: 0.3s;
+  cursor: pointer;
+  width: 60px;
+  height: 50px;
+  z-index: 3;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-dislike i {
+  position: relative;
+  top: 12px;
+  left: 12px;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-dislike svg {
+  fill: #c4c4c400;
+  stroke: #ffffffc2;
+  transition: 0.3s;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-dislike:hover {
+  background-color: #00000073;
+}
+.modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-dislike:hover svg {
+  fill: #c4c4c400;
+  stroke: #3e5fb4;
+}
+.modal-list-compare .modal-dialog .modal-body #link-Compare {
+  width: 100%;
+  background: #3e5fb4;
+  height: 100%;
+  font-size: 16px;
+  font-style: normal;
+  line-height: 26px;
+  border-radius: 8px;
+  border: 1px solid #BE7EE1;
+  padding: 10px;
+}
+.modal-list-compare .modal-dialog .modal-body #link-Compare img {
+  width: 18px;
+  margin-right: 5px;
+  margin-top: -3px;
+}

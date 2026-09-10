@@ -1,0 +1,1614 @@
+.map-container {
+    width: 100%;
+}
+
+:root {
+    // Khai bao o :root (khong phai truc tiep tren #box-search-base) vi ".action-close-search"
+    // (nut X) la SIBLING cua form "#box-search-base", KHONG phai con - CSS custom property chi ke
+    // thua xuong con chau, dat tren :root de ca 2 phia (panel + nut X) doc chung 1 gia tri, luon
+    // dong bo khi panel doi do rong (xem #box-search-base.box-search va .action-close-search).
+    --panel-w: clamp(500px, 26vw, 620px);
+}
+
+// Nut tron "X" dinh giua man hinh, o canh trai cua panel Bo loc - CHI dung tren DESKTOP (theo
+// yeu cau nguoi dung, xac nhan qua propertyplus.vn that: tren desktop KHONG co thanh "Bo loc" +
+// X o tren cung panel nhu Angular goc - giu nguyen nut tron nay cho desktop). TREN MOBILE, dung
+// dung ".title-seach"/".close-search" (thanh tren cung, giong het Angular goc + propertyplus.vn
+// that tren mobile that) lam cach dong panel - xem media query an nut tron nay duoi 768px o cuoi
+// khoi nay.
+//
+// Angular goc panel truot tu TRAI (left:0/-370px) nen dung "left:350px" (cach canh phai cua panel
+// 20px, panel rong 370px) - ban WP nay panel truot tu PHAI (#box-search-base.box-search:
+// right:0/-466px, rong 466px), nen phai doi sang "right:446px" (466-20, cung logic "cach canh
+// trong cua panel 20px") thay vi "left" moi dung vi tri.
+// 446px co dinh -> panel gio rong theo --panel-w (co dan 500-620px), nut X phai tinh lai theo
+// dung do rong hien tai (van cach canh phai cua panel dung 20px) thay vi 1 con so co dinh - neu
+// khong nut se lech vao giua thay vi nam sat canh panel khi panel rong hon 466px (bug thuc te da
+// bao cao).
+.action-close-search {
+    display: none;
+    position: fixed;
+    background: #3e5fb4;
+    box-shadow: 0px 0.9333332777023315px 4.853332996368408px 0px rgba(0, 0, 0, 0.13);
+    width: 36.4px;
+    height: 36.4px;
+    line-height: 36.4px;
+    text-align: center;
+    border-radius: 50%;
+    top: 50%;
+    right: calc(var(--panel-w, 466px) - 20px);
+    // Cao hon z-index cua chinh panel (#box-search-base: 1002) de khong bi panel de len, khac voi
+    // ban Angular goc (z-index:1001) vi do KHONG can cao hon panel (panel truot tu trai, nut dat o
+    // canh phai cua panel - khong co van de overlap giong ban WP nay).
+    z-index: 1003;
+    font-size: 18px;
+    font-weight: 700;
+    // Nen xanh #3e5fb4 + chu X trang, giong het nut "Tim kiem >" (#btnSearch) - theo phan hoi
+    // nguoi dung (mau trang/tim cu kho nhin).
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+
+    &:hover {
+        background: #2f4b91;
+    }
+
+    // Duoi 768px: an han nut tron nay - da co ".title-seach"/".close-search" o tren cung panel
+    // lam cach dong dung theo ban goc that (khong con can nut tron nay tren mobile nua).
+    @media (min-width: 0px) and (max-width: 768px) {
+        display: none !important;
+    }
+}
+
+// Chi hien khi panel dang mo (thay the "*ngIf="offSearch === true"" ben Angular, vi WP khong co
+// state JS rieng - dung CSS sibling selector doc lai chinh class "show-search" panel da toggle).
+#box-search-base.show-search ~ .action-close-search {
+    display: block;
+}
+
+// Container cho nut "quay lai" A2 (xem ghi chu ".action-close-map" ben duoi) - can position:relative
+// de ".action-close-map" (position:absolute) neo dung vi tri ben trong.
+.url-callBack {
+    position: relative;
+    cursor: pointer;
+}
+
+// Nut tron "<" (mui ten fa-angle-right xoay 180deg) - dung cho A2 (nut "quay lai trang truoc",
+// .url-callBack > .action-close-map, click goi history.back()) VA A1 (map/list toggle, chua lam
+// - xem ghi chu o page-office-list.php). Angular goc "display:none" mac dinh (desktop), CHI hien
+// tren mobile (duoi 880px) - ban port truoc day thieu dong "display:none" nay nen neu co markup
+// se hien nham ca tren desktop.
+.action-close-map {
+    display: none;
+    position: absolute;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0px 0.9333332777023315px 4.853332996368408px 0px rgba(0, 0, 0, 0.13);
+    width: 28px;
+    height: 28px;
+    text-align: center;
+    border-radius: 50%;
+    top: 50%;
+    left: -15px;
+    z-index: 1001;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+
+    @media (min-width: 0px) and (max-width: 880px) {
+        display: block;
+        top: 20px;
+        left: 15px;
+        transform: rotate(180deg);
+    }
+
+    &:hover {
+        background: #f7dede;
+    }
+}
+
+// Nut "Quay lai" to, co chu - CHI dung cho man xem ban do o A1/A4 (page-office-list.php,
+// page-reference.php). Khong dung chung class ".action-close-map" vi class do CON duoc A2
+// (page-office-detail.php) dung rieng cho nut "quay lai trang truoc" (history.back(), vong
+// tron nho) - doi ca 2 se lam vo nut cua A2 ngoai pham vi yeu cau.
+.action-close-map-label {
+    display: none;
+
+    @media (min-width: 0px) and (max-width: 880px) {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        position: absolute;
+        top: 20px;
+        left: 15px;
+        height: 38px;
+        padding: 0 14px;
+        border-radius: 13px;
+        background: #3e5fb4;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0px 12px 17px 0px #00000040;
+        // 1001 -> 1002: ".box-content .box-list-header" (max-width:768px) cung dung z-index:1001,
+        // 2 ben bang nhau nen thu tu DOM quyet dinh - box-list-header render SAU trong DOM nen
+        // thang, che mat click cua nut nay du nhin van thay duoc (xac nhan qua
+        // document.elementFromPoint() tai toa do giua nut - tra ve box-list-header). Len 1002 de
+        // luon thang bat ke thu tu DOM.
+        z-index: 1002;
+        cursor: pointer;
+    }
+}
+
+// Angular goc truot tu TRAI sang (left: -370px -> 0). Theo yeu cau rieng cua ban WP nay, doi
+// sang truot tu PHAI (dung "right" thay "left") - xem feedback.
+//
+// QUAN TRONG: gioi han bang "#box-search-base" (id CHI co o form panel loc, khong co o thanh
+// tim kiem trang chu front-page.php) - Angular goc dung CHUNG ten class ".box-search" cho CA 2
+// component (search-base component nay VA search-home, xem search-home.less) vi trong Angular
+// moi component co CSS rieng/dong goi (Angular ViewEncapsulation), khong bao gio dung tren cung
+// 1 trang. O WP ca 2 file CSS deu duoc enqueue tren trang chu (B1 dung .focus-popup/.office-list-base
+// tu file nay cho popup) nen neu khong gioi han, rule "position:fixed" o day se DE luon thanh
+// tim kiem trang chu (lam no bay mat khoi man hinh) - loi thuc te da gap, xem feedback.
+#box-search-base.box-search {
+    padding: 30px 8px;
+    position: fixed;
+    height: calc(var(--vh, 1vh) * 100);
+    /* Nếu trình duyệt không có dvh thì dùng biến tự tính */
+    height: 100%;
+    /* Fallback cuối cùng */
+    background-color: white;
+    top: 0px;
+    // Rong hon 26% so voi ban goc Angular (370px -> 466px) theo yeu cau rieng, de luoi quan/phuong
+    // va cac o loc khac co du cho, giam bot can cuon ca panel.
+    // 466px co dinh -> clamp: rong toi thieu 500px (giu nguyen tren man hinh nho), tang nhe theo
+    // 26vw tren man hinh lon, toi da 620px - CHI du de moi o trong luoi 4 cot Quan/Huyen
+    // (.pplus-show-district, VAN GIU CO DINH 4 cot) khong bi vo dong chu (vd "Bắc Từ Liêm"), KHONG
+    // phai de don het cac quan ve 1 hang ngang (hieu nham truoc do, xem feedback nguoi dung - da
+    // sua lai .pplus-show-district ve repeat(4,...) co dinh nhu cu). "--panel-w" khai bao o :root
+    // (dau file nay) chu khong o day, vi ".action-close-search" (nut X) can doc chung gia tri nay
+    // nhung la SIBLING cua form nay, khong phai con - custom property khong ke thua qua sibling.
+    width: var(--panel-w);
+    right: calc(-1 * var(--panel-w));
+    z-index: 1002;
+    box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.11);
+    transition: 0.7s ease-in-out;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+
+    &.show-search {
+        right: 0px;
+        transition: 0.7s ease-in-out;
+    }
+
+    @media (max-width: 768px) {
+        width: 100vw;
+        right: -100%;
+
+        &.show-search {
+            right: 0px;
+        }
+    }
+
+    .search-option {
+        padding: 8px 5px;
+
+        &.search-option-search-text {
+            position: relative;
+        }
+
+        .icon {
+            position: relative;
+            bottom: 2px;
+            width: 35px;
+            text-align: center;
+            margin-right: 6px;
+        }
+
+        .choose-price {
+            padding: 20px 0px;
+
+            @media (min-width: 0px) and (max-width: 880px) {
+                padding: 10px 0px;
+            }
+        }
+
+        .tab-district {
+            border: none;
+            margin-bottom: 20px;
+            display: flex;
+
+            // Chia 50/50 giua 2 tinh (Ha Noi/HCM) - Angular goc khong ep ty le, o day ep theo
+            // yeu cau rieng cua ban WP nay.
+            .nav-item {
+                flex: 1 1 50%;
+                text-align: center;
+
+                .nav-link {
+                    font-size: 18px;
+                    font-weight: 500;
+                    line-height: 27px;
+                    text-align: center;
+                    color: #23182B;
+                    border: none;
+                    width: 100%;
+                    padding-left: 0px;
+                    padding-right: 0px;
+                    border-bottom: 1px solid #C1BAC7;
+
+                    &.active {
+                        border-bottom: 2px solid #B581DB;
+                    }
+                }
+            }
+        }
+    }
+
+    .class-action {
+        padding: 0 12px;
+
+        @media (min-width: 0px) and (max-width: 880px) {
+            margin-bottom: 200px;
+        }
+    }
+
+    .focus-popup.first-popup {
+        left: 30px !important;
+
+        &.first-popup-search-text {
+            left: 0px !important;
+            width: 100%;
+        }
+    }
+
+    // Thanh "Bo loc" (title-seach + close-search) - CHI hien tren mobile (duoi 768px), khop dung
+    // hanh vi that cua propertyplus.vn (da kiem tra truc tiep: desktop KHONG co thanh nay, chi
+    // mobile moi co - Angular goc dung chung 1 markup cho ca 2 nhung o day gioi han rieng theo
+    // yeu cau nguoi dung "chỉ với Mobile thôi nhé").
+    .pplus-mobile-top-bar {
+        display: none;
+
+        @media (min-width: 0px) and (max-width: 768px) {
+            display: block;
+        }
+    }
+
+    .title-seach {
+        color: rgba(84, 84, 85, 1);
+        font-size: 22px;
+        font-weight: 500;
+        margin-bottom: 20px;
+
+        img {
+            margin: 0px 15px 0px 10px;
+        }
+    }
+
+    // Nut "X" trong thanh "Bo loc" tren cung - CHINH LA cach dong panel that su tren mobile (dung
+    // showSearchBase() ben Angular goc, o day dung lai co che toggle "show-search" co san). Gia
+    // tri y het Angular goc (search-base.component.less).
+    .close-search {
+        border: 1px solid #BE7EE1;
+        position: absolute;
+        right: 28px;
+        top: 32px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        color: #BE7EE1;
+        cursor: pointer;
+    }
+
+    .search-controls {
+        .search-label {
+            color: rgba(35, 24, 43, 1);
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .search-option {
+            .icon {
+                width: 40px;
+                text-align: center;
+            }
+        }
+    }
+
+}
+
+.box-content {
+    margin-top: 150px !important;
+    position: relative;
+
+    @media (min-width: 0px) and (max-width: 880px) {
+        margin-top: 10px !important;
+        position: initial;
+    }
+
+    .box-list-header {
+        // "position:relative" (them 21/8/2026) - lam DIEM NEO cho ".action-search" (position:absolute,
+        // xem ghi chu day du tai do) canh CHINH XAC theo mep ".box-map" ben duoi. Truoc day khong dat
+        // gi (mac dinh "static"), khong anh huong layout hien co (chi co y nghia khi co con
+        // position:absolute can neo toi, truoc gio chua co con nao dung den).
+        position: relative;
+        margin-bottom: 25px;
+        padding-left: 20px;
+
+        @media (min-width: 0px) and (max-width: 880px) {
+            margin-bottom: 5px;
+        }
+
+        // Duoi 768px, .box-map (layout.css) chuyen sang position:fixed phu kin man hinh (xem
+        // ghi chu chi tiet trong layout.css); .box-list-body (cung khoi .box-list, layout.css
+        // dong ~1338) da co san "position:relative; z-index:99" de cac the van phong hien DUNG
+        // TREN map, nhung .box-list-header (breadcrumb + tieu de + nut action-search) la SIBLING
+        // cua .box-list, khong duoc thua huong stacking do - bi map (fixed) de len, chu khong
+        // hien ra (bug thuc te: mo trang danh sach tren mobile khong thay tieu de/breadcrumb dau
+        // vi bi an sau map, phai cuon qua moi thay noi dung).
+        // z-index:99 -> 1001: .header vua duoc sua len z-index:999 (fix logo/menu trang chu bien
+        // mat - xem header-component.css) - truoc day .header khong co z-index rieng (mac dinh
+        // "auto"), nen nen trang cua khoi nay (background-color:#fff) tu nhien che duoc anh nen
+        // header (:not(.headerHome), bk-header-child.png) phia sau. Sau khi header len 999, anh
+        // nen do de len tren ca breadcrumb/tieu de tren mobile (bug thuc te da bao cao). Dung 1001
+        // (khong phai 1000, trung voi .box-map che do ban do - xem layout.css) de vua cao hon
+        // header vua khong trung voi cac z-index mobile khac.
+        @media (max-width: 768px) {
+            position: relative;
+            z-index: 1001;
+            background-color: #fff;
+            padding-top: 10px;
+            padding-bottom: 5px;
+        }
+
+        .text-find {
+            display: block;
+
+            .title-search {
+                font-size: 25px;
+                font-weight: 500;
+                color: rgba(51, 50, 51, 1);
+                float: left;
+
+                h1,
+                span {
+                    font-size: 25px;
+                    float: left;
+                    margin-right: 6px;
+                    margin-bottom: 0px;
+                }
+            }
+
+            .action-search {
+                // "position:absolute; right:0; width:41.6667%" (thay "display:flex" don gian, 21/8/2026,
+                // theo phan hoi nguoi dung kem do dac truc tiep DOM that): ".box-list-header" (cha cua
+                // ".text-find" > ".action-search") RONG BANG CA HANG (0 - het chieu rong trang, gom CA
+                // ".box-list" 7-cot LAN ".box-map" 5-cot cong lai - xac nhan qua getBoundingClientRect()
+                // that: box-list-header rong 1430px, dung bang ".box-list"(834px, 7 phan)+".box-map"
+                // (596px, 5 phan)). Truoc day dung "display:flex" don gian, khung nut chi canh theo
+                // khoang trong CON LAI sau khi tru chieu rong tieu de H1 (float:left) trong CHINH hang
+                // 1430px do - HOAN TOAN KHONG lien quan gi den vi tri THAT cua ".box-map" ben duoi (khac
+                // cot, khac ty le) - bug thuc te nguoi dung bao cao: khung nut lech han so voi mep ban do
+                // (canh trai/phai deu sai, co luc con "vuot qua" mep).
+                //
+                // Sua dung: lay CHINH XAC ty le 5/12 (41.6667%) - GIONG HET ty le "col-md-5" cua
+                // ".box-map" - nhung tinh tren chieu rong CUA ".box-list-header" (can "position:relative"
+                // tren chinh no lam "neo", xem quy tac ngay duoi) thay vi tren ".text-find" (bi hep di
+                // do padding/float H1) - dam bao canh phai luon = "right:0" (trung mep phai ".box-map",
+                // vi ca 2 deu ket thuc cung 1 diem la mep phai chung cua hang/row) VA canh trai tu dong
+                // = 1430 * (1 - 41.6667%) = trung CHINH XAC mep trai ".box-map" (da kiem chung qua do
+                // dac that: lech <1px, xem chi tiet trong task). Khong con phu thuoc H1 dai/ngan the
+                // nao, luon dung mep map bat ke noi dung tieu de.
+                position: absolute;
+                // 35px (do dac thuc te 21/8/2026): can bang chinh giua theo chieu doc voi H1 (".title-
+                // search", tam doc cach dinh ".box-list-header" 55.5px) - "top:35px" + chieu cao 40.6px
+                // cua hang nut => tam doc hang nut = 35+20.3=55.3px, khop sat voi 55.5px cua H1.
+                top: 35px;
+                right: 0;
+                width: 41.6667%;
+                display: flex;
+                align-items: center;
+                // "flex-start" (thay "flex-end", 21/8/2026 - phan hoi nguoi dung THEM sau khi xem thuc
+                // te): dong CA 3 nut ve sat canh TRAI cua khung 41.6667% (khop mep trai map), KHONG con
+                // ep sat mep PHAI - user thay khung dai qua/mat can doi + canh phai "hoi xa". Ket hop voi
+                // ".pplus-search-bar-trigger" doi tu "flex-grow" (chiem het cho con) sang co-lai-vua-du-
+                // chu (xem ghi chu tai do) - khoang trong con lai (neu co) gio nam o CUOI (ben phai cum
+                // nut, giua "So sánh" va mep phai map), khong con o giua o tim kiem lam no dai qua chu.
+                justify-content: flex-start;
+                // "gap:10px" (them 21/8/2026, theo phan hoi nguoi dung: 3 nut khoang cach khong deu) -
+                // truoc day khoang cach giua cac nut chi den tu "margin-right" RIENG cua tung nut
+                // (".btn-action-search-base" moi KHONG co margin-right nao, ".btn-action-search" thi
+                // co 10px) -> khoang cach nut 1-2 va 2-3 khac nhau. "gap" ap dung DONG DEU cho MOI
+                // khoang trong giua cac flex item, khong phu thuoc margin rieng cua tung nut - dam bao
+                // deu nhau tuyet doi. Cac "margin-right" cu tren tung nut GIU NGUYEN khong xoa (vo hai,
+                // chi la dat trung/du thua voi gap - khong lam sai lech gi vi "margin-right" cua nut
+                // CUOI ("So sánh") da duoc dat ve 0 tu truoc, cac nut khac co margin-right cung se CONG
+                // DON vao gap chu khong thay the, nhung do gap(10px) da la khoang cach chinh, margin
+                // thua chi la du 0px cua rieng nut dau (".btn-action-search-base") nen khong gay lech).
+                gap: 10px;
+
+                @media (min-width: 0px) and (max-width: 880px) {
+                    display: none;
+                }
+
+                // ".btn-action-search-base" (nut "Tim kiem van phong" xanh, thay ".pplus-search-bar-
+                // trigger" cu, 21/8/2026) dung LAI nguyen CSS chung o cuoi file (line ~875), khong can
+                // rule rieng o day nua - dong bo hoan toan voi cach dung tren A2/blog/lien he... Khoang
+                // cach voi 2 nut con lai da chuyen sang "gap" tren ".action-search" (xem tren).
+
+                .btn-action-search {
+                    border: 1px solid #BE7EE1;
+                    padding: 8px;
+                    border-radius: 8px;
+                    color: rgba(84, 84, 85, 1);
+                    font-size: 16px;
+                    cursor: pointer;
+                    box-shadow: 0px 0px 6px 0px #0000001F;
+
+                    // Khoang cach giua 3 nut (nut xanh + "Tìm theo bán kính" + "So sánh") gio HOAN TOAN
+                    // do "gap:10px" tren ".action-search" quyet dinh (xem ghi chu tai do) - bo han
+                    // "margin-right" rieng cua tung nut o day (truoc gio la nguyen nhan khoang cach
+                    // KHONG DEU giua cac nut: nut xanh moi khong co margin-right nao, 2 nut con lai lai
+                    // vi hut vao 10px) - dam bao ca cum nut canh CHINH XAC theo mep ban do nhu yeu cau.
+
+                    i {
+                        margin-right: 6px;
+
+                        img {
+                            width: 20px;
+                        }
+                    }
+
+                    &:hover {
+                        background-color: #be7ee11f;
+                    }
+
+                    &.btn-action-map {
+                        i {
+                            svg {
+                                width: 14px;
+                                fill: #134aae;
+                            }
+                        }
+                    }
+                }
+
+
+                #btn-action-map {
+                    // Nut "Bản đồ" canh "Tìm kiếm" khong co tac dung tren PC (ban do da luon hien
+                    // san o cot phai ".box-map", khong co JS xu ly rieng cho id nay - chi
+                    // ".action-close-map-label"/".GroupMoblieActive" moi thuc su dieu khien che do
+                    // xem map, va cai do CHI ap dung tren mobile) - an theo yeu cau user.
+                    display: none;
+                    box-shadow: 0px 0px 6px 0px #0000001F;
+
+                    i {
+                        position: relative;
+                        top: -2px;
+                    }
+                }
+            }
+        }
+    }
+
+    .box-map #map {
+        .map-container {
+            height: 100% !important;
+            width: 100% !important;
+        }
+
+    }
+}
+
+#btnSearch {
+    width: 100%;
+    background: #3e5fb4;
+    // "height:44px" (thay vi 100% nhu ban dau) - truoc day nut nam trong ".pplus-filter-top-bar"
+    // (flex, chieu cao tu keo gian theo 2 icon 34px canh no) nen "height:100%" moi co tac dung; gio
+    // nut dat rieng o duoi cung panel (".pplus-filter-bottom-bar", khong con flex-stretch) nen phai
+    // tu dinh chieu cao co dinh, neu khong "height:100%" se vo hieu (khong co parent dinh san chieu
+    // cao) va nut co the bi xep bep theo dung line-height.
+    height: 44px;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 26px;
+    border-radius: 8px;
+    border: 1px solid #BE7EE1;
+
+    i {
+        margin-left: 3px;
+    }
+}
+
+.office-popup-search3 {
+    padding: 12px 0px;
+
+    .pplus-show-district {
+        // Doi tu 3 sang 4 cot theo yeu cau rieng (panel da rong hon 26% nen 4 cot van du cho).
+        // GIU CO DINH 4 cot (da thu auto-fit nhung hieu nham yeu cau nguoi dung - ho muon GIU 4
+        // cot, chi can panel rong hon vua du de chu trong 1 o khong vo dong, xem --panel-w o
+        // #box-search-base.box-search va .item-class white-space:nowrap o duoi).
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        column-gap: 8px;
+        display: grid;
+        margin-top: 15px;
+
+        // Duoi 768px: tra lai 3 cot dung ban goc Angular/propertyplus.vn that (4 cot lam ten dai
+        // nhu "Bắc Từ Liêm" bi vo dong tren man hinh hep - da xac nhan qua screenshot thuc te tu
+        // nguoi dung, doi chieu voi search-base.component.less dong 320 ben Angular goc).
+        @media (min-width: 0px) and (max-width: 768px) {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        // Doi tu width co dinh (145px / calc(100% - 165px), tinh rieng cho panel 370px) sang %
+        // de tu dong co dan dung theo panel rong hon (466px) - khong can tinh lai tay lan sau.
+        &.pplus-show-district-ward {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            width: 40%;
+            // 296px = vua dung 6 hang (truoc la 345px = 7 hang) - theo yeu cau rieng, con lai cuon.
+            max-height: 296px;
+            overflow: auto;
+            float: left;
+            margin-bottom: 10px;
+        }
+
+        &.pplus-show-list-ward {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            width: 57%;
+            // 296px = vua dung 6 hang (truoc la 345px = 7 hang) - theo yeu cau rieng, con lai cuon.
+            max-height: 296px;
+            overflow: auto;
+            float: left;
+            margin-bottom: 10px;
+            margin-left: 3%;
+        }
+
+        @media (min-width: 0px) and (max-width: 880px) {}
+
+        .district-item {
+            margin-bottom: 15px;
+
+            .item-class {
+                background: rgba(245, 244, 245, 1);
+                padding: 8px;
+                border-radius: 8px;
+                transition: 0.5s all;
+                width: 100%;
+                cursor: pointer;
+                text-align: center;
+                align-content: center;
+                // Ten dai (vd "Bắc Từ Liêm") khong duoc tu xuong dong trong o - ket hop voi panel
+                // rong hon (--panel-w o #box-search-base.box-search) de vua khop 1 dong.
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
+                &.active {
+                    background: #3e5fb4;
+                    color: white;
+                }
+            }
+
+            input[name=DistrictCheck]:checked+.item-class {
+                background: #3e5fb4;
+                color: white;
+            }
+        }
+
+    }
+}
+
+.building-class-list-base {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 10px;
+    display: grid;
+    margin-top: 15px;
+
+    @media (min-width: 0px) and (max-width: 880px) {}
+
+    .search-rating {
+        margin-bottom: 15px;
+
+        .building-class {
+            background: rgba(245, 244, 245, 1);
+            padding: 10px;
+            border-radius: 8px;
+            transition: 0.5s all;
+            width: 100%;
+            cursor: pointer;
+            text-align: center;
+
+        }
+
+        input[name=RatingLevelCheck]:checked+.building-class {
+            background: #3e5fb4;
+            color: white;
+        }
+    }
+
+
+}
+
+
+.office-list-base {
+    // Doi tu 1 cot (Angular goc, 2 nut xep chong) sang 2 cot canh nhau - theo dung bo cuc anh
+    // yeu cau, tan dung panel rong hon va giam 1 hang chieu cao, do gop phan tranh phai cuon.
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 10px;
+    display: grid;
+    margin-top: 15px;
+
+    // Duoi 768px: tra lai 1 cot (2 nut xep chong) dung ban goc Angular/propertyplus.vn that - da
+    // xac nhan qua kiem tra truc tiep tren live site (Van phong truyen thong/Van phong tron goi
+    // xep chong full-width, khong canh nhau).
+    @media (min-width: 0px) and (max-width: 768px) {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    .office-type {
+        margin-bottom: 15px;
+
+        .office-class {
+            background: rgba(245, 244, 245, 1);
+            padding: 10px;
+            border-radius: 8px;
+            transition: 0.3s all;
+            width: 100%;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .icon {
+            svg {
+                fill: #737373;
+                // "Van phong tron goi" dung stroke (khong phai fill) cho phan lon path - Angular
+                // goc khong dat mau stroke rieng (path chi co stroke-width, khong co stroke),
+                // rule nay bo sung de icon hien mau mac dinh dung, khop voi rule fill ben tren.
+                stroke: #737373;
+                transition: 0.3s all;
+            }
+        }
+
+        // Doi tu [class=input-check] (so khop CHINH XAC toan bo gia tri class, gay bug khi
+        // input co them class "pplus-toggle-check" cho hieu ung bam-lai-de-bo-chon) sang
+        // .input-check (class selector thuong, khong quan tam cac class khac co mat hay khong).
+        input.input-check:checked+.office-class {
+            background: #3e5fb4;
+            color: white;
+
+            .icon {
+                svg {
+                    fill: white;
+                    stroke: white;
+                }
+            }
+        }
+
+
+    }
+}
+
+// Ban goc Angular chi render dai the nay khi "fullContent === false" (dang o CHE DO BAN DO, xem
+// search-base.component.html dong 780-782) - tuong duong ".box-map" KHONG co class "invision-map"
+// o ban port nay ("invision-map" = che do danh sach, ban do dang an, xem layout.less). Thieu dieu
+// kien nay se hien dai the CA KHI dang o che do danh sach (da xac nhan qua thu truc tiep: mac
+// dinh trang vao la che do danh sach, dai the van hien de len, trung lap voi luoi san pham binh
+// thuong ben duoi) - dung selector anh em (~), khong can JS, tu dong an/hien theo dung class
+// ".invision-map" ma nut "Bản đồ"/nut "<" da toggle san.
+@media (min-width: 0px) and (max-width: 880px) {
+    .box-map.invision-map ~ .box-list-body-mobile {
+        display: none !important;
+    }
+}
+
+.box-list-body-mobile {
+    display: none;
+
+    @media (min-width: 0px) and (max-width: 880px) {
+        display: block;
+        position: fixed;
+        // 150px (goc port) -> 85px -> 93px: theo yeu cau nguoi dung - vung the phai cach CHAN
+        // TRANG (.footer-mobile, height:65px, z-index moi 1003) dung 20px, khong theo con so
+        // 150px cua ban goc. 65 + 20 = 85px; sau do nhich them 8px de co khoang trong thoang
+        // hon voi chan trang, theo yeu cau nguoi dung (anh chu thich truc tiep).
+        bottom: 93px;
+        left: 0;
+        right: 0;
+        overflow: auto;
+        padding: 0 15px;
+        // .box-map (ban do toan man hinh) la position:fixed rieng voi z-index:1002 (xem
+        // layout.less) - tu tao stacking context rieng, che mat dai the nay neu no khong co
+        // z-index cao hon (z-index:auto mac dinh se thua, du deu la position:fixed) - cung mau
+        // bug da gap va sua nhieu lan trong phien nay (chan trang, breadcrumb...) voi .box-map.
+        z-index: 1003;
+        // scroll-snap: theo yeu cau "khung hình thì hiển thị đủ 1 sản phẩm" - vuot qua 1 the la
+        // snap gon vao dung 1 the tiep theo (khong dung o giua 2 the), ca khi nguoi dung tu vuot
+        // tay lan khi JS cuon toi (xem assets/js/pplus-maps.js, bam marker -> scrollIntoView).
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+
+        .list-product-office {
+            display: inline-flex;
+
+            .item-office {
+                float: left;
+                // 300px (goc port, chi ho 1 the + mot phan the ke ben tren man hinh 375px) -> gan
+                // tron chieu rong man hinh (tru padding 2 ben cua container o tren) - dung y
+                // "hiển thị đủ 1 sản phẩm" (moi lan chi thay DUNG 1 san pham, khong thay mot phan
+                // san pham ben canh).
+                width: calc(100vw - 30px);
+                scroll-snap-align: center;
+                margin-right: 15px;
+                padding: 10px;
+                box-shadow: 0px 3px 6.5px 0px #00000033;
+                background: #ffffff;
+
+                .item-like {
+                    left: 10px;
+                    width: 40px;
+                    height: 40px;
+
+                    i {
+                        top: 8px;
+                        left: 4px;
+                    }
+                }
+
+                img {
+                    width: 120px;
+                    margin-right: 10px;
+                }
+
+                .item-content-m {
+                    width: calc(100% - 130px);
+                    float: right;
+
+                    .item-content {
+                        padding: 0px 0px 20px 0px;
+
+                        .viewdetail {
+                            display: none;
+                        }
+
+                        .item-address {
+                            display: none;
+                        }
+
+                        .item-name {
+                            font-size: 14px;
+                        }
+
+                        .item-price {
+                            position: absolute;
+                            bottom: -6px;
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.mobileFull {
+    @media (min-width: 0px) and (max-width: 880px) {
+        min-height: auto !important;
+        border-top-left-radius: 30px;
+        border-top-right-radius: 30px;
+        position: fixed !important;
+        bottom: 65px !important;
+        left: 0px;
+
+        &.drapClass {
+            position: absolute !important;
+            padding: 0px 15px !important;
+            top: calc(100vh - 135px) !important;
+            min-height: 100vh;
+        }
+    }
+
+    .box-list-body {
+        @media (min-width: 0px) and (max-width: 880px) {
+            &.drapClass {
+                display: none !important;
+            }
+        }
+    }
+}
+
+.btnShowThongTin {
+    height: 42px;
+    background: none;
+    font-family: SF Pro Display;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 19px;
+    letter-spacing: 0.01em;
+    border: none;
+    color: #fff;
+    padding: 10px 15px;
+    display: block;
+    float: left;
+
+    i {
+        margin-right: 8px;
+    }
+}
+
+.btn-action-search-base {
+    font-family: Helvetica Neue;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    color: white;
+    border: 1px solid #BE7EE1;
+    background: #3e5fb4;
+    border-radius: 8px;
+    float: right;
+
+    &:hover {
+        color: white;
+    }
+
+    @media (min-width: 0px) and (max-width: 880px) {
+        display: none !important;
+    }
+}
+
+.url-content-list-children {
+    display: inherit;
+    // Angular goc KHONG co clearfix o day - moi ".district-name" con la "float:left" (xem duoi),
+    // khong co gi "clear" cac float do nen container nay sup do ve height:0 trong luong tai lieu.
+    // Cac phan tu SAU do (vd ".box-map" voi position:sticky, luon phu thuoc vi tri tu nhien trong
+    // luong tai lieu de tinh diem bat dau "dinh") khong duoc day xuong dung theo chieu cao that su
+    // cua hang pill nay, gay chong lan/sai vi tri (bug thuc te da gap tren trang dich vu A4, noi
+    // hang pill nay MOI xuat hien lan dau tren site nay). "overflow:hidden" tao 1 Block Formatting
+    // Context moi, buoc container tu bao boc dung chieu cao thuc cua cac phan tu float ben trong.
+    overflow: hidden;
+
+    .district-name {
+        min-width: 87px;
+        padding: 0px 10px;
+        height: 36px;
+        border: 1px solid #87878796;
+        border-radius: 22px;
+        text-align: center;
+        float: left;
+        color: #000000b3;
+        font-size: 15px;
+        line-height: 32px;
+        margin-right: 8px;
+        transition: 0.5s all;
+        cursor: pointer;
+        margin-bottom: 10px;
+        font-weight: 600;
+
+        a {
+            color: #000000b3;
+            font-weight: 600;
+        }
+
+        &:hover,
+        &.active {
+            border: 1px solid #3E5FB4;
+            color: #3E5FB4;
+            background: #D7E1F9;
+
+            a {
+                color: #3E5FB4;
+            }
+        }
+
+        // Bo loc gia nhanh (page-reference.php) - theo yeu cau nguoi dung: option DANG CHON phai
+        // "chuyển màu thành nền xanh chữ trắng" (khac han active mac dinh cua ".district-name" o
+        // tren - nen xanh NHAT/chu xanh) de de phan biet "dang loc gia nay" voi cac goi y thuong
+        // (quan/phuong/hang...). Selector rieng ".pplus-price-pill.active" (SAU ".district-name
+        // &.active" o tren de thang specificity, KHONG can !important) - chi anh huong hang gia,
+        // khong doi active mac dinh o noi khac dang dung chung class ".district-name".
+        &.pplus-price-pill.active {
+            border: 1px solid #3E5FB4;
+            color: #ffffff;
+            background: #3E5FB4;
+
+            a {
+                color: #ffffff;
+            }
+        }
+
+        // Nut "Xóa lọc giá" cuoi hang - vien net dut + chu xam (khac han cac pill loc mau xanh o
+        // tren) de bao hieu day la 1 HANH DONG (huy loc) chu khong phai 1 LUA CHON gia nhu 5 nut
+        // con lai, tranh nham la 1 khoang gia thu 6.
+        &.pplus-price-pill-clear {
+            border: 1px dashed #87878796;
+            color: #6b6b6b;
+
+            a {
+                color: #6b6b6b;
+            }
+
+            i {
+                margin-right: 4px;
+            }
+
+            &:hover {
+                border: 1px dashed #d9534f;
+                color: #d9534f;
+                background: transparent;
+
+                a {
+                    color: #d9534f;
+                }
+            }
+        }
+    }
+
+    @media (min-width: 0px) and (max-width: 880px) {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x;
+        gap: 8px;
+        scrollbar-width: none;
+        margin-top: 15px;
+        padding: 0px 10px;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        .district-name {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        // Hang goi y "cac quan khac" tren trang quan (A4, page-reference.php $district_siblings) -
+        // theo yeu cau nguoi dung: tren mobile uu tien khong gian cho panel Bo loc (da co san danh
+        // sach quan tuong tu de chon), khong can lap lai gop y nay o day.
+        &.pplus-hide-mobile {
+            display: none;
+        }
+    }
+}
+
+
+.searching-tool-button-wed {
+    display: block;
+    position: absolute;
+    height: 35px;
+    justify-content: space-between;
+    padding: 10px;
+    width: 190px;
+    left: calc(50% - 95px);
+    background: #fff;
+    top: 15px;
+    box-shadow: 0px 7px 11px 0px #00000033;
+    border: 1px solid #EBEBEB;
+    border-radius: 20px !important;
+    z-index: 99;
+    padding: 8px 12px;
+    border: 1px solid #E1E1E1;
+    box-sizing: border-box;
+    border-radius: 9px;
+    font-size: 13px;
+
+    i {
+        position: relative;
+        top: -2px;
+        left: -5px;
+    }
+
+    svg {
+        width: 12px;
+    }
+}
+
+.clearText {
+    border-radius: 50%;
+    border: 1px solid #999999;
+    padding: 2px 7px;
+    line-height: 18px;
+    position: absolute;
+    right: 10px;
+    top: 58px;
+    color: #999999;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #7972721f;
+    }
+}
+
+.office-type-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 8px;
+    display: grid;
+    margin-bottom: 15px;
+
+    input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .item-class {
+        background: #f5f4f5;
+        padding: 8px;
+        border-radius: 8px;
+        transition: 0.5s all;
+        width: 100%;
+        cursor: pointer;
+        text-align: center;
+        align-content: center;
+        margin-bottom: 10px;
+    }
+
+    input[type="radio"]:checked+label {
+        background: #1e44a7;
+        color: #fff;
+    }
+}
+
+.from-search-roam {
+    display: inline-flex;
+    width: 100%;
+
+    .col-findter {
+        width: calc(100% - 180px);
+
+        @media (min-width: 1400px) and (max-width: 1680px) {
+            width: calc(100% - 220px);
+        }
+    }
+
+    .col-action {
+        width: 170px;
+        margin-left: 60px;
+
+        @media (min-width: 1400px) and (max-width: 1680px) {
+            margin-left: 78px;
+        }
+
+        @media (min-width: 1000px) and (max-width: 1390px) {
+            margin-left: 85px;
+        }
+    }
+
+    .pplus-show-group-search {
+        position: relative;
+
+        .pplus-show-group {
+            display: none;
+            z-index: 1000;
+            opacity: 1;
+            top: 100%;
+            bottom: auto;
+            left: 10px !important;
+            width: calc(100% - 20px);
+            min-width: 200px;
+            background: #FFFFFF;
+            box-shadow: 0px 9px 50px rgba(0, 0, 0, 0.13);
+            position: absolute;
+            border-radius: 5px;
+            transition: 0.3s;
+            z-index: 1000;
+            -webkit-user-select: none;
+            user-select: none;
+            margin-top: 5px;
+            border: 1px solid #b3d2ff;
+
+            &:focus-within,
+            &:hover {
+                display: block;
+            }
+
+            .text-data {
+                font-style: normal;
+                font-weight: 700;
+                font-size: 15px;
+                line-height: 21px;
+                color: #264879;
+                padding: 10px 15px;
+                background: #F1F6FD;
+                position: relative;
+
+                .locations-ico {
+                    position: relative;
+                    top: 6px;
+                }
+            }
+
+            .dot-item {
+                position: relative;
+                width: 6px;
+                background-color: #B18E4E;
+                float: left;
+                height: 6px;
+                margin-right: 10px;
+                border-radius: 50%;
+                top: 6px;
+            }
+
+            .item-content-data {
+                font-size: 15px;
+                color: #000D1F;
+                margin-left: 44px;
+                border-bottom: 1px solid #E1E1E1;
+                padding: 10px 5px 10px 0px;
+                margin-bottom: 5px;
+                cursor: pointer;
+            }
+        }
+
+        &:focus-within .pplus-show-group {
+            display: block;
+        }
+
+        .input-search-google-map {
+            height: 34px;
+            border-radius: 3px;
+
+            &:focus+.pplus-show-group {
+                display: block;
+            }
+        }
+    }
+
+
+    .input-roam-distance {
+        height: 34px;
+        border-radius: 3px;
+    }
+}
+
+.btn-action-roamingclick {
+    border: none;
+    padding: 5px;
+    border-radius: 6px;
+    border: none;
+    padding: 0px 10px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    right: 8px;
+    top: 55px;
+    box-shadow: 2px 2px 1px #ababab;
+    background-color: #fff;
+
+    .hand-container {
+        position: relative;
+        width: 30px;
+        height: 50px;
+        cursor: pointer;
+        display: inline-block;
+
+        .hand-icon {
+            width: 100%;
+            height: 100%;
+            fill: #9d9191;
+            transition: transform 0.2s ease;
+
+            &.active {
+                fill: #007bff;
+            }
+        }
+
+        /* Hiệu ứng khi hover hoặc click */
+        .hand-container:hover .hand-icon {
+            transform: scale(1.05);
+        }
+
+        /* Tia sáng ở đầu ngón tay */
+        .spark {
+            position: absolute;
+            top: 0px;
+            right: 15px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #df1717 0%, rgba(0, 123, 255, 0) 70%);
+            opacity: 0;
+            animation: sparkle 2s infinite;
+        }
+    }
+}
+
+// Tam bo tinh nang "Tim theo ban kinh" tren mobile theo yeu cau user - dung !important vi
+// radius-search.js dieu khien hien/an 3 phan tu nay qua inline style (.show()/.hide()), CSS
+// thuong se bi de len boi inline style. #pplus-roam-toggle da nam trong ".action-search" (an san
+// duoi 880px) nhung 2 phan tu con lai (panel + nut "ban tay") KHONG nam trong do (la sibling cua
+// ".box-list"/".box-map") nen truoc day van co the tu hien qua restoreFromUrl() (khi mo 1 URL da
+// co san ne_lat/sw_lat... tren man hinh mobile) du nut mo panel da bi an.
+@media (min-width: 0px) and (max-width: 880px) {
+    #pplus-roam-toggle,
+    #pplus-roam-panel,
+    #pplus-roam-hand {
+        display: none !important;
+    }
+}
+
+/* Hiệu ứng lóe sáng */
+@keyframes sparkle {
+
+    0%,
+    90%,
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 1;
+    }
+}
+
+.distance-wrapper {
+    position: relative;
+    width: 100px;
+    font-family: inherit;
+
+    .input-group {
+        display: flex;
+
+        .distance-input {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 8px 0 0 8px;
+            padding: 8px 12px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+
+            &:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
+            }
+
+            &:hover {
+                border-color: #80bdff;
+            }
+        }
+    }
+
+    /* Danh sách gợi ý */
+    .distance-options {
+        display: none;
+        position: absolute;
+        width: 100%;
+        top: 100%;
+        left: 0;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        margin: 4px 0 0;
+        list-style: none;
+        padding: 0;
+        z-index: 1000;
+
+        li {
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background 0.15s;
+
+            &:hover {
+                background: #007bff;
+                color: #fff;
+            }
+        }
+
+        &:hover {
+            display: block;
+        }
+
+    }
+
+    /* Khi focus input thì hiển thị list */
+    &:focus-within {
+        .distance-options {
+            display: block;
+        }
+    }
+}
+
+.btn-hand-draw {
+    border: none;
+    padding: 5px;
+    border-radius: 6px;
+    border: none;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    right: 8px;
+    top: 55px;
+    box-shadow: 2px 2px 1px #ababab;
+    background-color: #fff;
+
+    &.active {
+        background-color: #fbf4bf;
+    }
+
+    .hand-draw-anim {
+        width: 40px;
+        height: 40px;
+        display: inline-block;
+        position: relative;
+        top: -28px;
+        left: -20px;
+
+        svg {
+            overflow: visible;
+        }
+
+        .draw-path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: drawLine 5s ease-in-out infinite;
+        }
+
+        .hand {
+            opacity: 1;
+            transform-origin: center;
+            animation: moveHand 5s ease-in-out infinite;
+        }
+
+        .tip {
+            opacity: 0;
+            animation: tipGlow 5s ease-in-out infinite;
+        }
+    }
+}
+
+@keyframes drawLine {
+    0% {
+        stroke-dashoffset: 100;
+        opacity: 0.2;
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    50% {
+        stroke-dashoffset: 0;
+    }
+
+    100% {
+        stroke-dashoffset: 100;
+        opacity: 0.2;
+    }
+}
+
+@keyframes moveHand {
+    0% {
+        transform: translate(-30px, 20px);
+    }
+
+    50% {
+        transform: translate(10px, 0);
+    }
+
+    100% {
+        transform: translate(-30px, 20px);
+    }
+}
+
+@keyframes tipGlow {
+
+    0%,
+    90%,
+    100% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    40%,
+    60% {
+        opacity: 1;
+        transform: scale(1.3);
+    }
+}
+
+// Ban PHP (parts/office-filter-panel.php) dung THANG ten field GET that (rating_level, district)
+// thay vi RatingLevelCheck/DistrictCheck nhu Angular (chi la ten input noi bo, khong submit form
+// that) - de khop voi $_GET ma page-office-list.php (A1) da doc san, khong can JS dong bo rieng.
+// Nhan lai y het style :checked cua ban goc, chi doi ten selector.
+.building-class-list-base .search-rating input[name="rating_level"]:checked + .building-class {
+    background: #3e5fb4;
+    color: white;
+}
+.office-popup-search3 .pplus-show-district .district-item input[name="district"]:checked + .item-class {
+    background: #3e5fb4;
+    color: white;
+}
+.office-popup-search3 .pplus-show-list-ward .district-item input[name="ward"]:checked + .item-class {
+    background: #3e5fb4;
+    color: white;
+}
+.pplus-show-district-ward .item-class.active {
+    background: #3e5fb4;
+    color: white;
+}
+
+// Nut "Tim kiem >" dat o DUOI CUNG panel "Bo loc" - theo yeu cau nguoi dung (bo het khoi nut tat/
+// icon o tren cung, chi giu lai nut tron "X" giua man hinh lam noi dong duy nhat, xem
+// .action-close-search o duoi file nay). Truoc day tung dat ca X + icon bo loc + nut "Tim kiem >"
+// tren CUNG 1 hang o tren cung panel (".pplus-filter-top-bar") - da bo, khong con dung nua.
+.pplus-filter-bottom-bar {
+    // Padding trai/phai = 15.5px (thay vi 8px mac dinh) de mep nut "Tim kiem >" (#btnSearch,
+    // width:100%) khop dung mep trai/phai cua cac o input/nut khac trong panel (vd ".search-option"
+    // padding 8px 5px) - yeu cau nguoi dung sau khi sua bug #btnSearch bi ket 120px.
+    padding: 15px 15.5px 8px;
+
+    // Panel Bo loc (#box-search-base) la position:fixed, cao 100% man hinh, tu cuon rieng ben
+    // trong (overflow:auto) - keo het co, nut "Tim kiem" chi cach DAY CUA CHINH PANEL 8px, TRUNG
+    // voi vi tri thanh dieu huong duoi (.footer-mobile, position:fixed, cao 65px) luon de len
+    // tren, khien nut bi che mat/kho bam (bug thuc te nguoi dung bao cao). Them padding-bottom
+    // du 65px (chieu cao thanh dieu huong) + 25px khoang trong theo yeu cau nguoi dung.
+    // Padding trai/phai giu nguyen 8px tren mobile (khong doi theo ban PC) vi nguoi dung xac
+    // nhan giao dien mobile da on.
+    @media (min-width: 0px) and (max-width: 768px) {
+        padding: 15px 8px 90px;
+    }
+}
+
+// Hang "Quan / Phuong": them icon map (giong Angular goc) + ep ty le 50/50 giong ".tab-district"
+// o tren - theo yeu cau rieng. Khi dang o che do "Phuong", them 1 duong ke doc chinh giua
+// giua 2 cot (quan chon o trai / phuong hien o phai), cung chia dung 50/50.
+.pplus-mode-tab-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .control-search-group {
+        display: flex;
+        flex: 1;
+
+        .pplus-mode-tab {
+            flex: 1 1 50%;
+            text-align: center;
+        }
+    }
+}
+.pplus-mode-panel[data-mode="phuong"] .office-popup-search3 {
+    display: flex;
+
+    .pplus-show-district-ward,
+    .pplus-show-list-ward {
+        width: 50%;
+        float: none;
+        margin-left: 0;
+    }
+
+    .pplus-show-district-ward {
+        border-right: 1px solid #C1BAC7;
+        padding-right: 10px;
+    }
+
+    .pplus-show-list-ward {
+        padding-left: 10px;
+    }
+}
+
+// "Địa điểm" autocomplete (goi y Tên dự án/Tên đường khi go input[name="search_key"]) - xem
+// assets/js/main.js (dung y ".control:has()" da dung o cho khac trong theme nay de tao stacking
+// context/anchor cho popup, khong can sua JS gan inline style).
+.control:has(.pplus-location-suggest) {
+    position: relative;
+}
+
+.pplus-location-suggest {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 6px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.15);
+    z-index: 30;
+    padding: 8px 0;
+    max-height: 320px;
+    overflow-y: auto;
+    text-align: left;
+
+    &-group {
+        display: none;
+
+        + .pplus-location-suggest-group {
+            border-top: 1px solid #eeeeee;
+            margin-top: 4px;
+            padding-top: 4px;
+        }
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            position: relative;
+            padding: 8px 16px 8px 34px;
+            font-family: 'SF Pro Display';
+            font-size: 14px;
+            color: #333333;
+            cursor: pointer;
+
+            &::before {
+                content: '';
+                position: absolute;
+                left: 18px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 5px;
+                height: 5px;
+                border-radius: 50%;
+                background: #BE7EE1;
+            }
+
+            &:hover {
+                background: #f7f7f7;
+            }
+        }
+    }
+
+    &-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px;
+        font-family: 'SF Pro Display';
+        font-weight: 600;
+        font-size: 14px;
+        color: #2D5185;
+
+        svg {
+            flex: 0 0 auto;
+            color: #BE7EE1;
+        }
+    }
+
+    &-loading {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        font-family: 'SF Pro Display';
+        font-size: 14px;
+        color: #777777;
+    }
+}
+
+// Rieng thanh tim kiem desktop trang chu (form-search-destop, front-page.php) - popup goi y rong
+// bang dung "Địa điểm" (~1 trong 5 cot cua thanh tim kiem) nen ten duong dai (vd "14/535 Kim Mã -
+// Hà Nội") bi xuong dong, kho doc. Theo yeu cau nguoi dung (17/8/2026): rong them 50%, neo trai
+// (giu "left: 0" cu) roi tran sang phai - z-index 30 la lop phu (overlay), khong chiem cho that
+// cua cac cot ben canh nen tran ra ngoai khong lam vo layout. CHI ap dung cho trang chu (khong dung
+// chung voi panel "Bo loc" o office-filter-panel.php, cot do hep hon nhieu, rong 150% co the tran
+// qua canh man hinh) - "right: auto" de huy bo rang buoc "right: 0" o rule chung phia tren, tranh
+// trinh duyet tu quyet dinh mo ho giua left+right+width khi ca 3 cung duoc khai bao.
+.form-search-destop .pplus-location-suggest {
+    right: auto;
+    width: 150%;
+}
+
+.pplus-location-spinner {
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #e1e1e1;
+    border-top-color: #BE7EE1;
+    animation: pplus-location-spin 0.7s linear infinite;
+}
+
+@keyframes pplus-location-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

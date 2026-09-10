@@ -1,0 +1,149 @@
+/* PropertyPlus theme base styles - khung toi gian, mo rong dan theo thiet ke that. */
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+/* Cuon muot khi bam link neo (#bg-toc "Muc Luc" o A3/A4, nut nhay chu cai o A5) - thay the
+   scrollIntoView({behavior:'smooth'}) ben Angular (table-of-contents.component.ts scrollTo()) ma
+   khong can JS: CSS scroll-behavior lam dung viec do cho moi the <a href="#id">. */
+html { scroll-behavior: smooth; }
+
+/* Breadcrumb ".url-content" tren mobile (<=800px) duoc header-component.css dat "overflow: auto"
+   de vuot qua duoc man hinh hep, va da co san rule an thanh cuon rieng cho WebKit
+   (".url-content::-webkit-scrollbar { display:none }") - NHUNG thieu 2 thuoc tinh tuong duong cho
+   Firefox/trinh duyet khac (khong dung pseudo-element ::-webkit-scrollbar), nen thanh cuon ngang
+   xam van hien ra o cac trinh duyet do. Bo sung o day (KHONG sua header-component.css vi la file
+   compile tu header.less, giu nguyen ban port). */
+.url-content { scrollbar-width: none; -ms-overflow-style: none; }
+
+/* showHeader()==false ben Angular (teamplate-header.component.ts dong 202-213): tren MOBILE,
+   header cua A1 (page-office-list.php)/A2 (chi tiet)/A3-A4 (page-landing.php/page-reference.php)
+   cung chuyen trong suot giong het trang chu (bo anh nen banner xanh cua
+   ".header:not(.headerHome)" trong header-component.css) - truoc day chi co is_front_page() nen
+   3 loai trang nay tren mobile bi sai mau nen header. Dung dung breakpoint 768px (khop y het CSS
+   goc cho ".header.headerHome" trong header-component.css, KHAC voi 800px o cac cho khac trong
+   theme). Xem class "pplus-mobile-transparent-header" trong parts/header.php. */
+@media (max-width: 768px) {
+  .header.pplus-mobile-transparent-header:not(.headerHome) {
+    background-image: none !important;
+    background-color: #ffffff00 !important;
+  }
+}
+
+.pplus-container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+
+/* ".url-box-content .container" (breadcrumb + nut "Tìm kiếm văn phòng", dung o A1 page-office-list.php
+   va A2 page-office-detail.php) - bug co san tu truoc (xac nhan ca A1 cung bi, khong phai rieng A2
+   moi thieu): ".url-content" (breadcrumb) la 1 block KHONG gioi han chieu rong (header.less khong
+   dat width/float), nen no chiem het 100% hang, day ".btn-action-search-base" (float:right, header.less)
+   xuong HANG DUOI thay vi nam cung hang ben phai - khac voi thiet ke that (2 ben cung 1 hang). Sua
+   bang flex O DAY (khong dong vao ".url-content" toan site vi class do con dung rieng, khong kem
+   nut, o nhieu trang khac - A3/A4 breadcrumb - sua rong se anh huong noi khong lien quan). */
+.url-box-content .container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+.url-box-content .container .url-content { flex: 1 1 auto; min-width: 0; }
+.url-box-content .container .btn-action-search-base { flex: 0 0 auto; float: none !important; }
+
+/* Icon truoc 3 dong "Tư vấn miễn phí/Giá thuê tốt nhất/Gửi báo giá nhanh chóng" trong khung
+   ".contact-us" (dung o nhieu trang: A3 page-landing.php, A4 page-reference.php, B3 blog-detail.php)
+   - CSS goc do TRONG blog-detail-component.css (chi enqueue rieng cho B3), nhung markup ".contact-us"
+   giong het nhau o ca 3 trang nen dua rule nay ra global (main.css, luon load) thay vi lap lai 3
+   noi. Kich thuoc 29x24 do truc tiep tren production qua DevTools (anh nguon khong vuong, KHONG
+   ep vuong 20x20 se lam meo hinh). */
+.contact-us p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: rgba(43, 43, 43, 1);
+}
+.contact-us p .icon-from-search { width: 29px; height: 24px; flex-shrink: 0; }
+
+.pplus-header__inner,
+.pplus-footer__inner { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; }
+
+.pplus-breadcrumb ol { list-style: none; display: flex; gap: 8px; padding: 0; margin: 12px 0; }
+.pplus-breadcrumb li:not(:last-child)::after { content: "/"; margin-left: 8px; }
+
+.pplus-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.pplus-gallery img { width: 100%; height: 150px; object-fit: cover; border-radius: 4px; }
+
+.pplus-office-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+.pplus-office-table th, .pplus-office-table td { border: 1px solid #e0e0e0; padding: 8px 12px; text-align: left; }
+
+.pplus-related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.pplus-building-card { display: block; text-decoration: none; color: inherit; border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden; }
+.pplus-building-card img { width: 100%; height: 140px; object-fit: cover; }
+.pplus-building-card h3, .pplus-building-card .price { padding: 0 12px; }
+
+.pplus-notice { padding: 16px; background: #fff3cd; border-radius: 4px; }
+
+/* Popup ban do (A1/A4, xem assets/js/pplus-maps.js) - CSS moi hoan toan, KHONG dua tren Angular
+   goc (Angular dung 1 HTMLMarker/OverlayView tu viet rieng, khac co che voi Google Maps InfoWindow
+   chuan dang dung o day - xem ghi chu dau file pplus-maps.js). */
+.pplus-map-popup { width: 236px; font-family: inherit; }
+.pplus-map-popup a { display: block; text-decoration: none; color: inherit; }
+/* Ty le anh popup do truc tiep tren production (DevTools: img 236x177, ~4:3) - dung aspect-ratio
+   thay vi height co dinh de khop dung ty le do bat ke width thay doi sau nay. */
+.pplus-map-popup-photo { width: 100%; aspect-ratio: 236 / 177; object-fit: cover; display: block; }
+.pplus-map-popup-body { padding: 8px 2px 2px; }
+.pplus-map-popup-rank { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-right: 6px; background: #D7E1F9; color: #3E5FB4; }
+.pplus-map-popup-price { font-size: 13px; font-weight: 600; color: #333; }
+.pplus-map-popup-title { font-size: 14px; font-weight: 700; color: #3E5FB4; margin-top: 4px; line-height: 1.3; }
+.pplus-map-popup-address { font-size: 12px; color: #737373; margin-top: 2px; line-height: 1.3; }
+
+/* ".marker-title" (nhan hang+ten tren marker ban do, xem assets/js/pplus-maps.js) mac dinh co
+   min-width:110px CO DINH (officebase/style/layout.less) - theo feedback thuc te, nhieu toa nha
+   ten dai can ~153px moi du, nhung toa ten ngan chi can ~100px se bi thua khoang trang neu ep
+   cung 1 do rong. Ghi de lai thanh TU CO GIAN theo noi dung: bo min-width co dinh, chi giu 1
+   max-width lam gioi han an toan (JS van cat gon o ranh gioi tu neu vuot qua muc nay), va bat
+   buoc "white-space: nowrap" tren <p> (CSS goc chi co overflow:hidden, KHONG co nowrap - neu
+   khong bat, chu dai se tu XUONG DONG trong khung cao co dinh 24px thay vi no rong ra ngang).
+*/
+.marker-title { min-width: 0 !important; width: auto !important; max-width: 210px; align-items: center; }
+/* KHONG duoc dat "display" o rule tren (khong dieu kien) - "display:none" mac dinh cua
+   ".marker-title" (layout.less) la co che AN/HIEN theo hover, ghi de "!important" o day se lam
+   TAT CA marker hien ten CUNG LUC thay vi chi khi hover/active-hover (bug da gap thuc te). Chi
+   doi "display" sang flex O DUNG 3 trang thai da hien san (:hover/:focus/.active-hover, xem
+   layout.less dong 2252-2282), giu nguyen dieu kien an/hien goc. */
+.office-marker:hover .marker-title,
+.office-marker:focus .marker-title,
+.office-marker.active-hover .marker-title { display: flex !important; }
+/* BUG THUC SU (khong phai do do dai chu): "p { overflow:hidden }" trong layout.less khien <p> tu
+   tao 1 Block Formatting Context rieng (dac ta CSS: BFC luon tranh khong de chong len phan tu
+   float) - vi ".class-label" dung float:left ngay truoc no, <p> bi CO HEP lai de tranh vung float
+   do, NHO HON ca khong gian con lai thuc te trong ".marker-title". Do la ly do MOI marker (khong
+   phan biet ten dai/ngan) deu bi cat chu ben trong <p> dau khong lien quan gi den thuat toan cat
+   chu trong pplus-maps.js (da xac nhan qua do p.scrollWidth > p.clientWidth tren toan bo marker
+   thuc te). Chuyen sang flex: ".class-label" khong con float nen khong con BFC-avoidance, <p>
+   duoc flex-grow chiem dung phan con lai. */
+.marker-title .class-label { float: none !important; flex: 0 0 auto; margin: 0 5px 0 0; }
+/* <p> chua bao gio duoc reset margin (layout.less chi co "overflow:hidden", khong co "margin:0") -
+   trinh duyet mac dinh cho <p> mot margin ~1em (~14px, xem DevTools thuc te da do). O block layout
+   (truoc khi doi sang flex), margin nay THUONG "collapse" vao margin/padding cua ".marker-title"
+   nen khong thay anh huong. Flexbox KHONG BAO GIO collapse margin cua flex item (dung dac ta CSS)
+   - nen sau khi doi sang flex, margin do bat dau day chu that su xuong duoi, tran ra ngoai khung
+   trang cao co dinh 24px cua ".marker-title" (bug da gap thuc te: "chữ dự án nằm ngoài khung"). */
+.marker-title p { white-space: nowrap; flex: 1 1 auto; min-width: 0; margin: 0; }
+
+/* Phan trang danh so (paginate_links() cua WordPress, dung o page-office-list.php/page-reference.php)
+   - chua co CSS rieng nao trong theme, mac dinh se hien nhu 1 danh sach link tho khong style. */
+.pplus-pagination ul.page-numbers { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.pplus-pagination .page-numbers li { display: inline-flex; }
+.pplus-pagination .page-numbers .page-numbers { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 8px; border-radius: 8px; border: 1px solid #E0E0E0; color: #23182B; font-weight: 500; text-decoration: none; }
+.pplus-pagination .page-numbers .page-numbers.current { background: #3E5FB4; border-color: #3E5FB4; color: #ffffff; }
+.pplus-pagination .page-numbers .page-numbers.dots { border: none; }
+
+/* Khoi thong bao "Gui thanh cong" THUONG TRUC (khong tu an nhu toastr) thay the form vua gui -
+   xem assets/js/main.js pplusShowAdviseSuccess(). Dat display:none mac dinh vi phan tu nay do JS
+   tu tao/chen vao ngay sau ".pplus-advise-form" (khong co san trong HTML server-render). */
+.pplus-advise-success { display: none; text-align: center; padding: 32px 16px; }
+.pplus-advise-success-icon { width: 56px; height: 56px; line-height: 56px; border-radius: 50%; background: #2C6E49; color: #fff; font-size: 26px; font-weight: 700; margin: 0 auto 16px; }
+.pplus-advise-success-text { font-size: 15px; color: #23182B; line-height: 1.55; margin-bottom: 20px; }
+.pplus-advise-success-close { min-width: 120px; }
+.pplus-pagination .page-numbers a.page-numbers:hover { border-color: #3E5FB4; color: #3E5FB4; }

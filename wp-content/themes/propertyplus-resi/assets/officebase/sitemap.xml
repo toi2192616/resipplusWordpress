@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sitemapindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://propertyplus.vn/sitemaps/sitemap_products.xml</loc>
+    <lastmod>2023-11-17T05:36:01+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://propertyplus.vn/sitemaps/sitemap_posts.xml</loc>
+    <lastmod>2023-11-17T05:36:01+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://propertyplus.vn/sitemaps/sitemap_pages.xml</loc>
+    <lastmod>2023-11-17T05:36:01+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://propertyplus.vn/sitemaps/sitemap_quan.xml</loc>
+    <lastmod>2023-11-17T05:36:01+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://propertyplus.vn/sitemaps/sitemap_duong.xml</loc>
+    <lastmod>2023-11-17T05:36:01+00:00</lastmod>
+  </sitemap>
+</sitemapindex>

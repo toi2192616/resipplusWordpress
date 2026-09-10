@@ -1,0 +1,1034 @@
+<?php
+/**
+ * Goi truc tiep cac API .NET ma Angular dang dung (khong phai API tong hop /api/seo/v1/*
+ * cua ke hoach truoc) - xem docs/SCREENS_AND_TASK_SPLIT.md. Dung chung cho header/footer
+ * va toan bo cac trang o Phase 1.
+ */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * Base URL de GOI API .NET (server -> server, chay trong PHP qua wp_remote_get/post - KHONG phai
+ * trinh duyet nguoi dung). Khi deploy chung 1 may voi app .NET, co the tro thang vao PORT NOI BO
+ * (vd "http://localhost:5000" hoac "http://127.0.0.1:5000") de goi loopback, KHONG di ra Internet/
+ * qua domain public - nhanh hon va khong phu thuoc DNS/SSL ben ngoai. Dat trong Giao dien >
+ * PropertyPlus > "API .NET Base URL".
+ */
+function pplus_api_base_url(): string {
+    $base = rtrim((string) get_option('pplus_dotnet_api_base', 'https://admin.propertyplus.com.vn'), '/');
+    // Guard: CHI fallback ve domain that khi gia tri ro rang la loi (rong, HOAC localhost/127.0.0.1
+    // TRAN - khong co port). Truong hop nay thuong do vo tinh giu lai gia tri DB dev/test, se khien
+    // moi anh/API tren site public vo ERR_CONNECTION_REFUSED voi khach.
+    // NHUNG "localhost:<port>"/"127.0.0.1:<port>" (CO port) la CHU DICH: goi app .NET qua loopback
+    // ngay tren cung may server, khong ra Internet (xem docblock tren + inc/settings-page.php) - phai
+    // CHO PHEP di qua. Regex (/|$) sau host = chi bat khi host KHONG kem port (ket thuc bang "/" hoac
+    // het chuoi); "localhost:5000" khong khop nen duoc giu nguyen.
+    if ($base === '' || preg_match('#^https?://(localhost|127\.0\.0\.1)(/|$)#i', $base)) {
+        return 'https://admin.propertyplus.com.vn';
+    }
+    return $base;
+}
+
+/**
+ * Base URL de GHEP URL ANH/ASSET (item.img, photoList...) render ra <img src> cho TRINH DUYET
+ * NGUOI DUNG tai. KHAC voi pplus_api_base_url(): cai nay PHAI la domain PUBLIC truy cap duoc tu
+ * ben ngoai - trinh duyet cua khach KHONG the mo "http://localhost:port" cua server. Vi vay khi
+ * dat API base = port noi bo, van phai giu asset base = domain that (vd https://admin.propertyplus.vn).
+ * De TRONG option "pplus_dotnet_asset_base" -> tu dung lai pplus_api_base_url() (giu nguyen hanh vi
+ * cu / local dev, khong can cau hinh gi them) - NHUNG KHONG BAO GIO tra ve localhost:<port>: vi
+ * pplus_api_base_url() gio cho phep "localhost:<port>" (goi .NET noi bo server->server), neu asset
+ * cung lay gia tri do thi <img src> ra link loopback -> trinh duyet khach vo ERR_CONNECTION_REFUSED
+ * (dung loi "anh lay ca link local"). Truong hop API base la loopback thi asset fallback ve domain
+ * that thay vi localhost.
+ */
+function pplus_asset_base_url(): string {
+    $asset_base = trim((string) get_option('pplus_dotnet_asset_base', ''));
+    if ($asset_base !== '') {
+        return rtrim($asset_base, '/');
+    }
+    $api_base = pplus_api_base_url();
+    if (preg_match('#^https?://(localhost|127\.0\.0\.1)(:\d+)?#i', $api_base)) {
+        return 'https://admin.propertyplus.com.vn';
+    }
+    return $api_base;
+}
+
+/**
+ * Ghep URL anh tuong doi (item.img) voi domain .NET, giong bien currentDomainAdmin
+ * ma Angular dung o rat nhieu cho trong home.component.html.
+ */
+function pplus_admin_asset_url(?string $relative_path): string {
+    if (empty($relative_path)) {
+        return '';
+    }
+    // API .NET goc doi khi tra ve duong dan anh voi dau "\" (path Windows, vd photoList cua
+    // listOffice: "Photos\202304\Ten anh.jpg") thay vi "/" - trinh duyet KHONG hieu "\" trong
+    // URL nen anh bi 404 (loi da gap thuc te, xem feedback). Chuan hoa lai o day 1 lan cho moi
+    // noi dung pplus_admin_asset_url(), tranh phai sua rieng tung cho goi ham nay.
+    $relative_path = str_replace('\\', '/', $relative_path);
+    if (preg_match('#^https?://#i', $relative_path)) {
+        return $relative_path;
+    }
+    // Dung asset base (domain public) chu KHONG phai api base - xem ghi chu pplus_asset_base_url().
+    return pplus_asset_base_url() . '/' . ltrim($relative_path, '/');
+}
+
+/**
+ * Chuan hoa "urlHerf" tra ve tu API (Office/_GetOffices, Office/_GetDetail...) truoc khi dung lam
+ * <a href>. API tra ve URL KHONG co dau "/" cuoi (vd "/en/office-for-rent/ha-noi/hoan-kiem-district/
+ * 63-ly-thai-to-building-465") - WordPress redirect_canonical() se tu 301 sang ban co dau "/" cuoi,
+ * va trong qua trinh do LANG LANG XOA MAT tien to "/en" (cung 1 loi da gap va sua nhieu lan trong
+ * theme nay cho cac link tu viet, xem header.php/front-page.php...). Truoc day chi anh huong link
+ * tu viet (home_url($lang_prefix...)); day la lan dau "urlHerf" tho tu API bi dung truc tiep khong
+ * qua buoc chuan hoa nay, nen loi chi lo ro khi click tu 1 trang tieng Anh (vi urlHerf ban viet
+ * khong co tien to /en nen redirect khong lam mat gi ca, che khuat loi cho toi bay gio).
+ */
+function pplus_office_url(?string $url_herf): string {
+    $url_herf = trim((string) $url_herf);
+    if ($url_herf === '') {
+        return '#';
+    }
+    return trailingslashit($url_herf);
+}
+
+/**
+ * Ten hang muc dich vu (Van phong rieng/Cho ngoi co dinh/Cho ngoi linh hoat/Dang ky kinh doanh) -
+ * port GlobalConstants.ts OfficeTypeList (dung chung boi office-list.component.ts
+ * GetNameLangeOfficeType() va detail.component.ts getOfficeTypeName()). Backend KHONG co ban tieng
+ * Anh cho 4 ten nay (xac nhan qua production that: ca panel loc "Loại văn phòng" lan nhan tren the
+ * san pham deu chi tra ve tieng Viet) - NHUNG day la 1 tap CO DINH chi 4 gia tri (hang so trong
+ * code Angular, khong phai noi dung CMS co the sua), nen quyet dinh (theo yeu cau nguoi dung) tu
+ * dich san o day thay vi cho backend, dung pplus_t() nhu moi chuoi tinh khac trong theme.
+ */
+function pplus_office_type_name($value): string {
+    $names = [
+        1 => pplus_t('Văn phòng riêng', 'Private Office'),
+        2 => pplus_t('Chỗ ngồi cố định', 'Dedicated Desk'),
+        3 => pplus_t('Chỗ ngồi linh hoạt', 'Hot Desk'),
+        4 => pplus_t('Đăng ký kinh doanh', 'Business Registration'),
+    ];
+    return $names[(int) $value] ?? '';
+}
+
+/**
+ * Giai ma "zone_stringify" (4 goc chu nhat, filter.zone_stringify tra ve tu Reference/GetIndex*)
+ * thanh bounds ne/sw dung duoc ngay cho Office/_GetOffices (xem pplus_get_office_list()). Dung
+ * min/max tren ca 4 goc thay vi tin ten truong "Bl/Br/Tl/Tr" (Bottom-left/...) - du lieu thuc te
+ * KHONG theo dung quy uoc do (vd BlLocationLng > BrLocationLng, nguoc voi "trai" thuong <= "phai"
+ * ve kinh do) - da xac nhan qua debug thuc te, tin ten truong se gan nham ne/sw nguoc hoan toan.
+ *
+ * @return array{ne_lat:float,ne_lng:float,sw_lat:float,sw_lng:float}|null
+ */
+function pplus_zone_to_bounds(?string $zone_stringify): ?array {
+    if (empty($zone_stringify)) {
+        return null;
+    }
+    $zone = json_decode($zone_stringify, true);
+    if (!is_array($zone) || !isset($zone['BlLocationLat'], $zone['BlLocationLng'])) {
+        return null;
+    }
+    $lats = [
+        (float) $zone['BlLocationLat'],
+        (float) ($zone['TlLocationLat'] ?? $zone['BlLocationLat']),
+        (float) ($zone['BrLocationLat'] ?? $zone['BlLocationLat']),
+        (float) ($zone['TrLocationLat'] ?? $zone['BlLocationLat']),
+    ];
+    $lngs = [
+        (float) $zone['BlLocationLng'],
+        (float) ($zone['BrLocationLng'] ?? $zone['BlLocationLng']),
+        (float) ($zone['TlLocationLng'] ?? $zone['BlLocationLng']),
+        (float) ($zone['TrLocationLng'] ?? $zone['BlLocationLng']),
+    ];
+    return [
+        'ne_lat' => max($lats),
+        'ne_lng' => max($lngs),
+        'sw_lat' => min($lats),
+        'sw_lng' => min($lngs),
+    ];
+}
+
+/**
+ * Bounds (ne/sw) cho 1 TINH/THANH, dung CHUNG cho MOI trang quan/phuong/duong/hang trong tinh do
+ * (KHONG dung bounds rieng cua tung quan/duong) - goi Reference/GetIndexProvince (co cache transient,
+ * re khi lap lai) + pplus_zone_to_bounds() tren "zone_stringify" cua CHINH TINH.
+ *
+ * Bug thuc te nguoi dung bao cao (15/8/2026): trang Quan Hoan Kiem tren local CHI ra 22 ket qua/2
+ * trang, ban chinh (propertyplus.vn) ra 77/5 trang cho CUNG 1 URL. 2 lop nguyen nhan da xac nhan
+ * qua goi truc tiep pplus_get_office_list() (bo qua UI), THU TU DA THU:
+ * 1) Dung bounds tu zone_stringify cua RIENG quan (4 goc chu nhat khoanh vung rat hep, vd Hoan Kiem
+ *    chi ~1.9km be ngang) -> 22 (khop loi). Zone rieng cua quan hop de VE polygon/tam ban do, nhung
+ *    qua hep de LOC van phong (loai bo nham van phong o ria quan).
+ * 2) Thu doi sang 4 truong "ne_lat/ne_lng/sw_lat/sw_lng" co san TRONG CUNG object filter (tuong la
+ *    vung "Angular thuc su dung" vi khong can giai ma gi) -> 77 cho Hoan Kiem (Ha Noi, DUNG), NHUNG
+ *    xac nhan lai voi Quan 4 (TP.HCM, cung loai=1 that, dataSelected day du) thi 4 truong nay LAI
+ *    TRA VE Y HET toa do Ha Noi (21.08/20.97) - BUG PHIA .NET: 4 truong nay bi "dinh" o gia tri Ha
+ *    Noi cho MOI tinh/thanh, khong tinh dung theo tung request (zone_stringify van dung rieng tung
+ *    quan/tinh, xac nhan qua Quan 4 co zone_stringify DUNG toa do TPHCM ~10.75/106.7) - dung 4 truong
+ *    nay se loc SAI hoan toan cho moi tinh/thanh KHAC Ha Noi, khong an toan de dung.
+ * 3) GIAI PHAP DUNG: van dung zone_stringify (qua pplus_zone_to_bounds(), dang tin cay, tinh rieng
+ *    dung tung request) nhung lay o CAP TINH/THANH (GetIndexProvince) thay vi cap quan/duong rieng -
+ *    vung TINH tu nhien rong hon nhieu (bao trum CA quan), khong loai nham van phong o ria quan nao
+ *    ca, van giu duoc loi ich ban dau cua bounds (tranh total_count=0 sai o 1 so tinh/thanh nhu
+ *    TPHCM) ma khong can dung 4 truong ne_lat.. dang loi. Da xac nhan qua goi that: Hoan Kiem + bounds
+ *    TINH Ha Noi -> dung 77 (khop production).
+ *
+ * @return array{ne_lat:float,ne_lng:float,sw_lat:float,sw_lng:float}|null
+ */
+function pplus_province_bounds(string $province_alias): ?array {
+    if ($province_alias === '') {
+        return null;
+    }
+    $province_zone = pplus_api_get('vi/Reference/GetIndexProvince', ['alias' => $province_alias], 600);
+    return pplus_zone_to_bounds($province_zone['result']['filter']['zone_stringify'] ?? null);
+}
+
+function pplus_current_lang(): string {
+    // Tien to /en/ hoac /ja/ da duoc phat hien SOM trong inc/language-route.php (truoc khi WP
+    // parse_request() chay) va luu vao hang so PPLUS_LANG (vi|en|ja).
+    $default = defined('PPLUS_LANG') ? PPLUS_LANG : 'vi';
+    return apply_filters('pplus_current_lang', $default);
+}
+
+/**
+ * Tra ve dictionary dich {name => value} cho 1 ngon ngu (en/ja) - PORT tu Angular:
+ * homeService.GetLangBase(lang) = GET {api}/{lang}/Home/GetLangApi, .result la mang {name, value}.
+ * VI khong co dictionary (Localizer tra thang key). Cache transient 1 ngay + nho cap-request.
+ *
+ * @return array<string,string>
+ */
+function pplus_lang_dictionary(string $lang): array {
+    static $cache = [];
+    if (isset($cache[$lang])) {
+        return $cache[$lang];
+    }
+    if ($lang !== 'en' && $lang !== 'ja') {
+        return $cache[$lang] = [];
+    }
+    $data = pplus_api_get("{$lang}/Home/GetLangApi", [], DAY_IN_SECONDS);
+    $map  = [];
+    foreach ((array) ($data['result'] ?? []) as $row) {
+        if (isset($row['name'])) {
+            $map[(string) $row['name']] = (string) ($row['value'] ?? $row['name']);
+        }
+    }
+    return $cache[$lang] = $map;
+}
+
+/**
+ * Dich 1 chuoi TINH theo ngon ngu hien tai - PORT NGUYEN cua AppComponentBase.Localizer():
+ * vi => tra thang $vi_key; en/ja => tra cuu dictionary GetLangApi theo name==$vi_key, fallback ve
+ * chinh $vi_key khi khong tim thay. Dung cho MOI label/menu/button viet cung trong theme
+ * (header/footer/page-*). KHONG dung cho du lieu API (da tu doi ngon ngu qua {lang}/... trong URL).
+ */
+function pplus_localize(string $vi_key): string {
+    $lang = pplus_current_lang();
+    if ($lang === 'vi') {
+        return $vi_key;
+    }
+    $dict = pplus_lang_dictionary($lang);
+    return $dict[$vi_key] ?? $vi_key;
+}
+
+/**
+ * Danh sach ngon ngu - PORT GlobalConstants.language (vi/en/ja).
+ * @return array<int,array{DisplayName:string,Name:string}>
+ */
+function pplus_language_options(): array {
+    return [
+        ['DisplayName' => 'Tiếng Việt', 'Name' => 'vi'],
+        ['DisplayName' => 'English',    'Name' => 'en'],
+        ['DisplayName' => '日本語',      'Name' => 'ja'],
+    ];
+}
+
+/**
+ * Tien to duong dan theo ngon ngu hien tai: '' cho vi, '/en' hoac '/ja'. Angular Resi dat tien to
+ * cho CA vi (urlLang='vi') nhung ban WP dung 'vi' = mac dinh khong tien to (xem language-route.php).
+ */
+function pplus_lang_prefix(?string $lang = null): string {
+    $lang = $lang ?: pplus_current_lang();
+    return $lang === 'vi' ? '' : ('/' . $lang);
+}
+
+/**
+ * Ghep 1 URL noi bo co tien to ngon ngu hien tai. $path bat dau bang '/'.
+ */
+function pplus_lang_url(string $path): string {
+    return home_url(pplus_lang_prefix() . '/' . ltrim($path, '/'));
+}
+
+/**
+ * Dich 1 chuoi text TINH (khong phai du lieu API) theo ngon ngu hien tai - WordPress i18n that
+ * (wp_set_locale()/.po-.mo) khong duoc dung o day vi site khong doi locale that su theo /en/,
+ * chi doi field text hien thi. Dung cho label/breadcrumb/button viet cung trong theme (header,
+ * footer, cac page-*.php) - KHONG dung cho du lieu tra ve tu pplus_api_get() (da tu doi ngon
+ * ngu dung qua {lang}/... trong URL goi API roi).
+ */
+function pplus_t(string $vi, string $en): string {
+    return pplus_current_lang() === 'en' ? $en : $vi;
+}
+
+/**
+ * Doan URL tinh "cho-thue-van-phong" (goc cua A1/A3/A4) - ban tieng Anh THAT cua production la
+ * "office-for-rent" (KHAC HAN, khong phai giu nguyen tieng Viet), xac nhan qua doi chieu truc tiep
+ * hreflang tren propertyplus.vn (17/8/2026): "/cho-thue-van-phong/ha-noi" (vi) <-> "/en/office-for-
+ * rent/ha-noi" (en). Truoc gio site nay dung CHUNG 1 slug "cho-thue-van-phong" cho ca 2 ngon ngu
+ * (chi doi tien to /en) - dung cho URL KHONG bi loi/gay nham, nhung khong khop URL that cua
+ * production (bug thuc te nguoi dung bao cao). Dung ham nay o MOI noi xay link toi A1/A3/A4 thay vi
+ * ghi thang chuoi "cho-thue-van-phong" - xem cac rewrite rule EN moi trong inc/reference-index-
+ * route.php + functions.php (A1/A3) khop nguoc lai dung segment nay.
+ */
+function pplus_office_list_base_slug(): string {
+    return pplus_current_lang() === 'en' ? 'office-for-rent' : 'cho-thue-van-phong';
+}
+
+/**
+ * Chuan hoa "alasProvince" tra ve tu API .NET (_GetDetail) truoc khi ghep vao URL breadcrumb -
+ * PORT tu Angular detail.component.ts: `this.Model.alasProvince.replace("thanh-pho-ho-chi-minh",
+ * "ho-chi-minh")`. .NET tra alias DAI cho TPHCM: "thanh-pho-ho-chi-minh" (VI) / "ho-chi-minh-city"
+ * (EN), nhung URL that cua production dung "ho-chi-minh" (khop pplus_office_list_base_slug +
+ * rewrite route). WordPress truoc day dung alias THO -> breadcrumb toa nha HCM tro sai URL (404) o
+ * ca VI lan EN. Angular goi CUNG API nhung lam .replace() nay nen dung; day la lo hong phia WP, KHONG
+ * phai loi data .NET. (Ha Noi khong bi: alias "ha-noi" da dung san.)
+ */
+function pplus_normalize_province_alias(string $alias): string {
+    return str_replace(['thanh-pho-ho-chi-minh', 'ho-chi-minh-city'], 'ho-chi-minh', $alias);
+}
+
+/**
+ * Duong dan hien tai (KHONG con tien to /en, vi inc/language-route.php da strip khoi REQUEST_URI/
+ * PATH_INFO tu truoc do roi) - dung de xay link doi ngon ngu ma VAN O LAI trang hien tai, thay vi
+ * luon nhay ve trang chu nhu code cu (home_url($lang_prefix . '/')) - xem feedback.
+ */
+function pplus_current_path(): string {
+    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+    return $path ?: '/';
+}
+
+/**
+ * Sinh URL doi ngon ngu, GIU NGUYEN trang hien tai (chi doi/bo tien to /en).
+ *
+ * KHONG dung duoc cho trang chi tiet van phong (page-office-detail.php): URL vi/en cua CUNG 1
+ * toa nha KHAC HAN nhau ca ve route prefix (cho-thue-van-phong vs office-for-rent) lan alias
+ * (vd "toa-nha-63-ly-thai-to" vs "63-ly-thai-to-building") - xac nhan qua doi chieu truc tiep
+ * API that: Office/_GetDetail YEU CAU DUNG alias theo tung ngon ngu, sai alias tra ve rong ngay
+ * ca khi id/province/district dung (bug thuc te da gap: doi ngon ngu tren A2 ca 2 chieu deu 404).
+ * page-office-detail.php tu dang ky filter "pplus_language_switch_url" (xem
+ * pplus_get_office_url_in_lang() ben duoi) de tra ve dung URL thay vi chi doi tien to nhu o day.
+ */
+function pplus_language_switch_url(string $target_lang): string {
+    $path    = pplus_current_path();
+    $prefix  = ($target_lang === 'en' || $target_lang === 'ja') ? ('/' . $target_lang) : '';
+    $default = home_url($prefix . $path);
+    return apply_filters('pplus_language_switch_url', $default, $target_lang);
+}
+
+/**
+ * Tra ve urlHerf cua CHINH XAC 1 van phong (theo projectId, ngon ngu-doc-lap) o ngon ngu chi dinh -
+ * dung de sinh link doi ngon ngu dung tren A2 (xem page-office-detail.php), vi Office/_GetDetail
+ * khong the goi truc tiep bang alias cua ngon ngu con lai (xem ghi chu pplus_language_switch_url()).
+ *
+ * Office/_GetOffices (danh sach) lai chap nhan loc theo "project_id" MA KHONG can alias/toa do map -
+ * xac nhan qua goi API that: {lang}/Office/_GetOffices voi payload {project_id: 465} tra ve dung
+ * total_count=1, item dau tien co urlHerf CHINH XAC theo dung ngon ngu duoc goi (province/district
+ * trong payload hoan toan bi bo qua khi loc theo project_id, khong can truyen).
+ */
+function pplus_get_office_url_in_lang(int $project_id, int $project_type, string $lang): ?string {
+    if ($project_id <= 0) {
+        return null;
+    }
+    $payload = [
+        'skip'        => 0,
+        'page_count'  => 1,
+        'ProjectType' => $project_type,
+        'SortType'    => 2,
+        'project_id'  => $project_id,
+    ];
+    $data     = pplus_api_post_json("{$lang}/Office/_GetOffices", $payload, 600);
+    $url_herf = $data['result']['listOffice'][0]['urlHerf'] ?? '';
+    return $url_herf !== '' ? $url_herf : null;
+}
+
+/**
+ * Goi 1 endpoint .NET, JSON GET, co cache transient. Dung chung cho moi man hinh.
+ *
+ * @param string $path   Vi du "vi/Home/HeaderInvokeAsync" hoac "Office/_GetDetail"
+ * @return array|null    null neu loi (KHONG lam sap trang - template phai tu xu ly fallback)
+ */
+function pplus_api_get(string $path, array $query = [], int $cache_seconds = 600): ?array {
+    $url = pplus_api_base_url() . '/' . ltrim($path, '/');
+    if (!empty($query)) {
+        $url = add_query_arg($query, $url);
+    }
+
+    $cache_key = 'pplus_api_' . md5($url);
+    if ($cache_seconds > 0) {
+        $cached = get_transient($cache_key);
+        if ($cached !== false) {
+            return $cached;
+        }
+    }
+
+    $response = wp_remote_get($url, [
+        'timeout' => 6,
+        'headers' => ['Accept' => 'application/json'],
+    ]);
+
+    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) >= 400) {
+        return null;
+    }
+
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+    if (!is_array($body)) {
+        return null;
+    }
+
+    if ($cache_seconds > 0) {
+        set_transient($cache_key, $body, $cache_seconds);
+    }
+
+    return $body;
+}
+
+/**
+ * @return array|null Shape: { result: { listMenu: [...], listCatalogBlog: [...] } }
+ */
+function pplus_get_header_data(): ?array {
+    // Nho dem cap-request (static, KHAC voi transient tren - transient tranh goi lai API GIUA
+    // CAC LUOT TAI TRANG, cai nay tranh doc lai/giai ma lai CUNG 1 transient NHIEU LAN trong CUNG
+    // 1 lan tai trang). Xac nhan qua ra soat: ham nay dang duoc goi tu 2-3 noi khac nhau tren CUNG
+    // 1 trang (parts/header.php + parts/office-filter-panel.php, them 1 lan nua tu page-reference.php
+    // voi trang dich vu) - moi lan goi truoc day deu tu doc lai + giai ma transient (co the vai KB
+    // du lieu menu toan site), du ket qua giong het nhau. Key theo ngon ngu vi HeaderInvokeAsync tra
+    // ve du lieu KHAC NHAU giua vi/en.
+    static $cache = [];
+    $lang = pplus_current_lang();
+    if (array_key_exists($lang, $cache)) {
+        return $cache[$lang];
+    }
+    $data = pplus_api_get("{$lang}/Home/HeaderInvokeAsync", [], 900);
+    return $cache[$lang] = ($data['result'] ?? null);
+}
+
+/**
+ * Ban do "id => alias tieng Viet" cho TOAN BO cac muc trong menu header (quan/phuong/duong/hang/
+ * dich vu) - dung de header.php luon dung DUNG 1 alias (VI) lam URL slug cho MOI ngon ngu, tranh
+ * bug thuc te da gap: Home/HeaderInvokeAsync tra ve "alias" KHAC NHAU theo ngon ngu dang goi (vd
+ * quan Hoan Kiem: vi="hoan-kiem", en="hoan-kiem-district" - "aliasVi"/"aliasEn" trong response LUON
+ * null, khong dung duoc). Site nay dung CHUNG 1 slug cho ca 2 ngon ngu (chi doi tien to /en, xem
+ * pplus_language_switch_url()) - neu link header xay dung tu alias theo ngon ngu HIEN TAI (vd dang
+ * o /en/ thi dung alias tieng Anh), bam vao se ra URL mang alias EN, roi khi doi ngon ngu tiep (EN
+ * -> VI) se bi sai vi pplus_get_reference_index() chi tu doi alias theo chieu VI -> EN, khong co
+ * chieu nguoc lai. Truong "id" (khoa DB) da xac nhan GIONG NHAU giua 2 ngon ngu qua API that, dung
+ * lam khoa doi chieu dang tin cay.
+ *
+ * Ngoai alias, map nay con luu kem "title"/"subTitle" ban tieng Viet cua tung phan tu de dung
+ * lam fallback hien thi (xem pplus_header_label()) - phat hien qua doi chieu truc tiep API that:
+ * 1 vai muc con (vd duong "Phú Thượng", id=6634) co ban ghi EN HOAN TOAN rong (title/alias/aliasEn
+ * deu null, chi co id/stt/loai/menuItemID), khong phai do site nay chua dich ma do chinh backend
+ * chua nhap noi dung tieng Anh cho muc do - neu in thang ra se ra 1 <li> rong giua danh sach, lam
+ * lech hang doi voi cot ben canh trong CSS grid 2 cot (bug thuc te: "Find by street" tieng Anh nhin
+ * lech hang so voi "Tìm theo đường" tieng Viet, do 1 muc rong chen giua).
+ *
+ * @return array<int,array{alias:string,title:string,subTitle:string}> id => { alias, title, subTitle } (vi)
+ */
+function pplus_get_header_vi_alias_map(): array {
+    // Nho dem cap-request - xem ghi chu tuong tu trong pplus_get_header_data(): tren trang dich vu
+    // (A4, EN) ham nay bi goi 2 lan (page-reference.php + parts/header.php) du cung ket qua.
+    static $cache = null;
+    if ($cache !== null) {
+        return $cache;
+    }
+
+    $cache_key = 'pplus_header_vi_alias_map';
+    $cached = get_transient($cache_key);
+    if ($cached !== false) {
+        return $cache = $cached;
+    }
+
+    $data = pplus_api_get('vi/Home/HeaderInvokeAsync', [], 900);
+    $list_menu = $data['result']['listMenu'] ?? [];
+
+    $map = [];
+    $walk = function (array $item) use (&$walk, &$map) {
+        if (isset($item['id'])) {
+            $map[(int) $item['id']] = [
+                'alias'     => (string) ($item['alias'] ?? ''),
+                'title'     => (string) ($item['title'] ?? ''),
+                'subTitle'  => (string) ($item['subTitle'] ?? ''),
+                'subTitle2' => (string) ($item['subTitle2'] ?? ''),
+            ];
+        }
+        foreach (['dataListDistrict', 'dataListWard', 'dataListStreet', 'dataListVpHang', 'dataListVPDichVu'] as $child_key) {
+            foreach ((array) ($item[$child_key] ?? []) as $child) {
+                if (is_array($child)) {
+                    $walk($child);
+                }
+            }
+        }
+    };
+    foreach ((array) $list_menu as $item_menu) {
+        if (!empty($item_menu['menu']) && is_array($item_menu['menu'])) {
+            $walk($item_menu['menu']);
+        }
+        foreach (['dataListDistrict', 'dataListStreet', 'dataListVpHang', 'dataListVPDichVu'] as $child_key) {
+            foreach ((array) ($item_menu[$child_key] ?? []) as $child) {
+                if (is_array($child)) {
+                    $walk($child);
+                }
+            }
+        }
+    }
+
+    set_transient($cache_key, $map, 900);
+    return $cache = $map;
+}
+
+/**
+ * Tra ve alias DUNG DE LAM URL cho 1 phan tu menu header - dung DUNG ban theo NGON NGU HIEN TAI
+ * ($item['alias'], da tu dung vi da goi Home/HeaderInvokeAsync voi tien to {lang} hien tai - xem
+ * pplus_get_header_data()), fallback ve ban tieng Viet (qua $vi_alias_map) CHI khi ban hien tai
+ * rong (bug du lieu backend that, vd duong "Phú Thượng" id=6634 khong co ban ghi tieng Anh nao ca -
+ * xem ghi chu pplus_get_header_vi_alias_map()), KHONG PHAI vi khong the dung alias EN.
+ *
+ * TRUOC DAY (den 17/8/2026) ham nay LUON uu tien ban tieng Viet (nguoc lai voi o day) - luc do la
+ * chu dich, vi routing A4 (inc/reference-index-route.php) CHI biet xu ly alias dang tieng Viet
+ * trong URL (KHONG co rewrite rule/logic nao doc duoc alias tieng Anh truc tiep tu URL, phai do
+ * tham nguoc qua vi truoc). Da xay THEM rewrite rule + logic doc alias EN truc tiep (xem
+ * pplus_get_reference_index() tham so $alias_lang, rewrite rule "office-for-rent/..." trong
+ * inc/reference-index-route.php) nen gio dung an toan duoc alias tieng Anh THAT (xac nhan qua goi
+ * API that "en/Home/HeaderInvokeAsync": item alias da la "hoan-kiem-district"/"duy-tan-street"/
+ * "grade-a" dung san, khong can tu doan/ghep chuoi).
+ */
+function pplus_header_alias(array $item, array $vi_alias_map): string {
+    $current = (string) ($item['alias'] ?? '');
+    if ($current !== '') {
+        return $current;
+    }
+    if (isset($item['id'], $vi_alias_map[(int) $item['id']]['alias'])) {
+        return $vi_alias_map[(int) $item['id']]['alias'];
+    }
+    return '';
+}
+
+/**
+ * Tra ve nhan hien thi (title hoac subTitle) cho 1 phan tu menu header - fallback ve ban tieng
+ * Viet (qua $vi_alias_map) khi ban hien tai (EN) rong, xem ghi chu pplus_get_header_vi_alias_map().
+ */
+function pplus_header_label(array $item, array $vi_alias_map, string $field = 'title'): string {
+    $current = (string) ($item[$field] ?? '');
+    if ($current !== '') {
+        return $current;
+    }
+    if (isset($item['id'], $vi_alias_map[(int) $item['id']][$field])) {
+        return $vi_alias_map[(int) $item['id']][$field];
+    }
+    return '';
+}
+
+/**
+ * Tim alias tinh/thanh (vd "ho-chi-minh") tu TEN TIENG VIET (vd "Thành phố Hồ Chí Minh") - dung
+ * de tra cuu lai bounds ban do DUNG tinh khi nguoi dung doi Tinh qua panel Bo loc trong khi dang
+ * o 1 trang A4 da co san bounds cua tinh KHAC (xem page-reference.php: $map_bounds). Ho Chi Minh
+ * dac biet CAN bounds moi ra ket qua (Office/_GetOffices bo qua Province neu thieu bounds voi 1
+ * so tinh/thanh, xac nhan qua goi API that), nen khong the giu nguyen bounds cu cua tinh truoc do.
+ *
+ * Dung LAI pplus_get_header_vi_alias_map() (luon fetch ban VI, khong phu thuoc ngon ngu hien tai)
+ * thay vi goi rieng 1 API khac - map nay da co san moi item (tinh/quan/phuong/duong...) keyed theo
+ * id, chi can duyet tim item co subTitle/subTitle2 khop ten truyen vao.
+ */
+function pplus_find_province_alias_by_name(string $vi_name): string {
+    if ($vi_name === '') {
+        return '';
+    }
+    foreach (pplus_get_header_vi_alias_map() as $item) {
+        if (($item['subTitle'] ?? '') === $vi_name || ($item['subTitle2'] ?? '') === $vi_name) {
+            return (string) ($item['alias'] ?? '');
+        }
+    }
+    return '';
+}
+
+/**
+ * Tra ve gia tri DUNG DE LOC (gui len Office/_GetOffices lam Province/District/WardName) cho 1
+ * phan tu menu header - LUON la ban tieng Viet co dau, BAT KE ban hien tai (EN) co rong hay khong
+ * (khac han pplus_header_label() o tren, chi fallback khi EN rong - o day PHAI ep ve VI luon vi
+ * ban EN LUON khac dinh dang).
+ *
+ * Xac nhan qua goi truc tiep API that (Office/_GetOffices): field Province chap nhan ca "Ha Noi"
+ * lan "Hà Nội" (co ve co chuan hoa/khong phan biet dau), NHUNG District/WardName CHI khop khi
+ * dung dung ten tieng Viet co dau (vd "Hoàn Kiếm"/"Phường Hoàn Kiếm") - truyen ban tieng Anh cua
+ * header (subTitle/subTitle2 luc lang=en, vd "Office For Lease in Hanoi"/"Hoan Kiem Dist."/"Office
+ * for Lease in Hoan Kiem Ward") LUON tra ve total_count=0 (bug thuc te: bo loc quan/phuong/tinh
+ * tren panel tieng Anh khong tim ra ket qua nao ca). $vi_alias_map rong (dang o ban vi) -> tra ve
+ * thang $item[$field] (da la tieng Viet san).
+ */
+function pplus_header_filter_value(array $item, array $vi_alias_map, string $field): string {
+    if (isset($item['id'], $vi_alias_map[(int) $item['id']][$field]) && $vi_alias_map[(int) $item['id']][$field] !== '') {
+        return $vi_alias_map[(int) $item['id']][$field];
+    }
+    return (string) ($item[$field] ?? '');
+}
+
+/**
+ * @return array|null Shape: { result: { listMenuFooter: [...], myHistories: [...], phone1, phone2, email1, email2 } }
+ */
+function pplus_get_footer_data(): ?array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/Home/FooterInvokeAsync", [], 900);
+    return $data['result'] ?? null;
+}
+
+/**
+ * @return array|null Shape (tu home.component.ts/ControlHome): { dataList, dataListHCM, listOffice,
+ *   listVideos, danhSachNhanVien, listBaoChis, listBlogNews }
+ */
+function pplus_get_home_data(): ?array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/Home/GetIndex", [], 300);
+    return $data['result'] ?? null;
+}
+
+/**
+ * Goi 1 endpoint .NET bang POST + JSON body (dung cho _GetOffices, _GetMarkers...).
+ * Khac voi pplus_api_get() vi cac endpoint nay yeu cau POST JSON, khong phai GET query string.
+ *
+ * @return array|null null neu loi
+ */
+function pplus_api_post_json(string $path, array $payload, int $cache_seconds = 300): ?array {
+    $url = pplus_api_base_url() . '/' . ltrim($path, '/');
+
+    $cache_key = 'pplus_api_' . md5($url . wp_json_encode($payload));
+    if ($cache_seconds > 0) {
+        $cached = get_transient($cache_key);
+        if ($cached !== false) {
+            return $cached;
+        }
+    }
+
+    $response = wp_remote_post($url, [
+        'timeout' => 8,
+        'headers' => ['Content-Type' => 'application/json; charset=utf-8', 'Accept' => 'application/json'],
+        'body'    => wp_json_encode($payload),
+    ]);
+
+    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) >= 400) {
+        return null;
+    }
+
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+    if (!is_array($body)) {
+        return null;
+    }
+
+    if ($cache_seconds > 0) {
+        set_transient($cache_key, $body, $cache_seconds);
+    }
+
+    return $body;
+}
+
+/**
+ * Danh sach van phong cho trang /cho-thue-van-phong. Da doi chieu truc tiep code .NET that
+ * (OfficeController._GetOffices + OfficeFilter.cs + ApiGetAllProjectInput.cs) de xac dinh
+ * dung ten field can gui - khong doan qua Angular code (Angular gui ca object searchBase,
+ * ta chi gui dung cac field controller thuc su doc: Province, District, ProjectType, SortType,
+ * RatingLevel, price_from, price_to, skip, page_count).
+ *
+ * @param array $args { province?, district?, ward?, price_from?, price_to?, rating_level?, project_type?, page? }
+ * @return array|null Shape: { listOffice: [...], total_count: N }
+ */
+function pplus_get_office_list(array $args): ?array {
+    $lang = pplus_current_lang();
+    $page = max(1, (int) ($args['page'] ?? 1));
+    // Mac dinh 18 (PPlusConst.DefaultPageSize/GlobalConstants.searchFormGolbal.page_count) - nhung
+    // "Văn phòng gần đó" tren A2 dung page_count=5 rieng (searchBaseDetail.page_count trong
+    // detail.component.ts dong 217), cho phep ghi de qua $args.
+    $page_count = isset($args['page_count']) ? max(1, (int) $args['page_count']) : 18;
+
+    $payload = [
+        'skip'       => ($page - 1) * $page_count,
+        'page_count' => $page_count,
+        // Mac dinh ProjectType=2 (van phong truyen thong) + SortType=2 (gia giam dan), giong
+        // hanh vi thuc te cua ApiGetAllProjectInput khi SortType=0 se tu chuyen thanh 2.
+        'ProjectType' => (int) ($args['project_type'] ?? 2),
+        'SortType'    => (int) ($args['sort_type'] ?? 2),
+    ];
+
+    if (!empty($args['province'])) {
+        $payload['Province'] = $args['province'];
+    }
+    if (!empty($args['district'])) {
+        $payload['District'] = $args['district'];
+    }
+    if (!empty($args['ward'])) {
+        $payload['WardName'] = $args['ward']; // xem OfficeFilter.cs field WardName
+    }
+    // "OfficeType" - phan biet loai van phong dich vu (chỗ ngồi cố định/văn phòng ảo/trọn gói/chỗ
+    // ngồi linh hoạt) khi ProjectType=1 (dich vu, khac ProjectType=2 van phong truyen thong). Dung
+    // cho trang loai=3 (page-reference.php, vd "cho-thue-cho-ngoi-co-dinh") - xac nhan gia tri truc
+    // tiep qua API (filter.officeType), KHONG doan.
+    if (isset($args['office_type']) && $args['office_type'] !== '') {
+        $payload['OfficeType'] = (int) $args['office_type'];
+    }
+    if (!empty($args['rating_level'])) {
+        $payload['RatingLevel'] = $args['rating_level'];
+    }
+    // "StreetCode" - trang duong (page-reference.php loai=6). Xac nhan qua doi chieu truc tiep API
+    // that: gui "Street" (ten duong dang text, vd "Duy Tân") bi backend BO QUA, tra ve gan het van
+    // phong ca tinh (679 ket qua); phai gui "StreetCode" (vd "D00074", lay tu filter.streetCode) moi
+    // loc dung, khop chinh xac danh sach production (36 ket qua, dung thu tu Epic Tower/The Vista
+    // Duy Tân/IDMC Duy Tân Building).
+    if (!empty($args['street_code'])) {
+        $payload['StreetCode'] = $args['street_code'];
+    }
+    // "project_id" (chu thuong, KHONG phai "ProjectId") - dung khi nguoi dung chon 1 goi y "Tên dự
+    // án" cu the tu autocomplete "Địa điểm" (xem inc/location-search.php). Da xac nhan qua goi API
+    // that (xem pplus_get_office_url_in_lang() o duoi): {project_id: N} tra ve DUNG total_count=1
+    // (chinh xac 1 toa do), va MOI dieu kien loc khac (Province/District...) trong payload bi backend
+    // BO QUA hoan toan khi co project_id - dung y muon (chon 1 du an cu the = loc con dung 1 toa do).
+    if (!empty($args['project_id'])) {
+        $payload['project_id'] = (int) $args['project_id'];
+    }
+    // "project_ids" (danh sach ID toa nha, dang chuoi "1944,2029,...") - .NET reference (GetIndex) tra
+    // field nay cho trang QUAN, dac biet TPHCM: filter.province/district deu RONG cho quan HCM (vd
+    // quan-2/quan-9), CHI co project_ids moi loc dung toa nha cua quan (85 id cho quan-2). Angular gui
+    // NGUYEN filter (co project_ids) nen dung; WP truoc day bo qua -> trang quan HCM ro ca tinh (bug #3
+    // file loi 26/8). Quan HN dung district text (project_ids RONG) nen field nay chi anh huong HCM.
+    // LUU Y: project_ids 1 minh -> 0; PHAI kem bounds (zone_stringify cua quan) moi ra ket qua (xac
+    // nhan API: quan-2 project_ids khong bounds=0, + zone bounds=40 dung) - fallback bounds da xu ly.
+    if (!empty($args['project_ids'])) {
+        $payload['project_ids'] = (string) $args['project_ids'];
+    }
+    if (!empty($args['price_from'])) {
+        $payload['price_from'] = (float) $args['price_from'];
+    }
+    if (!empty($args['price_to'])) {
+        $payload['price_to'] = (float) $args['price_to'];
+    }
+    if (!empty($args['project_id_not_in'])) {
+        $payload['project_idNotIn'] = (int) $args['project_id_not_in'];
+    }
+    // Vung ban do (ne_lat/ne_lng/sw_lat/sw_lng) - xac nhan qua doi chieu truc tiep voi API that:
+    // Province/District dang chuoi TEXT khong du de tim ra van phong that o mot so tinh/thanh (vd
+    // Ho Chi Minh, khac Ha Noi) - search-base.component.ts (Angular) LUON gui KEM bounds nay (tu
+    // MapFilter(), doc truc tiep tu Google Map dang hien) cung voi Province/District trong MOI request
+    // GetOffices, khong bao gio goi rieng chi Province/District. Thieu bounds se tra ve total_count=0
+    // du van phong that su ton tai (bug thuc te da gap: trang quan HCM luon "Không tìm thấy...").
+    if (isset($args['ne_lat'], $args['ne_lng'], $args['sw_lat'], $args['sw_lng'])) {
+        $payload['ne_lat'] = (float) $args['ne_lat'];
+        $payload['ne_lng'] = (float) $args['ne_lng'];
+        $payload['sw_lat'] = (float) $args['sw_lat'];
+        $payload['sw_lng'] = (float) $args['sw_lng'];
+        $payload['zoom']   = (int) ($args['zoom'] ?? 13);
+    }
+
+    $data = pplus_api_post_json("{$lang}/Office/_GetOffices", $payload, 300);
+    return $data['result'] ?? null;
+}
+
+/**
+ * Danh cho nhanh "project_id"/"street_code" (chon 1 goi y "Địa điểm" cu the, xem page-office-
+ * list.php + page-reference.php) - 2 nhanh nay TUNG can them $bounds de tranh total_count=0 sai o
+ * TPHCM (xem ghi chu project_id/street_code trong pplus_get_office_list() o tren, bug 16/8/2026:
+ * project_id=2043 Pearl 5 Building KHONG bounds -> 0; CO bounds TPHCM -> 1 dung).
+ *
+ * NHUNG bug thuc te MOI nguoc lai (17/8/2026): chon du an "Keangnam Landmark Ha Noi Tower"
+ * (project_id=284) tu goi y autocomplete tren trang A1 -> "Không tìm thấy văn phòng phù hợp", du
+ * du an nay CHAC CHAN co that (xac nhan qua pplus_get_office_list() truc tiep, bo qua UI: KHONG
+ * bounds -> total_count=1 dung; CO bounds Ha Noi (pplus_province_bounds()) -> total_count=0 SAI).
+ * Nguyen nhan: toa do that cua Keangnam (lat=21.0177746, lng=105.7846364, khu Mỹ Đình/Nam Từ Liêm)
+ * nam NGOAI (phia tay) bounds tinh Ha Noi tinh tu zone_stringify (sw_lng=105.791 > 105.7846) - tuc
+ * la CHINH bounds cap tinh (da la lua chon "rong nhat" co the, xem pplus_province_bounds()) van
+ * chua du rong de bao trum HET moi du an that trong tinh, chu khong phai loi tinh toan sai.
+ *
+ * Ket luan: bounds vua co the CAN THIET (TPHCM) vua co the LAM HONG (Keangnam) tuy du an - khong co
+ * 1 lua chon "luon dung" duy nhat cho toan bo du an/duong. Giai phap AN TOAN: thu KHONG bounds
+ * TRUOC (truong hop pho bien, nhanh - 1 lan goi), CHI fallback sang CO bounds neu lan dau ra RONG
+ * (truong hop hiem, chi ton THEM 1 lan goi khi that su can). Dung CHUNG cho ca nhanh project_id lan
+ * street_code o ca 2 trang (A1 + A4) - khong lap lai logic try/fallback o tung noi goi.
+ */
+function pplus_get_office_list_with_bounds_fallback(array $base_args, ?array $bounds): ?array {
+    $result = pplus_get_office_list($base_args);
+    if (!empty($result['total_count']) || empty($bounds)) {
+        return $result;
+    }
+    return pplus_get_office_list(array_merge($base_args, $bounds));
+}
+
+/**
+ * Landing theo tinh (A3) - /cho-thue-van-phong/{province-alias}, vd "ha-noi", "ho-chi-minh".
+ * Doi chieu tu reference.service.ts GetIndexProvinceProduct() + reference-main.component.ts.
+ *
+ * @return array|null Shape: { dataSelected: {title, subTitle, description, content, metaTitle,
+ *   metaDescription, alias, isIndex}, dataList: [{title, alias, listOffice: [...]}] }
+ */
+function pplus_get_province_landing(string $province_alias): ?array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/Reference/GetIndexProvinceProduct", ['alias' => $province_alias], 600);
+    return $data['result'] ?? null;
+}
+
+/**
+ * Chi tiet 1 van phong/toa nha - GET (khong phai POST nhu _GetOffices).
+ * Doi chieu tu office.service.ts GetDetail() + OfficeController._GetDetail(int id, string lang,
+ * string province, string district, string alias). Field "alias" phai la phan KHONG co "-{id}"
+ * o cuoi - xem pplus_parse_office_alias_id() trong inc/office-detail-route.php.
+ *
+ * @return array|null Shape: { projectId, projectName, address, ratingLevel, photoList[{url,alt}],
+ *   dataSelected{title,description,content,metaTitle,metaDescription}, serviceIncludedList[],
+ *   fromLeaseFeeString, managerFeeString, fromTotalAmtString, releaseDateString, elevatorInfoString,
+ *   urlHerf, alasProvince, alasDistrict, subType, lat, lng, videoUrl, ... }
+ */
+function pplus_get_office_detail(int $id, string $province, string $district, string $alias): ?array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/Office/_GetDetail", [
+        'id'       => $id,
+        'province' => $province,
+        'district' => $district,
+        'alias'    => $alias,
+    ], 600);
+    return $data['result'] ?? null;
+}
+
+/**
+ * Landing theo tinh/alias-loai-hinh (A4) - "thue-van-phong/{province}" (khong alias, dung
+ * province lam alias) HOAC "cho-thue-van-phong/{province}/{alias}" (co alias rieng, vd
+ * "cho-thue-van-phong/ha-noi/hoan-kiem"). Doi chieu tu reference.service.ts GetIndex() -
+ * xem inc/reference-index-route.php: khi $alias rong, goi Reference/GetIndexProvince?alias=
+ * (dung $province lam gia tri alias, dung logic Angular), nguoc lai goi Reference/GetIndex
+ * ?province=&alias=. Khac voi A3 (pplus_get_province_landing): response O DAY KHONG co
+ * listOffice trong dataList (chi la bai viet + form lien he, khong co luoi van phong).
+ *
+ * @return array|null Shape: { dataSelected: {id, title, subTitle, content, metaTitle,
+ *   metaDescription, alias, aliasVi, aliasEn, isIndex, loai}, menuItem: {alias, ...}|null }
+ */
+function pplus_get_reference_index(string $province, string $alias, string $alias_lang = 'vi'): ?array {
+    $lang = pplus_current_lang();
+    if ($alias !== '') {
+        // BUG doi ngon ngu tren trang quan/phuong (feedback thuc te): API .NET luu noi dung tieng
+        // Anh duoi 1 alias KHAC HAN tieng Viet (vd vi "hoan-kiem" nhung en la "hoan-kiem-district",
+        // xac nhan qua curl truc tiep - goi "en/Reference/GetIndex?alias=hoan-kiem" tra ve toan bo
+        // dataSelected = null). URL VI-form ("cho-thue-van-phong/{province}/{alias}", $alias_lang
+        // mac dinh 'vi') VAN con duoc chap nhan ke ca duoi tien to /en (tuong thich nguoc voi link
+        // cu/URL da chia se) - khi do, lang=en phai TU DOI sang aliasEn that truoc khi goi API that,
+        // bang 1 cuoc goi "do tham" phia vi (co cache transient nen khong ton them request that khi
+        // lap lai).
+        //
+        // URL EN-form MOI ("office-for-rent/{province}/{alias}", $alias_lang='en' - xem rewrite
+        // rule rieng trong inc/reference-index-route.php) da mang SAN alias dung ngon ngu EN (vd
+        // "hoan-kiem-district") - KHONG can do tham nua, goi thang en/Reference/GetIndex voi alias
+        // do la du (da xac nhan qua goi API that truc tiep: "en/Reference/GetIndex?alias=hoan-kiem-
+        // district" tra ve dung dataSelected, khac han vi du "alias=hoan-kiem" o tren).
+        $resolved_alias = $alias;
+        if ($lang === 'en' && $alias_lang !== 'en') {
+            $vi_probe   = pplus_api_get('vi/Reference/GetIndex', ['province' => $province, 'alias' => $alias], 600);
+            $alias_en   = $vi_probe['result']['dataSelected']['aliasEn'] ?? '';
+            if ($alias_en !== '') {
+                $resolved_alias = $alias_en;
+            }
+        }
+        $data = pplus_api_get("{$lang}/Reference/GetIndex", ['province' => $province, 'alias' => $resolved_alias], 600);
+    } else {
+        $data = pplus_api_get("{$lang}/Reference/GetIndexProvince", ['alias' => $province], 600);
+    }
+    return $data['result'] ?? null;
+}
+
+/**
+ * Danh sach duong theo tinh (A5) - /street/{province-alias}. Doi chieu tu reference.service.ts
+ * GetIndexStreet() + list-street.component.ts dong 39-40: param GET la "province" (KHONG phai
+ * "alias" nhu cac ham Reference/* khac o tren).
+ *
+ * @return array|null Shape: { menuData: {subTitle, alias, ...}, listRank: ["a","b",...],
+ *   list: [{ rank: "a", listStreet: [{title, alias, loai, ...}] }] }
+ */
+function pplus_get_province_streets(string $province_alias): ?array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/Reference/GetIndexProvinceStreet", ['province' => $province_alias], 600);
+    return $data['result'] ?? null;
+}
+
+/**
+ * "Hà Nội"/"Hồ Chí Minh" (gia tri text VI dung lam filter Province khap theme nay) -> slug alias
+ * dung cho cac endpoint Reference/* (GetIndexProvinceStreet/GetIndex...) - chi 2 tinh, khong can
+ * bang doi day du (xem <select name="province"> front-page.php, cung chi 2 option nay).
+ */
+function pplus_province_text_to_alias(string $province_text): string {
+    $normalized = mb_strtolower(remove_accents($province_text));
+    return (strpos($normalized, 'ho chi minh') !== false) ? 'ho-chi-minh' : 'ha-noi';
+}
+
+/**
+ * Ten duong (text hien thi, vd "Kim Mã", lay tu goi y autocomplete "Địa điểm" - xem
+ * inc/location-search.php) -> "streetCode" (vd "D00129") dung duoc cho Office/_GetOffices
+ * (StreetCode, xem pplus_get_office_list()). API .NET KHONG co endpoint tra ve streetCode truc
+ * tiep tu ten duong - phai di qua 2 buoc, CA HAI DEU CO CACHE TRANSIENT (600s, pplus_api_get()):
+ * (1) Reference/GetIndexProvinceStreet - danh sach DAY DU duong cua 1 tinh, tim theo "title" khop
+ *     $street_name (khong phan biet hoa/thuong + dau) de lay "alias" cua CHINH XAC duong do; (2)
+ *     Reference/GetIndex?alias=<alias do> - tra ve filter.streetCode (field CHI co o day, khong co
+ *     o (1)). Da xac nhan qua goi API that ca 2 buoc (vd "Kim Mã" -> alias "kim-ma" -> streetCode
+ *     "D00129"). Chi chay 1 lan/luot submit (khong phai moi phim go), nen 2 lan goi them nay khong
+ *     anh huong toc do go-tim-goi-y (endpoint rieng, xem inc/location-search.php).
+ */
+function pplus_resolve_street_code(string $province_text, string $street_name): ?string {
+    $street_name = trim($street_name);
+    if ($street_name === '') {
+        return null;
+    }
+
+    $province_alias = pplus_province_text_to_alias($province_text);
+    $streets = pplus_get_province_streets($province_alias);
+    $needle  = pplus_location_search_normalize($street_name);
+
+    $matched_alias = null;
+    foreach ((array) ($streets['list'] ?? []) as $rank_group) {
+        foreach ((array) ($rank_group['listStreet'] ?? []) as $street) {
+            $title = (string) ($street['title'] ?? '');
+            if (pplus_location_search_normalize($title) === $needle) {
+                $matched_alias = (string) ($street['alias'] ?? '');
+                break 2;
+            }
+        }
+    }
+    if ($matched_alias === null || $matched_alias === '') {
+        return null;
+    }
+
+    $index = pplus_get_reference_index($province_alias, $matched_alias);
+    $code  = $index['filter']['streetCode'] ?? '';
+    return $code !== '' ? (string) $code : null;
+}
+
+/**
+ * Sinh URL trang danh sach van phong voi query param duoc ghi de (dung cho phan trang/loc,
+ * xem page-office-list.php).
+ */
+function pplus_office_list_url(array $override = []): string {
+    $params = array_merge($_GET, $override);
+    $params = array_filter($params, fn($v) => $v !== '' && $v !== null);
+    return add_query_arg($params, home_url((pplus_current_lang() === 'en' ? '/en' : '') . '/' . pplus_office_list_base_slug()));
+}
+
+/**
+ * Chia mang thanh 4 cot theo kieu round-robin, giong ham ControlHome() trong home.component.ts
+ * (danhSachNhanVien chia deu vao 4 cot de hien thi luoi 4 cot doi ngu nhan vien).
+ */
+function pplus_chunk_round_robin(array $items, int $columns): array {
+    $result = array_fill(0, $columns, []);
+    foreach ($items as $index => $item) {
+        $result[$index % $columns][] = $item;
+    }
+    return $result;
+}
+
+/**
+ * Tach id + alias tu doan cuoi URL dang "{alias}-{id}" - dung chung cho blog detail (B3) va
+ * office detail (A2, xem pplus_parse_office_alias_id trong office-detail-route.php). Logic
+ * giong het detail.component.ts / blog-detail.component.ts: id la phan sau dau "-" cuoi cung.
+ *
+ * @return array{id:int, alias:string}
+ */
+function pplus_parse_alias_id(string $alias_id): array {
+    $parts = explode('-', $alias_id);
+    $id    = (int) end($parts);
+    $alias = preg_replace('/-' . preg_quote((string) $id, '/') . '$/', '', $alias_id);
+    return ['id' => $id, 'alias' => $alias];
+}
+
+/**
+ * (B2) Danh sach tin tuc /blogs - doi chieu blog.service.ts GetIndex(): GET voi query
+ * ?catalogid=&page= (khong phai POST JSON nhu office). page_count co dinh 16 giong
+ * dataPaging.maxSizePage ben Angular (blog-list.component.ts).
+ *
+ * @return array|null Shape: { listBlog: [{id,alias,title,subTitle,img}], listCatalog: [{id,nameCatalog}], totalItem }
+ */
+function pplus_get_blog_list(array $args = []): ?array {
+    $lang = pplus_current_lang();
+    $page = max(1, (int) ($args['page'] ?? 1));
+
+    $data = pplus_api_get("{$lang}/Blogs/GetIndex", [
+        'catalogid' => $args['catalogid'] ?? '',
+        'page'      => $page,
+    ], 300);
+
+    return $data['result'] ?? null;
+}
+
+/**
+ * (B3) Chi tiet 1 bai tin - doi chieu blog.service.ts GetDetail(): GET ?id=&alias=.
+ * $alias PHAI la phan KHONG co "-{id}" o cuoi - dung pplus_parse_alias_id() truoc khi goi.
+ *
+ * @return array|null Shape: { dataSelected: {id,title,subTitle,content,alias,aliasVi,aliasEn,
+ *   metaTitle,metaDescription,img,isIndex,isShowProduct,htmlHeader}, dataList: [related blogs],
+ *   projectList: [...] } - hoac { isRedirect:true, redirectUrl, redirectType } neu bai da doi alias.
+ */
+function pplus_get_blog_detail(int $id, string $alias): ?array {
+    $lang = pplus_current_lang();
+    return pplus_api_get("{$lang}/Blogs/GetDetail", [
+        'id'    => $id,
+        'alias' => $alias,
+    ], 300);
+}
+
+/**
+ * (B4) Trang tac gia /author/{alias} - doi chieu blog.service.ts GetDetailTacGia(): GET ?alias=.
+ *
+ * @return array|null Shape: { dataModel: {title,img,description,content,metaTitle,metaDescription,
+ *   textExtension1..6 (social links/phone/email)}, dataList: [related blogs], alias, aliasVi, aliasEn }
+ */
+function pplus_get_blog_author(string $alias): ?array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/Blogs/GetDetailTacGia", ['alias' => $alias], 600);
+    return $data['result'] ?? null;
+}
+
+/**
+ * (B5) Trang "Ve chung toi" - doi chieu abount.service.ts GetIndex(): GET, khong query param.
+ * Phan lon noi dung trang la text tinh (xem about-index.component.html) - endpoint nay chi
+ * tra ve phan dong: doi ngu nhan vien (listUser) + hoat dong cong ty (listDataAboutUs).
+ *
+ * @return array|null Shape: { listUser: [{title,content,img,imgSize}], listDataAboutUs: [{title,content,img}] }
+ */
+function pplus_get_about_index(): ?array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/About/GetIndex", [], 900);
+    return $data['result'] ?? null;
+}
+
+/**
+ * Trang con /ve-chung-toi/{alias} (vd "chinh-sach-bao-mat-thong-tin", "dieu-khoan-su-dung",
+ * "chinh-sach-thue-van-phong" - lay tu $footer['myHistories'] trong parts/footer.php, cung API
+ * FooterInvokeAsync). Doi chieu abount.service.ts GetNewsAbout(): GET
+ * About/TinTucHoatDong?alias=... - port tu about-new.component (chua lam truoc day, xem TODO
+ * trong page-about.php + inc/about-subpage-route.php).
+ *
+ * @return array|null Shape: { id, title, content (HTML), metaTitle, metaDescription, alias, ... }
+ */
+function pplus_get_about_subpage(string $alias): ?array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/About/TinTucHoatDong", ['alias' => $alias], 900);
+    return $data['result'] ?? null;
+}
+
+/**
+ * Sinh URL trang /blogs voi query param duoc ghi de (loc theo catalogid, phan trang) -
+ * giong pplus_office_list_url() dung cho A1.
+ */
+function pplus_blog_list_url(array $override = []): string {
+    $lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
+    $params = array_merge($_GET, $override);
+    $params = array_filter($params, fn($v) => $v !== '' && $v !== null);
+    return add_query_arg($params, home_url($lang_prefix . '/blogs/'));
+}
+
+/**
+ * Sinh URL chi tiet 1 bai tin dang /blogs/{alias}-{id}, giong het routerLink ben Angular
+ * (vd trong blog-list.component.html, home.component.html).
+ */
+function pplus_blog_detail_url(string $alias, int $id): string {
+    $lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
+    return home_url($lang_prefix . '/blogs/' . $alias . '-' . $id);
+}

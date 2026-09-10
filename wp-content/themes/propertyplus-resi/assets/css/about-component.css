@@ -1,0 +1,451 @@
+@media only screen and (max-width: 800px) {
+  .about-us {
+    margin-top: 0px;
+  }
+}
+.about-us .a-u-banner {
+  background-image: url(../Content/Img/about-us-bk.jpg); /* doi tu .png (439K) sang .jpg (34K, GD imagejpeg quality=82) - anh chup khong co vung trong suot nao, toi uu hieu nang. Sua duong dan tuong doi tu ../../../../assets/ (sai, tro ra ngoai wp-content/themes/propertyplus, 404) thanh ../ */
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 55px;
+}
+@media only screen and (max-width: 800px) {
+  .about-us .a-u-banner {
+    margin: 10px;
+    padding: 55px 0px;
+  }
+}
+.about-us .a-u-banner .a-u-banner-img {
+  width: 100%;
+}
+@media only screen and (max-width: 800px) {
+  .about-us .a-u-banner .a-u-banner-img {
+    width: 250px;
+    margin: auto;
+    display: block;
+  }
+}
+.about-us .a-u-banner .a-u-banner-t {
+  margin-left: 75px;
+  margin-top: 110px;
+}
+@media only screen and (max-width: 800px) {
+  .about-us .a-u-banner .a-u-banner-t {
+    margin-left: 0px;
+    margin-top: 0px;
+  }
+}
+.about-us .a-u-banner .a-u-banner-t h1 {
+  font-size: 25px;
+  font-weight: 500;
+  line-height: 37.5px;
+  margin-bottom: 30px;
+}
+@media only screen and (max-width: 800px) {
+  .about-us .a-u-banner .a-u-banner-t h1 {
+    margin-top: 30px;
+    line-height: 28px;
+    font-size: 18px;
+  }
+}
+.about-us .a-u-banner .a-u-banner-t .a-u-banner-content {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: left;
+  color: #545455;
+}
+.about-us .a-u-c-1 {
+  padding: 78px 0px 121px 0px;
+  background-color: #F3F3F3;
+}
+@media only screen and (max-width: 800px) {
+  .about-us .a-u-c-1 {
+    padding: 20px 0px 20px 0px;
+  }
+}
+.about-us .a-u-c-1 hr {
+  border: 1px solid #CECECE !important;
+  width: 62px !important;
+}
+@media only screen and (max-width: 800px) {
+  .about-us .a-u-c-1 .a-u-c-1-item {
+    margin-bottom: 10px;
+  }
+}
+.about-us .a-u-c-1 .a-u-c-1-item .icon-c-1 {
+  width: 78px;
+  height: 78px;
+  background: #DFE8F4;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.23);
+  border-radius: 15px;
+  margin: auto;
+  padding: 15px;
+}
+.about-us .a-u-c-1 .a-u-c-1-item .icon-c-1 img {
+  margin: auto;
+  width: 100%;
+  display: block;
+}
+.about-us .a-u-c-1 .a-u-c-1-item .a-u-cus-t3 {
+  margin: 30px 0px 12px 0px;
+}
+@media only screen and (max-width: 800px) {
+  .about-us .a-u-c-1 .a-u-c-1-item .a-u-cus-t3 {
+    margin: 15px 0px 12px 0px;
+    min-height: auto;
+  }
+}
+.about-us .a-u-c-2 {
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(238, 239, 226, 0.8) 100%), url(../Content/Img/about-us-5.jpg);
+  padding: 78px 0px 80px 0px;
+}
+@media only screen and (max-width: 800px) {
+  .about-us .a-u-c-2 {
+    padding: 20px 0px 70px 0px;
+  }
+}
+.about-us .a-u-c-2 .a-u-c-2-items {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 60px;
+  display: grid;
+}
+@media only screen and (max-width: 800px) {
+  .about-us .a-u-c-2 .a-u-c-2-items {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    padding: 0px;
+  }
+}
+.about-us .a-u-c-2 .a-u-c-2-item {
+  box-sizing: border-box;
+  border-radius: 10px;
+  margin-top: 10px;
+  min-height: 362px;
+}
+.about-us .a-u-c-2 .a-u-c-2-item .a-u-step img {
+  width: 100%;
+}
+.about-us .a-u-c-2 .a-u-c-2-item .a-u-cus-t3 {
+  margin-bottom: 15px;
+  margin-top: 24px;
+}
+.sale-nhanvien {
+  background-image: url(../officebase/Common/Images/Home/story-project-client.jpg);
+  background-position: unset;
+  background-size: cover;
+  padding: 100px 0px;
+}
+@media only screen and (max-width: 800px) {
+  .sale-nhanvien {
+    margin-bottom: 30px;
+  }
+}
+.sale-nhanvien h2 {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 36px;
+  color: #000000;
+  opacity: 0.8;
+  margin-bottom: 70px;
+  text-align: center;
+  margin-top: -20px;
+}
+@media only screen and (max-width: 800px) {
+  .sale-nhanvien h2 {
+    font-size: 25px;
+  }
+}
+@media only screen and (max-width: 800px) {
+  .sale-nhanvien .list-nhanvien .col-sm-6 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}
+.sale-nhanvien .list-nhanvien .item {
+  border-radius: 8px;
+  position: relative;
+  margin-bottom: 15px;
+}
+.sale-nhanvien .list-nhanvien .item img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.sale-nhanvien .list-nhanvien .item .item-content {
+  position: absolute;
+  bottom: 0px;
+  padding: 15px;
+  width: 100%;
+}
+.sale-nhanvien .list-nhanvien .item .item-content .text-1 {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  color: #FFFFFF;
+}
+.sale-nhanvien .list-nhanvien .item .item-content .text-2 {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  color: #FFFFFF;
+  opacity: 0.8;
+}
+.about-img {
+  padding: 100px 0px;
+}
+@media only screen and (max-width: 800px) {
+  .about-img {
+    margin-bottom: 30px;
+  }
+}
+.about-img .list-about:not(.slick-slider) {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 20px;
+  display: grid;
+}
+@media (min-width: 0px) and (max-width: 880px) {
+  .about-img .list-about:not(.slick-slider) {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+.about-img .list-about .slick-track .slick-slide {
+  margin-right: 15px;
+}
+.about-img .list-about .item {
+  border-radius: 8px;
+  position: relative;
+  margin-bottom: 15px;
+}
+.about-img .list-about .item img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.about-img .list-about .item .item-content {
+  position: absolute;
+  bottom: 0px;
+  padding: 15px;
+  width: 100%;
+  background-image: linear-gradient(#00000017, #000000ad);
+}
+.about-img .list-about .item .item-content .text-1 {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  color: #FFFFFF;
+}
+.about-img .list-about .item .item-content .text-2 {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  color: #FFFFFF;
+  opacity: 0.8;
+}
+.story-project-client {
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0%, rgba(183, 183, 183, 0.4) 100%), url(../Content/Img/about-us-6.jpg); /* doi tu .png (1.36MB) sang .jpg (39K, nen tren nen trang vi anh nay von la texture kinh mo/trong suot dung lam overlay nhat, khong co canh net can giu trong suot that su). Sua duong dan tuong doi tu ../../../../assets/ (sai, 404) thanh ../ */
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 78px 0px 80px 0px;
+}
+@media (min-width: 0px) and (max-width: 880px) {
+  .story-project-client {
+    padding: 30px 15px;
+  }
+}
+.story-project-client .client-slider {
+  margin-top: 50px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  column-gap: 30px;
+  display: grid;
+}
+@media (min-width: 0px) and (max-width: 880px) {
+  .story-project-client .client-slider {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+.story-project-client .client-slider .client-logo {
+  margin-bottom: 40px;
+}
+.story-project-client .client-slider .client-logo img {
+  width: 100%;
+  height: auto;
+}
+.a-u-cus-t1 {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 39px;
+  color: #2D5185;
+  text-align: center;
+}
+.a-u-cus-hr {
+  border: 1px solid #6C6C6C;
+  width: 190px;
+  margin: 25px auto;
+}
+@media only screen and (max-width: 800px) {
+  .a-u-cus-hr {
+    margin: 15px auto;
+  }
+}
+.a-u-cus-t3 {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 27px;
+}
+.a-u-cus-t4 {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+.stick-custom-css.oflowX {
+  overflow: visible;
+}
+.stick-custom-css .slick-prev {
+  display: block;
+  position: absolute;
+  left: -100px;
+  top: 45%;
+  z-index: 150;
+  opacity: 1;
+  width: 88px;
+  height: 44px;
+  background: #DAD6DD;
+  border: 1px solid #DAD6DD;
+  box-sizing: border-box;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+  border-radius: 42px !important;
+  font-size: 22px;
+  padding-bottom: 6px;
+  padding-left: 9px;
+}
+@media (min-width: 0px) and (max-width: 880px) {
+  .stick-custom-css .slick-prev {
+    display: none !important;
+  }
+}
+.stick-custom-css .slick-prev:before {
+  display: none;
+}
+.stick-custom-css .slick-prev i {
+  font-size: 25px;
+  color: #000000;
+  margin: auto;
+  position: relative;
+  top: 2px;
+  right: 7px;
+}
+.stick-custom-css .slick-prev:hover {
+  background-color: #beb7c3;
+}
+.stick-custom-css .slick-next {
+  display: block;
+  position: absolute;
+  right: -90px;
+  top: 45%;
+  z-index: 150;
+  opacity: 1;
+  width: 88px;
+  height: 44px;
+  background: #DAD6DD;
+  border: 1px solid #DAD6DD;
+  box-sizing: border-box;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+  border-radius: 42px !important;
+  font-size: 22px;
+  padding-bottom: 6px;
+  padding-left: 12px;
+}
+@media (min-width: 0px) and (max-width: 880px) {
+  .stick-custom-css .slick-next {
+    display: none !important;
+  }
+}
+.stick-custom-css .slick-next:before {
+  display: none;
+}
+.stick-custom-css .slick-next i {
+  font-size: 25px;
+  color: #000000;
+  margin: auto;
+  position: relative;
+  top: 2px;
+  right: 4px;
+}
+.stick-custom-css .slick-next:hover {
+  background-color: #beb7c3;
+}
+.group-title-style-1 {
+  margin-bottom: 80px;
+  border-left: 5px solid #dfb54c;
+  padding-left: 40px;
+}
+.group-title-style-1 .title {
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 50px;
+  margin-bottom: 20px;
+  color: #2D5185;
+}
+@media (min-width: 0px) and (max-width: 880px) {
+  .group-title-style-1 .title {
+    font-size: 26px;
+    line-height: 30px;
+  }
+}
+.group-title-style-1 .sub-title {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 26px;
+  color: #545455;
+}
+.tite-box {
+  margin-bottom: 42px;
+  text-align: center;
+}
+@media (min-width: 0px) and (max-width: 880px) {
+  .tite-box {
+    margin-bottom: 0px;
+  }
+}
+.tite-box .title {
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 50px;
+  margin-bottom: 20px;
+  color: #2D5185;
+}
+@media (min-width: 0px) and (max-width: 880px) {
+  .tite-box .title {
+    font-size: 26px;
+    line-height: 30px;
+  }
+}
+.tite-box .sub-title {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 26px;
+  color: #545455;
+}
+.tite-box hr {
+  height: 5px;
+  width: 150px;
+  background-color: #dfb54c;
+  margin: auto;
+  margin-top: 30px;
+}
+.isMobile {
+  display: none;
+}
+@media (min-width: 0px) and (max-width: 880px) {
+  .isMobile {
+    display: block;
+  }
+}
+@media (min-width: 0px) and (max-width: 880px) {
+  .isWebPC {
+    display: none;
+  }
+}

@@ -1,0 +1,270 @@
+.contact {
+    min-height: calc(100vh - 150px);
+    background-image: url('../officebase/Common/Images/About/contact-bk.png');
+    background-position: center;
+    background-size: cover;
+
+    @media only screen and (max-width: 760px) and (min-width: 0px) {
+        margin-top: -30px;
+        background-image: none;
+    }
+
+    .contact-content {
+        padding: 50px 0px;
+
+        .content-left {
+            padding-right: 120px;
+
+            @media only screen and (max-width: 760px) and (min-width: 0px) {
+                padding: 15px 10px;
+                background-image: url('../officebase/Common/Images/About/contact-bk.png');
+                background-position: center;
+                background-size: cover;
+            }
+
+            .btn-back {
+                border: 1px solid #252323;
+                border-radius: 29px;
+                font-style: normal;
+                font-weight: 500;
+                font-size: 16px;
+                text-align: justify;
+                color: #252323;
+                padding: 5px 15px;
+                margin-bottom: 50px;
+                display: inline-block;
+
+                .icon {
+                    margin-right: 3px;
+
+                    svg {
+                        fill: #252323;
+
+                        @media only screen and (max-width: 760px) and (min-width: 0px) {
+                            fill: #000000c4;
+                        }
+                    }
+                }
+
+                @media only screen and (max-width: 760px) and (min-width: 0px) {
+                    color: #000000c4;
+                    border: 1px solid #000000c4;
+                    margin-bottom: 20px;
+                }
+            }
+
+            .text-1 {
+                font-family: 'SF Pro Display';
+                font-style: normal;
+                font-weight: 700;
+                font-size: 36px;
+                color: #252323;
+                margin-bottom: 25px;
+
+                @media only screen and (max-width: 760px) and (min-width: 0px) {
+                    color: #000000c4;
+                    font-size: 22px;
+                    margin-bottom: 20px;
+                }
+            }
+
+            .text-2 {
+                font-family: 'SF Pro Display';
+                font-style: normal;
+                font-weight: 300;
+                font-size: 16px;
+                color: #252323;
+                text-transform: uppercase;
+                margin-bottom: 10px;
+
+                @media only screen and (max-width: 760px) and (min-width: 0px) {
+                    color: #000000c4;
+                    font-size: 15px;
+                    font-weight: 400;
+                }
+            }
+
+            .text-3 {
+                font-family: 'SF Pro Display';
+                font-style: normal;
+                font-weight: 400;
+                font-size: 16px;
+                color: #252323;
+                padding-right: 200px;
+                margin-bottom: 45px;
+                line-height: 22px;
+
+                a {
+                    color: #252323;
+                }
+
+                @media only screen and (max-width: 760px) and (min-width: 0px) {
+                    color: #000000c4;
+                    font-size: 15px;
+                    font-weight: 400;
+                    margin-bottom: 20px;
+                    padding-right: 10px;
+
+                    a {
+                        color: #000000c4;
+                    }
+                }
+            }
+
+            .text-4 {
+                font-family: 'SF Pro Display';
+                font-style: normal;
+                font-weight: 300;
+                font-size: 16px;
+                color: #252323;
+                text-transform: uppercase;
+                margin-bottom: 10px;
+
+                @media only screen and (max-width: 760px) and (min-width: 0px) {
+                    color: #000000c4;
+                    font-size: 15px;
+                    font-weight: 400;
+                }
+            }
+
+            .link-1 {
+                margin-bottom: 25px;
+                display: inline-block;
+                font-family: 'SF Pro Display';
+                font-style: normal;
+                font-weight: 500;
+                font-size: 16px;
+                color: #252323;
+                background: rgba(255, 255, 255, 0.4);
+                border-radius: 9px;
+                padding: 12px;
+
+                @media only screen and (max-width: 760px) and (min-width: 0px) {
+                    color: #000000c4;
+                    font-size: 15px;
+                    background: none;
+                    border: 1px solid #000000c4;
+                    margin-bottom: 20px;
+                }
+            }
+
+            .contact-link {
+                a {
+                    margin-right: 10px;
+
+                    i {
+                    }
+                }
+            }
+
+            .group-1 {
+                grid-template-columns: repeat(2,minmax(0,1fr));
+                column-gap: 20px;
+                display: grid;
+
+                @media (min-width: 0px) and (max-width: 880px) {
+                    grid-template-columns: repeat(1,minmax(0,1fr));
+                }
+
+                .group-c {
+                    .text-3 {
+                        padding-right: 0px;
+                    }
+                }
+            }
+
+            .iframe-map {
+                width: 100%;
+                aspect-ratio: 5/2.5;
+            }
+        }
+
+        .content-right {
+            padding-top: 85px;
+
+            @media only screen and (max-width: 760px) and (min-width: 0px) {
+                padding-top: 25px;
+            }
+
+            .text-1 {
+                font-family: 'SF Pro Display';
+                font-style: normal;
+                font-weight: 700;
+                font-size: 34px;
+                line-height: 39px;
+                color: #252323;
+                margin-bottom: 25px;
+
+                @media only screen and (max-width: 760px) and (min-width: 0px) {
+                    font-size: 24px;
+                    color: #000000c4;
+                }
+            }
+
+            .from-send-contact {
+
+                input {
+                    border-color: #25232300;
+                    background-color: #25232300;
+                    border-bottom: 1px solid #AFAFAF;
+                    font-family: 'SF Pro Display';
+                    font-style: normal;
+                    font-weight: 300;
+                    font-size: 17px;
+                    color: #545353;
+                    ;
+                    margin-bottom: 25px;
+                    padding: 10px 10px 10px 0px;
+
+                    @media only screen and (max-width: 760px) and (min-width: 0px) {
+                        color: #000000c4;
+                        font-size: 16px;
+                        font-weight: 400;
+                    }
+                }
+
+
+                textarea {
+                    background-color: #25232300;
+                    border: 1px solid #AFAFAF;
+                    font-family: 'SF Pro Display';
+                    font-style: normal;
+                    font-weight: 300;
+                    font-size: 17px;
+                    color: #252323;
+                    margin-bottom: 25px;
+                    border-radius: 10px;
+                    min-height: 200px;
+
+                    @media only screen and (max-width: 760px) and (min-width: 0px) {
+                        color: #000000c4;
+                        font-size: 16px;
+                        font-weight: 400;
+                    }
+                }
+
+                input::placeholder, textarea::placeholder {
+                    color: #252323;
+                    opacity: 0.25;
+
+                    @media only screen and (max-width: 760px) and (min-width: 0px) {
+                        color: #000000c4;
+                    }
+                }
+
+                .btn-sendcontact {
+                    background: #252323;
+                    border-radius: 10px;
+                    width: 100%;
+                    font-size: 17px;
+                    padding: 7px 5px;
+                    color: #ffffff;
+                    font-family: 'SF Pro Display';
+                    font-style: normal;
+                    font-weight: 400;
+                    font-size: 18px;
+                }
+            }
+        }
+    }
+}

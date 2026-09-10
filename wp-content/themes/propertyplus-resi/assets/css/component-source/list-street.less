@@ -1,0 +1,112 @@
+.street-box {
+    margin-top: 10px;
+
+    @media only screen and (max-width: 800px) {
+        margin-top: 0px;
+    }
+
+    .street-header {
+        h1 {
+            margin-top: 5px;
+            margin-left: 10px;
+        }
+    }
+
+    .street-key-search {
+        border-top: 0.5px solid #0000002e;
+        border-bottom: 0.5px solid #0000002e;
+        padding: 5px 0px;
+        margin: 30px 0px;
+
+        .street-key-content {
+            .street-key-item {
+                font-family: 'SF Pro Display';
+                font-style: normal;
+                font-weight: 600;
+                font-size: 20px;
+                align-items: center;
+                text-align: center;
+                color: #000000;
+                width: 57px;
+                height: 30px;
+                display: inline-block;
+                text-transform: uppercase;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .street-list {
+        .street-list-item {
+            padding: 20px 0px;
+            border-bottom: 1px solid #0000002e;
+
+            .street-list-data {
+                display: flex;
+                margin: 20px 0px;
+
+                .street-list-left {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 10px;
+                    width: 94px;
+                    height: 60px;
+                    background: #3E5FB4;
+                    border-radius: 12px;
+                    font-size: 28px;
+                    color: #FFFFFF;
+                    text-transform: uppercase;
+                }
+
+                .street-list-right {
+                    width: calc(100% - 100px);
+
+                    .street-list-content {
+                        grid-template-columns: repeat(4,minmax(0,1fr));
+                        column-gap: 10px;
+                        display: grid;
+                        margin-left: 30px;
+
+                        @media only screen and (max-width: 800px) {
+                            grid-template-columns: repeat(1,minmax(0,1fr));
+                        }
+
+                        .street-name {
+                            position: relative;
+                            font-family: 'SF UI Display';
+                            font-style: normal;
+                            font-weight: 500;
+                            font-size: 16px;
+                            line-height: 26px;
+                            color: #000000;
+                            padding: 10px 35px 5px 10px;
+                            display: block;
+                            margin-bottom: 10px;
+
+                            &:hover {
+                                background: #F5F5F5 !important;
+                                border-radius: 6px;
+                            }
+
+                            i {
+                                position: absolute;
+                                right: 15px;
+                                top: 5px;
+
+                                svg {
+                                    fill: silver;
+                                }
+                            }
+
+                            &:hover i svg {
+                                fill: #000000;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
