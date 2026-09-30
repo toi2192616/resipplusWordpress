@@ -16,13 +16,18 @@ if (!defined('ABSPATH')) exit;
 
 get_header();
 
+// SUA 17/9: dong 1 file that (contact-index.component.html, <app-search-base isMapshow=false
+// isShowUrlMenu=true>) CHI render suggest-header (hang pill) + breadcrumb - da them
+// pplus_render_suggest_header() con thieu, va bo "parts/office-filter-panel.php" (panel Bo loc bia
+// them nham, xem parts/url-box-content.php).
+pplus_render_suggest_header();
+
 get_template_part('parts/url-box-content', null, [
     'breadcrumb' => [
         ['name' => pplus_t('Trang chủ', 'Home'), 'url' => home_url('/')],
         ['name' => pplus_t('Liên hệ', 'Contact')],
     ],
 ]);
-get_template_part('parts/office-filter-panel');
 ?>
 <div class="contact">
     <div class="container">

@@ -52,10 +52,7 @@
                 $('body').removeClass('modal-active');
             }
         });
-
-        // Nut tim kiem tren footer-mobile: bat/tat tab tim kiem neu co (search-tab-mobile).
-        $(document).on('click', '[data-pplus-search-mobile]', function () {
-            $('#search-tab-mobile').toggleClass('showSearch');
-        });
+        // Nut "Tim kiem" tren footer-mobile / o nhap + nut "Bo loc" tren ".searching-tool": logic da
+        // chuyen sang assets/js/pplus-search-mobile.js (mo panel #search-tab-mobile theo dung buoc).
     });
 })(jQuery);

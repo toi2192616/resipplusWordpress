@@ -388,385 +388,267 @@
     }
 }
 
+// SUA 24/9: .why-choose-us/.achievement-box/.achievement-box-2 + .a-u-cus-* THAY bang ban NGUYEN VAN tu home.component.less that (dong 198-409 + 882-928). Ban cu la copy tu theme Van phong (bo cuc khac han ban that, an han tren mobile).
 .why-choose-us {
-    padding: 70px 0px;
-    position: relative;
+    padding: 78px 0px 121px 0px;
+    background-color: #F3F3F3;
 
-    @media (min-width: 0px) and (max-width: 880px) {
-        padding: 30px 15px;
-        display: none;
+    @media only screen and (max-width: 800px) {
+        padding: 20px 0px 20px 0px;
     }
 
-    .content-left {
-        position: relative;
-
-        .content-1 {
-            img {
-                max-width: 100%;
-                border-radius: 15px;
-                position: relative;
-                top: 0px;
-                left: 10px;
-            }
-        }
-
-        .content-2 {
-            position: absolute;
-            bottom: -35px;
-            left: 15px;
-
-            img {}
-        }
-
-        .content-3 {
-            position: absolute;
-            top: 0px;
-            background: #3e5fb4;
-            width: auto;
-            border-radius: 20px 10px 20px 10px;
-            padding: 25px 25px;
-
-            .title-1 {
-                font-size: 20px;
-                color: rgba(253, 251, 255, 1);
-
-
-                @media (min-width: 0px) and (max-width: 880px) {
-                    font-size: 18px;
-                }
-            }
-
-            .title-2 {
-                font-weight: 600;
-                font-size: 28px;
-                color: rgba(253, 251, 255, 1);
-                line-height: 42px;
-                margin-top: 15px;
-
-                @media (min-width: 0px) and (max-width: 880px) {
-                    font-size: 24px;
-                }
-            }
-        }
+    hr {
+        border: 1px solid #CECECE !important;
+        width: 62px !important;
     }
 
-    .content-right {
-        padding-left: 55px;
-
-        @media (min-width: 0px) and (max-width: 880px) {
-            padding-left: 5px;
+    .a-u-c-1-item {
+        @media only screen and (max-width: 800px) {
+            margin-bottom: 10px;
         }
 
-        .title-vct-1 {
-            font-weight: 600;
-            color: rgba(35, 24, 43, 1);
-            font-size: 25px;
-            line-height: 37.5px;
+
+
+        img {
+            margin: auto;
+            width: 78px;
+            height: auto;
+            display: block;
         }
 
-        .title-vct-2 {
-            color: rgba(35, 24, 43, 1);
-            font-size: 16px;
-            line-height: 24px;
-            margin-top: 30px;
+        .a-u-cus-t3 {
+            margin: 30px 0px 12px 0px;
 
-        }
 
-        .action-link-abount {
-            margin-top: 80px;
-            padding: 14px;
-            border-radius: 2px;
-            border: 1px solid rgba(132, 117, 142, 1);
-            display: inline-block;
-            font-size: 16px;
+            @media only screen and (max-width: 800px) {
+                margin: 15px 0px 12px 0px;
+                min-height: auto;
+            }
         }
     }
 }
 
 .achievement-box {
-    margin-top: 35px;
-    position: relative;
+    padding: 78px 0px 70px 0px;
 
-    @media (min-width: 0px) and (max-width: 880px) {
-        background: #3e5fb4;
-
+    @media only screen and (max-width: 800px) {
+        padding: 20px 0px 70px 0px;
     }
 
-    .box-1 {
-        height: 245px;
-        margin: 0px;
+    .a-u-c-2-item {
+        padding: 50px;
+        background: #FFFFFF;
+        border: 1px solid #ECECEC;
+        box-sizing: border-box;
+        box-shadow: 0px 30px 57px -25px rgb(202 202 202);
+        border-radius: 10px;
+        margin-top: 10px;
+        min-height: 362px;
 
-        .bk-box-1 {
-            background: #3e5fb4;
-        }
-    }
-
-
-    .container {
-        position: relative;
-    }
-
-    .box-2 {
-        position: absolute;
-        top: -220px;
-        width: 100%;
-
-        @media (min-width: 0px) and (max-width: 880px) {
-            position: relative;
-            top: 0px;
-            display: unset;
-
+        @media (min-width: 992px) {
+            margin: 10px 20px 0 20px;
+            width: 29%;
         }
 
-        .tite-box {
-            margin-bottom: 42px;
-            text-align: left;
-            margin-top: 15px;
-
-            @media (min-width: 0px) and (max-width: 880px) {
-                margin-bottom: 0px;
-                text-align: center;
-            }
-
-            .title {
-                font-size: 36px;
-                font-style: normal;
-                font-weight: 700;
-                line-height: 50px;
-                margin-bottom: 20px;
-                color: #2449A8;
-
-                @media (min-width: 0px) and (max-width: 880px) {
-                    font-size: 20px;
-                    line-height: 30px;
-                    color: #ffffff;
-                }
-            }
-
-
-            .sub-title {
-                font-size: 18px;
-                font-weight: 400;
-                line-height: 26px;
-                color: rgba(84, 84, 85, 1);
-
-                @media (min-width: 0px) and (max-width: 880px) {
-                    font-size: 16px;
-                    margin-top: 15px;
-                    color: #ffffff;
-                    margin-bottom: 15px;
-                }
-            }
-
-            hr {
-                height: 5px;
-                width: 150px;
-                background-color: rgba(223, 181, 76, 1);
-                margin-top: 30px;
-                margin-left: 0;
-
-                @media (min-width: 0px) and (max-width: 880px) {
-                    margin: auto;
-                }
-            }
+        @media only screen and (max-width: 1366px) {
+            padding: 30px !important;
         }
 
-        .box-2-item {
-            @media (min-width: 0px) and (max-width: 880px) {
-                border: 1px solid #FFFEFF;
-                border-radius: 8px;
-                margin-bottom: 18px;
-                margin-left: 15px;
-            }
+        .a-u-step {
+            width: 42px;
+            height: 42px;
+            color: white;
+            font-size: 20px;
+            background: #2D5185;
+            border-radius: 10px;
+            text-align: center;
+            padding-top: 8px;
+            font-weight: bold;
+            margin: 0px auto 15px auto;
+        }
 
-            .content-1 {
-                font-weight: 700;
-                font-size: 60px;
-                color: white;
-                text-align: center;
-                margin-bottom: 15px;
-                margin-top: 30px;
-
-
-                @media (min-width: 0px) and (max-width: 880px) {
-                    color: #FFCA59;
-                    font-size: 32px;
-                    text-align: left;
-                    margin-bottom: 15px;
-                    margin-top: 0px;
-                }
-            }
-
-            .content-2 {
-                font-weight: 400;
-                font-size: 20px;
-                color: white;
-                text-align: center;
-
-                @media (min-width: 0px) and (max-width: 880px) {
-                    color: #ffffff;
-                    font-size: 18px;
-                    text-align: left;
-                    margin-bottom: 15px;
-                }
-            }
+        .a-u-cus-t3 {
+            margin-bottom: 15px;
         }
     }
 
 }
 
 .achievement-box-2 {
-    margin: 120px 0px 40px 0px;
-    position: relative;
+    background: #2D5185;
+    padding: 30px 0px;
 
+    @media(max-width: 768px) {}
 
-    @media (min-width: 0px) and (max-width: 880px) {
-        margin: 10px 0px 40px 0px;
+    .srv-title1 {
+        font-family: SF Pro Display;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 24px;
+        line-height: 21px;
+        letter-spacing: 0.01em;
+        color: #F9D28C;
+        margin: 30px 0px 5px 0px;
+
+        @media(max-width: 768px) {
+            text-align: center;
+        }
     }
 
-    .box-1 {
-        height: 245px;
-        margin: 0px;
+    .srv-title2 {
+        font-family: SF Pro Display;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 24px;
+        line-height: 32px;
+        /* identical to box height */
+        color: #FFFFFF;
 
-        .bk-box-1 {
-            padding-right: 70px;
+        @media(max-width: 768px) {
+            text-align: center;
+        }
+    }
+
+    .srv-title3 {
+        font-family: SF Pro Display;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 16px;
+        line-height: 25px;
+        margin-bottom: 30px;
+        /* or 156% */
+        color: #FFFFFF;
+    }
+
+    .srv-hr-1 {
+        border: 1px solid #FFFFFF;
+        width: 100px;
+        margin: 25px 0px;
+
+        @media(max-width: 768px) {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+
+    .srv-item {
+        padding: 0;
+        margin-top: 20px;
+        float: left;
+
+        @media(max-width: 768px) {
+            width: 33%;
+            margin-bottom: 20px;
+        }
+
+        .srv-box {
+            background: #FFFFFF;
+            border: 1px solid #E7E7E7;
+            box-sizing: border-box;
+            box-shadow: 0px 20px 25px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            width: 89px;
+            height: 89px;
+            position: relative;
+            margin: auto;
+
+            @media(max-width: 768px) {
+                float: initial;
+                margin: auto;
+            }
 
             img {
-                width: 100%;
-            }
-        }
-    }
-
-    .container {
-        position: relative;
-    }
-
-    .box-2 {
-        @media (min-width: 0px) and (max-width: 880px) {
-            margin: 0px 10px;
-        }
-
-        .tite-box {
-            margin-bottom: 42px;
-            text-align: right;
-            margin-top: 15px;
-            position: absolute;
-            right: 0px;
-            top: -220px;
-
-            @media (min-width: 0px) and (max-width: 880px) {
-                margin-bottom: 0px;
-                text-align: center;
-            }
-
-            .title {
-                font-size: 36px;
-                font-style: normal;
-                font-weight: 700;
-                line-height: 50px;
-                margin-bottom: 20px;
-                color: #2449A8;
-
-                @media (min-width: 0px) and (max-width: 880px) {
-                    font-size: 26px;
-                    line-height: 30px;
-                    font-size: 20px;
-
-                }
-            }
-
-
-            .sub-title {
-                font-size: 18px;
-                font-weight: 400;
-                line-height: 26px;
-                color: rgba(84, 84, 85, 1);
-            }
-
-            hr {
-                height: 5px;
-                width: 150px;
-                background-color: rgba(223, 181, 76, 1);
-                margin-top: 30px;
-                margin-left: 0;
                 position: absolute;
-                right: 0px;
-
-                @media (min-width: 0px) and (max-width: 880px) {
-                    margin: auto;
-                    position: initial;
-                }
+                margin: auto;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: auto;
+                height: 47px;
             }
         }
 
-        .list-box-2-item {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            column-gap: 30px;
-            display: grid;
+        .srv-content {
+            font-family: SF Pro Display;
+            font-style: normal;
+            font-weight: 600;
+            font-size: 15px;
+            line-height: 21px;
+            /* or 140% */
+            text-align: center;
+            color: #FFFFFF;
+            margin-top: 20px;
 
-            @media (min-width: 1024px) and (max-width: 4000px) {
-                width: 970px;
-                position: relative;
-                top: -90px;
-            }
-
-            @media (min-width: 0) and (max-width: 800px) {
-                grid-template-columns: repeat(1, minmax(0, 1fr));
-                column-gap: 10px;
-                margin-left: 8px;
-                margin-top: -70px;
-            }
-
-            .box-2-item {
+            @media(max-width: 768px) {
+                width: 100%;
                 text-align: center;
-                background-color: white;
-                padding: 35px 20px;
-                border-top-right-radius: 50%;
-                border-top-left-radius: 50%;
-                box-shadow: 0px 4px 21.399999618530273px 0px rgba(26, 9, 43, 0.12);
-
-
-                img {
-                    margin: auto;
-                }
-
-                .content-1 {
-                    font-weight: 500;
-                    font-size: 22px;
-                    color: rgba(35, 24, 43, 1);
-                    text-align: center;
-                    margin-bottom: 15px;
-                    margin-top: 30px;
-                }
-
-                .content-2 {
-                    font-weight: 400;
-                    font-size: 16px;
-                    color: rgba(35, 24, 43, 1);
-                    text-align: center;
-                    line-height: 24px;
-                }
+                margin-left: 0;
+                font-size: 13px;
             }
         }
+    }
 
+    .img-right {
+        width: 100%;
+        height: auto;
+        margin-left: 50px;
+
+        @media only screen and (max-width: 800px) {
+            margin-left: 0px;
+        }
     }
 
 }
+
 
 .a-u-cus-t1 {
     font-style: normal;
     font-weight: 500;
     font-size: 24px;
     line-height: 39px;
+    color: #AE8944;
+    text-align: center;
+}
+
+.a-u-cus-t2 {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 36px;
+    line-height: 39px;
     color: #2D5185;
     text-align: center;
+}
+
+.a-u-cus-t3 {
+    font-style: normal;
+    font-weight: bold;
+    line-height: 25px;
+    color: #2D5185;
+    font-size: 15px;
+    min-height: 50px;
+}
+
+.a-u-cus-t4 {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 15px;
+    line-height: 23px;
+    color: #000000;
+    opacity: 0.6;
+    text-align: justify;
 }
 
 .a-u-cus-hr {
     border: 1px solid #6C6C6C;
     width: 190px;
-    margin: 25px auto;
+    margin: 44px auto;
+
+    @media only screen and (max-width: 800px) {
+        margin: 15px auto;
+    }
 }
+
 
 .sale-nhanvien {
     background: radial-gradient(circle at center,
@@ -842,6 +724,93 @@
     }
 }
 
+
+// Ported 2026-09-17 from assets/css/home-component.css (block existed only in the compiled output,
+// never in this .less source - recompiling home.less would otherwise silently delete it and
+// unstyle front-page.php's "Đội ngũ nhân viên" section, which does render this markup).
+.nhanvien-box {
+    // "content-visibility: auto" cua ban goc DA BO - thieu "contain-intrinsic-size" di kem bat
+    // buoc, khien trinh duyet uoc luong SAI chieu cao khoi nay truoc khi cuon toi gan (thuong ra 0
+    // hoac rat nho), lam ca khoi co lai con ~140px trong khi noi dung that (anh nhan vien) cao hon
+    // 500px roi tran ra ngoai ranh gioi cua chinh no - bug thuc te da gap khi kiem tra. Bo hang nay
+    // an toan hon la doan dung contain-intrinsic-size (de doan sai lai tao khoang trong sai kieu
+    // khac), chi danh doi mot chut hieu nang render-khi-can khong dang ke tren 1 khoi trang chu.
+    background-image: url(../Content/ImgHome/NewHomeV2/bk-nhanvien.webp);
+    background-position: unset;
+    background-size: cover;
+    padding: 70px 0px;
+
+    @media (min-width: 0px) and (max-width: 880px) {
+        padding: 30px 15px;
+    }
+
+    .data-header {
+        .title-1 {
+            font-weight: 600;
+            font-size: 32px;
+            color: #2449A8;
+            text-align: center;
+
+            @media (min-width: 0px) and (max-width: 880px) {
+                font-size: 30px;
+            }
+        }
+
+        hr {
+            width: 160px;
+            border: 1px solid #3E5FB4;
+            margin: auto;
+            margin-top: 20px;
+        }
+    }
+
+    .silder-nhanvien {
+        margin-top: 70px;
+
+        .item-nhanvien {
+            position: relative;
+            margin-bottom: 15px;
+
+            img {
+                width: 100%;
+                aspect-ratio: 47/60;
+                border-radius: 10px;
+            }
+
+            .data-content {
+                padding: 15px;
+                color: #FFFFFF;
+                position: absolute;
+                bottom: 0px;
+                background-image: linear-gradient(#00000017, #000000ad);
+                transition: 0.3s all;
+                width: 100%;
+
+                .title-1 {
+                    font-style: normal;
+                    font-weight: 600;
+                    font-size: 16px;
+                    margin-bottom: 5px;
+                }
+
+                .title-2 {
+                    font-style: normal;
+                    font-weight: 400;
+                    font-size: 15px;
+                    opacity: 0.8;
+                }
+            }
+        }
+    }
+}
+
+// Ported 2026-09-17, same reason as .nhanvien-box above (compiled-output-only, no prior .less source).
+.hr-custom-1 {
+    background: url(../Content/ImgHome/Vector.png);
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
 
 .advise-box {
     padding: 70px 0px;
@@ -1165,160 +1134,218 @@
 }
 
 
+// SUA 24/9: .blog-box THAY bang ban NGUYEN VAN tu home.component.less that (dong 549-668) - ban cu la copy tu theme Van phong (the bai viet khong co khung anh/chu de len anh).
 .blog-box {
-    padding: 70px 0px;
+    padding: 0 0px;
+    margin-top: 65px;
+    margin-bottom: 65px;
 
-    @media (min-width: 0px) and (max-width: 880px) {
-        padding: 30px 15px;
+
+    ._partner-title {
+        font-size: 32px;
+        line-height: 36px;
+        /* identical to box height, or 139% */
+        text-align: center;
+        color: #717171;
+        margin-bottom: 5px;
+        background: -webkit-linear-gradient(#426AA3, #1D3558);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px;
     }
 
-    .data-header {
+    .cuisine-title {
+        line-height: 46px;
+        /* identical to box height, or 139% */
+        text-align: center;
+        color: #717171;
+        margin-bottom: 5px;
+        background: -webkit-linear-gradient(#426AA3, #1D3558);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 32px;
+    }
 
-        .title-1 {
-            font-weight: 600;
-            font-size: 36px;
-            color: #2449A8;
-            text-align: center;
+    .cuisine-title-2 {
+        font-family: SF Pro Display;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 18px;
+        line-height: 26px;
+        text-align: center;
+        letter-spacing: 0.01em;
+        color: #717171;
+        background: -webkit-linear-gradient(#426AA3, #1D3558);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        opacity: 0.7;
+        margin: 10px auto 30px auto;
+        font-size: 16px;
+        max-width: 900px;
+    }
 
-            @media (min-width: 0px) and (max-width: 880px) {
-                font-size: 30px;
+
+    a.cuisine-img {
+        border-radius: 50% !important;
+        min-width: 170px;
+
+
+        img {
+            border-radius: 10px !important;
+            object-fit: cover;
+            width: 100%;
+            height: 267px;
+        }
+    }
+
+    .cuisines {
+        width: 100%;
+        float: left;
+        margin-bottom: 50px;
+    }
+
+    .cuisine-item {
+        position: relative;
+        float: left;
+
+        .khampha-2-content {
+            position: absolute;
+            bottom: 0px;
+            height: auto;
+            font-size: 18px;
+            padding: 22px 22px 25px 31px;
+            color: white;
+            width: calc(100%);
+            opacity: 1;
+            border-bottom-right-radius: 10px !important;
+            border-bottom-left-radius: 10px !important;
+            transition: 0.5s ease-in-out;
+            background: rgba(45, 81, 133, 0.5);
+
+            .khampha-2-t-1 {
+                font-family: SF Pro Display;
+                font-style: normal;
+                font-weight: bold;
+                font-size: 18px;
+                letter-spacing: 0.04em;
+                color: #FFFFFF;
+            }
+
+            .khampha-2-t-2 {
+                display: none;
+                font-family: SF Pro Display;
+                font-style: normal;
+                font-weight: normal;
+                font-size: 14px;
+                color: #FFFFFF;
             }
         }
 
-        hr {
-            width: 150px;
-            border: 2px solid rgba(223, 181, 76, 1);
-            margin: auto;
-            margin-top: 20px;
-        }
-    }
+        &:hover {
+            .khampha-2-content {
+                background: rgba(45, 81, 133, 0.5);
 
-    .silder-blog {
-        margin-top: 70px;
-
-
-        .item-blog {
-
-            &:not(.slick-slider) {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                column-gap: 20px;
-                display: grid;
-
-                @media (min-width: 0px) and (max-width: 880px) {
-                    grid-template-columns: repeat(1, minmax(0, 1fr));
-                }
-            }
-
-            .slick-track {
-
-                .slick-slide {
-                    margin-right: 15px;
-                }
-            }
-
-
-            .data-1 {
-                position: relative;
-                margin-bottom: 15px;
-
-
-                img {
-                    width: 100%;
-                    aspect-ratio: 4/3;
-                    border-radius: 10px;
-                }
-
-                .data-content {
-                    filter: drop-shadow(0px 5px 10px rgba(62, 95, 180, 0.2));
-                    padding: 15px;
-                    font-weight: 600;
-                    font-size: 15px;
-                    color: #FFFFFF;
-                    position: absolute;
-                    bottom: 0px;
-                    background-color: #0000001c;
-                    width: 100%;
-
-                    .data-view {
-                        font-weight: 500;
-                        font-size: 14px;
-                        border-radius: 29px;
-                        border: 1px solid #FFFFFF;
-                        backdrop-filter: blur(2px);
-                        width: 110px;
-                        padding: 8px;
-                        margin-top: 12px;
-
-                        .icon {
-                            margin-left: 5px;
-                        }
-                    }
+                .khampha-2-t-2 {
+                    display: block;
                 }
             }
         }
     }
+
 }
 
 
+
 .story-project-client {
-    background-color: #E8EFF6;
-    padding: 70px 0px;
+    background: #e7eef8;
+    padding: 15px 0px 100px 0px;
+
+    @media only screen and (max-width: 1620px) and (min-width: 1024px) {
+        padding: 15px 0px 10px 0px;
+    }
 
     @media (min-width: 0px) and (max-width: 880px) {
-        padding: 30px 15px;
+        padding: 15px 15px 100px 15px;
     }
 
-    .data-header {
-
-        .title-1 {
-            font-weight: 600;
-            font-size: 36px;
-            color: #2449A8;
-            text-align: left;
-
-            @media (min-width: 0px) and (max-width: 880px) {
-                font-size: 30px;
-            }
-        }
-
-        hr {
-            width: 150px;
-            border: 2px solid #2449A8;
-            margin-top: 20px;
-        }
+    ._partner-hr-1 {
+        border: 1px solid #B18E4E;
+        margin: 25px auto;
+        width: 70px;
     }
 
-    .client-slider-list {
-        @media (min-width: 0px) and (max-width: 880px) {
-            overflow: auto;
-        }
-    }
-
-    .client-slider-list::-webkit-scrollbar {
-        display: none
-    }
-
-    .client-slider {
+    ._partner {
         margin-top: 50px;
-        grid-template-columns: repeat(7, minmax(0, 1fr));
-        column-gap: 30px;
-        display: grid;
 
-        @media (min-width: 0px) and (max-width: 880px) {
-            grid-template-columns: repeat(14, minmax(0, 1fr));
-            column-gap: 10px;
-            min-width: 1100px;
+        ._partner-title {
+            font-size: 32px;
+            line-height: 46px;
+            /* identical to box height, or 139% */
+            text-align: center;
+            color: #717171;
+            margin-bottom: 5px;
+            background: -webkit-linear-gradient(#426AA3, #1D3558);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .client-logo {
-            margin-bottom: 40px;
+        ._partner-title-2 {
+            font-family: SF Pro Display;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 18px;
+            line-height: 26px;
+            text-align: center;
+            letter-spacing: 0.01em;
+            color: #000000;
+            opacity: 0.7;
+            margin: 10px auto 30px auto;
+            font-size: 16px;
+            max-width: 900px;
+        }
 
-            img {
+        ._partner-silder {
+            ._partner-item {
+                background: #FFFFFF;
+                border: 1px solid #ECECEC;
+                box-sizing: border-box;
+                box-shadow: 0px 15px 22px -10px rgba(0, 0, 0, 0.15);
+                border-radius: 10px;
+                border-radius: 10px !important;
+                height: 182px;
+                position: relative;
                 width: 100%;
-                height: auto;
+                float: left;
+                overflow: hidden;
+
+                @media only screen and (max-width: 1620px) and (min-width: 1390px) {
+                    height: 140px;
+                }
+
+                @media only screen and (max-width: 1380px) and (min-width: 1024px) {
+                    height: 115px;
+                }
+
+                ._partner-img {
+                    max-width: 96%;
+                    position: absolute;
+                    margin: auto;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+
+                    @media only screen and (max-width: 1380px) and (min-width: 1024px) {
+                        width: 105px;
+                    }
+                }
+
+                ._partner-item-title {}
             }
+
         }
     }
+
 }
 
 
@@ -1501,4 +1528,269 @@
         background-color: #ffffff00;
         border: none;
     }
+}
+
+// SUA 24/9: mui ten slick mac dinh cua carousel blog (".cuisines-silder-track") co "right:-25px"/"left:-25px" (slick-theme) -> lan ra ngoai khung tren mobile, lam TRANG bi tran ngang ~10px (scrollWidth 385 > 375). Hau qua: Chrome mobile/DevTools phong to vung layout, khien moi phan tu "position:fixed" (thanh tim kiem tren, menu chan trang) bi tinh SAI kich thuoc/vi tri. Ban goc dung Swiper voi nut rieng ".cuisines-next/.cuisines-prev" nam TRONG khung. Keo 2 mui ten vao trong khung o man hinh nho.
+@media (min-width: 0px) and (max-width: 880px) {
+    .cuisines-silder-track {
+        .slick-next {
+            right: 0;
+        }
+
+        .slick-prev {
+            left: 0;
+        }
+    }
+}
+
+
+// SUA 24/9: khoi hero trang chu ".search-tab" (+ .content-1/2/3) - port NGUYEN VAN tu home.component.less that (dong 25-122). Truoc day CHUA CO trong ban WP nen chu hero khong duoc dinh dang va tren mobile bi can GIUA doc (".bg-search" flex align-items:center) thay vi nam o TREN nhu ban goc (".search-tab" position:absolute; top:0; margin-top:100px tren mobile, 35vh tren desktop). Font "Mermaid" khong duoc khai bao o dau ca (ban goc cung vay) nen roi ve serif mac dinh - giu nguyen.
+.search-tab {
+    position: absolute;
+    width: 755px;
+    max-width: 817px;
+    top: 0px;
+    margin-top: 35vh;
+    z-index: 99;
+
+    @media only screen and (max-width: 768px) {
+        width: calc(100% - 60px);
+        margin-top: 100px;
+    }
+
+    .content-1 {
+        font-family: SF Pro Display;
+        font-style: normal;
+        font-weight: 300;
+        font-size: 36px;
+        line-height: 43px;
+        letter-spacing: 0.01em;
+        color: #B18E4E;
+    }
+
+    .content-2 {
+        font-family: Mermaid;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 45px;
+        line-height: 60px;
+        letter-spacing: 0.02em;
+        background: -webkit-linear-gradient(#426AA3, #1D3558);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .content-3 {
+        font-family: SF Pro Display;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 16px;
+        line-height: 24px;
+        color: #000d1fc9;
+        max-width: 730px;
+        padding: 10px 0px;
+    }
+
+    form {
+
+        label {
+            font-family: SF Pro Display;
+            font-style: normal;
+            font-weight: bold;
+            font-size: 16px;
+            line-height: 26px;
+            color: #000000;
+            opacity: 0.65;
+        }
+
+
+        .search-input {
+            padding: 5px 15px 3px 1px;
+        }
+
+
+        input,
+        select {
+            border: none;
+            padding-left: 0px;
+            font-family: SF Pro Display;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 16px;
+            line-height: 26px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+            margin-top: -7px;
+        }
+    }
+
+    @media only screen and (max-width: 800px) {
+        .content-1 {
+            font-size: 22px;
+            line-height: 26px;
+        }
+
+        .content-2 {
+            font-size: 35px;
+            line-height: 42px;
+        }
+
+        .content-3 {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+            text-align: justify;
+        }
+    }
+}
+
+
+// SUA 24/9: tieu de + "Xem tat ca >>" + nen xam + slide 290px cua cac khoi "Can ho cho thue o Ha Noi / theo quan" tren trang chu - port NGUYEN VAN tu home.component.less that (dong 936-1053, tru ".offices-engine" da co ban rieng o tren). Truoc day CHUA CO trong ban WP nen tieu de/nut "Xem tat ca" khong duoc dinh dang va nen khong xam nhu ban goc.
+.backgroup-style {
+    background-color: #f2f4f7;
+}
+
+._interesting {
+    margin-top: 50px;
+    margin-bottom: 30px;
+
+    ._interesting-hr-1 {
+        border: 1px solid #B18E4E;
+        margin: 20px 15px;
+        width: 70px;
+
+        @media only screen and (max-width: 800px) and (min-width: 0px) {
+            margin: 20px auto;
+        }
+    }
+
+    a {
+        position: relative;
+        display: block;
+    }
+
+    ._interesting-title {
+        font-family: SF Pro Display;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 32px;
+        line-height: 38px;
+        text-align: left;
+        color: #B18E4E;
+
+        @media only screen and (max-width: 800px) and (min-width: 0px) {
+            text-align: left;
+            font-size: 26px;
+        }
+    }
+
+    ._interesting-title-content {
+        font-family: SF Pro Display;
+        font-style: normal;
+        font-size: 16px;
+        line-height: 22px;
+        text-align: left;
+        color: #ffffff;
+        position: absolute;
+        bottom: 0px;
+        padding: 10px;
+        width: 100%;
+        min-height: 65px;
+        background-color: #0000003b;
+        border-radius: 10px;
+    }
+
+    ._interesting-title-data {
+        font-family: 'SF Pro Display';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 24px;
+        line-height: 29px;
+        display: flex;
+        align-items: center;
+        color: #040D58;
+        margin-bottom: 30px;
+        position: relative;
+        padding-left: 10px;
+
+        @media only screen and (max-width: 800px) and (min-width: 0px) {
+            margin-top: 20px;
+            display: flow-root;
+
+            h3 {
+                text-align: left;
+                display: block;
+                font-size: 20px;
+            }
+        }
+
+        .see-all {
+            font-size: 16px;
+            position: absolute;
+            right: 5px;
+            color: #4473b7;
+
+            @media only screen and (max-width: 800px) and (min-width: 0px) {
+                position: inherit;
+                margin-top: 15px;
+                right: 0px;
+                text-align: right;
+            }
+        }
+    }
+
+    ._interesting-silder {
+        margin: 0px 10px;
+        margin-bottom: 40px;
+
+        @media only screen and (max-width: 800px) and (min-width: 0px) {
+            margin: 0px 0px;
+        }
+
+        .silder-aparment-loop {
+            padding-bottom: 20px;
+
+            @media only screen and (max-width: 800px) and (min-width: 0px) {
+                max-width: 290px;
+            }
+        }
+    }
+}
+
+
+// 24/9: carousel can ho trang chu tren mobile: slide rong 290px (ban goc ".silder-aparment-loop {max-width:290px}", spaceBetween 25) de lo dau slide ke tiep. Ket hop variableWidth cua Slick (main.js, breakpoint 800).
+@media only screen and (max-width: 800px) {
+    .offices-engine .offices-col .apt-card-slide {
+        width: 290px;
+        max-width: 290px;
+        padding-bottom: 20px;
+    }
+
+    .offices-engine .offices-col .slick-track .slick-slide {
+        margin-right: 25px;
+    }
+}
+
+
+// 24/9: Swiper goc dung "spaceBetween:15" giua cac slide (nhan vien / bao chi / doi tac / khach hang / kham pha - home.component.ts). Slick khong co spaceBetween: dung padding 7.5px moi ben tren slide + margin am tren .slick-list de the sat mep container (khong du khoang thua o 2 dau), khoang cach giua 2 the = 15px dung nhu ban goc.
+.silder-nhanvien-track,
+.silder-newspapers,
+.partner-silder-track,
+.customer-silder-track,
+.cuisines-silder-track {
+    .slick-list {
+        margin: 0 -7.5px;
+    }
+
+    .slick-slide {
+        margin-right: 0 !important;
+        padding: 0 7.5px;
+    }
+}
+
+
+// 24/9: ".item-nhanvien" thieu "position:relative" (ban goc home.component.less dong 446-448) nen lop nen den ".data-content" (position:absolute; width:100%) neo theo khung carousel thay vi theo tung the -> dai ra ngoai the.
+.nhanvien-box .item-nhanvien {
+    position: relative;
+    margin-bottom: 15px;
 }

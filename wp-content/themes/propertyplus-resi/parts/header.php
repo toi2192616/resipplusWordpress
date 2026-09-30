@@ -4,7 +4,8 @@
  *   src/app/partials/teamplate-header/teamplate-header.component.html (+ .ts)
  * Du lieu: pplus_get_header_data() = {lang}/Home/HeaderInvokeAsync -> .result (bien dataHeader).
  * Cac field dung: dataLists[], apartmentLuxury[], projectList[], projectListLuxury[],
- * apartmentVilla[], apartmentType[] (moi item: alias, subTitle; rieng projectList*: project.projectName).
+ * apartmentType[] (moi item: alias, subTitle; rieng projectList*: project.projectName).
+ * (apartmentVilla[] KHONG con dung - muc "Biet thu tai Ha Noi" da bo khoi menu, xem lich su git).
  * Localizer(...) -> pplus_localize(...); urlLang -> pplus_lang_prefix(); routerLink -> pplus_lang_url().
  */
 
@@ -16,7 +17,6 @@ $header       = pplus_get_header_data();
 $theme_uri    = PPLUS_THEME_URI;
 $cur_lang     = pplus_current_lang();
 $apartment    = pplus_localize('cho-thue-can-ho'); // en: rental-apartment ...
-$villa        = pplus_localize('biet-thu-cho-thue');
 $is_home      = is_front_page();
 
 // slug tinh mac dinh cua menu (Angular hard-code 'ha-noi')
@@ -53,12 +53,17 @@ $render_alias_items = static function (array $items, string $base_slug) {
           <img src="<?php echo esc_url($theme_uri . '/assets/officebase/Common/Images/logo.png'); ?>" width="100" height="94" alt="logo" />
         </a>
         <div class="header-navigation font-transform-inherit" data-pplus-menu>
-          <div class="mobi-toggler" data-pplus-toggle-menu><i class="toggle-menu-ico" aria-label="Toggle"></i></div>
+          <?php // Nut dong menu mobile: "Quay lại" + mui ten (giong nut "Quay lại" o che do ban do) thay cho vong tron 3 gach
+          // mo nhat - yeu cau nguoi dung 30/9/2026, de nhan biet la nut thoat menu. ?>
+          <div class="mobi-toggler pplus-menu-back" data-pplus-toggle-menu role="button" tabindex="0">
+            <img src="<?php echo esc_url($theme_uri . '/assets/Content/Img/reply-arrow-white.svg'); ?>" alt="" width="16" height="16" />
+            <span><?php echo esc_html(pplus_localize('Quay lại')); ?></span>
+          </div>
 
           <div class="additional-nav-mobile">
             <div id="LanguageDropDown" class="btn-group dropdown pull-left">
               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-delay="1000" data-close-others="true">
-                <img src="<?php echo esc_url($theme_uri . '/assets/Content/Img/langue-icon.png'); ?>" width="18" height="18" alt="lang" /><span> <?php echo esc_html($cur_lang); ?></span>
+                <img src="<?php echo esc_url($theme_uri . '/assets/Content/Img/langue-icon.png'); ?>" width="18" height="18" alt="" /><span> <?php echo esc_html($cur_lang); ?></span>
               </button>
               <ul class="dropdown-menu dropdown-menu-right LanguageDropDown LanguageDropDown-link" role="menu">
                 <?php foreach (pplus_language_options() as $lg) : if ($lg['Name'] === $cur_lang) { continue; } ?>
@@ -111,23 +116,10 @@ $render_alias_items = static function (array $items, string $base_slug) {
               </div>
             </li>
 
-            <!-- Biet thu tai Ha Noi -->
-            <li class="dropdown" data-pplus-submenu>
-              <a class="dropdown-toggle" href="#" data-pplus-submenu-toggle>
-                <?php echo esc_html(pplus_localize('Biệt thự tại Hà Nội')); ?>
-                <i class="fa fa-chevron-right arrow-menu" aria-hidden="true"></i>
-              </a>
-              <div class="dropdown-menu">
-                <div class="dropdown-menu-office-style">
-                  <div class="menu-quan-title"><?php echo esc_html(pplus_localize('Tìm trên bản đồ')); ?></div>
-                  <?php foreach ((array) ($header['apartmentVilla'] ?? []) as $item) :
-                    $alias = (string) ($item['alias'] ?? '');
-                    $sub   = (string) ($item['subTitle'] ?? ''); ?>
-                    <li class="li-orther"><a href="<?php echo esc_url(pplus_lang_url($villa . '/ha-noi/' . $alias)); ?>"><?php echo esc_html($sub); ?></a><i class="icon-menu-link"></i></li>
-                  <?php endforeach; ?>
-                </div>
-              </div>
-            </li>
+            <?php // Muc "Biet thu tai Ha Noi" da BO KHOI MENU theo quyet dinh chien luoc cua nguoi
+            // dung (2026-09-13): Resi khong con ban/cho thue biet thu tren site nay nua. Neu can
+            // khoi phuc: xem lich su git file nay (block cu dung $header['apartmentVilla'] +
+            // bien $villa da khai bao o dau file). ?>
 
             <!-- Loai can ho -->
             <li class="dropdown" data-pplus-submenu>
@@ -136,14 +128,14 @@ $render_alias_items = static function (array $items, string $base_slug) {
                 <i class="fa fa-chevron-right arrow-menu" aria-hidden="true"></i>
               </a>
               <div class="dropdown-menu">
-                <div class="dropdown-menu-office-style">
+                <ul class="dropdown-menu-office-style">
                   <div class="menu-quan-title"><?php echo esc_html(pplus_localize('Tìm trên bản đồ')); ?></div>
                   <?php foreach ((array) ($header['apartmentType'] ?? []) as $item) :
                     $alias = (string) ($item['alias'] ?? '');
                     $sub   = (string) ($item['subTitle'] ?? ''); ?>
                     <li class="li-orther"><a href="<?php echo esc_url(pplus_lang_url($apartment . '/ha-noi/' . $alias)); ?>"><?php echo esc_html($sub); ?></a><i class="icon-menu-link"></i></li>
                   <?php endforeach; ?>
-                </div>
+                </ul>
               </div>
             </li>
 
@@ -185,14 +177,14 @@ $render_alias_items = static function (array $items, string $base_slug) {
         <div class="action-righh-headed">
           <div class="moblie-show"></div>
           <div class="pc-show">
-            <a href="<?php echo esc_url(pplus_lang_url('danh-sach-yeu-thich')); ?>" class="action-yeu-thich" aria-label="Like page">
-              <img src="<?php echo esc_url($theme_uri . '/assets/Content/Img/heart-circle.png'); ?>" width="18" alt="lang" />
+            <a href="<?php echo esc_url(pplus_lang_url('danh-sach-yeu-thich')); ?>" class="action-yeu-thich" aria-label="<?php echo esc_attr(pplus_localize('Yêu thích')); ?>">
+              <img src="<?php echo esc_url($theme_uri . '/assets/Content/Img/heart-circle.png'); ?>" width="18" alt="" />
               <div class="dot-like"></div>
             </a>
             <div class="additional-nav pull-left action-langue">
               <div id="LanguageDropDown" class="btn-group dropdown pull-left">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-delay="1000" data-close-others="true">
-                  <img src="<?php echo esc_url($theme_uri . '/assets/Content/Img/LangDrop.svg'); ?>" width="16" height="16" alt="lang" /><span><?php echo esc_html($cur_lang); ?></span>
+                  <img src="<?php echo esc_url($theme_uri . '/assets/Content/Img/LangDrop.svg'); ?>" width="16" height="16" alt="" /><span><?php echo esc_html($cur_lang); ?></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right LanguageDropDown-link" role="menu">
                   <?php foreach (pplus_language_options() as $lg) : if ($lg['Name'] === $cur_lang) { continue; } ?>

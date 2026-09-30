@@ -64,10 +64,36 @@ $rsEmail    = !empty($company['email']) ? explode('|', (string) $company['email'
             <div class="menu-2">
               <div class="menu-title"><?php echo esc_html(pplus_localize('Chính sách')); ?></div>
               <div class="list-unstyled">
-                <?php foreach ((array) ($footer['myHistories'] ?? []) as $item) :
+                <?php
+                // SUA 30/9 (kiem tra da ngon ngu theo yeu cau nguoi dung): xac nhan qua goi API that
+                // - 2/3 muc trong "myHistories" ("Use of Term"/"Apartment Rental Policy", id 44/46)
+                // co "alias" RONG (null) o CA EN LAN JA (chi ban VI la co du lieu day du) - day la
+                // thieu du lieu phia backend (khong phai loi port), nhung neu de nguyen se sinh URL
+                // hong dang "about-us/-44" (thieu han phan chu truoc dau "-") -> 404 100% khi bam.
+                // Fallback: khi alias rong o ngon ngu hien tai, dung TAM alias cua BAN VI (goi 1 lan
+                // duy nhat, CHI khi thuc su can - da co cache transient rieng trong pplus_api_get()
+                // nen khong ton them request that o cac lan tai trang sau) - noi dung trang van hien
+                // dung ngon ngu dang xem (API doc theo "id" la chinh, "alias" chi de doi chieu/SEO),
+                // chi rieng DUONG DAN la dung tam alias VI thay vi 1 URL hong hoan toan.
+                $vi_history_alias_by_id = null;
+                foreach ((array) ($footer['myHistories'] ?? []) as $item) :
                   $alias = (string) ($item['alias'] ?? '');
                   $id    = (string) ($item['id'] ?? '');
-                  $title = (string) ($item['title'] ?? ''); ?>
+                  $title = (string) ($item['title'] ?? '');
+                  if ($alias === '' && $id !== '') {
+                      if ($vi_history_alias_by_id === null) {
+                          $vi_footer = pplus_api_get('vi/Home/FooterInvokeAsync', [], 900);
+                          $vi_history_alias_by_id = [];
+                          foreach ((array) ($vi_footer['result']['myHistories'] ?? []) as $vi_item) {
+                              $vi_history_alias_by_id[(string) ($vi_item['id'] ?? '')] = (string) ($vi_item['alias'] ?? '');
+                          }
+                      }
+                      $alias = $vi_history_alias_by_id[$id] ?? '';
+                  }
+                  if ($alias === '') {
+                      continue; // Van khong co alias nao ca (ke ca VI) - bo qua, tranh sinh link hong.
+                  }
+                  ?>
                   <a class="chinh-sach" href="<?php echo esc_url(pplus_lang_url($about . '/' . $alias . '-' . $id)); ?>"><?php echo esc_html($title); ?></a>
                 <?php endforeach; ?>
                 <br />

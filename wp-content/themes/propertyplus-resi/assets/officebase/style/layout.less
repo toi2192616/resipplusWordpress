@@ -1676,6 +1676,48 @@ input[type=number] {
                     }
                 }
 
+                // (them 17/9, theo yeu cau nguoi dung - CHI ap dung cho luoi danh sach nay
+                // (".box-list-body .list-product-office"), KHONG dung ".item-office" toan cuc de
+                // khong anh huong carousel trang chu (".offices-col", van giu nguyen ty le
+                // "aspect-ratio:4/3" goc).
+                //
+                // Thu dau: ep "50/50" cung qua "aspect-ratio" co dinh tren CA THE + "height:50%" 2
+                // khoi con + "justify-content:space-between" ben trong ".item-content". BO theo phan
+                // hoi nguoi dung ngay sau khi xem thuc te: cac the co do dai dia chi/tieu de KHAC
+                // NHAU nen chieu cao noi dung TU NHIEN khong deu giua cac the (vd "Westlake
+                // Residence 8" ngan hon "Somerset West Point Hanoi..."), trong khi khung 50% lai CO
+                // DINH - "space-between" phai keo GIAN cac khoang trong CON LAI de lap day, ra
+                // khoang trang to/nho KHAC NHAU tuy the (khong deu, trong "gia" ro rang tren the co
+                // it noi dung hon) - khong phai loi ky thuat, la sai huong tiep can (khong nen ep
+                // dung 50/50 khi noi dung dai ngan khac nhau). Doi lai: CHI dat ty le rieng cho ANH
+                // (cao hon mac dinh 4/3 1 chut, khong ep bang noi dung), phan noi dung tro lai
+                // chieu cao TU NHIEN (auto, khong con "height:50%"/"space-between") - nhat quan cho
+                // MOI do dai noi dung, khong con khoang trang co dan.
+                .item-office {
+                    img {
+                        aspect-ratio: 5 / 4;
+                        width: 100%;
+                        object-fit: cover;
+                    }
+
+                    // (them 17/9, theo yeu cau nguoi dung) 2 chinh sua khoang cach cho ".item-address"
+                    // - CHI trong luoi danh sach nay, KHONG sua rule ".item-address" toan cuc (dong
+                    // ~2268) vi rule do con dung chung cho list-compare/project-list/favourite-detail
+                    // (chua chac chan cung muon giam min-height nhu o day):
+                    // 1. "margin-top:5px" - dia chi truoc do dinh sat ngay duoi tieu de du an, thieu
+                    //    khoang cach (phan hoi nguoi dung: "để không sát với tên dự án quá").
+                    // 2. "min-height:35px" (rule goc, danh cho ngu canh khac can dat cao co dinh) ->
+                    //    "auto" - dia chi o day thuong CHI 1 dong, "min-height:35px" du thua ~15-18px
+                    //    KHONG LIEN QUAN gi den khoang cach that su can (object--info da tu co
+                    //    "margin-top:20px" rieng) - cong don ca 2 tao khoang trang qua rong giua dia
+                    //    chi va hang "Diện tích" (phan hoi nguoi dung: "giảm khung trắng ... về bình
+                    //    thường").
+                    .item-address {
+                        margin-top: 5px;
+                        min-height: 0;
+                    }
+                }
+
             }
         }
     }
@@ -1710,6 +1752,16 @@ input[type=number] {
             bottom: 0;
             left: 0px;
             height: 100% !important;
+            // SUA 22/9 (nguoi dung phat hien qua anh chup that: chan trang - "Residence Leasing
+            // Department"/dien thoai/email - hien chu trang mo de len tren ban do): thieu z-index
+            // rieng o day, doi chieu voi theme Van phong that (D:\SoureceCode\PropertyOfficeWordPree\
+            // ...\layout.less dong 1734-1748, CO SAN "z-index:1002" tai dung cho nay + ghi chu ro ly
+            // do: "position:fixed LUON tao stacking context rieng - neu khong dat z-index o day, cac
+            // phan tu z-index cao hon o NGOAI context nay (vd chan trang neu vo tinh co z-index/
+            // stacking rieng do cau truc trang) van co the "canh tranh" theo cach khong ro rang. Them
+            // dung 1002 (dam bao luon tren cung khi o che do xem ban do) giong het Office, sua trong
+            // .less (khong sua truc tiep .css) de khong bi mat khi bien dich lai.
+            z-index: 1002;
 
             #map {
                 position: fixed !important;
@@ -2002,6 +2054,39 @@ input[type=number] {
 
         &:hover {
             transform: scale(1.1);
+        }
+    }
+
+    // (them 17/9, theo yeu cau nguoi dung - KHONG phai port tu Angular, home.component.html goc
+    // khong co nhan nay) Nhan loai can ho o goc tren-trai anh, dung 2 mau THAT trong logo
+    // (assets/officebase/Common/Images/logo.png - gradient vang #B18E4E -> xanh #2D5185, 2 mau nay
+    // da dung san khap theme: #B18E4E cho suggestDistrict/active pill, #2D5185 cho gia tien) khop
+    // dung 2 gia tri that cua $item['apartmentType'] (1|2 - xem parts/apartment-card.php).
+    .item-type-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 2;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-family: SF Pro Display;
+        font-size: 12px;
+        font-weight: 600;
+        color: #fff;
+        white-space: nowrap;
+        box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.22);
+
+        i {
+            margin-right: 4px;
+            font-size: 10px;
+        }
+
+        &.badge-serviced {
+            background: #2D5185;
+        }
+
+        &.badge-condo {
+            background: #B18E4E;
         }
     }
 
@@ -2489,6 +2574,45 @@ input[type=number] {
     }
 }
 
+// 30/9/2026 (yeu cau nguoi dung): an thanh tim kiem tren cung o mobile khi xem DANH SACH - trung chuc nang
+// voi nut "Tim kiem" o menu duoi. GIU o che do ban do (khong co .resultOnTop, body.gmap-search): luc do menu
+// duoi bi an, thanh nay la cho tim kiem duy nhat. Chi an bang CSS, KHONG xoa markup: ".GroupMoblieActive"
+// (nut ban do/danh sach) hien nho selector anh em ".searching-tool.resultOnTop ~". 3 rule sau keo noi dung
+// len, bo khoang 65px truoc day chua cho thanh nay.
+@media only screen and (max-width: 800px) {
+    .searching-tool.resultOnTop {
+        display: none;
+    }
+
+    body:not(.gmap-search) {
+        .url-box-content {
+            margin-top: 10px;
+        }
+
+        .box-content {
+            margin-top: 0 !important;
+        }
+
+        #web-content {
+            top: 0;
+        }
+    }
+}
+
+// SUA 22/9 (nguoi dung phat hien: bam icon "Bản đồ" tren mobile KHONG ra gi ca - Maps that ra co
+// tai/hien, nhung ".box-list" (danh sach the) van con hien DE LEN TREN, che het ban do vi CHUA CO
+// rule CSS nao cho class nay - main.js co toggle class ".pplus-hide-mobile-map-mode" (dong ~206)
+// nhung KHONG co CSS nao dinh nghia no ca, class "chet"). Doi chieu voi theme Van phong that
+// (D:\SoureceCode\PropertyOfficeWordPree\wp-content\themes\propertyplus\assets\officebase\style\
+// layout.css dong 2038-2043, ban do RIENG cua Office, KHONG co trong file .less nao - hinh nhu them
+// tay truc tiep vao CSS bien dich o ben do) - port lai dung y het, dat trong .less lan nay de khong
+// bi ghi de moi lan bien dich lai.
+.pplus-hide-mobile-map-mode {
+    // !important can vi ".box-content .box-list" (duoi 768px) co specificity cao hon (2 class) va tu
+    // dat "display:inline-block", de len rule nay neu khong co !important - day la trang thai JS
+    // toggle chu dong (che do xem ban do), can luon thang.
+    display: none !important;
+}
 
 .GroupMoblieActive {
     position: fixed;
@@ -3078,5 +3202,33 @@ input[type=number] {
 @media only screen and (max-width: 800px) {
     iframe {
         max-width: 100%;
+    }
+}
+
+// SUA 24/9: mui ten mac dinh cua Slick (slick-theme: left/right:-25px; .stick-custom-css: right:-10px) lan ra NGOAI khung tren mobile -> trang tran ngang ~10px (document scrollWidth 385 > 375). Hau qua that (do truc tiep): Chrome mobile/DevTools phong to vung layout len 385x834 nen thanh menu chan trang "position:fixed" bi day xuong duoi man hinh, thanh tim kiem tren bi tran. Ban goc dung Swiper voi nut nam TRONG khung. Keo mui ten vao trong khung o man hinh nho (!important vi cac rule cung do dac hiiu chi phoi theo thu tu nap file).
+@media only screen and (max-width: 880px) {
+    .slick-slider .slick-next {
+        right: 0 !important;
+    }
+
+    .slick-slider .slick-prev {
+        left: 0 !important;
+    }
+}
+
+// 24/9: che do xem ban do tren mobile (main.js them "gmap-search" vao <body>). ".box-map" la
+// position:fixed z-index:1002 (xem tren) va dai the san pham 1003 - thanh tim kiem noi (.searching-tool),
+// nut "Tim kiem khu vuc nay" va panel tim kiem #search-tab-mobile (z-index goc chi 99/1000) phai nam TREN
+// ban do, neu khong bi che mat (thanh tim kiem o dau man hinh khong hien ra).
+@media (max-width: 800px) {
+    body.gmap-search {
+        .searching-tool,
+        .searching-tool-button {
+            z-index: 1004;
+        }
+
+        #search-tab-mobile {
+            z-index: 1006;
+        }
     }
 }

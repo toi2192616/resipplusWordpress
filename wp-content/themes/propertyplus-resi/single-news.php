@@ -1,9 +1,9 @@
 <?php
 /**
- * B3 - Chi tiet 1 bai tin /blogs/{alias}-{id} - port rut gon tu blog-detail.component.html.
- * Duoc load qua template_include trong inc/blog-routes.php (query var pplus_blog_detail),
- * KHONG dung WP Loop/CPT 'news' - noi dung fetch truc tiep tu Blogs/GetDetail moi request
- * (co cache transient trong pplus_api_get), giong het co che A2 (page-office-detail.php).
+ * B3 - Chi tiet 1 bai tin /blog/{alias}-{id} (SO IT - xem inc/blog-routes.php) - port rut gon tu
+ * blog-detail.component.html. Duoc load qua template_include trong inc/blog-routes.php (query var
+ * pplus_blog_detail), KHONG dung WP Loop/CPT 'news' - noi dung fetch truc tiep tu Blogs/GetDetail
+ * moi request (co cache transient trong pplus_api_get), giong het co che A2 (page-office-detail.php).
  * File nay TRUOC DAY la mot CPT single template doc du lieu tu 1 WP post local + goi ham
  * pplus_get_news_seo() chua bao gio duoc dinh nghia (luon tra ve null, khong crash chi vi
  * entity_id local mac dinh la 0) - da thay hoan toan bang kien truc route dong.
@@ -11,6 +11,13 @@
  * Thu tu block (dong y het blog-detail.component.html dong 37-181): row(col-md-8 TOC+content,
  * col-md-4 bai viet lien quan) TRUOC, box tac gia (col-md-12, full width) sau CUNG - KHONG
  * phai o dau trang (da sua sau khi Dev doi chieu screenshot production that, xem feedback).
+ *
+ * SUA 17/9 (bug nghiem trong - trang nay TRUOC DAY khong bao gio render duoc noi dung that):
+ * doc lai dung shape response THAT (xac nhan qua curl truc tiep Blogs/GetDetail, xem ghi chu day
+ * du trong pplus_get_blog_detail(), inc/api-client.php) - "dataSelected" KHONG BAO GIO ton tai
+ * trong response that (ten dung la "data"), "dataList" phai la "listLQ", "dataModel" (tac gia)
+ * NAM BEN TRONG "data" chu khong phai anh em cung cap voi no. Vi $selected truoc day LUON la null,
+ * trang nay LUON roi vao nhanh "loi API" ben duoi du du lieu that hoan toan binh thuong.
  *
  * TODO (khong chan hien thi, giong scope "SEO co ban truoc" da chot cho A1/A2):
  * - Khong co khoi "van phong lien quan" (Model.projectList, isShowProduct) - can UI office-card
@@ -26,7 +33,10 @@ if (!defined('ABSPATH')) exit;
 
 $data     = pplus_get_blog_detail_from_query_vars();
 $result   = $data['result'] ?? null;
-$selected = $result['dataSelected'] ?? null;
+$selected = $result['data'] ?? null;
+$catalog  = $result['catalog'] ?? null;
+$related  = $result['listLQ'] ?? [];
+$author   = $selected['dataModel'] ?? null;
 
 // API bao bai da doi alias/id - redirect that (301) sang URL moi, giong seoRedirectService
 // ben Angular (blog-detail.component.ts dong 63-71).
@@ -36,6 +46,7 @@ if (!empty($data['isRedirect']) && !empty($data['redirectUrl'])) {
 }
 
 get_header();
+pplus_render_suggest_header();
 
 $content = $selected['content'] ?? '';
 // Dung pplus_generate_toc (KHONG pplus_extract_toc cu) - ban cu chi lay <h2> DA co san id nen bai
@@ -51,17 +62,31 @@ $toc = pplus_generate_toc($content);
     <?php else : ?>
         <?php
         $lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
-        get_template_part('parts/url-box-content', null, [
-            'breadcrumb' => [
-                ['name' => pplus_t('Trang chủ', 'Home'), 'url' => home_url('/')],
-                ['name' => pplus_t('Tin tức', 'Blog'), 'url' => home_url($lang_prefix . '/blogs/')],
-                ['name' => $selected['title'] ?? ''],
-            ],
-        ]);
-        get_template_part('parts/office-filter-panel');
+        // Breadcrumb - them crumb "catalog" con thieu (giua "Blog" va tieu de bai) theo dung
+        // ListUrlMenu THAT (blog-detail.component.ts dong 56-70): Trang chu > Blog > {ten catalog,
+        // link ve danh sach loc theo catalogid} > {tieu de bai, trang hien tai khong link}.
+        $breadcrumb = [
+            ['name' => pplus_t('Trang chủ', 'Home'), 'url' => home_url('/')],
+            ['name' => pplus_t('Tin tức', 'Blog'), 'url' => home_url($lang_prefix . '/blogs/')],
+        ];
+        if (!empty($catalog['nameCatalog'])) {
+            $breadcrumb[] = [
+                'name' => $catalog['nameCatalog'],
+                'url'  => pplus_blog_list_url(['catalogid' => $catalog['id'] ?? '', 'page' => null]),
+            ];
+        }
+        $breadcrumb[] = ['name' => $selected['title'] ?? ''];
+        get_template_part('parts/url-box-content', null, ['breadcrumb' => $breadcrumb]);
         ?>
         <div class="blog-header col-md-12 row">
-            <h1 class="data-title-header text-1"><?php echo esc_html($selected['title'] ?? ''); ?></h1>
+            <div class="col-md-12">
+                <div class="blog-header-content">
+                    <h1 class="text-1"><?php echo esc_html($selected['title'] ?? ''); ?></h1>
+                    <?php if (!empty($selected['dateUpdate'])) : ?>
+                        <div class="text-2"><?php echo esc_html(pplus_t('Ngày cập nhật', 'Updated date')); ?>: <?php echo esc_html(date_i18n('d-m-Y', strtotime($selected['dateUpdate']))); ?></div>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
 
         <div class="datalist">
@@ -79,10 +104,10 @@ $toc = pplus_generate_toc($content);
                     <div class="col-md-4">
                         <div class="blog-list-orther">
                             <div class="title-list"><?php echo esc_html(pplus_t('Bài viết liên quan', 'Related articles')); ?></div>
-                            <?php if (!empty($result['dataList'])) : ?>
+                            <?php if (!empty($related)) : ?>
                                 <div class="blog-item-list">
                                     <div class="blog-item-list-rs">
-                                        <?php foreach ($result['dataList'] as $item) : ?>
+                                        <?php foreach ($related as $item) : ?>
                                             <div class="blog-item">
                                                 <div class="blog-body">
                                                     <a href="<?php echo esc_url(pplus_blog_detail_url($item['alias'] ?? '', (int) ($item['id'] ?? 0))); ?>">
@@ -137,7 +162,7 @@ $toc = pplus_generate_toc($content);
                         </div>
                     </div>
 
-                    <?php if (!empty($result['dataModel']['alias'])) : $author = $result['dataModel']; ?>
+                    <?php if (!empty($author['alias'])) : ?>
                         <?php $author_url = home_url($lang_prefix . '/author/' . $author['alias']); ?>
                         <div class="col-md-12">
                             <div class="main-tacgia">

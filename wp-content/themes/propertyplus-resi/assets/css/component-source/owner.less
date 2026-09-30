@@ -1,0 +1,341 @@
+// Trang "Chủ nhà" (C2, xem inc/owner-route.php + page-owner.php + parts/owner-benefit.php). Port
+// DUNG tu owner-index.component.less (PPlusAngularResi) - CHU Y: file nay KHONG PHAI
+// owner-benefit.component.css (component that CO file .css nhung RONG 0 dong, cung 1 pattern voi
+// search-home.component.less - style THAT nam o component CHA "owner-index" dung chung cho ca 2
+// TypeSite, xem GHI CHU o duoi ve ".service-1-banner").
+//
+// ".info-list" (tab nav "Loi ich cua chu nha"/"Dang ky cho thue nha") KHONG port lai o day - da co
+// san dung nguyen ("list-service-component.css", dung chung voi trang Dich vu C1, enqueue lai o
+// day qua functions.php) vi la 1 CSS khong scope rieng component nao (dung y het production).
+//
+// ".service-1-banner"/".service-1-body-1" CO TEN TRUNG voi list-service-component.css (trang Dich
+// vu C1 dung cot ".col-md-4" 3-cot, ban nay dung cot ".col-md-6" 2-cot - 2 THIET KE THAT SU KHAC
+// NHAU dung chung ten class giua 2 component Angular khac nhau, cung LOP loi trung ten class da
+// gap nhieu lan trong theme nay). De tranh de/ghi de nham voi rule cua trang Dich vu (cung do
+// specificity ".service-1 .xxx", thang/thua se phu thuoc thu tu nap CSS - RUI RO), scope THEM
+// ".owner-box" (dung ĐÚNG wrapper that cua trang nay, "owner-box.row" - khac "service-box-1.row"
+// cua trang Dich vu) lam tien to moi selector duoi day de dam bao do dac hieu luc CAO HON, khong
+// phu thuoc thu tu file CSS nao nap sau.
+.owner-box {
+    .service-1 {
+        .service-1-banner {
+            position: relative;
+            margin-top: -15px;
+            background: radial-gradient(43.71% 43.71% at 50% 50%, #DFE7F2 0%, #CFDBEB 100%);
+            border: 1px solid #E3E3E3;
+            box-sizing: border-box;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            padding: 5px 0px;
+
+            img {
+                height: 306px;
+                width: 406px;
+                position: relative;
+                right: -55%;
+
+                @media only screen and (max-width: 800px) and (min-width: 0px) {
+                    width: 100%;
+                    height: auto;
+                    right: 0;
+                }
+            }
+
+            .service-1-banner-c {
+                position: absolute;
+                top: 50px;
+                left: 50px;
+                max-width: 480px;
+                padding-right: 30px;
+
+                @media only screen and (max-width: 800px) and (min-width: 0px) {
+                    position: initial;
+                    padding: 10px;
+                }
+
+                h1 {
+                    font-style: normal;
+                    font-weight: normal;
+                    font-size: 32px;
+                    line-height: 42px;
+                    color: #C6A065;
+                    margin-bottom: 0px;
+                }
+
+                h3 {
+                    font-style: normal;
+                    font-weight: normal;
+                    font-size: 32px;
+                    line-height: 42px;
+                    color: #2D5185;
+                    margin-bottom: 0px;
+                    font-weight: 600;
+                }
+
+                hr {
+                    width: 206px;
+                    border-top: 2px solid #2D5185;
+                    opacity: 0.8;
+                    border-radius: 3px;
+                    margin: 10px 0px;
+                }
+
+                p {
+                    font-style: normal;
+                    font-weight: 300;
+                    font-size: 14px;
+                    line-height: 25px;
+                    color: #000000;
+                    opacity: 0.6;
+                    margin: 10px 0px;
+                }
+            }
+        }
+
+        .service-1-body-1 {
+            position: relative;
+            margin: 0px;
+            margin-bottom: 30px;
+
+            .col-md-6 {
+                padding: 10px 35px;
+
+                img {
+                    width: auto;
+                    margin: auto;
+                    margin-bottom: 15px;
+                }
+
+                p {
+                    font-style: normal;
+                    font-weight: normal;
+                    font-size: 14px;
+                    line-height: 20px;
+                    text-align: justify;
+                    letter-spacing: -0.01em;
+                    color: #000000;
+                    opacity: 0.6;
+                }
+            }
+        }
+
+        .hr-cus {
+            border-bottom: 1px solid #2D5185;
+            padding-left: 0px;
+            margin: 0px 0 20px 0;
+            width: 85px;
+        }
+
+        .box-custom {
+            background: #F5F5F5;
+            border-radius: 10px;
+        }
+    }
+
+    .header-title {
+        padding: 15px 0 10px;
+
+        h3 {
+            font-style: normal;
+            font-weight: bold;
+            font-size: 18px;
+            line-height: 21px;
+            color: #2D5185;
+        }
+    }
+
+    // Them 22/9 (TypeSite 2 "Đăng ký cho thuê nhà", parts/owner-register-leasing.php) - phan con
+    // lai cua owner-index.component.less that (dong 366-552 ban goc) chua duoc port o lan dau (chi
+    // lam TypeSite 1). "@base-color"/"@common-boder" (bien LESS that) ghi thang gia tri (#2D5185/
+    // 1px solid #cccccc) - khong import bien cheo file, dung quy uoc chung cua theme nay.
+    .flex-row label {
+        margin-top: 5px;
+    }
+
+    .col-label {
+        min-width: 200px;
+
+        label:first-child {
+            display: block;
+        }
+
+        label {
+            font-weight: 600;
+        }
+    }
+
+    // Khung ".input-group" do bootstrap-input-spinner.js TU SINH quanh moi input ".numberspin"
+    // (Bedroom/WCroom) - KHONG nham voi ".service-regis .input-group" cua TypeSite 4
+    // (register-service-component.css, scope rieng, khong anh huong o day).
+    .input-group {
+        max-width: 150px;
+        border: none;
+        display: flex;
+        align-items: center;
+
+        input {
+            border: none;
+            font-size: 14px;
+            color: #2D5185;
+            font-weight: 600;
+            width: calc(100% - 60px);
+        }
+
+        button {
+            border: 1px solid #cccccc;
+            border-radius: 50% !important;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+        }
+
+        .form-control {
+            border-radius: 0 !important;
+        }
+    }
+
+    .owner-regist-content {
+        hr {
+            border-bottom: 1px solid #2D5185;
+            padding-left: 0px;
+            margin: 0px 0 40px 0;
+            width: 85px;
+        }
+
+        .form-group {
+            label {
+                font-weight: bold;
+                font-size: 14px;
+                color: #000000;
+                opacity: 0.55;
+                float: left;
+                width: 110px;
+                margin-top: 10px;
+            }
+
+            .form-control {
+                float: left;
+                width: calc(100% - 111px);
+                height: 40px;
+            }
+
+            .select2-selection--single {
+                height: 40px;
+            }
+
+            .radio-group-pp {
+                float: left;
+                margin-top: -2px;
+
+                input {
+                    margin-right: 7px;
+                }
+            }
+        }
+
+        .sub-question {
+            font-weight: normal;
+            font-size: 15px;
+            color: #000000;
+            opacity: 0.35;
+        }
+
+        @media only screen and (max-width: 800px) and (min-width: 0px) {
+            .form-group {
+                display: flex;
+            }
+        }
+    }
+
+    .question {
+        font-weight: 600;
+        font-size: 1.8rem;
+        margin-bottom: 5px;
+    }
+
+    .input-group-pp {
+        max-width: 200px;
+    }
+
+    .label-cus {
+        font-weight: bold;
+        font-size: 14px;
+        color: #000000;
+        opacity: 0.55;
+    }
+}
+
+// Anh tai len (".item-update-img" > ".file-upload" > ".file-upload-content", parts/owner-register-
+// leasing.php + assets/js/main.js renderPhotoList()) - port DUNG tu owner-index.component.less
+// dong 211-261 that, KHONG scope rieng (class ten rieng, khong trung o dau khac trong theme).
+.file-upload {
+    height: 150px;
+    padding: 10px;
+    margin-bottom: 10px;
+    position: relative;
+    width: 50%;
+    float: left;
+
+    @media only screen and (max-width: 800px) and (min-width: 0px) {
+        width: 100%;
+    }
+}
+
+.file-upload-content {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+
+    .file-upload-image {
+        max-height: 100%;
+        width: auto;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .image-title-wrap {
+        padding: 0 15px 15px 15px;
+        color: #222;
+    }
+
+    .removeUpload {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        padding: 2px 6px;
+        border: 1px solid #dedbdb;
+        border-radius: 50%;
+        font-size: 14px;
+        cursor: pointer;
+
+        &:hover {
+            background: #b1a4a2;
+            color: #ffffff;
+            transition: all .2s ease;
+        }
+
+        &:active {
+            border: 0;
+            transition: all .2s ease;
+        }
+    }
+}
+
+// 2 utility class con thieu (dung trong register-leasing.component.html that) - xac nhan qua grep
+// TOAN BO source that: KHONG ton tai trong bat ky file component-scope nao, chi co trong bundle
+// vendor Metronic (assets/officebase/metronic/assets/global/css/components.css) - file đó KHÔNG
+// duoc enqueue trong theme nay (da bi bo trong dot don vendor CSS truoc, xem git log "Perf: drop
+// 15 unused vendor libraries"), nen port THANG 2 gia tri that o day thay vi nap lai ca bundle lon
+// chi vi 2 class nho. ".border-radius-5" (dung tren textarea "Remarks") tra ve 0 KET QUA trong
+// TOAN BO Angular source that - khong co CSS nao ca, la 1 class-tham-chieu-nhung-khong-co-style
+// that su trong production (khong port them, giu dung y het "khong lam gi").
+.margin-top-15 {
+    margin-top: 15px !important;
+}
+
+.margin-top-30 {
+    margin-top: 30px !important;
+}

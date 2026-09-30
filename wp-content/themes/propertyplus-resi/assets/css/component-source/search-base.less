@@ -118,8 +118,12 @@
         align-items: center;
         gap: 6px;
         position: absolute;
-        top: 20px;
-        left: 15px;
+        // 24/9: goc duoi-phai ngay tren dai the san pham (.box-list-body-mobile: bottom 20px + cao ~122px)
+        // - theo yeu cau nguoi dung (anh chi cho), thay vi goc tren-trai (bi thanh tim kiem che).
+        top: auto;
+        left: auto;
+        right: 15px;
+        bottom: 156px;
         height: 38px;
         padding: 0 14px;
         border-radius: 13px;
@@ -314,25 +318,33 @@
 }
 
 .box-content {
-    margin-top: 150px !important;
+    // SUA 17/9: doi chieu truc tiep CSS that (propertyplus.com.vn/styles-*.css, khong chi doc lai
+    // .less nguon) phat hien ".box-content" that CHI co "margin:0 !important; width:100%; z-index:0;"
+    // - khong co "margin-top:150px" nao ca (o BAT KY breakpoint nao). Gia tri 150px truoc day la SAI,
+    // gay 1 khoang trang rong ~150px giua hang goi y (.suggest-header) va noi dung danh sach
+    // (bug thuc te nguoi dung bao cao tren trang /cho-thue-can-ho/ha-noi/{alias}/).
+    margin: 0 !important;
+    width: 100%;
+    z-index: 0;
+    // "position:relative" + khoi @media duoi day (them 17/9): day la 1 rule ".box-content" THU 2,
+    // ton tai SONG SONG voi rule chinh o tren trong CHINH production that (doc lai qua <style> Angular
+    // tu inject vao <head>, KHONG nam trong styles-*.css goc, tim thay boi search "group-oder" trong
+    // DOM <style> tags - 2 rule cung selector ".box-content" o 2 noi khac nhau trong production, vi
+    // Angular ban nay dung ViewEncapsulation.None nen khong scope class, ca 2 cung ap dung/cong don).
+    // Tren mobile, rule nay (margin-top:65px) NAM SAU rule chinh (margin:0) trong DOM that nen thang
+    // the (!important vs !important, thu tu sau de) - port dung ca 2 de giu dung hanh vi that.
     position: relative;
 
     @media (min-width: 0px) and (max-width: 880px) {
-        margin-top: 10px !important;
+        margin-top: 65px !important;
         position: initial;
     }
 
     .box-list-header {
-        // "position:relative" (them 21/8/2026) - lam DIEM NEO cho ".action-search" (position:absolute,
-        // xem ghi chu day du tai do) canh CHINH XAC theo mep ".box-map" ben duoi. Truoc day khong dat
-        // gi (mac dinh "static"), khong anh huong layout hien co (chi co y nghia khi co con
-        // position:absolute can neo toi, truoc gio chua co con nao dung den).
-        position: relative;
-        margin-bottom: 25px;
-        padding-left: 20px;
+        margin-bottom: 45px;
 
         @media (min-width: 0px) and (max-width: 880px) {
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
 
         // Duoi 768px, .box-map (layout.css) chuyen sang position:fixed phu kin man hinh (xem
@@ -359,19 +371,181 @@
 
         .text-find {
             display: block;
+            position: relative;
 
             .title-search {
-                font-size: 25px;
+                // "margin:0" (them 17/9, khong co trong ban that goc - ban that KHONG can vi title
+                // tieng Anh thuong vua 1 dong nen it lo ra): ".title-search" chinh la the <h1> (xem
+                // page-reference.php), trinh duyet mac dinh cho <h1> "margin-bottom" UA ~0.67em
+                // (~15px o 22px). Du <h1> "float:left" (khong con trong luong doc binh thuong), phan
+                // margin-box do van khien ".text-find" (cha, height:auto) cao HON that su 15px so
+                // voi noi dung <h1> thay hien - lam ".group-oder" (top:50%;transform:translateY(-50%),
+                // xem duoi) can giua LECH xuong duoi ~7-8px so voi <h1>, ro nhat khi title dai xuong
+                // 2-3 dong (tieng Viet) - bug thuc te nguoi dung bao cao ("Căn hộ/Dự án/Lọc theo"
+                // khong "ngang hang" voi H1).
+                margin: 0;
+                font-size: 22px;
                 font-weight: 500;
-                color: rgba(51, 50, 51, 1);
+                color: #333233;
                 float: left;
+                width: calc(100% - 450px);
+
+                @media (min-width: 0px) and (max-width: 880px) {
+                    margin-bottom: 10px;
+                    max-height: 30px;
+                    overflow: hidden;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    width: calc(100%);
+                }
 
                 h1,
                 span {
-                    font-size: 25px;
+                    font-size: 22px;
                     float: left;
                     margin-right: 6px;
                     margin-bottom: 0px;
+                }
+            }
+
+            // (them 17/9) 2 nut tab "Căn hộ"/"Dự án" + dropdown "Lọc theo" (group-oder.component,
+            // xem search-base.component.html dong 111-135) - CHUA TUNG duoc port CSS truoc day (0
+            // dong ma ".order-right"/".order-control"/".group-oder" trong toan bo theme), khien hang
+            // nay hien thanh chu thuong xep chong len tieu de, khong phai nut/tab nhu ban that (bug
+            // thuc te nguoi dung bao cao). Doc lai TRUC TIEP tu <style> Angular tu inject (khong co
+            // trong styles-*.css goc - component nay dung style rieng inject runtime, tim qua DOM
+            // truc tiep tren propertyplus.com.vn), dung DUNG "select2" (da co san site-wide, xem
+            // functions.php pplus_officebase_styles()) cho ".order-control" (parts/office-filter-panel
+            // khong lien quan - day la <select> rieng, khong phai select cua panel loc van phong).
+            // "top:50%; transform:translateY(-50%)" (thay "top:0" nhu ban that, sua theo yeu cau
+            // nguoi dung 17/9): ban that gia dinh H1 luon vua 1 dong (title tieng Anh ngan hon,
+            // "top:0" khop dung mep tren = ngang hang dong 1) - nhung tieu de tieng Viet dai hon
+            // ("Cho Thuê Căn Hộ Quận Tây Hồ | Giá Thuê 09/2026") thuong xuong 2 dong, khien hang nut
+            // dinh o mep tren (dong 1) thay vi ngang hang giua khoi H1 nhu nguoi dung mong doi. Can
+            // giua theo chieu doc so voi CA KHOI .text-find (cao bang H1, du 1 hay 2 dong) thay vi
+            // neo cung cung vao dinh - hoat dong dung ca khi title ngan (nhu ban goc) lan dai.
+            .group-oder {
+                display: flex;
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 14px;
+
+                @media (min-width: 0px) and (max-width: 880px) {
+                    position: inherit;
+                    width: 100%;
+                    top: 5px;
+                    left: -10px;
+                    display: none;
+                }
+
+                .order-right {
+                    border-radius: 16px;
+                    border: 1px solid #CAC4D0;
+                    // "3px 15px" (thay "12px 15px" ban that, theo yeu cau nguoi dung 17/9: giam
+                    // khung xuong 6px, chia deu 3px tren/3px duoi - CHI doi chieu doc, giu nguyen
+                    // 15px ngang).
+                    padding: 3px 15px;
+                    margin-left: 10px;
+                    cursor: pointer;
+
+                    @media (min-width: 0px) and (max-width: 880px) {
+                        min-width: 70px;
+                        padding: 6px 10px;
+                    }
+
+                    &.active {
+                        background: #3E5FB4;
+
+                        label {
+                            color: #FFFFFF;
+                        }
+                    }
+
+                    label {
+                        cursor: pointer;
+                        color: #7E7E7E;
+                        margin-bottom: 0px;
+                        line-height: 20px;
+                    }
+                }
+
+                .order-label {
+                    font-family: "SF Pro Display";
+                    font-size: 16px;
+                    font-weight: 400;
+                    line-height: 19px;
+                    letter-spacing: 0em;
+                    text-align: left;
+                    opacity: 0.35;
+
+                    @media (min-width: 0px) and (max-width: 880px) {
+                        display: none;
+                    }
+                }
+
+                // "+.select2-container--default" (sibling ngay sau .order-control - select2 tu chen
+                // markup nay SAU the <select> goc khi khoi tao) - dung DUNG selector that, khong bao
+                // ".order-control" (the <select> that select2 an di, khong hien thi truc tiep).
+                .order-control {
+                    font-weight: 600;
+
+                    + .select2-container--default {
+                        border: none;
+                        height: auto;
+                        width: auto !important;
+
+                        .select2-selection__rendered {
+                            padding-right: 15px !important;
+                            line-height: 19px;
+                            font-size: 16px;
+                            height: 19px;
+                            opacity: 0.75;
+                            font-weight: 600;
+                            padding: 0 5px;
+                            position: relative;
+                            bottom: 1px;
+
+                            // Ban that dung "content:url('../../../../assets/officebase/Common/Icons/
+                            // arrow-select.svg')" (doc truc tiep tu chinh search-base.component.less
+                            // nguon that, KHONG phai build-hash nhu doan doan ra tu bundle production -
+                            // file nay HOA RA da co san trong theme WP nay tu truoc, chi truoc gio chua
+                            // ai dung toi). Duong dan port lai: file .css BIEN DICH nam thang trong
+                            // "assets/css/" (khong phai "assets/css/component-source/" nhu .less nguon
+                            // nay), nen chi can "len 1 cap" (-> assets/) roi vao "officebase/Common/
+                            // Icons/", KHONG phai "len 4 cap" nhu ban goc Angular (cau truc thu muc
+                            // khac hoan toan). (Ghi chu: co 1 ban trung lap da lo tai nham ve
+                            // "assets/Content/Img/arrow-select.svg" truoc khi phat hien file goc nay -
+                            // da xoa, dung THANG file that trong "officebase/Common/Icons/").
+                            &:after {
+                                content: url("../officebase/Common/Icons/arrow-select.svg");
+                                position: absolute;
+                                right: 0;
+                                top: -1px;
+                            }
+
+                            .select2-icon {
+                                position: relative;
+                                bottom: 6px;
+
+                                i {
+                                    top: 3px !important;
+                                }
+                            }
+                        }
+
+                        .select2-selection--single {
+                            border: none;
+                            height: auto;
+                            background-color: #fff;
+                        }
+
+                        .select2-selection__arrow b {
+                            border: none;
+                        }
+                    }
                 }
             }
 
@@ -704,23 +878,17 @@
     @media (min-width: 0px) and (max-width: 880px) {
         display: block;
         position: fixed;
-        // 150px (goc port) -> 85px -> 93px: theo yeu cau nguoi dung - vung the phai cach CHAN
-        // TRANG (.footer-mobile, height:65px, z-index moi 1003) dung 20px, khong theo con so
-        // 150px cua ban goc. 65 + 20 = 85px; sau do nhich them 8px de co khoang trong thoang
-        // hon voi chan trang, theo yeu cau nguoi dung (anh chu thich truc tiep).
-        bottom: 93px;
+        // 24/9: khop Angular goc (search-base.component.less dong 540-632: the 300px, ho 1 phan the ke
+        // tiep, item-like/dia chi/ten nhan an) - bottom 75px goc chua thanh "N ket qua" (.toggleTopGroup)
+        // o day, KHONG lam thanh do theo yeu cau nguoi dung nen ha xuong 20px (chan trang
+        // .footer-mobile da an o che do ban do).
+        bottom: 20px;
         left: 0;
         right: 0;
         overflow: auto;
         padding: 0 15px;
-        // .box-map (ban do toan man hinh) la position:fixed rieng voi z-index:1002 (xem
-        // layout.less) - tu tao stacking context rieng, che mat dai the nay neu no khong co
-        // z-index cao hon (z-index:auto mac dinh se thua, du deu la position:fixed) - cung mau
-        // bug da gap va sua nhieu lan trong phien nay (chan trang, breadcrumb...) voi .box-map.
+        // .box-map (position:fixed, z-index:1002) tu tao stacking context - phai cao hon.
         z-index: 1003;
-        // scroll-snap: theo yeu cau "khung hình thì hiển thị đủ 1 sản phẩm" - vuot qua 1 the la
-        // snap gon vao dung 1 the tiep theo (khong dung o giua 2 the), ca khi nguoi dung tu vuot
-        // tay lan khi JS cuon toi (xem assets/js/pplus-maps.js, bam marker -> scrollIntoView).
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
 
@@ -729,39 +897,51 @@
 
             .item-office {
                 float: left;
-                // 300px (goc port, chi ho 1 the + mot phan the ke ben tren man hinh 375px) -> gan
-                // tron chieu rong man hinh (tru padding 2 ben cua container o tren) - dung y
-                // "hiển thị đủ 1 sản phẩm" (moi lan chi thay DUNG 1 san pham, khong thay mot phan
-                // san pham ben canh).
-                width: calc(100vw - 30px);
+                width: 300px;
                 scroll-snap-align: center;
                 margin-right: 15px;
                 padding: 10px;
                 box-shadow: 0px 3px 6.5px 0px #00000033;
                 background: #ffffff;
 
-                .item-like {
-                    left: 10px;
-                    width: 40px;
-                    height: 40px;
-
-                    i {
-                        top: 8px;
-                        left: 4px;
-                    }
+                .item-like,
+                .item-type-badge {
+                    display: none;
                 }
 
                 img {
-                    width: 120px;
-                    margin-right: 10px;
+                    width: 95px;
+                    margin-right: 0px;
+                    border-radius: 8px;
+                    margin-top: 7px;
                 }
 
                 .item-content-m {
-                    width: calc(100% - 130px);
+                    width: calc(100% - 100px);
                     float: right;
 
+                    .object--info {
+                        margin-top: 0px;
+                        margin-bottom: 0px;
+                        height: 20px;
+                        overflow: hidden;
+
+                        .thongtin-ctn {
+                            font-size: 11px;
+
+                            .ten {
+                                line-height: auto;
+                                display: none;
+                            }
+
+                            .thongtin {
+                                margin-top: 0px;
+                            }
+                        }
+                    }
+
                     .item-content {
-                        padding: 0px 0px 20px 0px;
+                        padding: 0px 0px 0px 0px;
 
                         .viewdetail {
                             display: none;
@@ -772,12 +952,16 @@
                         }
 
                         .item-name {
+                            margin-top: 0px;
                             font-size: 14px;
+                            height: 45px;
+                            line-height: 21px;
+                            -webkit-line-clamp: 2;
                         }
 
                         .item-price {
                             position: absolute;
-                            bottom: -6px;
+                            bottom: 0px;
                             font-size: 14px;
                         }
                     }
@@ -1610,5 +1794,657 @@
 @keyframes pplus-location-spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+// (them 17/9, theo yeu cau nguoi dung) #searchModal - popup tim kiem mo tu nut tron xanh cuoi hang
+// suggest-header, xem parts/search-modal.php. Port tu search-base.component.less that (khung modal
+// + luoi "Hoặc chọn theo gợi ý" - CSS 2 o nhap/nut tim kiem nam RIENG trong header.less, xem ghi
+// chu tai do).
+#searchModal {
+    .modal-dialog {
+        width: 940px;
+
+        @media (min-width: 1025px) {
+            max-width: 940px;
+        }
+
+        @media (max-width: 1024px) {
+            margin: 1.75rem 15px;
+        }
+
+        .modal-content {
+            background-color: #ffffff00;
+            box-shadow: none;
+            border: none;
+
+            .search-box .tab-container {
+                background: none;
+            }
+        }
+    }
+}
+
+// SUA 18/9 (nguoi dung phat hien qua anh chup: "vị trí thanh pop tìm kiếm cần hạ thấp xuống thêm
+// xuống dưới như bản chính"): thieu HAN rule ".tab-content" that (search-base.component.less dong
+// 136-144) - day moi la phan tu THAT SU co "background:#fff"/"box-shadow"/"border-radius" (khung
+// trang bo goc cua ca thanh tim kiem), VOI "margin-top:50px" day no xuong duoi trong modal (dung
+// #searchModal cung dung chung rule nay - modal override o tren CHI tat rieng ".tab-container"
+// (KHONG phai ".tab-content") vi ".tab-container" von chi dung lam nen cho ".nav-tabs" cua thanh
+// tim kiem trang chu, thu khong ton tai trong modal nay). Thieu rule nay khien thanh tim kiem ta
+// dinh sat len tren, khong co khoang trang giong production.
+.box-search .tab-container .tab-content {
+    display: inline-block;
+    width: 910px;
+    top: 45px;
+    border-radius: 10px;
+    padding: 0;
+    background: #fff;
+    box-shadow: 10px 4px 40px 0px rgba(0, 0, 0, 0.14);
+    margin-top: 50px;
+}
+
+.search-input-group {
+    padding-top: 20px;
+    padding-bottom: 20px;
+
+    .search-label {
+        font-style: normal;
+        font-weight: bold;
+        font-size: 15px;
+        line-height: 21px;
+        text-align: justify;
+        color: #000D1F;
+        opacity: 0.6;
+        padding-left: 10px;
+        padding-right: 12px;
+    }
+
+    @media (min-width: 1025px) {
+        .search-input {
+            border-left: 1px solid #E3E3E3;
+        }
+
+        // SUA 18/9: them "width:255px;float:left" (".s1") va "float:left" (".s3") - bi thieu tu
+        // truoc (chi co "padding-left"), trong khi that su ca 2 deu la PHAN TU FLOAT (khong phai
+        // flex-item cua 1 ".row" nao - xem search-modal.php, da bo wrapper "row" bia them cung lan
+        // sua nay). Thieu "float" khien 2 cot nay boi ke thua flex-context cu, gay lech vi tri cot
+        // "s4"/popup goi y so voi production (nguoi dung phat hien qua anh chup so sanh).
+        &.s1 {
+            width: 255px;
+            padding-left: 21px;
+            float: left;
+
+            .focus-popup.first-popup {
+                left: 12px;
+            }
+        }
+
+        &.s3 {
+            padding-left: 50px;
+            float: left;
+        }
+    }
+}
+
+// SUA 22/9 (nguoi dung phat hien qua anh chup: canh phai thanh tim kiem "dài ra" so voi canh phai
+// cua luoi goi y ben duoi). XAC NHAN qua do dac truc tiep tren production that (EN, thu duoc luoi
+// vua khop ~4px voi thanh) - ".focus-popup.first-popup" KHONG co "width"/"right" CO DINH nao ca,
+// no dung co che "shrink-to-fit" (chi "left:12px", "right" bo trong) - rong cua no hoan toan phu
+// thuoc NOI DUNG chu (CSS Grid "minmax(0,1fr)" size theo max-content khi container auto-width) -
+// nghia la do vua khop voi thanh tim kiem O BAN TIENG ANH la MOT SU TRUNG HOP do nhan 16 nhan tieng
+// Anh (vd "Easy Access To Industrial Parks") du dai de "vua lap day" 910px, KHONG phai 1 quy tac
+// CSS dam bao. Tieng Viet (ngon ngu chinh cua site) co nhan NGAN HON ro ret (vd "Thuận Tiện Đi Khu
+// CN" so voi "Easy Access To Industrial Parks") nen luoi tu nhien HEP hon that nhieu (do dac: 838px
+// thay vi 903px) - day CHINH LA nguyen nhan khoang trong nguoi dung thay, khong phai loi CSS nao ca.
+//
+// QUYET DINH: thay vi giu nguyen co che "shrink-to-fit" (se tiep tuc lech trong Tieng Viet), CHU
+// DONG ep luoi gioi han DUNG BANG chieu rong that cua thanh tim kiem bang cach dat CA "left" LAN
+// "right" tren cung 1 phan tu - buoc trinh duyet tinh "width" theo khoang cach 2 canh thay vi theo
+// noi dung (dung nguyen ly CSS: absolute voi CA left+right => width tu dat). QUAN TRONG: containing
+// block cua ".focus-popup" (do dac truc tiep qua getBoundingClientRect) KHONG PHAI ".search-option"
+// (van "position:static", chua tung co "position:relative" trong bat ky file .less nao - kiem tra
+// ky) MA LA ".box-search" (to hon nhieu, "position:relative", RONG GAN BANG CA thanh tim kiem,
+// ~915px) - "left:12px" tu truoc gio thuc ra la "12px tinh tu canh trai .box-search", KHONG phai
+// tinh tu ".search-option", chi VO TINH nhin dung vi trong o Location (cot dau tien, x=0 trong
+// hang) nen "container that ~= vi tri o Location" trong truong hop nay. Vi containing block DA GAN
+// nhu du rong san, chi can "right:0" (khong phai tinh toan phuc tap "910-255=655" nhu ban dau sai
+// lam - do nham containing block), cho canh phai luoi ep sat canh phai ".box-search" (gan nhu trung
+// khop voi canh phai thanh tim kiem that, chi lech vai px do sai so margin/padding nho khong dang
+// ke). Day la 1 SUA DOI CHU DONG (khong phai port nguyen ban - production khong co rule "right" nao
+// ca) de dam bao canh phai luoi LUON khop voi canh phai thanh tim kiem O MOI ngon ngu, thay vi chi
+// "may man" khop trong Tieng Anh nhu ban that.
+#searchModal .search-input-group.s1 .focus-popup.first-popup {
+    right: 0px;
+}
+
+// SUA 18/9: ban dau bia "display:flex;align-items:center;justify-content:center" (doan nay khong
+// co trong ban that o dau ca) khien nut kinh lup bi CAN GIUA thay vi nam THAP xuong nhu production
+// that - do dac truc tiep tren production (matches() qua document.styleSheets) xac nhan CHI CO 1
+// rule that duy nhat khop voi cot nay: ".box-search .tab-container .s4 {float:right;margin:24px
+// 20px 0 0}" (search-base.component.less dong 239-242 that). "float:right" bi trinh duyet BO QUA
+// vi ".s4" la flex-item (cha ".row" Bootstrap la flex) nhung "margin" van co hieu luc binh thuong
+// trong flex - margin-top:24px chinh la ly do nut nam THAP hon, khong phai can giua.
+.box-search .tab-container .s4 {
+    float: right;
+    margin: 24px 20px 0px 0px;
+}
+
+// "Hoặc chọn theo gợi ý" - luoi 16 muc that (Apartment/_GetAllDistrict, xem
+// pplus_get_all_districts()). Port DUNG tu search-base.component.less (".pplus-show-district
+// .suggestDistrict") - KHONG nham voi ".office-popup-search3 .pplus-show-district" (rieng cho panel
+// loc Van phong, khac ca class con lan du lieu, xem parts/office-filter-panel.php).
+.pplus-show-district {
+    .suggestDistrict {
+        padding: 15px;
+
+        @media only screen and (max-width: 760px) and (min-width: 0px) {
+            padding: 0px;
+            margin-top: 15px;
+        }
+
+        .textHeader {
+            font-weight: 500;
+            font-size: 15px;
+            color: #B18E4E;
+            margin-bottom: 15px;
+        }
+
+        .list-suggest {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            column-gap: 10px;
+            display: grid;
+            max-height: 450px;
+            overflow: auto;
+
+            @media only screen and (max-width: 760px) and (min-width: 0px) {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                max-height: calc(100vh - 250px);
+            }
+
+            .item-suggest {
+                border: 1px solid #E8E8E8;
+                border-radius: 6px;
+                margin-bottom: 10px;
+                padding: 10px;
+                transition: 0.3s ease-in-out;
+                cursor: pointer;
+                display: block;
+
+                &:hover {
+                    background: #E3EFFF;
+                    border: 1px solid #6194DF;
+
+                    .content-suggest {
+                        .content-suggest-text1 {
+                            color: #2D5185;
+                            opacity: 1;
+                        }
+                    }
+                }
+
+                .icon-suggest {
+                    float: left;
+                    width: 30px;
+                    height: 27.74px;
+                    border-radius: 5px;
+                    background: #F1F7FF;
+                    margin: 2px 5px 0px 0px;
+                    position: relative;
+
+                    img {
+                        width: 22px;
+                        height: 22px;
+                        position: relative;
+                        left: 5px;
+                        top: 3px;
+                    }
+                }
+
+                .content-suggest {
+                    width: calc(100% - 55px);
+                    float: left;
+
+                    .content-suggest-text1 {
+                        font-weight: 700;
+                        font-size: 14px;
+                        color: #000D1F;
+                        opacity: 0.7;
+                    }
+                }
+            }
+        }
+
+        .list-suggest::-webkit-scrollbar {
+            width: 4px;
+            border-radius: 50%;
+        }
+    }
+}
+
+// SUA 24/9: Panel tim kiem MOBILE "#search-tab-mobile" (mo tu nut "Tim kiem" o menu chan trang, o nhap va nut "Bo loc" o thanh ".searching-tool") - port NGUYEN VAN tu search-base.component.less that (dong 813-1237), chi doi duong dan anh makerMap.png. Truoc day CHUA CO (chi co JS toggle class "showSearch" tren 1 id khong ton tai).
+#search-tab-mobile {
+    display: none;
+    background: white;
+    border-radius: 0;
+    position: fixed !important;
+    z-index: 1000;
+    width: 100%;
+    left: -100%;
+    top: 0px;
+    bottom: 65px;
+    margin-top: 0 !important;
+    transition: left 0.5s ease;
+    height: calc(100vh - 65px);
+    max-height: -webkit-fill-available;
+
+    @media only screen and (max-width: 760px) and (min-width: 0px) {
+        display: block;
+    }
+
+    &.showSearch {
+        left: 0 !important;
+    }
+
+    .m-step {
+        padding: 0 30px;
+    }
+
+
+
+    .tab-content-search {
+        margin-top: 20px;
+        height: calc(100% - 116px);
+
+        @media only screen and (max-width: 760px) and (min-width: 0px) {
+            height: calc(100% - 80px);
+        }
+    }
+
+
+    .long-term-s1-item {
+        height: calc(100% - 155px);
+    }
+
+    .longterm-s1-result {
+        max-height: calc(100vh - 340px);
+    }
+
+    .search-home-mobile {
+        display: flex;
+        position: unset;
+        background: white;
+        height: 55px;
+        border-radius: 10px;
+        width: 100%;
+        border: 1px solid #DFDFDF;
+
+        button {
+            width: 55px;
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            right: -25px;
+        }
+
+        .btn-delete-text {
+            color: #000000b3;
+        }
+    }
+
+    .search-mobile {
+        padding-left: 60px;
+        background-image: url(../officebase/Common/Images/makerMap.png);
+        background-size: 24px 24px;
+        background-repeat: no-repeat;
+        background-position: 20px;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        font-family: SF Pro Display;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 21px;
+        border: none;
+        width: calc(100% - 55px);
+    }
+
+    .tab-header {
+        margin-bottom: 0;
+        padding: 40px 30px 10px;
+        border-bottom: 1px solid #F0F0F0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        @media only screen and (max-width: 760px) and (min-width: 0px) {
+            padding: 16px 30px 10px;
+        }
+        button {
+            padding: 0;
+            border: none;
+            background: transparent;
+            font-family: SF Pro Display;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 21px;
+            letter-spacing: 0em;
+            opacity: 0.6;
+            display: flex;
+            align-items: center;
+        }
+
+        span {
+            font-family: SF Pro Display;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 21px;
+            opacity: 0.6;
+        }
+    }
+
+    .btnBackStep i {
+        font-size: 20px;
+        margin-right: 5px;
+        opacity: 0.6;
+        position: relative;
+        font-weight: 600;
+        top: -1px;
+    }
+
+    .btnNextStep i {
+        font-size: 20px;
+        margin-left: 6px;
+        opacity: 0.6;
+        position: relative;
+        font-weight: 600;
+        top: -1px;
+    }
+
+    .nav-tabs-mobile {
+        background: #F5F5F5;
+        border-radius: 13px;
+        border-bottom: none;
+        margin: 30px;
+
+        >li {
+            width: 33.33%;
+            font-family: SF Pro Display;
+            font-size: 13px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 20px;
+            letter-spacing: 0em;
+            text-align: center;
+
+            >a {
+                height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: transparent;
+            }
+
+            &.active>a {
+                border-radius: 13px;
+                background: #2D5185;
+            }
+        }
+    }
+
+    .tab-content {
+        padding: 0;
+        background: #fff;
+        padding-top: 15px;
+    }
+
+    .longterm-s1-result {
+        overflow-x: hidden;
+        overflow-y: auto;
+        margin-left: -30px;
+        margin-right: -30px;
+        padding: 0 30px;
+    }
+
+    .long-term-s1-t1 {
+        margin-top: 20px;
+        margin-bottom: 3px;
+        font-family: SF Pro Display;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 17px;
+        letter-spacing: 0.01em;
+        text-align: left;
+        opacity: 0.65;
+        color: #B18E4E;
+        margin-bottom: 15px;
+    }
+
+    .short-term-s3-t1 {
+        margin-top: 30px;
+        font-family: SF Pro Display;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 19px;
+        letter-spacing: 0.01em;
+        text-align: left;
+        opacity: 0.65;
+    }
+
+    .long-term-s3 {
+        box-shadow: none;
+        position: inherit;
+        width: 100%;
+        opacity: 1;
+        max-height: calc(100vh - 300px);
+        padding: 0px 30px;
+        overflow-y: auto;
+
+        @media only screen and (max-width: 760px) and (min-width: 0px) {
+            max-height: calc(100vh - 220px);
+        }
+
+        .long-term-s3-item {
+            display: block;
+            margin-top: 20px;
+            padding: 0;
+            border: none;
+
+            @media only screen and (max-width: 800px) {
+                display: inline-grid;
+            }
+
+            &:first-child {
+                margin-top: 20px;
+            }
+        }
+
+        .long-term-s3-t1 {
+            font-family: SF Pro Display;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 19px;
+            letter-spacing: 0.01em;
+            text-align: left;
+            opacity: 0.65;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .checkbox-term {
+            display: flex;
+            flex-direction: column;
+
+            >label {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-right: 0;
+
+                input:last-child {
+                    margin-right: 0;
+                }
+            }
+        }
+
+        .numberspin-customer {
+            margin-bottom: 0;
+
+            .input-group {
+                float: right;
+                width: 82px;
+            }
+        }
+
+        .cus-type-1,
+        .cus-type-2 {
+            display: flex;
+            align-items: center;
+            width: auto;
+
+            > :last-child {
+                margin-right: 0;
+            }
+        }
+
+        .cus-type-1 {
+            margin-right: 4px;
+        }
+
+        .rs-mobile-list-value {
+            display: flex !important;
+            overflow: auto !important;
+            margin-right: -24px !important;
+            scroll-snap-type: x mandatory !important;
+            width: calc(100% + 28px);
+        }
+
+        .rs-mobile-list-value::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    .noUi-target {
+        padding: 0 14px;
+    }
+
+    .group-price-ranger>img {
+        margin-left: 40px;
+    }
+
+    .accept-box {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        left: 0;
+        background: white;
+        padding: 20px 30px;
+        border-top: 1px solid #F0F0F0;
+        z-index: 99;
+        display: flex;
+        justify-content: space-between;
+
+        button {
+            font-family: SF Pro Display;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 21px;
+            letter-spacing: 0em;
+            height: 50px;
+            border-radius: 13px;
+        }
+    }
+
+
+    .pplus-easyliving-box {
+        margin-bottom: 20px;
+    }
+
+    .pplus-trans-box,
+    .google-map-box,
+    .pplus-map-box,
+    .pplus-district-box {
+        margin-bottom: 3px;
+    }
+
+    .pplus-trans-box,
+    .google-map-box,
+    .pplus-map-box,
+    .pplus-district-box,
+    .pplus-easyliving-box {
+        .text-data {
+            font-style: normal;
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 21px;
+            color: #264879;
+            padding: 10px 15px;
+            background: #F1F6FD;
+            position: relative;
+            border-radius: 10px;
+
+            .locations-ico {
+                top: 5px;
+                margin-right: 5px;
+            }
+
+            .icon-show {
+                font-weight: bold;
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                font-size: 17px;
+                transition: 0.3s all;
+            }
+        }
+
+        .content-data {
+            height: 0px;
+            overflow: hidden;
+            transition: 0.3s all;
+
+            .item-content-data {
+                font-size: 15px;
+                color: #000D1F;
+                margin-left: 44px;
+                border-bottom: 1px solid #E1E1E1;
+                padding: 10px 0px;
+                margin-bottom: 5px;
+                cursor: pointer;
+
+                .dot-item {
+                    position: relative;
+                    width: 6px;
+                    background-color: #B18E4E;
+                    float: left;
+                    height: 6px;
+                    margin-right: 10px;
+                    border-radius: 50%;
+                    top: 6px;
+                }
+            }
+        }
+
+        &.show-data {
+            .icon-show {
+                transform: rotate(90deg);
+            }
+
+            .content-data {
+                height: auto;
+                overflow: initial;
+            }
+        }
     }
 }

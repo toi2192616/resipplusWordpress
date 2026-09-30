@@ -688,3 +688,55 @@
     color: #000000;
     opacity: 0.8;
 }
+
+// Marker gia tren ban do rut gon cua A3/A4 (".pplus-map-price-pin", assets/js/reference-map-simple.js)
+// - BI MAT toan bo style (18/9, nguoi dung bao cao kem anh chup: chu gia hien tho, khong con khung
+// pill nao) - xac nhan qua getComputedStyle() thuc te: class nay KHONG co rule CSS nao trong toan bo
+// theme (grep toan bo thu muc assets/, 0 ket qua ngoai chinh file JS gan class). Doi chieu voi ban
+// that (propertyplus.com.vn) qua getComputedStyle() CUNG cho ket qua la "transparent" tren chinh
+// element ".marker-cnt"/".svg-ctn" (class that: "marker up apartment-marker" > "marker-cnt" >
+// "svg-ctn") - dung y het cau truc (marker-cnt/svg-ctn) nhung KHONG the xac dinh chac chan co che
+// CSS that (nghi ngo co the qua 1 lop render khac nhu canvas/WebGL vector map ma DevTools thuong
+// khong doc dung duoc tu computed style) - do do KHONG port lai 1:1 (khong co gi de port), thay
+// bang TU THIET KE lai giao dien pill gia don gian, dung LAI dung 2 mau THAT cua logo da dung nhat
+// quan toan theme (#2D5185 xanh dam, xem badge "Serviced apartment"/gia tien o noi khac) - giu dung
+// hinh dang pill + duoi nhon (".point") ma markup goc (JS) da co san class cho, chi chua tung duoc
+// style.
+.pplus-map-price-pin {
+    background: #2D5185;
+    color: #FFFFFF;
+    font-family: 'SF Pro Display', Roboto, Arial, sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 15px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.15s ease-in-out;
+
+    &::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -5px;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #2D5185;
+    }
+
+    // ".is-active" (JS them khi tro chuot vao the can ho tuong ung, xem setActive() trong
+    // reference-map-simple.js) - doi mau sang vang dong (mau THU 2 cua logo) de noi bat, cong voi
+    // scale 1.35 da co san qua inline transform (JS tu tinh, khong dat o day).
+    &.is-active {
+        background: #B18E4E;
+        z-index: 10;
+
+        &::after {
+            border-top-color: #B18E4E;
+        }
+    }
+}

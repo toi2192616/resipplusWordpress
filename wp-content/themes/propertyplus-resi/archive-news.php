@@ -6,14 +6,15 @@
  * KHONG dung WP_Query/have_posts() - danh sach tin tuc la du lieu song tu .NET, giong het
  * cach page-office-list.php (A1) khong dung WP_Query cho van phong.
  *
- * TODO (khong chan hien thi, giong scope "SEO co ban truoc" da chot cho A1/A2):
- * - Nut "Tim kiem van phong" KHONG mo popup filter that (showSearch() - phan phuc tap nhat cua
- *   search-base.component, 1385 dong, chua lam o dau ca) - o day chi dan thang sang trang
- *   /cho-thue-van-phong (A1), du de nguoi dung tim duoc van phong, giu dung icon/text goc.
+ * SUA 17/9: bo "parts/office-filter-panel.php" (panel Bo loc Van phong bia them nham, xem
+ * parts/url-box-content.php) va them pplus_render_suggest_header() con thieu - xac nhan qua doc
+ * dung blog-list.component.html dong 1 (<app-search-base isMapshow=false isShowUrlMenu=true>) +
+ * doi chieu truc tiep propertyplus.com.vn/en/blogs.
  */
 if (!defined('ABSPATH')) exit;
 
 get_header();
+pplus_render_suggest_header();
 
 $lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
 $catalogid   = sanitize_text_field($_GET['catalogid'] ?? '');
@@ -45,7 +46,6 @@ get_template_part('parts/url-box-content', null, [
         ['name' => pplus_t('Tin tức', 'Blog')],
     ],
 ]);
-get_template_part('parts/office-filter-panel');
 ?>
 <div class="container box-container">
     <div class="cusomer-box row">

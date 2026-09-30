@@ -8,12 +8,17 @@
  *
  * Angular goc (about-new.component.html) CHI co tieu de (h1) + noi dung (content, HTML tu CMS) -
  * cot phai (col-md-4) de RONG (khong co sidebar/lien quan nhu B3) - giu dung, khong tu bia them.
+ *
+ * SUA 17/9: dong 1 file that (<app-search-base isMapshow=false isShowUrlMenu=true>) CHI render
+ * suggest-header (hang pill) + breadcrumb - da them pplus_render_suggest_header() con thieu, va bo
+ * "parts/office-filter-panel.php" (panel Bo loc bia them nham, xem parts/url-box-content.php).
  */
 if (!defined('ABSPATH')) exit;
 
 $model = pplus_get_about_subpage_from_query_vars();
 
 get_header();
+pplus_render_suggest_header();
 ?>
 <div class="container">
     <?php if ($model === null) : ?>
@@ -26,7 +31,6 @@ get_header();
                 ['name' => $model['title'] ?? ''],
             ],
         ]);
-        get_template_part('parts/office-filter-panel');
         ?>
         <div class="about-new">
             <div class="col-md-12">

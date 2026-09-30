@@ -1,0 +1,203 @@
+/**
+ * Nguon LESS that cho page-about-subpage.php (/ve-chung-toi/{alias}, trang con B5) - ban sao tu
+ * D:\SoureceCode\PPlusAngularResi\src\app\modules\about\about-new\about-new.component.ts (goi
+ * gian tiep qua styleUrl) - file NAY LAN DAU duoc compile/enqueue (14/9): CSS chua tung ton tai
+ * cho trang con, chi PHP thoi (page-about-subpage.php da dung nhung khong co CSS rieng, dua hoan
+ * toan vao CSS dung chung khac nen thieu nhieu style .datalist/.data-content/.header-right...).
+ *
+ * 1 cho sua duy nhat: bo tien to "::ng-deep " truoc ".datalist" (Angular ViewEncapsulation
+ * selector, khong co y nghia trong CSS thuong - cung 1 loai loi da gap va sua 39 lan o
+ * reference-index-component.css).
+ */
+.about-new {
+    margin-top: 0px;
+
+    @media (min-width: 0px) and (max-width: 880px) {
+        margin-top: 0px;
+    }
+}
+
+.datalist {
+    float: left;
+    width: 100%;
+
+    .data-content {
+        font-family: 'SF Pro Display';
+        padding: 0px;
+
+        @media (min-width: 0px) and (max-width: 880px) {
+            padding: 0px 0px;
+            margin: 0px -5px;
+        }
+
+        h1 {
+            font-size: 32px !important;
+        }
+
+        h2 {
+            font-size: 24px !important;
+            color: #000000;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+
+        h3 {
+            margin-top: 10px;
+            font-size: 20px !important;
+        }
+
+
+        h4,
+        h5,
+        h6,
+        a,
+        li,
+        p,
+        span,
+        b,
+        i {
+            font-size: 16px !important;
+            line-height: 25px;
+        }
+
+
+        table {
+            max-width: 100%;
+            margin: auto;
+            margin-bottom: 10px !important;
+
+            th {
+                background-color: #000;
+                color: white;
+                width: 50%;
+            }
+
+            td,
+            th {
+                padding: 5px 10px;
+                border: 1px solid #000;
+            }
+
+            tr:first-child td {
+                background: #3E5FB4;
+                color: white;
+            }
+        }
+
+        img {
+            width: 80% !important;
+            height: auto !important;
+            max-width: 800px !important;
+            margin: auto;
+            display: block;
+
+            @media (min-width: 0px) and (max-width: 880px) {
+                width: 100% !important;
+                height: auto !important;
+            }
+        }
+
+        .content-1 {
+            margin: 0px;
+
+            @media (min-width: 1024px) and (max-width: 1380px) {
+                margin-top: 15px;
+            }
+        }
+
+        blockquote {
+            position: relative;
+            padding-left: 20px;
+            padding-right: 10px;
+            font-style: italic;
+            margin-top: 20px;
+            margin-left: 10px;
+            background-color: #f2f2f2;
+            padding-top: 10px;
+            padding-bottom: 5px;
+            box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.2);
+
+            :before {
+                content: "";
+                position: absolute;
+                width: 3px;
+                height: 100%;
+                left: 0;
+                top: 0;
+                background-image: linear-gradient(to bottom, #7ed858, #e7838b, #737aa0, #5270fb);
+            }
+        }
+    }
+
+    @media (min-width: 1024px) and (max-width: 1380px) {
+        .container {
+            width: 1250px !important;
+        }
+    }
+
+    .data-title {
+        font-family: 'SF Pro Display';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 49px;
+        text-align: left;
+        color: #000000;
+        opacity: 0.8;
+        float: left;
+    }
+
+    .data-title-2 {
+        font-family: SF Pro Display;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 16px;
+        text-align: center;
+        color: #000000;
+        opacity: 0.7;
+    }
+}
+
+.box-content .box-map {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+.url-content {
+    padding-left: 0px;
+}
+
+.header-right {
+    float: left;
+    padding: 0px 20px;
+    background-color: white;
+    width: 100%;
+    margin-top: 15px;
+
+
+    @media (min-width: 0px) and (max-width: 880px) {
+        padding-left: 0px;
+        display: inline-grid;
+    }
+
+    .data-title {
+        float: left;
+
+        h1 {
+            font-weight: 700;
+            font-size: 21px;
+            color: #000000;
+        }
+
+        .text-1 {
+            font-style: normal;
+            font-weight: 400;
+            font-size: 14px;
+            color: #000000;
+            opacity: 0.5;
+            float: left;
+        }
+    }
+}

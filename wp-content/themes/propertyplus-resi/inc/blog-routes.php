@@ -1,10 +1,18 @@
 <?php
 /**
- * B2 + B3 - /blogs (danh sach) va /blogs/{alias}-{id} (chi tiet). Dung cung 1 co che voi
- * A2 (inc/office-detail-route.php): tu dang ky rewrite rule + query var + template_include,
- * KHONG dung CPT 'news' (inc/cpt-news.php, slug rieng "tin-tuc") - CPT do khong duoc lien ket
- * toi tu bat cu dau trong theme (header.php, front-page.php, sitemap_posts.xml deu tro thang
- * ve /blogs/{alias}-{id}), nen khong dung lam URL cong khai o day de tranh 2 nguon su that.
+ * B2 (/blogs, danh sach) + B3 (/blog/{alias}-{id}, chi tiet - CHU Y so IT, khac goc "blogs" cua
+ * danh sach - xem ghi chu chi tiet trong pplus_blog_detail_url(), inc/api-client.php). Dung cung
+ * 1 co che voi A2 (inc/office-detail-route.php): tu dang ky rewrite rule + query var +
+ * template_include, KHONG dung CPT 'news' (inc/cpt-news.php, slug rieng "tin-tuc") - CPT do khong
+ * duoc lien ket toi tu bat cu dau trong theme (header.php, front-page.php, sitemap_posts.xml deu
+ * tro thang ve /blogs hoac /blog/{alias}-{id}), nen khong dung lam URL cong khai o day de tranh 2
+ * nguon su that.
+ *
+ * SUA 17/9: rewrite rule chi tiet TRUOC DAY dung nham "blogs/{alias}-{id}" (so nhieu, giong het
+ * goc danh sach) - xac nhan qua doc truc tiep app-routing.module.ts + moi routerLink that trong
+ * blog-list/blog-detail/home.component.html deu dung "blog" SO IT rieng cho chi tiet. Bug nay tu
+ * "an toan" voi chinh no (pplus_blog_detail_url() cung sai giong het nen link noi bo van bam duoc)
+ * nhung sai hoan toan so voi URL That cua production/API.
  */
 
 if (!defined('ABSPATH')) {
@@ -12,11 +20,11 @@ if (!defined('ABSPATH')) {
 }
 
 add_action('init', function () {
-    // /blogs/{alias}-{id} phai dang ky TRUOC /blogs de khop dung (2 rule khong de doi trung
-    // pattern vi ([^/]+) bat buoc it nhat 1 ky tu, nhung dat chi tiet truoc cho ro rang).
-    add_rewrite_rule('^blogs/([^/]+)/?$', 'index.php?pplus_blog_detail=1&pplus_alias_id=$matches[1]', 'top');
+    // /blog/{alias}-{id} (chi tiet, SO IT) phai dang ky TRUOC /blogs (danh sach, SO NHIEU) de
+    // khop dung (2 goc khac nhau nen thuc ra khong de doi trung, nhung giu thu tu cho ro rang).
+    add_rewrite_rule('^blog/([^/]+)/?$', 'index.php?pplus_blog_detail=1&pplus_alias_id=$matches[1]', 'top');
     add_rewrite_rule('^blogs/?$', 'index.php?pplus_blog_list=1', 'top');
-    add_rewrite_rule('^en/blogs/([^/]+)/?$', 'index.php?pplus_blog_detail=1&pplus_alias_id=$matches[1]', 'top');
+    add_rewrite_rule('^en/blog/([^/]+)/?$', 'index.php?pplus_blog_detail=1&pplus_alias_id=$matches[1]', 'top');
     add_rewrite_rule('^en/blogs/?$', 'index.php?pplus_blog_list=1', 'top');
 });
 
@@ -42,9 +50,12 @@ add_action('parse_query', function (WP_Query $query) {
 });
 
 add_action('init', function () {
-    if (get_option('pplus_rewrite_flushed_v3') !== '1') {
+    // Bump "_v3" -> "_v4" (17/9): rewrite rule chi tiet vua doi tu "blogs/" sang "blog/" - option
+    // cu da la '1' tu truoc, se KHONG tu flush lai neu giu nguyen ten, khien rule MOI khong bao gio
+    // duoc ghi vao bang rewrite that su (van khop nham theo rule cu da cache).
+    if (get_option('pplus_rewrite_flushed_v4') !== '1') {
         flush_rewrite_rules();
-        update_option('pplus_rewrite_flushed_v3', '1');
+        update_option('pplus_rewrite_flushed_v4', '1');
     }
 }, 20);
 
@@ -107,7 +118,7 @@ add_filter('pre_get_document_title', function (string $title): string {
         return $title;
     }
     $data = pplus_get_blog_detail_from_query_vars();
-    $selected = $data['result']['dataSelected'] ?? null;
+    $selected = $data['result']['data'] ?? null;
     if (!$selected) {
         return $title;
     }
@@ -119,7 +130,7 @@ add_action('wp_head', function () {
         return;
     }
     $data = $data_model = pplus_get_blog_detail_from_query_vars();
-    $selected = $data['result']['dataSelected'] ?? null;
+    $selected = $data['result']['data'] ?? null;
     if (!$selected) {
         return;
     }

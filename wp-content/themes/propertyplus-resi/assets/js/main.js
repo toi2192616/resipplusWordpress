@@ -12,12 +12,17 @@
         nextArrow: "<button type='button' aria-label='button' class='slick-next pull-right'><i class='fa fa-angle-right' aria-hidden='false' title='next'></i></button>",
       };
       if ($('.offices-col').length) {
+        // Resi: slidesToShow=4 (KHONG phai 3 nhu ban Van phong) - dung theo LoadList() that trong
+        // home.component.ts (slidesPerView:4, breakpoints{0:1,1024:4}) - bug thuc te da gap khi
+        // doi chieu anh chup voi propertyplus.com.vn (hien 3 the/hang thay vi 4).
         $('.offices-col').slick($.extend({
-          slidesToShow: 3, slidesToScroll: 1, infinite: true, autoplaySpeed: 5000, autoplay: true, lazyLoad: 'ondemand',
+          slidesToShow: 4, slidesToScroll: 1, infinite: true, autoplaySpeed: 5000, autoplay: true, lazyLoad: 'ondemand',
           responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1 } },
-            { breakpoint: 768, settings: { slidesToShow: 2, slidesToScroll: 1 } },
-            { breakpoint: 480, settings: { slidesToShow: 1, slidesToScroll: 1 } },
+            { breakpoint: 1024, settings: { slidesToShow: 1, slidesToScroll: 1 } },
+            // <=800px: ban goc (LoadList() home.component.ts + .silder-aparment-loop max-width:290px) chi
+            // 1 slide rong 290px + de lo dau slide ke tiep (peek), KHONG co mui ten (khong khai bao
+            // navigation) - variableWidth de Slick dung dung be rong 290px cua moi slide (xem home.less).
+            { breakpoint: 800, settings: { slidesToShow: 1, slidesToScroll: 1, variableWidth: true, arrows: false } },
           ],
         }, slickArrows));
       }
@@ -31,8 +36,74 @@
           ],
         }, slickArrows));
       }
-      if ($('.silder-newspapers').length && $(window).width() < 992) {
-        $('.silder-newspapers').slick($.extend({ slidesToShow: 1, slidesToScroll: 1, infinite: true, autoplaySpeed: 10000, autoplay: true, lazyLoad: 'ondemand' }, slickArrows));
+      // Resi: KHONG con gioi han "chi duoi 992px" nhu ban Van phong - CSS that cua Resi
+      // (home-component.css, bien dich tu home.component.less) khong co san luoi/flex du phong cho
+      // desktop (ban goc luon dung Swiper carousel, moi kich thuoc man hinh), nen .item-newspapers
+      // se xep chong doc full-width (~4000px cao) neu khong chay Slick tren desktop - bug thuc te
+      // da gap khi kiem tra bang mat, khac voi ban Van phong (co luoi tinh rieng cho desktop).
+      if ($('.silder-newspapers').length) {
+        $('.silder-newspapers').slick($.extend({
+          slidesToShow: 4, slidesToScroll: 1, infinite: true, autoplaySpeed: 10000, autoplay: true, lazyLoad: 'ondemand',
+          responsive: [
+            // 24/9: ban goc Swiper breakpoints {0:N,1024:M} (home.component.ts) - duoi 1024px CO DINH N slide, KHONG co mui ten nhin thay tren mobile (nut swiper-button-* nam ngoai khung left/right:-65px).
+            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
+          ],
+        }, slickArrows));
+      }
+      // Trang chu Resi (khong co ben Van phong): nhan vien, doi tac, khach hang, kham pha - cung
+      // quy uoc voi 3 khoi tren (mot class dung chung cho nhieu khoi, moi khoi tu khoi tao rieng).
+      if ($('.silder-nhanvien-track').length) {
+        $('.silder-nhanvien-track').slick($.extend({
+          slidesToShow: 4, slidesToScroll: 1, infinite: true, autoplaySpeed: 6000, autoplay: true, lazyLoad: 'ondemand',
+          responsive: [
+            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
+          ],
+        }, slickArrows));
+      }
+      if ($('.partner-silder-track').length) {
+        $('.partner-silder-track').slick($.extend({
+          slidesToShow: 6, slidesToScroll: 1, infinite: true, autoplaySpeed: 5000, autoplay: true, lazyLoad: 'ondemand',
+          responsive: [
+            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
+          ],
+        }, slickArrows));
+      }
+      if ($('.customer-silder-track').length) {
+        $('.customer-silder-track').slick($.extend({
+          slidesToShow: 6, slidesToScroll: 1, infinite: true, autoplaySpeed: 5000, autoplay: true, lazyLoad: 'ondemand',
+          responsive: [
+            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
+          ],
+        }, slickArrows));
+      }
+      if ($('.cuisines-silder-track').length) {
+        $('.cuisines-silder-track').slick($.extend({
+          slidesToShow: 3, slidesToScroll: 1, infinite: true, autoplaySpeed: 7000, autoplay: true, lazyLoad: 'ondemand',
+          responsive: [
+            { breakpoint: 1024, settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false } },
+          ],
+        }, slickArrows));
+      }
+      // Trang "Ve chung toi" (page-about.php) - 2 carousel ban that dung Swiper (slidesPerView:4,
+      // breakpoints{0:2,1024:4}, spaceBetween:15, loop:true - xem about-index.component.ts
+      // BaseAction()), port sang Slick cung quy uoc voi cac khoi tren. Khoang cach that giua slide
+      // (".slick-slide{padding:0 7.5px}") da nam san trong about-component.css
+      // (component-source/about.less), khong can div boc rieng nhu apt-card-slide.
+      if ($('.blog-silder-loop').length) {
+        $('.blog-silder-loop').slick($.extend({
+          slidesToShow: 4, slidesToScroll: 1, infinite: true, autoplaySpeed: 8000, autoplay: true, lazyLoad: 'ondemand',
+          responsive: [
+            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+          ],
+        }, slickArrows));
+      }
+      if ($('.silder-about-loop').length) {
+        $('.silder-about-loop').slick($.extend({
+          slidesToShow: 4, slidesToScroll: 1, infinite: true, autoplaySpeed: 8000, autoplay: true, lazyLoad: 'ondemand',
+          responsive: [
+            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+          ],
+        }, slickArrows));
       }
     }
     // Swiper carousel "Video du an" - giong swiperParams trong home.component.ts BaseAction()
@@ -71,23 +142,9 @@
       $('.header-navigation').toggleClass('showMenu');
     });
 
-    // Bam vao muc menu co submenu (Ha Noi/TPHCM, "Cho thue van phong dich vu", Tin tuc) tren
-    // MOBILE se MO submenu thay vi dieu huong luon - thay the showChildrenMenu()/AddClassMenu()
-    // ben Angular (teamplate-header.component.ts dong 135-142: preventDefault() + gan class "open"
-    // cho <li> cha, CSS ".dropdown.open .dropdown-menu" da co san tu truoc nhung chua co gi gan
-    // class "open" ca nen submenu KHONG BAO GIO mo duoc tren mobile - bug thuc te, khong phai
-    // thieu CSS). Desktop KHONG doi (van dua vao bootstrap-hover-dropdown.js co san tu-hover-mo).
-    $('.header-navigation li.dropdown > a.dropdown-toggle').on('click', function (e) {
-      if ($(window).width() > 800) {
-        return;
-      }
-      var $li = $(this).closest('li.dropdown');
-      if (!$li.children('.dropdown-menu').length) {
-        return;
-      }
-      e.preventDefault();
-      $li.toggleClass('open');
-    });
+    // Submenu tren mobile: xu ly duy nhat trong assets/js/resi-ui.js ([data-pplus-submenu-toggle]). Truoc day
+    // ca 2 file cung gan handler toggle class "open" cho cung 1 the <a> nen bam 1 lan = toggle 2 lan = khong doi
+    // gi (menu mobile "bam vao khong tuong tac duoc").
 
     // Toggle search box mobile (thay the showSearchBase())
     $('[data-pplus-toggle="search"]').on('click', function () {
@@ -121,9 +178,9 @@
     // co z-index rieng - neu khong an list se DE LEN map (z-index:99 > auto), map hien "co ve
     // nhu bien mat" du opacity/position da dung (bug thuc te da gap khi tu kiem tra).
     $(document).on('click', '.box-map .action-close-map, .box-map .action-close-map-label, .GroupMoblieActive .btnBackToMap-gr', function () {
-      var $mapOffice = $(this).closest('.map-office, .box-content').length
-        ? $(this).closest('.map-office, .box-content')
-        : $(this).closest('.row');
+      var $mapOffice = $(this).closest('.map-office').length
+        ? $(this).closest('.map-office')
+        : ($(this).closest('.box-content').length ? $(this).closest('.box-content') : $(this).closest('.row'));
       var $boxMap = $mapOffice.find('.box-map');
       // Toi uu toc do (13/8/2026): tren mobile, script Google Maps CHI tai luc nguoi dung THUC SU
       // bam xem ban do (xem assets/js/pplus-maps.js) - "invision-map" dang co mat = dang o che do
@@ -134,6 +191,15 @@
       $boxMap.toggleClass('invision-map');
       $mapOffice.find('.box-list.init').toggleClass('pplus-hide-mobile-map-mode');
       $mapOffice.find('.GroupMoblieActive').toggle();
+      // showMap() that (search-base.component.ts dong 158-179), nhanh mobile: fullContent=false (dang
+      // xem ban do) -> an ".footer-mobile" (css display:none), bo class "resultOnTop" khoi
+      // ".searching-tool" (thanh tim kiem thanh dang "the noi" bo goc, xem layout.less) va them
+      // "gmap-search" vao <body>; quay ve danh sach thi lam nguoc lai ($(".footer-mobile") tra ve
+      // "grid" - o day xoa inline style de tra ve CSS goc).
+      var nowMapMode = !$boxMap.hasClass('invision-map');
+      $('.searching-tool').toggleClass('resultOnTop', !nowMapMode);
+      $('.footer-mobile').css('display', nowMapMode ? 'none' : '');
+      $('body').toggleClass('gmap-search', nowMapMode);
       if (isOpeningMap) {
         document.dispatchEvent(new CustomEvent('pplus:map-view-opened'));
       }
@@ -478,6 +544,16 @@
       window.history.back();
     });
 
+    // Nut "Quay lai" nho tren trang chi tiet can ho (mobile): chi history.back() khi trang truoc la chinh site nay
+    // (vao thang tu Google thi back se roi khoi site) - con lai di theo href du phong.
+    $('[data-pplus-back]').on('click', function (e) {
+      var ref = document.referrer;
+      if (ref && ref.indexOf(window.location.origin + '/') === 0 && window.history.length > 1) {
+        e.preventDefault();
+        window.history.back();
+      }
+    });
+
     // Hien 1 khoi thong bao THUONG TRUC (khong tu an nhu toastr) ngay trong chinh form vua gui -
     // theo yeu cau nguoi dung sau khi doi chieu voi ban chinh propertyplus.vn that (ban chinh
     // chuyen han sang 1 trang rieng bao ket qua, khong tu an). O day KHONG chuyen trang (giu ngu
@@ -813,6 +889,293 @@
         }
         $('.pplus-location-suggest').hide();
       });
+    }
+
+    // ===== Trang "Đăng ký dịch vụ" (TypeSite 4, parts/service-register.php) =====
+    if ($('#service-TinhGiaTri').length) {
+      // Bo dem (+/-) "Số phòng ngủ"/"Số người ở" - thay the setTimeout(() => $(".numberspin").
+      // inputSpinner(), 100) ben Angular (khong can setTimeout: PHP da render san gia tri mac dinh
+      // ngay trong HTML dau tien, khong phai doi 1 API tra ve nhu Angular).
+      if ($.fn.inputSpinner) {
+        $('.numberspin').inputSpinner();
+      }
+
+      // Do lai gia tri HIEN TAI cua bang gia + thong tin can ho vao modal xac nhan MOI LAN bam
+      // "Đăng ký dịch vụ" (khop dung hanh vi Angular that: modal doc THANG Model/DataInput dang co
+      // trong bo nho luc mo, khong phai 1 ban sao dung san tu luc trang tai xong) - dung .text()
+      // (khong dung noi chuoi HTML) cho MOI gia tri vi day la du lieu nguoi dung tu go (Ten du an/
+      // Ten toa nha...), tranh XSS.
+      $('#pplus-open-service-register-modal').on('click', function () {
+        var $chose = $('#pplus-service-modal-chose').empty();
+        var cfg = (typeof PPLUS_SERVICE_REGISTER_CONFIG !== 'undefined') ? PPLUS_SERVICE_REGISTER_CONFIG : null;
+
+        $('#service-TinhGiaTri tr[data-name]').each(function () {
+          var $row = $(this);
+          var name = $row.data('name');
+          var type = parseInt($row.data('type'), 10);
+          var value = $row.find('.priceInput').val();
+          if (type === 2 && cfg) {
+            value = (String(value) === '0') ? cfg.noText : cfg.yesText;
+          }
+          var $item = $('<div class="row col-md-12 mt-0 mb-0"></div>');
+          $('<div class="col-md-3"></div>').append($('<div class="_label"></div>').text(name)).appendTo($item);
+          $('<div class="col-md-9"></div>').append($('<div class="quantity-ctn"></div>').text(value)).appendTo($item);
+          $chose.append($item);
+        });
+
+        $('#modal-echo-ProjectName').text($('#NameProject').val());
+        $('#modal-echo-BuildingName').text($('#NameBuilding').val());
+        $('#modal-echo-FloorNo').text($('#NumberFloor').val());
+        $('#modal-echo-RoomNo').text($('#NumberApartment').val());
+        $('#modal-echo-BedroomQty').text($('#Bedroom').val());
+        $('#modal-echo-PersonQty').text($('#People').val());
+      });
+
+      // Gui that (thay the registerServiceSubmit() Angular): kiem tra (cung thu tu/quy tac voi ban
+      // goc) -> xac nhan (window.confirm() thay SweetAlert2, cung 1 quyet dinh da dung cho
+      // ".pplus-advise-form" ben tren) -> POST toi REST route RIENG (inc/service-register-route.php
+      // - KHAC pplus/v1/advise, field/endpoint .NET khac nhau, xem ghi chu file do).
+      $('#HoanTatDangKyDichVu').on('click', function () {
+        var cfg = (typeof PPLUS_SERVICE_REGISTER_CONFIG !== 'undefined') ? PPLUS_SERVICE_REGISTER_CONFIG : null;
+        if (!cfg) {
+          return;
+        }
+
+        var email = $('#modal-OwnerEmail').val() || '';
+        var phone = $('#modal-OwnerMobile').val() || '';
+        var agree = $('#modal-DongYDieuKhoan').is(':checked');
+
+        if (!email || !phone) {
+          toastr.error(cfg.errorContact, cfg.warningTitle);
+          return;
+        }
+        if (!agree) {
+          toastr.error(cfg.errorTerms, cfg.warningTitle);
+          return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          toastr.error(cfg.errorEmail, cfg.warningTitle);
+          return;
+        }
+        if (!/^\d{9,11}$/.test(phone)) {
+          toastr.error(cfg.errorPhone, cfg.warningTitle);
+          return;
+        }
+        if (!window.confirm(cfg.confirmMsg)) {
+          return;
+        }
+
+        var inputPrice = [];
+        $('#service-TinhGiaTri tr[data-name]').each(function () {
+          var $row = $(this);
+          inputPrice.push({
+            name: $row.data('name'),
+            type: parseInt($row.data('type'), 10),
+            value: $row.find('.priceInput').val()
+          });
+        });
+
+        var payload = {
+          OwnerName: $('#modal-OwnerName').val() || '',
+          OwnerEmail: email,
+          OwnerMobile: phone,
+          ProjectName: $('#NameProject').val() || '',
+          BuildingName: $('#NameBuilding').val() || '',
+          Area: $('#Area').val() || '',
+          FloorNo: $('#NumberFloor').val() || '',
+          RoomNo: $('#NumberApartment').val() || '',
+          BedroomQty: $('#Bedroom').val() || '',
+          PersonQty: $('#People').val() || '',
+          DongYDieuKhoan: true,
+          InputPrice: inputPrice,
+          lang: cfg.lang
+        };
+
+        var $submitBtn = $(this).prop('disabled', true);
+        $.ajax({
+          url: cfg.restUrl,
+          method: 'POST',
+          contentType: 'application/json; charset=utf-8',
+          data: JSON.stringify(payload)
+        }).done(function (rs) {
+          if (rs && rs.success) {
+            toastr.success(rs.message || '');
+            // SUA 30/9: modal nay gio dung Bootstrap that (data-bs-toggle, xem parts/service-register.php)
+            // thay vi he thong rieng cua theme - dong qua API Bootstrap, khong con class "two"/"out" nua.
+            var modalEl = document.getElementById('modal-service-register');
+            var instance = bootstrap.Modal.getInstance(modalEl);
+            if (instance) {
+              instance.hide();
+            }
+          } else {
+            toastr.error((rs && rs.message) || cfg.failMsg, cfg.warningTitle);
+          }
+        }).fail(function () {
+          toastr.error(cfg.failMsg, cfg.warningTitle);
+        }).always(function () {
+          $submitBtn.prop('disabled', false);
+        });
+      });
+    }
+
+    // ===== Trang "Đăng ký cho thuê nhà" (TypeSite 2, parts/owner-register-leasing.php) =====
+    // Thay the RegisterLeasingComponent that (register-leasing.component.ts) - port
+    // MainTest()/readURL()/AddImg()/removeUpload() (dong 84-123, tai anh -> base64, giu trong 1
+    // mang JS thay vi Model.PhotoList cua Angular) + IssueNewApartment() (dong 125-177, kiem tra ->
+    // xac nhan -> gui that). Nut mo modal doc lai form HIEN TAI vao luc bam (cung co che voi
+    // TypeSite 4 o tren), REST route RIENG (inc/owner-register-route.php - field/endpoint .NET
+    // khac han TypeSite 4).
+    if ($('#frm-owner-regis').length) {
+      if ($.fn.inputSpinner) {
+        $('.numberspin').inputSpinner();
+      }
+
+      // Anh tai len - giu base64 trong 1 mang JS thuan (thay the Model.PhotoList), ve lai
+      // "#drop_zone_img" moi lan them/xoa. Dung FileReader.readAsDataURL() y het MainTest() that.
+      var photoList = [];
+
+      function renderPhotoList() {
+        var $zone = $('#drop_zone_img').empty();
+        photoList.forEach(function (base64, i) {
+          var $item = $(
+            '<div class="item-update-img">' +
+              '<div class="file-upload">' +
+                '<div class="file-upload-content">' +
+                  '<img class="file-upload-image" alt="your image" />' +
+                  '<div class="image-title-wrap removeUpload"><i class="fa fa-trash"></i></div>' +
+                '</div>' +
+              '</div>' +
+            '</div>'
+          );
+          $item.find('.file-upload-image').attr('src', base64);
+          $item.find('.removeUpload').on('click', function () {
+            photoList.splice(i, 1);
+            renderPhotoList();
+          });
+          $zone.append($item);
+        });
+      }
+
+      $('#pplus-owner-photo-input').on('change', function () {
+        var files = this.files;
+        if (!files || !files.length) {
+          return;
+        }
+        Array.prototype.forEach.call(files, function (file) {
+          var reader = new FileReader();
+          reader.onload = function () {
+            photoList.push(reader.result);
+            renderPhotoList();
+          };
+          reader.readAsDataURL(file);
+        });
+        $(this).val('');
+      });
+
+      // Doc lai form hien tai vao cac o "modal-echo-*" ngay luc bam "Gửi thông tin" (cung co che
+      // voi TypeSite 4 - modal khong giu 1 ban sao rieng, luon phan anh dung form dang hien).
+      $('#pplus-open-owner-register-modal').on('click', function () {
+        var cfg = (typeof PPLUS_OWNER_REGISTER_CONFIG !== 'undefined') ? PPLUS_OWNER_REGISTER_CONFIG : null;
+        $('#modal-echo-NameProject').text($('#NameProject').val());
+        $('#modal-echo-NameBuilding').text($('#NameBuilding').val());
+        $('#modal-echo-NumberFloor').text($('#NumberFloor').val());
+        $('#modal-echo-NumberApartment').text($('#NumberApartment').val());
+        $('#modal-echo-Bedroom').text($('#Bedroom').val());
+        $('#modal-echo-WCroom').text($('#WCroom').val());
+        $('#modal-echo-Area').text($('#Area').val());
+        $('#modal-echo-NTT').text($('input[name="NTT"]:checked').val() || '');
+        $('#modal-echo-Remarks').text($('#Remarks').val());
+        $('#modal-echo-TotalPrice').text($('#TotalPrice').val() + ' ' + $('#TotalPriceUnit').val());
+        var isNegotiate = $('#IsNegotiatePrice').is(':checked');
+        $('#modal-echo-IsNegotiatePrice').text(isNegotiate ? (cfg ? cfg.yesText : '') : (cfg ? cfg.noText : ''));
+      });
+
+      $('#HoanTatDangKyChoThueNha').on('click', function () {
+        var cfg = (typeof PPLUS_OWNER_REGISTER_CONFIG !== 'undefined') ? PPLUS_OWNER_REGISTER_CONFIG : null;
+        if (!cfg) {
+          return;
+        }
+
+        var email = $('#modal-OwnerEmail').val() || '';
+        var phone = $('#modal-OwnerMobile').val() || '';
+        var agree = $('#modal-DongYDieuKhoan').is(':checked');
+
+        if (!email || !phone) {
+          toastr.error(cfg.errorContact, cfg.warningTitle);
+          return;
+        }
+        if (!agree) {
+          toastr.error(cfg.errorTerms, cfg.warningTitle);
+          return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          toastr.error(cfg.errorEmail, cfg.warningTitle);
+          return;
+        }
+        if (!/^\d{9,11}$/.test(phone)) {
+          toastr.error(cfg.errorPhone, cfg.warningTitle);
+          return;
+        }
+        if (!window.confirm(cfg.confirmMsg)) {
+          return;
+        }
+
+        var payload = {
+          OwnerName: $('#modal-OwnerName').val() || '',
+          OwnerEmail: email,
+          OwnerMobile: phone,
+          NameProject: $('#NameProject').val() || '',
+          NameBuilding: $('#NameBuilding').val() || '',
+          NumberFloor: $('#NumberFloor').val() || '',
+          NumberApartment: $('#NumberApartment').val() || '',
+          Area: $('#Area').val() || '',
+          Bedroom: $('#Bedroom').val() || '',
+          WCroom: $('#WCroom').val() || '',
+          NTT: $('input[name="NTT"]:checked').val() || '',
+          Remarks: $('#Remarks').val() || '',
+          IsNegotiatePrice: $('#IsNegotiatePrice').is(':checked'),
+          TotalPrice: $('#TotalPrice').val() || '',
+          TotalPriceUnit: $('#TotalPriceUnit').val() || '',
+          PhotoList: photoList,
+          FavoriteLink: window.location.href,
+          lang: cfg.lang
+        };
+
+        var $submitBtn = $(this).prop('disabled', true);
+        $.ajax({
+          url: cfg.restUrl,
+          method: 'POST',
+          contentType: 'application/json; charset=utf-8',
+          data: JSON.stringify(payload)
+        }).done(function (rs) {
+          if (rs && rs.success) {
+            toastr.success(rs.message || '');
+            // SUA 30/9: modal nay gio dung Bootstrap that (data-bs-toggle, xem parts/owner-register-leasing.php)
+            // thay vi he thong rieng cua theme - dong qua API Bootstrap, khong con class "two"/"out" nua.
+            var modalEl = document.getElementById('modal-owner-register');
+            var instance = bootstrap.Modal.getInstance(modalEl);
+            if (instance) {
+              instance.hide();
+            }
+          } else {
+            toastr.error((rs && rs.message) || cfg.failMsg, cfg.warningTitle);
+          }
+        }).fail(function () {
+          toastr.error(cfg.failMsg, cfg.warningTitle);
+        }).always(function () {
+          $submitBtn.prop('disabled', false);
+        });
+      });
+    }
+
+    // A3/A4 (page-reference.php): dropdown "Lọc theo" (".order-control", group-oder) dung select2
+    // - thu vien da enqueue SAN site-wide qua functions.php (pplus_officebase_styles/scripts) nhung
+    // truoc gio CHUA TUNG duoc goi .select2() o dau ca trong theme nay (bug thuc te: dropdown hien
+    // ra nhu <select> tho, khong giong ban that). minimumResultsForSearch:-1 an o tim kiem (5 lua
+    // chon co dinh, khop dung ban goc khong co o search). "change" van submit form nhu cu vi select2
+    // KHONG thay the <select> goc, chi an di va ULY proxy - "onchange" tren <select> that van no.
+    if ($.fn.select2 && $('.order-control').length) {
+      $('.order-control').select2({ minimumResultsForSearch: -1, width: 'auto' });
     }
   });
 })(jQuery);

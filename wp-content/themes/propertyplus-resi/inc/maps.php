@@ -83,7 +83,14 @@ function pplus_enqueue_google_maps(): void {
         printf('<link rel="preconnect" href="https://maps.googleapis.com" />' . "\n");
         printf('<link rel="preconnect" href="https://maps.gstatic.com" crossorigin />' . "\n");
     }, 1);
-    wp_enqueue_script('pplus-maps', PPLUS_THEME_URI . '/assets/js/pplus-maps.min.js', ['pplus-ob-script-0'], pplus_asset_version('assets/js/pplus-maps.min.js'), true);
+    // SUA 30/9 (bug thuc te nguoi dung bao cao: "dưới cùng bản đồ chưa hiện", A2 can ho VA van
+    // phong): dependency "pplus-ob-script-0" KHONG PHAI 1 handle co that (functions.php dang ky
+    // officebase JS voi ten "pplus-ob-js-{i}", khong phai "pplus-ob-script-{i}") - WordPress khi gap
+    // 1 dependency khong ton tai se TU AM THAM BO QUA toan bo script nay (khong in ra the <script>
+    // nao ca, khong loi/warning gi de nhan ra), khien pplus-maps.min.js KHONG BAO GIO duoc tai du ham
+    // nay duoc goi dung. Doi sang "jquery" (handle loi cua WordPress, luon co that va la thu duy nhat
+    // script nay thuc su can truoc no, dung $() xuyen suot).
+    wp_enqueue_script('pplus-maps', PPLUS_THEME_URI . '/assets/js/pplus-maps.min.js', ['jquery'], pplus_asset_version('assets/js/pplus-maps.min.js'), true);
     wp_add_inline_script('pplus-maps', 'var PPLUS_MAP_CONFIG = ' . wp_json_encode([
         'key'      => $key,
         'lang'     => pplus_current_lang(),

@@ -1,12 +1,19 @@
 /**
  * Danh sach yeu thich (port module Angular "favourite" + partials create/list-farourite). Toan bo
- * du lieu luu o localStorage (giong Angular, khong can login):
- *   ListFavourite        = [{ id, FavouriteName, DateCreate }]                (bo suu tap)
- *   listOfficeFavourite  = [{ IdFavourite, projectId, projectName, ... }]     (VP trong tung bo)
+ * du lieu luu o localStorage (giong Angular, khong can login) - DUNG DUNG TEN KHOA THAT (xac nhan
+ * qua favourite.component.ts/create-farourite.component.ts, PPlusAngularResi):
+ *   ListFavourite            = [{ id, FavouriteName, DateCreate }]                 (bo suu tap)
+ *   listApartmentFavourite   = [{ IdFavourite, apartmentId, title, photoList, ... }] (can ho trong tung bo)
  *
- * Nut ".item-like" (Yeu thich) tren card (parts/office-card.php) mo modal (parts/favourite-modals.php).
- * Trang /office-favourite (page-favourite.php) doc localStorage roi goi REST proxy
- * (inc/favourite-rest.php) de render luoi VP + Google Map.
+ * SUA 22/9 (cung lan sua page-favourite.php - xem docblock file do): khoa cu "listOfficeFavourite"
+ * la tan du copy tu theme Van phong, KHONG khop du lieu that cua Resi (component that dung
+ * "listApartmentFavourite" + field "apartmentId", khong phai "projectId"). Nut ".item-like" gio
+ * doc tu "data-apartment" (parts/apartment-card.php, moi them) thay vi "data-office" cu (van giu
+ * fallback doc "data-office" phong khi office-card.php con noi nao dang dung).
+ *
+ * Nut ".item-like" (Yeu thich) tren card mo modal (parts/favourite-modals.php). Trang
+ * /danh-sach-yeu-thich (page-favourite.php) CHI doc localStorage (khong goi API/REST nao - giong
+ * y het LoadList() that, xem doc trong page-favourite.php) de render luoi bo suu tap.
  *
  * File nay BAN GOC (Dev A) co ca phan "So sanh" (dung chung ".viewdetail" + key localStorage
  * "ListProducCompare") - da BO PHAN DO khi merge 2 nhanh Dev A/Dev B, GIU LAI tinh nang "So sanh"
@@ -18,7 +25,7 @@
     var CFG = window.PPLUS_FAV_CONFIG || {};
     var T = CFG.i18n || {};
     var LS_COLL = 'ListFavourite';
-    var LS_OFF = 'listOfficeFavourite';
+    var LS_OFF = 'listApartmentFavourite';
 
     function readLS(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch (e) { return []; } }
     function writeLS(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
@@ -37,6 +44,9 @@
         function p(n) { return (n < 10 ? '0' : '') + n; }
         return p(dt.getDate()) + '/' + p(dt.getMonth() + 1) + '/' + dt.getFullYear();
     }
+    // "apartmentId" (Resi that) hoac "projectId" (Office, fallback) - dung o nhieu cho de tranh
+    // lap dieu kien "a.apartmentId || a.projectId" moi lan can so sanh/dedup 1 item yeu thich.
+    function favId(o) { return o && (o.apartmentId != null ? o.apartmentId : o.projectId); }
 
     /* ---------------- Modal he thong ---------------- */
     function openModal(id) {
@@ -56,11 +66,12 @@
         }
     });
 
-    /* ---------------- Doc office tu card ---------------- */
+    /* ---------------- Doc can ho/VP tu card ---------------- */
     function officeFromEl(el) {
-        var card = el.closest('[data-office]');
+        var card = el.closest('[data-apartment]') || el.closest('[data-office]');
         if (!card) return null;
-        try { return JSON.parse(card.getAttribute('data-office')); } catch (e) { return null; }
+        var raw = card.getAttribute('data-apartment') || card.getAttribute('data-office');
+        try { return JSON.parse(raw); } catch (e) { return null; }
     }
 
     /* ================= THEM VAO BO SUU TAP (nut Yeu thich) ================= */
@@ -89,14 +100,41 @@
         ids.forEach(function (collId) {
             var o = JSON.parse(JSON.stringify(pendingOffice));
             o.IdFavourite = collId;
-            var dup = offices.some(function (x) { return x.IdFavourite === collId && x.projectId === o.projectId; });
+            var dup = offices.some(function (x) { return x.IdFavourite === collId && favId(x) === favId(o); });
             if (!dup) offices.push(o);
         });
         writeLS(LS_OFF, offices);
     }
 
-    /* ================= TAO BO SUU TAP ================= */
+    /* ================= TAO/SUA BO SUU TAP ================= */
     var createMode = 'plain'; // 'plain' = tao roi thoi; 'add' = tao xong them pendingOffice vao
+    var editCollId = null; // != null => dang SUA ten bo suu tap co san (khong tao moi) - port
+    // EditFavourite() (create-farourite.component.ts dong 104-114): "Favourite" != undefined thi
+    // nut doi thanh "Sua", chi doi FavouriteName, KHONG tao id moi/KHONG dong toi listApartmentFavourite.
+
+    // Mo modal tao/sua o TRANG THAI "plain" (tao moi) hoac "edit" (sua ten, "collId" != null).
+    // KHONG dong toi "createMode"/"pendingOffice" o day - do la trang thai cua NGUOI GOI ham nay
+    // (vd nut "Bộ sưu tập mới" trong modal them-vao can giu "createMode='add'" + "pendingOffice"
+    // nguyen ven qua ham nay) - tung co bug thuc te: ham nay tu RESET ca 2 bien ve 'plain'/null
+    // ngay sau khi nguoi goi vua gan 'add', khien bam "Bộ sưu tập mới" tao bo suu tap THANH CONG
+    // nhung KHONG gan can ho dang bam "thích" vao bo suu tap moi do (im lang, khong loi).
+    function openCreateModal(collId) {
+        editCollId = collId || null;
+        var input = document.getElementById('pplus-create-name');
+        var btn = document.getElementById('pplus-create-add');
+        var title = document.querySelector('#pplus-modal-create .modal-title');
+        if (editCollId) {
+            var coll = readLS(LS_COLL).filter(function (c) { return c.id === editCollId; })[0];
+            if (input) input.value = coll ? coll.FavouriteName : '';
+            if (btn) btn.textContent = T.editBtn || 'Sửa';
+            if (title) title.textContent = T.editTitle || 'Đổi tên bộ sưu tập';
+        } else {
+            if (input) input.value = '';
+            if (btn) btn.textContent = T.addBtn || 'Thêm vào';
+            if (title) title.textContent = T.createTitle || 'Tạo bộ sưu tập mới';
+        }
+        openModal('pplus-modal-create');
+    }
 
     function initModalButtons() {
         // Nut "Bo suu tap moi" trong modal them-vao - PHAI dong modal them-vao truoc khi mo modal
@@ -109,20 +147,17 @@
         var addfaNew = document.getElementById('pplus-addfa-new');
         if (addfaNew) addfaNew.addEventListener('click', function () {
             createMode = 'add';
-            var i = document.getElementById('pplus-create-name'); if (i) i.value = '';
             closeModal(document.getElementById('pplus-modal-addfa'));
-            openModal('pplus-modal-create');
+            openCreateModal(null);
         });
 
-        // Nut "Tao danh sach moi" o sidebar trang /office-favourite (page-favourite.php
-        // "#pplus-fa-create") - port show-modalCreate/openCreateFarourite() (favourite.component.html/
-        // .ts ben Angular goc, khong co pendingOffice, "createMode" giu nguyen 'plain').
-        var faCreate = document.getElementById('pplus-fa-create');
+        // Nut "+" (tao bo suu tap moi) tren trang /danh-sach-yeu-thich (page-favourite.php
+        // "#btnAddCollectionGrid") - port openCreateFarourite(null) (favourite.component.html/.ts
+        // goc, khong co pendingOffice).
+        var faCreate = document.getElementById('btnAddCollectionGrid');
         if (faCreate) faCreate.addEventListener('click', function () {
             createMode = 'plain';
-            pendingOffice = null;
-            var i = document.getElementById('pplus-create-name'); if (i) i.value = '';
-            openModal('pplus-modal-create');
+            openCreateModal(null);
         });
 
         // Nut "Them vao" trong modal them-vao
@@ -136,16 +171,28 @@
             markLiked(pendingOffice);
         });
 
-        // Nut "Them vao" trong modal tao moi
+        // Nut "Them vao"/"Sua" trong modal tao/sua (tuy "editCollId", xem openCreateModal()).
         var createAdd = document.getElementById('pplus-create-add');
         if (createAdd) createAdd.addEventListener('click', function () {
             var input = document.getElementById('pplus-create-name');
             var name = input ? input.value.trim() : '';
             if (!name) { toast('error', T.needName || 'Bạn cần nhập tên bộ sưu tập'); return; }
-            var colls = readLS(LS_COLL);
+
+            if (editCollId) {
+                var colls = readLS(LS_COLL);
+                colls.forEach(function (c) { if (c.id === editCollId) c.FavouriteName = name; });
+                writeLS(LS_COLL, colls);
+                toast('success', T.renamed || 'Cập nhật bộ sưu tập thành công');
+                editCollId = null;
+                closeModal(document.getElementById('pplus-modal-create'));
+                if (window.__pplusFaPage) window.__pplusFaPage.reloadList();
+                return;
+            }
+
+            var colls2 = readLS(LS_COLL);
             var coll = { id: uuid(), FavouriteName: name, DateCreate: new Date().toISOString() };
-            colls.push(coll);
-            writeLS(LS_COLL, colls);
+            colls2.push(coll);
+            writeLS(LS_COLL, colls2);
             if (createMode === 'add' && pendingOffice) {
                 addPendingToCollections([coll.id]);
                 toast('success', T.added || 'Thêm vào bộ sưu tập thành công');
@@ -162,10 +209,11 @@
 
     function markLiked(office) {
         if (!office) return;
-        document.querySelectorAll('[data-office]').forEach(function (card) {
+        document.querySelectorAll('[data-apartment],[data-office]').forEach(function (card) {
             try {
-                var o = JSON.parse(card.getAttribute('data-office'));
-                if (o && String(o.projectId) === String(office.projectId)) card.classList.add('pplus-liked');
+                var raw = card.getAttribute('data-apartment') || card.getAttribute('data-office');
+                var o = JSON.parse(raw);
+                if (o && String(favId(o)) === String(favId(office))) card.classList.add('pplus-liked');
             } catch (e) { }
         });
     }
@@ -221,215 +269,153 @@
         }
     });
 
-    /* ================= TRANG /office-favourite ================= */
+    /* ================= TRANG /danh-sach-yeu-thich (page-favourite.php) =================
+       Port DUNG tu favourite.component.ts LoadList() that: KHONG goi API/REST nao ca, chi doc 3
+       khoa localStorage (ListFavourite/listApartmentFavourite/listProjectFavourite - ve sau
+       "Project" luon rong vi WP nay chua co tinh nang "them Project vao yeu thich" o dau ca) roi
+       ghep photoList/Count cho tung bo suu tap. KHAC HAN khoi CU (da xoa, xem git history) tung
+       goi REST "offices-by-ids"/Google Map - do la logic cua favourite-DETAIL (1 trang RIENG,
+       CHUA xay - xem docblock day du trong page-favourite.php), khong phai trang nay. */
     function initFavouritePage() {
-        var sidebar = document.getElementById('item-list-fa');
-        if (!sidebar) return;
+        var grid = document.getElementById('pplus-fa-grid');
+        if (!grid) return;
 
-        var map = null, markers = [], infoWin = null;
-        var currentColl = null;
-        var sharedIds = (function () {
-            var m = window.location.search.match(/[?&]ids=([^&]+)/); return m ? decodeURIComponent(m[1]) : null;
-        })();
+        var typeView = 1; // 1 = luoi the (mac dinh, that), 2 = bang
+        var filterText = '';
 
-        function offices() { return readLS(LS_OFF); }
         function collections() { return readLS(LS_COLL); }
+        function apartments() { return readLS(LS_OFF); }
 
-        function renderSidebar() {
+        // Ghep photoList/Count cho tung bo suu tap - port DUNG doan LoadList() (favourite.
+        // component.ts dong 81-116): gop photoList cua MOI can ho thuoc bo suu tap do, lay 4 anh
+        // dau lam thumbnail, "Count" = so luong can ho (KHONG PHAI so anh).
+        function buildList() {
+            var offs = apartments();
             var colls = collections();
-            var offs = offices();
-            sidebar.innerHTML = colls.map(function (c) {
+            if (filterText) {
+                var f = filterText.toLowerCase();
+                colls = colls.filter(function (c) { return (c.FavouriteName || '').toLowerCase().indexOf(f) !== -1; });
+            }
+            return colls.map(function (c) {
                 var inColl = offs.filter(function (o) { return o.IdFavourite === c.id; });
-                var img = (inColl[0] && (inColl[0].PhotoListBaSE || (inColl[0].photoList && inColl[0].photoList[0]))) || CFG.placeholderImg || '';
-                var active = (currentColl === c.id) ? ' active' : '';
-                var actions = (currentColl === c.id) ?
-                    '<div class="action-item">' +
-                    '<div class="btn-action-dropdow-group">' +
-                    '<button type="button" class="btn btn-action-dropdow" data-fa-menu="' + esc(c.id) + '"><i class="fa fa-ellipsis-h"></i></button>' +
-                    '<div class="fa-dropdown-menu" data-fa-dd="' + esc(c.id) + '">' +
-                    '<button data-fa-pdf="' + esc(c.id) + '"><i><img src="' + esc(CFG.iconPdf) + '"></i> ' + esc(T.exportPdf || 'Tải PDF') + '</button>' +
-                    '<button data-fa-share="' + esc(c.id) + '"><i><img src="' + esc(CFG.iconShare) + '"></i> ' + esc(T.share || 'Chia sẻ') + '</button>' +
-                    '<button data-fa-del="' + esc(c.id) + '"><i><img src="' + esc(CFG.iconTrash) + '"></i> ' + esc(T.delColl || 'Xóa bộ sưu tập') + '</button>' +
-                    '</div></div>' +
-                    '<button class="btn btn-action-active"><i class="fa fa-chevron-right"></i></button>' +
-                    '</div>' : '';
-                return '<div class="item-list' + active + '" data-fa-coll="' + esc(c.id) + '">' +
-                    '<div class="item-img"><img src="' + esc(img) + '" /></div>' +
-                    '<div class="item-content"><label>' + esc(c.FavouriteName) + '</label><span>' + esc(T.savedOn || 'Lưu ngày') + ' ' + fmtDate(c.DateCreate) + '</span></div>' +
-                    actions + '</div>';
-            }).join('');
-        }
-
-        function projectIdsOfColl(collId) {
-            return offices().filter(function (o) { return o.IdFavourite === collId; }).map(function (o) { return o.projectId; });
-        }
-
-        function selectColl(collId) {
-            currentColl = collId;
-            renderSidebar();
-            var ids = projectIdsOfColl(collId);
-            loadOffices(ids, false);
-        }
-
-        function loadOffices(ids, isShared) {
-            var idStr = (ids || []).join(',');
-            if (!idStr && isShared) idStr = sharedIds || '';
-            var empty = document.getElementById('pplus-fa-empty');
-            var header = document.getElementById('pplus-fa-header');
-            var contentF = document.getElementById('content-office-f');
-            var listWrap = document.getElementById('pplus-fa-list');
-            if (!idStr) {
-                if (empty) empty.style.display = '';
-                if (header) header.style.display = 'none';
-                if (contentF) contentF.style.display = 'none';
-                clearMarkers();
-                return;
-            }
-            fetch(CFG.restUrl + 'offices-by-ids?lang=' + encodeURIComponent(CFG.lang || 'vi') + '&ids=' + encodeURIComponent(idStr))
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
-                    var list = (data && data.listOffice) || [];
-                    if (!list.length) {
-                        if (empty) empty.style.display = '';
-                        if (header) header.style.display = 'none';
-                        if (contentF) contentF.style.display = 'none';
-                        clearMarkers();
-                        return;
-                    }
-                    if (empty) empty.style.display = 'none';
-                    if (header) header.style.display = '';
-                    if (contentF) contentF.style.display = '';
-                    listWrap.innerHTML = list.map(function (o) { return officeItemHtml(o, !isShared); }).join('');
-                    loadMarkers(idStr);
-                })
-                .catch(function () { toast('error', T.loadErr || 'Không tải được danh sách'); });
-        }
-
-        function officeItemHtml(o, canRemove) {
-            var img = o.PhotoListBaSE || (o.photoList && o.photoList[0]) || CFG.placeholderImg || '';
-            var rank = o.ratingLevel || '';
-            var rankHtml = (rank === 'A' || rank === 'B' || rank === 'C')
-                ? '<div class="RateTingContent class' + rank + '">' + esc((T.grade || 'Hạng') + ' ' + rank) + '</div>'
-                : '<div class="RateTingContent">' + esc(T.updating || 'Đang cập nhật') + '</div>';
-            var removeHtml = canRemove ? '<div class="item-dislike" data-fa-remove="' + esc(o.projectId) + '" title="' + esc(T.removeOff || 'Bỏ yêu thích') + '"><i>' +
-                '<svg width="24" height="26" viewBox="0 8 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.428 12.857 11.142 30h13.714l1.714-17.143" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.25 23.25v-7.5M15.75 23.25v-7.5" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.857 9.429h6.857m0 0 .573-2.292A1.5 1.5 0 0 1 15.743 6h4.515a1.5 1.5 0 0 1 1.455 1.137l.573 2.292m-8.572 0h8.572m0 0h6.857" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-                '</i></div>' : '';
-            return '<a class="item-office hover-office-not" href="' + esc(o.urlHerf || '#') + '" data-id="office-' + esc(o.projectId) + '">' +
-                '<img src="' + esc(img) + '" alt="' + esc(o.projectName) + '" />' +
-                removeHtml +
-                '<div class="item-content-m"><div class="item-content">' +
-                '<div class="RateTing">' + rankHtml + '<div class="item-price">' + esc(o.itemPrice || '') + '</div></div>' +
-                '<div class="item-name">' + esc(o.projectName) + '</div>' +
-                '<div class="item-address">' + esc(o.address) + '</div>' +
-                '</div></div></a>';
-        }
-
-        /* ----- Map ----- */
-        // pplusLoadGoogleMaps (assets/js/pplus-maps.js, dung chung voi A1/A2) chi tu chay khi trang
-        // co "#map"/"#map-detail" - trang nay dung "#mapfarourite" rieng nen phai TU GOI de thuc su
-        // tai script Google Maps (truoc day chi kiem tra "window.google" co san hay chua ma khong
-        // bao gio tu tai, nut "Xem bang Ban do" bam khong co gi xay ra - bug thuc te da bao cao).
-        function ensureMap(cb) {
-            var el = document.getElementById('mapfarourite');
-            if (!el) { if (cb) cb(); return; }
-            if (map) { if (cb) cb(); return; }
-            function build() {
-                if (!map) {
-                    // window.pplusMapOptionsBase (assets/js/pplus-maps.js) - style terrain + an bot
-                    // nhan POI mac dinh cua Google, GIONG HET ban do A1/A4/A2 - truoc day trang nay
-                    // dung option "tho" (chi zoom/center/mapTypeControl/streetViewControl) nen nhin
-                    // khac han (bug thuc te: "map... chưa giống bản chính").
-                    map = new google.maps.Map(el, Object.assign({ zoom: 13, center: { lat: 21.0278, lng: 105.8342 } }, window.pplusMapOptionsBase || {}));
-                    infoWin = new google.maps.InfoWindow();
-                }
-                if (cb) cb();
-            }
-            if (window.pplusLoadGoogleMaps) {
-                window.pplusLoadGoogleMaps(build);
-            } else if (window.google && window.google.maps) {
-                build();
-            }
-        }
-        function clearMarkers() { markers.forEach(function (m) { m.setMap(null); }); markers = []; }
-        // office-markers-by-ids (inc/favourite-rest.php) la endpoint RIENG chi tra ve id/lat/lng/
-        // rating/title (khong co anh/gia/dia chi that - xac nhan qua goi API truc tiep) - phai ghep
-        // them voi du lieu DAY DU da co san trong "offices()" (localStorage, dung chung voi luoi
-        // the ben duoi) de co du field cho OfficeMarkerOverlay (photo/price/address/url).
-        function loadMarkers(idStr) {
-            ensureMap(function () {
-                if (!map) return;
-                fetch(CFG.restUrl + 'office-markers-by-ids?lang=' + encodeURIComponent(CFG.lang || 'vi') + '&ids=' + encodeURIComponent(idStr))
-                    .then(function (r) { return r.json(); })
-                    .then(function (data) {
-                        clearMarkers();
-                        var list = (data && data.markers) || [];
-                        if (!list.length || !window.pplusCreateOfficeMarker) return;
-                        var full = offices();
-                        var bounds = new google.maps.LatLngBounds();
-                        list.forEach(function (it) {
-                            if (it.lat == null || it.lng == null) return;
-                            var matched = full.filter(function (o) { return String(o.projectId) === String(it.id); })[0] || {};
-                            var pos = { lat: parseFloat(it.lat), lng: parseFloat(it.lng) };
-                            var markerItem = {
-                                id: 'office-' + it.id,
-                                lat: pos.lat,
-                                lng: pos.lng,
-                                rating: it.rating || '',
-                                title: it.title || matched.projectName || '',
-                                url: matched.urlHerf || '',
-                                photo: matched.PhotoListBaSE || (matched.photoList && matched.photoList[0]) || '',
-                                price: matched.itemPrice || '',
-                                address: matched.address || ''
-                            };
-                            var overlay = window.pplusCreateOfficeMarker(markerItem, map, infoWin);
-                            markers.push(overlay); bounds.extend(pos);
-                        });
-                        if (markers.length) map.fitBounds(bounds);
-                    });
+                var photos = [];
+                inColl.forEach(function (o) { photos = photos.concat(o.photoList || []); });
+                return {
+                    id: c.id,
+                    FavouriteName: c.FavouriteName,
+                    DateCreate: c.DateCreate,
+                    Count: inColl.length,
+                    photo1: photos[0] || '',
+                    photo2: photos[1] || '',
+                    photo3: photos[2] || '',
+                    photo4: photos[3] || '',
+                    photoCount: photos.length
+                };
             });
         }
 
-        /* ----- Toggle map (fullContent) ----- */
-        var detail = document.getElementById('pplus-fa-detail');
-        var boxmap = document.getElementById('pplus-fa-boxmap');
-        var toggletop = document.getElementById('pplus-fa-toggletop');
-        function setMapView(show) {
-            if (show) {
-                detail.classList.remove('fullContent');
-                boxmap.classList.remove('hidden-map');
-                if (toggletop) toggletop.style.display = '';
-                ensureMap(function () {
-                    if (map) google.maps.event.trigger(map, 'resize');
-                });
+        function detailUrl(id) {
+            return (CFG.detailUrl || '') + '?fshare_link=' + encodeURIComponent(id);
+        }
+        var placeholder = CFG.placeholderImg || '';
+
+        function gridItemHtml(c) {
+            var url = detailUrl(c.id);
+            function photoImg(cls, src) {
+                return '<a class="photo ' + cls + '" href="' + esc(url) + '"><img src="' + esc(src || placeholder) + '" onerror="this.src=\'' + esc(placeholder) + '\'" /></a>';
+            }
+            return '<div class="collection-gridbox">' +
+                '<div class="collection-photos">' +
+                photoImg('photo1', c.photo1) +
+                photoImg('photo2', c.photo2) +
+                photoImg('photo3', c.photo3) +
+                '<a class="photo photo4" href="' + esc(url) + '"><img src="' + esc(c.photo4 || placeholder) + '" onerror="this.src=\'' + esc(placeholder) + '\'" />' +
+                (c.photoCount > 4 ? '<div class="bg-count"></div><div class="count-plus">+' + (c.photoCount - 4) + '</div>' : '') +
+                '</a>' +
+                '</div>' +
+                '<div class="collection-des">' +
+                '<a class="collec-infos" href="' + esc(url) + '">' +
+                '<div class="collection-created">' + esc(T.savedOn || 'Lưu ngày') + ' ' + fmtDate(c.DateCreate) + '</div>' +
+                '<div class="collection-header"><div class="collection-title">' + esc(c.FavouriteName) + '</div>' +
+                '<div class="collection-item-count"><span>' + c.Count + '</span> ' + esc(T.apartmentUnit || 'căn hộ') + '</div></div>' +
+                '</a>' +
+                toolboxHtml(c.id) +
+                '</div></div>';
+        }
+
+        function tableRowHtml(c) {
+            var url = detailUrl(c.id);
+            return '<tr>' +
+                '<td><a class="collection-title" href="' + esc(url) + '">' + esc(c.FavouriteName) + '</a></td>' +
+                '<td class="collection-created">' + fmtDate(c.DateCreate) + '</td>' +
+                '<td class="collection-item-count">' + c.Count + '</td>' +
+                '<td>' + toolboxHtml(c.id) + '</td>' +
+                '</tr>';
+        }
+
+        function toolboxHtml(id) {
+            return '<div ngbDropdown class="toolbox" data-fa-toolbox="' + esc(id) + '">' +
+                '<button type="button" class="dropdown-toggle" data-fa-menu="' + esc(id) + '"><div></div><div></div><div></div></button>' +
+                '<ul class="dropdown-menu dropdown-menu-favourite" data-fa-dd="' + esc(id) + '">' +
+                '<li class="collection-menu-item"><a data-fa-rename="' + esc(id) + '">' + esc(T.rename || 'Đổi tên') + '</a></li>' +
+                '<li class="collection-menu-item"><a data-fa-del="' + esc(id) + '">' + esc(T.delColl || 'Xóa') + '</a></li>' +
+                '<li class="collection-menu-item"><a data-fa-pdf="' + esc(id) + '">' + esc(T.exportPdf || 'Tải PDF') + '</a></li>' +
+                '<li class="collection-menu-item"><a data-fa-share="' + esc(id) + '">' + esc(T.share || 'Copy link') + '</a></li>' +
+                '</ul></div>';
+        }
+
+        function render() {
+            var list = buildList();
+            document.getElementById('pplus-fa-count').textContent = collections().length;
+            if (typeView === 1) {
+                grid.style.display = '';
+                document.getElementById('collection-area-data-table').style.display = 'none';
+                grid.innerHTML = list.map(gridItemHtml).join('');
             } else {
-                detail.classList.add('fullContent');
-                boxmap.classList.add('hidden-map');
-                if (toggletop) toggletop.style.display = 'none';
+                grid.style.display = 'none';
+                document.getElementById('collection-area-data-table').style.display = '';
+                document.getElementById('collection-area-data-body').innerHTML = list.map(tableRowHtml).join('');
             }
         }
-        var btnToggleMap = document.getElementById('pplus-fa-togglemap');
-        if (btnToggleMap) btnToggleMap.addEventListener('click', function () { setMapView(true); });
-        var btnCollapse = document.getElementById('pplus-fa-collapsemap');
-        if (btnCollapse) btnCollapse.addEventListener('click', function () { setMapView(false); });
-        if (toggletop) toggletop.addEventListener('click', function () { setMapView(false); });
 
-        /* ----- Share ----- */
-        function shareLink(ids) {
-            var url = window.location.origin + window.location.pathname + '?ids=' + ids.join(',');
+        /* ----- Doi luoi/bang ----- */
+        document.querySelectorAll('.action-find .sort-list').forEach(function (el) {
+            el.addEventListener('click', function () {
+                typeView = parseInt(el.getAttribute('data-fa-view'), 10) || 1;
+                document.querySelectorAll('.action-find .sort-list').forEach(function (x) { x.classList.remove('active'); });
+                el.classList.add('active');
+                render();
+            });
+        });
+
+        /* ----- Tim theo ten (loc client-side, khong co trong Angular goc nhung input da co san
+           trong markup that - #FavouriteName - de trong tay khong lam gi la vo ly) ----- */
+        var searchInput = document.getElementById('FavouriteName');
+        if (searchInput) searchInput.addEventListener('input', function () {
+            filterText = searchInput.value.trim();
+            render();
+        });
+
+        /* ----- Share (URL that: /favourite/favourite-detail?ids=...&IdProject=..., xem
+           copyLinkShare() favourite.component.ts dong 169-198 - trang dich CHUA xay, van copy
+           DUNG URL de link hoat dong ngay khi favourite-detail duoc xay sau nay) ----- */
+        function shareLink(collId) {
+            var ids = apartments().filter(function (o) { return o.IdFavourite === collId; }).map(function (o) { return o.apartmentId; });
+            var url = (CFG.detailUrl || '') + '?ids=' + ids.join(',');
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(url).then(function () { toast('success', T.copied || 'Copy link yêu thích thành công!'); });
             } else { window.prompt('Copy link', url); }
         }
-        var btnShare = document.getElementById('pplus-fa-share');
-        if (btnShare) btnShare.addEventListener('click', function () { shareLink(projectIdsOfColl(currentColl)); });
 
         /* ----- PDF ----- */
-        function exportPdf(name, ids) {
-            if (!ids.length) { toast('error', T.pdfNoOffice || 'Không thấy văn phòng nào'); return; }
+        function exportPdf(name, collId) {
+            var ids = apartments().filter(function (o) { return o.IdFavourite === collId; }).map(function (o) { return o.apartmentId; });
+            if (!ids.length) { toast('error', T.pdfNoOffice || 'Không thấy căn hộ nào'); return; }
+            if (!window.confirm(T.pdfConfirm2 || 'Bạn xác nhận muốn tải file PDF bộ sưu tập này?')) return;
             fetch(CFG.restUrl + 'favourite-pdf', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name || 'Văn phòng yêu thích', ids: ids.join(','), lang: CFG.lang || 'vi' })
+                body: JSON.stringify({ name: name || 'Căn hộ yêu thích', ids: ids.join(','), lang: CFG.lang || 'vi' })
             }).then(function (r) { if (!r.ok) throw new Error(); return r.blob(); })
                 .then(function (blob) {
                     var url = URL.createObjectURL(blob);
@@ -439,63 +425,54 @@
                     toast('success', T.pdfOk || 'Tải file PDF thành công!');
                 }).catch(function () { toast('error', T.pdfErr || 'Không tải được file PDF!'); });
         }
-        var btnPdf = document.getElementById('pplus-fa-pdf');
-        if (btnPdf) btnPdf.addEventListener('click', function () {
-            var coll = collections().filter(function (c) { return c.id === currentColl; })[0];
-            exportPdf(coll ? coll.FavouriteName : 'Văn phòng yêu thích', projectIdsOfColl(currentColl));
-        });
 
-        /* ----- Delegated clicks (sidebar + remove office) ----- */
+        /* ----- Delegated clicks (toolbox menu tren tung the/dong) ----- */
         document.addEventListener('click', function (e) {
-            var item = e.target.closest('[data-fa-coll]');
-            if (item && !e.target.closest('.action-item')) { selectColl(item.getAttribute('data-fa-coll')); return; }
-
             var menuBtn = e.target.closest('[data-fa-menu]');
-            if (menuBtn) { e.stopPropagation(); var dd = document.querySelector('[data-fa-dd="' + menuBtn.getAttribute('data-fa-menu') + '"]'); if (dd) dd.classList.toggle('open'); return; }
+            if (menuBtn) {
+                e.preventDefault(); e.stopPropagation();
+                var id = menuBtn.getAttribute('data-fa-menu');
+                document.querySelectorAll('.toolbox.open').forEach(function (t) { if (t.getAttribute('data-fa-toolbox') !== id) t.classList.remove('open'); });
+                var tb = e.target.closest('.toolbox');
+                if (tb) tb.classList.toggle('open');
+                return;
+            }
+
+            var rename = e.target.closest('[data-fa-rename]');
+            if (rename) { e.preventDefault(); openCreateModal(rename.getAttribute('data-fa-rename')); return; }
 
             var del = e.target.closest('[data-fa-del]');
             if (del) {
-                var id = del.getAttribute('data-fa-del');
+                e.preventDefault();
+                var delId = del.getAttribute('data-fa-del');
                 if (window.confirm(T.confirmDelColl || 'Bạn muốn bỏ bộ sưu tập yêu thích này?')) {
-                    writeLS(LS_COLL, collections().filter(function (c) { return c.id !== id; }));
-                    writeLS(LS_OFF, offices().filter(function (o) { return o.IdFavourite !== id; }));
-                    currentColl = null;
-                    reloadList();
+                    writeLS(LS_COLL, collections().filter(function (c) { return c.id !== delId; }));
+                    writeLS(LS_OFF, apartments().filter(function (o) { return o.IdFavourite !== delId; }));
+                    toast('success', T.deletedCollection || 'Xóa bộ sưu tập thành công');
+                    render();
                 }
                 return;
             }
-            var pdf = e.target.closest('[data-fa-pdf]');
-            if (pdf) { var cid = pdf.getAttribute('data-fa-pdf'); var c = collections().filter(function (x) { return x.id === cid; })[0]; exportPdf(c ? c.FavouriteName : '', projectIdsOfColl(cid)); return; }
-            var sh = e.target.closest('[data-fa-share]');
-            if (sh) { shareLink(projectIdsOfColl(sh.getAttribute('data-fa-share'))); return; }
 
-            var rm = e.target.closest('[data-fa-remove]');
-            if (rm) {
-                e.preventDefault(); e.stopPropagation();
-                var pid = rm.getAttribute('data-fa-remove');
-                if (window.confirm(T.confirmRemove || 'Bạn muốn bỏ yêu thích văn phòng này?')) {
-                    writeLS(LS_OFF, offices().filter(function (o) { return !(o.IdFavourite === currentColl && String(o.projectId) === String(pid)); }));
-                    selectColl(currentColl);
-                    renderSidebar();
-                }
+            var pdf = e.target.closest('[data-fa-pdf]');
+            if (pdf) {
+                e.preventDefault();
+                var pdfId = pdf.getAttribute('data-fa-pdf');
+                var pc = collections().filter(function (c) { return c.id === pdfId; })[0];
+                exportPdf(pc ? pc.FavouriteName : '', pdfId);
                 return;
+            }
+
+            var sh = e.target.closest('[data-fa-share]');
+            if (sh) { e.preventDefault(); shareLink(sh.getAttribute('data-fa-share')); return; }
+
+            if (!e.target.closest('.toolbox')) {
+                document.querySelectorAll('.toolbox.open').forEach(function (t) { t.classList.remove('open'); });
             }
         });
 
-        function reloadList() {
-            renderSidebar();
-            var colls = collections();
-            if (sharedIds) { loadOffices([], true); return; }
-            if (colls.length) {
-                if (!currentColl || !colls.some(function (c) { return c.id === currentColl; })) currentColl = colls[0].id;
-                selectColl(currentColl);
-            } else {
-                loadOffices([], false);
-            }
-        }
-
-        window.__pplusFaPage = { reloadList: reloadList };
-        reloadList();
+        window.__pplusFaPage = { reloadList: render };
+        render();
     }
 
     /* ---------------- Khoi tao ---------------- */

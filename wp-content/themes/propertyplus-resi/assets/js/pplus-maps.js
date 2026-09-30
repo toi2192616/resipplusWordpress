@@ -76,6 +76,19 @@
       return;
     }
     loading = true;
+    // Script co the dang duoc tai boi pplus-search-suggest.js (goi y o tim kiem) - doi no xong, khong tai lan 2.
+    if (document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]')) {
+      var waited = 0;
+      (function tick() {
+        if (window.google && window.google.maps) {
+          callbacks.forEach(function (fn) { fn(); });
+          callbacks = [];
+        } else if ((waited += 100) <= 15000) {
+          setTimeout(tick, 100);
+        }
+      })();
+      return;
+    }
     var script = document.createElement('script');
     script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(window.PPLUS_MAP_CONFIG.key) +
       '&libraries=places&language=' + encodeURIComponent(window.PPLUS_MAP_CONFIG.lang || 'vi');

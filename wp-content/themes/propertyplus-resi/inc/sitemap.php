@@ -1,216 +1,245 @@
 <?php
 /**
- * Sitemap XML cho cac trang KHONG phai WP Page/Post that (A2 chi tiet van phong, B3 tin tuc chi
- * tiet) - nhung trang nay khong nam trong wp_posts nen sitemap mac dinh cua WordPress core (tu
- * WP 5.5, /wp-sitemap.xml, tu quet wp_posts/wp_users/taxonomy) KHONG BIET chung ton tai.
+ * Sitemap XML cho Resi (viet lai 30/9/2026 - ban cu la ban Office: van phong/tin tuc, khong hop
+ * Resi va CHUA TUNG duoc require trong functions.php).
  *
- * QUAN TRONG: file plugin cu `ppplus-seo-sync/includes/class-sitemap-provider.php` gia dinh se
- * goi 1 API tong hop `/api/seo/v1/sitemap-data` CHUA TUNG duoc xay (xem canh bao trong
- * inc/seo-hooks.php - cung 1 kien truc cu da bi bo) va CHI hoat dong khi RankMath active. File nay
- * dung lai HAN CHE DUNG: WordPress core Sitemaps API (co san tu WP 5.5, KHONG can RankMath), lay
- * du lieu truc tiep tu cac ham pplus_get_* DA CO SAN (cung nguon du lieu that cac trang dang dung),
- * dung dung kien truc "goi thang API Angular hien co" ma toan bo du an da chot tu dau.
+ * WordPress core Sitemaps API (/wp-sitemap.xml, khong can plugin) chi biet WP Page that (Ve chung
+ * toi, Lien he...). Phan lon URL cua Resi khong nam trong wp_posts, nen file nay them 3 provider:
+ *   - pplusareas      : trang tinh/quan/loai can ho/du an/dich vu/chu nha - THEO DUONG DAN MENU that
+ *                       (harvest link noi bo tu HTML trang chu VI + EN da render, khong doan URL).
+ *   - pplusapartments : ~2.1k trang chi tiet can ho, VI + EN (tu Apartment/_GetApartments,
+ *                       apartmentTypeList="1,2" = KHONG biet thu, dung y site). Bo JA: urlHerf JA tu API
+ *                       co "--" thay alias du an (link hong) - hreflang van tro toi ban JA cua trang.
+ *   - pplusblogs      : bai blog VI + EN.
  *
- * KIEN TRUC QUAN TRONG - TINH TRUOC QUA WP-CRON, KHONG TINH TRUC TIEP LUC CO REQUEST:
- * Liet ke het van phong/tin tuc can HANG CHUC lan goi API .NET tuan tu (server .NET tu gioi han
- * ~24 ket qua/lan bat ke page_count gui len, da xac nhan qua test that) - lam that bai voi loi
- * "Maximum execution time of 30 seconds exceeded" neu tinh truc tiep trong 1 request web binh
- * thuong (da gap that khi test). Nen: 1 WP-Cron job chay dinh ky (moi 6 tieng) tinh san danh sach
- * URL va luu vao option; provider sitemap CHI DOC option do (nhanh, khong cho API nao), KHONG BAO
- * GIO tu tinh toan luc co request.
+ * KIEN TRUC: tinh san qua WP-Cron, KHONG tinh luc co request (2.1k can x 2 ngon ngu ~ 360 lan goi API
+ * .NET, gioi han 12 ket qua/lan - lam trong 1 request web se vuot 30s). Cron chay THEO TUNG DOT NHO
+ * (~20s/dot, nghi 30s giua cac dot de khong don dap API that - bai hoc tu co che "ham nong cache" cua
+ * Office da tat vi qua tai server), luu tien do vao 1 option, xong moi hoan doi vao option cong khai
+ * (sitemap khong bao gio bi rong/nua chung trong luc dang tinh lai). Tinh lai moi 24 tieng.
  *
- * PHAM VI: A2 (van phong) + B3 (tin tuc) - 2 loai noi dung so luong lon nhat va quan trong nhat ve
- * SEO. CHUA bao gom A4 (quan/huyen/loai-hinh/duong/hang) va A5 (danh sach duong) - can 1 cach
- * enumerate rieng (khong co san 1 ham "liet ke tat ca" don gian nhu office/blog), de lam rieng sau.
- * A1/A3 (Page/Page-con that) + B1/B5/B6 (Page that) DA nam trong sitemap mac dinh cua WordPress
- * core roi (post_type 'page'), khong can code them o day.
+ * Bo cac provider khong dung (users, taxonomies) + loai trang "Danh sach yeu thich" (noindex).
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-// WP_Sitemaps_Provider chi co tu WordPress 5.5+ (va co the bi tat qua filter 'wp_sitemaps_enabled').
-// Thoat som, khong dang ky gi ca, thay vi de PHP fatal error luc "class ... extends
-// WP_Sitemaps_Provider" neu class chua ton tai.
 if (!class_exists('WP_Sitemaps_Provider')) {
     return;
 }
 
-const PPLUS_SITEMAP_OFFICE_OPTION = 'pplus_sitemap_office_urls';
-const PPLUS_SITEMAP_NEWS_OPTION   = 'pplus_sitemap_news_urls';
-const PPLUS_SITEMAP_CRON_HOOK     = 'pplus_sitemap_rebuild';
+const PPLUS_SITEMAP_STEP_HOOK  = 'pplus_sitemap_step';
+const PPLUS_SITEMAP_START_HOOK = 'pplus_sitemap_start';
+const PPLUS_SITEMAP_STATE_OPT  = 'pplus_sitemap_state';
+const PPLUS_SITEMAP_LANGS      = ['vi', 'en'];
 
-/**
- * Doc danh sach URL DA TINH SAN (option, khong goi API o day) - dung boi provider sitemap. Neu
- * chua bao gio chay cron lan nao (option chua ton tai), tra ve mang rong (sitemap rong tam thoi,
- * KHONG bao gio treo request cho nguoi dung/Googlebot).
- *
- * @return string[]
- */
-function pplus_sitemap_office_urls(): array {
-    $urls = get_option(PPLUS_SITEMAP_OFFICE_OPTION, []);
+function pplus_sitemap_urls(string $set): array {
+    $urls = get_option('pplus_sitemap_set_' . $set, []);
     return is_array($urls) ? $urls : [];
 }
 
-function pplus_sitemap_news_urls(): array {
-    $urls = get_option(PPLUS_SITEMAP_NEWS_OPTION, []);
-    return is_array($urls) ? $urls : [];
-}
-
-/**
- * Goi that su den .NET, chay RIENG trong WP-Cron (khong bi gioi han 30s cua 1 request web thong
- * thuong) - day la noi DUY NHAT thuc su lam viec nang. set_time_limit(0) de phong truong hop host
- * van ap dung gioi han cho ca cron request.
- */
-function pplus_sitemap_rebuild(): void {
-    if (function_exists('set_time_limit')) {
-        @set_time_limit(0);
+/** Harvest link noi bo tu HTML da render cua trang chu (header + footer + noi dung deu chua link that). */
+function pplus_sitemap_harvest_area_urls(string $lang): array {
+    $prefix = pplus_lang_prefix($lang);
+    $resp   = wp_remote_get(home_url($prefix . '/'), ['timeout' => 30, 'redirection' => 3, 'headers' => ['Accept' => 'text/html']]);
+    if (is_wp_error($resp) || wp_remote_retrieve_response_code($resp) !== 200) {
+        return [];
     }
-
-    update_option(PPLUS_SITEMAP_OFFICE_OPTION, pplus_sitemap_build_office_urls(), false);
-    update_option(PPLUS_SITEMAP_NEWS_OPTION, pplus_sitemap_build_news_urls(), false);
-}
-add_action(PPLUS_SITEMAP_CRON_HOOK, 'pplus_sitemap_rebuild');
-
-/**
- * Tinh toan THAT SU danh sach URL van phong (A2) - 2 tinh da biet (Ha Noi/TP.HCM) x 2 project_type
- * (truyen thong/tron goi). CHI duoc goi tu pplus_sitemap_rebuild() (trong WP-Cron), KHONG BAO GIO
- * goi truc tiep tu 1 request web.
- *
- * @return string[]
- */
-function pplus_sitemap_build_office_urls(): array {
-    $urls = [];
-    foreach (['Hà Nội', 'Hồ Chí Minh'] as $province) {
-        foreach ([2, 1] as $project_type) { // 2=truyen thong (mac dinh), 1=tron goi
-            $page       = 1;
-            $seen_count = 0;
-            do {
-                $result = pplus_get_office_list([
-                    'province'     => $province,
-                    'project_type' => $project_type,
-                    'page'         => $page,
-                ]);
-                if (!$result) {
-                    break;
-                }
-                $items = $result['listOffice'] ?? [];
-                foreach ($items as $item) {
-                    if (!empty($item['urlHerf'])) {
-                        $urls[] = home_url($item['urlHerf']);
-                    }
-                }
-                $seen_count += count($items);
-                $total = (int) ($result['total_count'] ?? 0);
-                $page++;
-                // .NET tu gioi han so ket qua/lan (~24, khong theo page_count gui len) - dung
-                // SO LUONG THAT SU tra ve moi lan (count($items)), khong gia dinh page_count da gui.
-            } while (count($items) > 0 && $seen_count < $total && $page < 200); // gioi han an toan
+    $html = wp_remote_retrieve_body($resp);
+    if (!preg_match_all('#<a\b[^>]*\shref=["\']([^"\'\#?]+)["\']#i', $html, $m)) {
+        return [];
+    }
+    $home_host = wp_parse_url(home_url(), PHP_URL_HOST);
+    $urls      = [];
+    foreach ($m[1] as $href) {
+        $href = html_entity_decode($href, ENT_QUOTES, 'UTF-8');
+        if (strpos($href, 'http') !== 0) {
+            $href = home_url($href);
         }
+        $p = wp_parse_url($href);
+        if (($p['host'] ?? '') !== $home_host) {
+            continue;
+        }
+        $path = $p['path'] ?? '/';
+        // Chi lay link cung ngon ngu dang harvest (EN: /en/..., VI: khong tien to /en /ja).
+        $is_en = (bool) preg_match('#^/en(/|$)#', $path);
+        $is_ja = (bool) preg_match('#^/ja(/|$)#', $path);
+        if (($lang === 'vi' && ($is_en || $is_ja)) || ($lang === 'en' && !$is_en)) {
+            continue;
+        }
+        if (preg_match('#/(wp-content|wp-includes|wp-json|wp-admin|feed)(/|$)|danh-sach-yeu-thich|favourite|\.[a-z0-9]{2,5}$#i', $path)) {
+            continue;
+        }
+        // Bo trang chu ('/' hoac '/en/') - da co trong provider "pages" mac dinh cua WP.
+        if (rtrim($path, '/') === '' || rtrim($path, '/') === '/en') {
+            continue;
+        }
+        $urls[] = home_url(trailingslashit($path));
     }
     return array_values(array_unique($urls));
 }
 
-/**
- * Tinh toan THAT SU danh sach URL tin tuc (B3). CHI duoc goi tu pplus_sitemap_rebuild().
- *
- * @return string[]
- */
-function pplus_sitemap_build_news_urls(): array {
-    $urls       = [];
-    $page       = 1;
-    $seen_count = 0;
-    do {
-        $result = pplus_get_blog_list(['page' => $page]);
-        if (!$result) {
-            break;
+/** 1 dot xu ly: lam viec toi khi het ~20s, luu tien do, tu len lich dot tiep. */
+function pplus_sitemap_step(): void {
+    if (function_exists('set_time_limit')) {
+        @set_time_limit(60);
+    }
+    $deadline = time() + 20;
+    $state    = get_option(PPLUS_SITEMAP_STATE_OPT);
+    // Chi chay khi 1 dot tinh lai DANG mo (pplus_sitemap_start() tao state) - tranh su kien cron thua
+    // con sot lai (vd sau khi dot da xong) bat dau tinh lai tu dau ngoai y muon.
+    if (!is_array($state)) {
+        return;
+    }
+
+    while (time() < $deadline && $state['phase'] !== 'done') {
+        $lang = PPLUS_SITEMAP_LANGS[$state['lang_i']] ?? null;
+
+        if ($state['phase'] === 'areas') {
+            foreach (PPLUS_SITEMAP_LANGS as $l) {
+                $state['sets']['areas'] = array_merge($state['sets']['areas'], pplus_sitemap_harvest_area_urls($l));
+            }
+            $state['phase']  = 'apartments';
+            $state['lang_i'] = 0;
+            $state['skip']   = 0;
+            continue;
         }
-        $items = $result['listBlog'] ?? [];
-        foreach ($items as $item) {
-            if (!empty($item['alias']) && isset($item['id'])) {
-                $urls[] = home_url('/blogs/' . $item['alias'] . '-' . (int) $item['id'] . '/');
+
+        if ($lang === null) { // het ngon ngu cua phase hien tai -> sang phase ke
+            $state['phase']  = ($state['phase'] === 'apartments') ? 'blogs' : 'done';
+            $state['lang_i'] = 0;
+            $state['skip']   = 0;
+            $state['page']   = 1;
+            continue;
+        }
+
+        if ($state['phase'] === 'apartments') {
+            $data  = pplus_api_post_json("{$lang}/Apartment/_GetApartments", [
+                'skip'              => (int) $state['skip'],
+                'price_sort_type'   => 2,
+                'apartmentTypeList' => '1,2',
+            ], 0);
+            $items = $data['result']['listApartments'] ?? [];
+            $total = (int) ($data['result']['total_count'] ?? 0);
+            foreach ($items as $it) {
+                if (!empty($it['urlHerf']) && strpos((string) $it['urlHerf'], '--') === false) {
+                    $state['sets']['apartments'][] = home_url(pplus_lang_prefix($lang) . '/' . trim((string) $it['urlHerf'], '/') . '/');
+                }
+            }
+            $state['skip'] += 12;
+            if (!$items || $state['skip'] >= $total || $state['skip'] > 6000) {
+                $state['lang_i']++;
+                $state['skip'] = 0;
+            }
+            continue;
+        }
+
+        if ($state['phase'] === 'blogs') {
+            $data  = pplus_api_get("{$lang}/Blogs/GetIndex", ['catalogid' => '', 'page' => (int) $state['page']], 0);
+            $items = $data['result']['listBlog'] ?? [];
+            $total = (int) ($data['result']['totalItem'] ?? 0);
+            foreach ($items as $it) {
+                if (!empty($it['alias']) && isset($it['id'])) {
+                    $state['sets']['blogs'][] = home_url(pplus_lang_prefix($lang) . '/blog/' . $it['alias'] . '-' . (int) $it['id'] . '/');
+                }
+            }
+            $state['page']++;
+            if (!$items || ($state['page'] - 1) * 16 >= $total || $state['page'] > 200) {
+                $state['lang_i']++;
+                $state['page'] = 1;
+            }
+            continue;
+        }
+    }
+
+    if ($state['phase'] === 'done') {
+        foreach ($state['sets'] as $set => $urls) {
+            $urls = array_values(array_unique($urls));
+            // Khong ghi de bang danh sach rong (API/loopback loi) - giu ban cu con dung duoc.
+            if ($urls) {
+                update_option('pplus_sitemap_set_' . $set, $urls, false);
             }
         }
-        $seen_count += count($items);
-        $total = (int) ($result['totalItem'] ?? 0);
-        $page++;
-    } while (count($items) > 0 && $seen_count < $total && $page < 200); // gioi han an toan
-
-    return array_values(array_unique($urls));
-}
-
-/**
- * Dang ky lich cron 6 tieng/lan - lan DAU TIEN (chua tung dang ky) se chay ngay sau 10s (khong
- * chan request hien tai) thay vi doi du 6 tieng, de sitemap co du lieu som nhat co the. Cac lan
- * sau (recurring cron da ton tai) khong lam gi them - tranh xep chong nhieu single-event thua.
- */
-add_action('init', function () {
-    if (wp_next_scheduled(PPLUS_SITEMAP_CRON_HOOK)) {
-        return; // da dang ky roi (recurring hoac single dang cho chay), khong lam lai
+        update_option('pplus_sitemap_built_at', time(), false);
+        delete_option(PPLUS_SITEMAP_STATE_OPT);
+        return;
     }
-    wp_schedule_single_event(time() + 10, PPLUS_SITEMAP_CRON_HOOK);
-    wp_schedule_event(time() + 300, 'pplus_six_hours', PPLUS_SITEMAP_CRON_HOOK);
+
+    update_option(PPLUS_SITEMAP_STATE_OPT, $state, false);
+    wp_schedule_single_event(time() + 30, PPLUS_SITEMAP_STEP_HOOK);
+}
+add_action(PPLUS_SITEMAP_STEP_HOOK, 'pplus_sitemap_step');
+
+/** Bat dau 1 dot tinh lai tu dau (goi moi 24h). */
+function pplus_sitemap_start(): void {
+    wp_clear_scheduled_hook(PPLUS_SITEMAP_STEP_HOOK);
+    update_option(PPLUS_SITEMAP_STATE_OPT, ['phase' => 'areas', 'lang_i' => 0, 'skip' => 0, 'page' => 1, 'sets' => ['areas' => [], 'apartments' => [], 'blogs' => []]], false);
+    pplus_sitemap_step();
+}
+add_action(PPLUS_SITEMAP_START_HOOK, 'pplus_sitemap_start');
+
+add_action('init', function () {
+    if (!wp_next_scheduled(PPLUS_SITEMAP_START_HOOK)) {
+        wp_schedule_event(time() + 60, 'daily', PPLUS_SITEMAP_START_HOOK);
+    }
+    // Lan dau (chua tung co du lieu) va khong co dot nao dang cho: chay som thay vi doi 24h.
+    if (!get_option('pplus_sitemap_built_at') && !get_option(PPLUS_SITEMAP_STATE_OPT) && !wp_next_scheduled(PPLUS_SITEMAP_STEP_HOOK)) {
+        wp_schedule_single_event(time() + 15, PPLUS_SITEMAP_START_HOOK);
+    }
 });
 
-add_filter('cron_schedules', function (array $schedules): array {
-    $schedules['pplus_six_hours'] = ['interval' => 6 * HOUR_IN_SECONDS, 'display' => 'Every 6 hours (PropertyPlus sitemap)'];
-    return $schedules;
-});
-
-/**
- * Provider dung chung cho WordPress core Sitemaps API (WP_Sitemaps_Provider, co san tu WP 5.5,
- * KHONG can plugin SEO nao). Nhan 1 ham DOC (khong tinh toan gi) tra ve mang URL phang, tu chia
- * trang theo wp_sitemaps_get_max_urls() (mac dinh 2000 URL/file con).
- */
+/** Provider dung chung: chi DOC mang URL da tinh san, tu chia file con theo wp_sitemaps_get_max_urls(). */
 class PPlus_Sitemap_Provider extends WP_Sitemaps_Provider {
-    /** @var callable */
-    private $urls_callback;
+    private string $set;
 
-    public function __construct(string $name, callable $urls_callback) {
-        $this->name          = $name;
-        $this->object_type   = $name;
-        $this->urls_callback = $urls_callback;
+    public function __construct(string $name, string $set) {
+        $this->name        = $name;
+        $this->object_type = $name;
+        $this->set         = $set;
     }
 
     public function get_url_list($page_num, $object_subtype = '') {
-        $urls     = call_user_func($this->urls_callback);
         $per_page = wp_sitemaps_get_max_urls($this->object_type);
-        $offset   = ($page_num - 1) * $per_page;
-
-        $list = [];
-        foreach (array_slice($urls, $offset, $per_page) as $url) {
+        $list     = [];
+        foreach (array_slice(pplus_sitemap_urls($this->set), ($page_num - 1) * $per_page, $per_page) as $url) {
             $list[] = ['loc' => $url];
         }
         return $list;
     }
 
     public function get_max_num_pages($object_subtype = '') {
-        $urls     = call_user_func($this->urls_callback);
         $per_page = max(1, wp_sitemaps_get_max_urls($this->object_type));
-        return (int) max(1, ceil(count($urls) / $per_page));
+        return (int) max(1, ceil(count(pplus_sitemap_urls($this->set)) / $per_page));
     }
 }
 
 add_action('wp_sitemaps_init', function () {
     $server = wp_sitemaps_get_server();
-    // TEN PROVIDER KHONG DUOC CO DAU GACH NGANG: rewrite rule mac dinh cua WordPress cho URL
-    // "khong subtype" la "^wp-sitemap-([a-z]+?)-(\d+?)\.xml$" - phan ten CHI cho phep [a-z], neu
-    // co dau "-" (vd "pplus-offices") WP se hieu nham la dang "type-subtype" (rule khac,
-    // "^wp-sitemap-([a-z]+?)-([a-z\d_-]+?)-(\d+?)\.xml$") va tach thanh type="pplus" +
-    // subtype="offices" - khong khop provider nao ca, ra 404 (da xac nhan qua debug rewrite rule
-    // that). Dung ten lien khong dau gach de tranh hoan toan.
-    $server->registry->add_provider('pplusoffices', new PPlus_Sitemap_Provider('pplusoffices', 'pplus_sitemap_office_urls'));
-    $server->registry->add_provider('pplusnews', new PPlus_Sitemap_Provider('pplusnews', 'pplus_sitemap_news_urls'));
+    // Ten provider KHONG duoc co dau gach ngang (rewrite rule core chi cho [a-z] o phan ten).
+    $server->registry->add_provider('pplusareas', new PPlus_Sitemap_Provider('pplusareas', 'areas'));
+    $server->registry->add_provider('pplusapartments', new PPlus_Sitemap_Provider('pplusapartments', 'apartments'));
+    $server->registry->add_provider('pplusblogs', new PPlus_Sitemap_Provider('pplusblogs', 'blogs'));
 });
 
-// URL sitemap (vd wp-sitemap-pplusoffices-1.xml) chi hoat dong sau khi rewrite rule tuong ung
-// duoc flush - dang ky provider MOI khong tu dong flush, giong quy luat da gap voi moi route rieng
-// khac trong du an (xem inc/office-detail-route.php...). Flush 1 lan duy nhat, guard bang 1 option
-// rieng (KHONG dung chung "pplus_rewrite_flushed_v1/v2/v3" da dung cho cac route khac).
+add_filter('wp_sitemaps_add_provider', function ($provider, string $name) {
+    return in_array($name, ['users', 'taxonomies'], true) ? false : $provider;
+}, 10, 2);
+
+// Trang "Danh sach yeu thich" la du lieu rieng tu nguoi dung, da noindex; "sample-page" la trang mac dinh cua WP - khong dua vao sitemap.
+add_filter('wp_sitemaps_posts_query_args', function (array $args): array {
+    foreach (['danh-sach-yeu-thich', 'sample-page'] as $slug) {
+        $page = get_page_by_path($slug);
+        if ($page) {
+            $args['post__not_in'] = array_merge($args['post__not_in'] ?? [], [(int) $page->ID]);
+        }
+    }
+    return $args;
+});
+
 add_action('init', function () {
-    if (get_option('pplus_rewrite_flushed_sitemap_v2') !== '1') {
+    if (get_option('pplus_rewrite_flushed_sitemap_resi_v1') !== '1') {
         flush_rewrite_rules();
-        update_option('pplus_rewrite_flushed_sitemap_v2', '1');
+        update_option('pplus_rewrite_flushed_sitemap_resi_v1', '1');
     }
 }, 20);

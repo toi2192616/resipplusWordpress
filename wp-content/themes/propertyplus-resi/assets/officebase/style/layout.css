@@ -1390,6 +1390,15 @@ input[type=number] {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 }
+.box-content .box-list .box-list-body .list-product-office .item-office img {
+  aspect-ratio: 5 / 4;
+  width: 100%;
+  object-fit: cover;
+}
+.box-content .box-list .box-list-body .list-product-office .item-office .item-address {
+  margin-top: 5px;
+  min-height: 0;
+}
 .box-content .box-map {
   padding: 0px;
   position: sticky;
@@ -1420,6 +1429,7 @@ input[type=number] {
     bottom: 0;
     left: 0px;
     height: 100% !important;
+    z-index: 1002;
   }
   .box-content .box-map #map {
     position: fixed !important;
@@ -1659,6 +1669,30 @@ input[type=number] {
 }
 .item-office .item-dislike:hover {
   transform: scale(1.1);
+}
+.item-office .item-type-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-family: SF Pro Display;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.22);
+}
+.item-office .item-type-badge i {
+  margin-right: 4px;
+  font-size: 10px;
+}
+.item-office .item-type-badge.badge-serviced {
+  background: #2D5185;
+}
+.item-office .item-type-badge.badge-condo {
+  background: #B18E4E;
 }
 .item-office .item-content {
   min-height: 85px;
@@ -2077,6 +2111,23 @@ input[type=number] {
   padding: 5px 10px 7px;
   border: none;
   background: #E1E1E1;
+}
+@media only screen and (max-width: 800px) {
+  .searching-tool.resultOnTop {
+    display: none;
+  }
+  body:not(.gmap-search) .url-box-content {
+    margin-top: 10px;
+  }
+  body:not(.gmap-search) .box-content {
+    margin-top: 0 !important;
+  }
+  body:not(.gmap-search) #web-content {
+    top: 0;
+  }
+}
+.pplus-hide-mobile-map-mode {
+  display: none !important;
 }
 .GroupMoblieActive {
   position: fixed;
@@ -2612,5 +2663,22 @@ input[type=number] {
 @media only screen and (max-width: 800px) {
   iframe {
     max-width: 100%;
+  }
+}
+@media only screen and (max-width: 880px) {
+  .slick-slider .slick-next {
+    right: 0 !important;
+  }
+  .slick-slider .slick-prev {
+    left: 0 !important;
+  }
+}
+@media (max-width: 800px) {
+  body.gmap-search .searching-tool,
+  body.gmap-search .searching-tool-button {
+    z-index: 1004;
+  }
+  body.gmap-search #search-tab-mobile {
+    z-index: 1006;
   }
 }

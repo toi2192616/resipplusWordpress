@@ -150,6 +150,34 @@ function pplus_zone_to_bounds(?string $zone_stringify): ?array {
 }
 
 /**
+ * Ep "apartmentTypeList" trong 1 filter goi Apartment/_GetApartments VE "1,2" (can ho/chung cu
+ * binh thuong) - chan TAN GOC tai moi noi filter duoc gui len API that (14/9, theo yeu cau nguoi
+ * dung: "loai bo hoan toan loai hinh biet thu ra khoi bo goi API, de nhung setup cu co goi loai
+ * nha/biet thu cung khong goi ra"). Xac nhan qua 2 lan goi API that RIENG BIET:
+ * 1) POST {"apartmentTypeList":"3",...} toi Apartment/_GetApartments tra ve THAT du lieu biet thu
+ *    ("Villa Ciputra"/"Villa StarLake") - endpoint nay khong tu chan gi ca.
+ * 2) QUAN TRONG HON: filter that cua 1 "vung" tuy chinh tren menu (vd alias "pho-nguoi-nhat", loai=3
+ *    trong nhom apartmentLuxury cua Home/HeaderInvokeAsync) tra ve "apartmentTypeList" RONG (khong
+ *    phai "1,2" nhu filter cua 1 quan) - va goi thang filter rong do (khong sua gi) ra ket qua CO
+ *    LAN "Villa Ciputra" (apartmentType=3) ngay dau danh sach. Nghia la "rong" o phia API nay =
+ *    "TAT CA loai, bao gom ca biet thu", KHONG PHAI "khong loc gi" - nen KHONG THE chi sua khi thay
+ *    ma "3", PHAI LUON ep ve "1,2" ke ca khi filter goc de trong.
+ *
+ * Dung cho MOI noi filter co the den tu nguon KHONG kiem soat duoc truc tiep (jsonSearch cua 1 nhom
+ * trang chu cau hinh qua admin .NET, hoac filter tra ve nguyen ban tu Reference/GetIndex) - khong
+ * dua vao rewrite rule/alias whitelist (se sot khi co alias/vung moi).
+ *
+ * @param array $filter Filter chuan bi gui len Apartment/_GetApartments.
+ * @return array Cung mang, "apartmentTypeList" LUON la "1,2" hoac 1 tap con khong co ma "3".
+ */
+function pplus_strip_villa_type(array $filter): array {
+    $types = (string) ($filter['apartmentTypeList'] ?? '');
+    $list  = array_filter(array_map('trim', explode(',', $types)), static fn ($t) => $t !== '3' && $t !== '');
+    $filter['apartmentTypeList'] = !empty($list) ? implode(',', $list) : '1,2';
+    return $filter;
+}
+
+/**
  * Bounds (ne/sw) cho 1 TINH/THANH, dung CHUNG cho MOI trang quan/phuong/duong/hang trong tinh do
  * (KHONG dung bounds rieng cua tung quan/duong) - goi Reference/GetIndexProvince (co cache transient,
  * re khi lap lai) + pplus_zone_to_bounds() tren "zone_stringify" cua CHINH TINH.
@@ -260,6 +288,24 @@ function pplus_lang_url(string $path): string {
 }
 
 /**
+ * URL DAY DU cua trang HIEN TAI, GIU LAI dung tien to ngon ngu (vd "/en/...", "/ja/...") - dung lam
+ * $base cho add_query_arg() khi can sinh link phan trang/sap xep TREN CHINH trang dang xem.
+ *
+ * SUA 30/9 (bug thuc te nguoi dung bao cao: "bấm trang 2 chuyển trang thì lỗi"): add_query_arg()
+ * KHONG truyen $base se tu dung $_SERVER['REQUEST_URI'] lam goc - nhung inc/language-route.php DA
+ * STRIP SAN tien to "/en"/"/ja" khoi bien nay TU RAT SOM (truoc khi bat ky code nao khac trong
+ * functions.php chay, xem file do) de cac rewrite rule khop dung, nen add_query_arg() "khong bao
+ * gio" con thay tien to ngon ngu nua - link phan trang tren MOI trang EN/JA co pagination (A3/A4:
+ * page-reference.php, A1: page-apartment-list.php, "Dự án cụ thể": page-project-detail.php) deu bi
+ * mat tien to, dua nguoi dung ve URL KHONG dau, PPLUS_LANG tu dong roi ve 'vi' trong khi duong dan
+ * lai la 1 alias kieu EN (vd "rental-apartment/.../dong-da-district") - Reference/GetIndex goi voi
+ * lang='vi' + alias EN se KHONG khop du lieu nao ca, ra thang trang loi API.
+ */
+function pplus_current_url(): string {
+    return home_url(pplus_lang_prefix() . ($_SERVER['REQUEST_URI'] ?? '/'));
+}
+
+/**
  * Dich 1 chuoi text TINH (khong phai du lieu API) theo ngon ngu hien tai - WordPress i18n that
  * (wp_set_locale()/.po-.mo) khong duoc dung o day vi site khong doi locale that su theo /en/,
  * chi doi field text hien thi. Dung cho label/breadcrumb/button viet cung trong theme (header,
@@ -267,7 +313,25 @@ function pplus_lang_url(string $path): string {
  * ngu dung qua {lang}/... trong URL goi API roi).
  */
 function pplus_t(string $vi, string $en): string {
-    return pplus_current_lang() === 'en' ? $en : $vi;
+    // SUA 30/9 (kiem tra da ngon ngu theo yeu cau nguoi dung - bug NGHIEM TRONG NHAT tim thay trong
+    // dot kiem tra nay): ham nay truoc gio CHI phan biet 'en', MOI ngon ngu khac (bao gom 'ja') deu
+    // roi ve $vi - nghia la TOAN BO noi dung tinh viet qua pplus_t() tren CA THEME (~240 lan goi,
+    // 22 file: page-about.php, page-contact.php, page-favourite.php, page-office-detail.php,
+    // single-news.php, archive-news.php, parts/office-card.php...) hien 100% TIENG VIET cho nguoi
+    // dung dang xem ban tieng Nhat - xac nhan qua kiem tra truc tiep "/ja/about-us/": ca trang (tieu
+    // de, breadcrumb, moi doan van) deu la VI thay vi JA, du URL/menu xung quanh da dung JA. Sua tai
+    // 1 diem duy nhat: doi voi 'ja', tra cuu qua CHINH dictionary that (GetLangApi, khop theo khoa
+    // $vi - cung co che voi pplus_localize()) thay vi mac dinh ve VI - loi ich toi da 240 cho goi
+    // ham nay cung 1 luc, khong can sua tung file rieng le.
+    $lang = pplus_current_lang();
+    if ($lang === 'en') {
+        return $en;
+    }
+    if ($lang === 'ja') {
+        $dict = pplus_lang_dictionary('ja');
+        return $dict[$vi] ?? $vi;
+    }
+    return $vi;
 }
 
 /**
@@ -352,6 +416,110 @@ function pplus_get_office_url_in_lang(int $project_id, int $project_type, string
 }
 
 /**
+ * Goi HTTP that toi .NET (GET hoac POST JSON). Khong cache - chi cho pplus_api_cached() / tac vu refresh.
+ */
+function pplus_api_http(string $method, string $url, ?array $payload, int $timeout): ?array {
+    if ($method === 'POST') {
+        $response = wp_remote_post($url, [
+            'timeout' => $timeout,
+            'headers' => ['Content-Type' => 'application/json; charset=utf-8', 'Accept' => 'application/json'],
+            'body'    => wp_json_encode($payload ?? []),
+        ]);
+    } else {
+        $response = wp_remote_get($url, [
+            'timeout' => $timeout,
+            'headers' => ['Accept' => 'application/json'],
+        ]);
+    }
+    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) >= 400) {
+        return null;
+    }
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+    return is_array($body) ? $body : null;
+}
+
+/**
+ * Cache API kieu STALE-WHILE-REVALIDATE (30/9/2026). Truoc day: het TTL (5-15 phut) thi NGUOI TRUY CAP KE TIEP
+ * phai cho toan bo chuoi goi API tuan tu de dung lai trang (do that tren local: trang chu 17-23s luc cache
+ * nguoi, 0.5s luc nong) va ca luc API .NET cham/loi thi moi trang deu doi het timeout 6-8s.
+ * Bay gio:
+ *   - con hieu luc (< ttl)  -> tra ngay.
+ *   - het ttl nhung con ban cu (giu them 24h) -> TRA NGAY ban cu, lam moi NGAM sau khi da tra trang cho nguoi
+ *     dung (fastcgi_finish_request neu co, khong thi WP-Cron) - khong ai phai cho.
+ *   - chua co gi -> goi that (chi xay ra lan dau tien cua tung khoa).
+ *   - API loi + khong co ban cu -> nho loi 30s (khong doi timeout lap lai tren moi request trong luc API sap).
+ * Khoa transient dung tien to moi 'pplus_swr_' (khong dung lai dinh dang 'pplus_api_' cu).
+ */
+function pplus_api_cached(string $method, string $url, ?array $payload, int $ttl, int $timeout): ?array {
+    if ($ttl <= 0) {
+        return pplus_api_http($method, $url, $payload, $timeout);
+    }
+    $key   = 'pplus_swr_' . md5($method . $url . ($payload !== null ? wp_json_encode($payload) : ''));
+    $entry = get_transient($key);
+
+    if (is_array($entry) && array_key_exists('b', $entry)) {
+        if (time() < (int) $entry['f']) {
+            return $entry['b'];
+        }
+        pplus_api_queue_refresh($key, $method, $url, $payload, $ttl, $timeout);
+        return $entry['b'];
+    }
+
+    if (get_transient($key . '_fail') !== false) {
+        return null;
+    }
+
+    $body = pplus_api_http($method, $url, $payload, $timeout);
+    if ($body === null) {
+        set_transient($key . '_fail', 1, 30);
+        return null;
+    }
+    set_transient($key, ['b' => $body, 'f' => time() + $ttl], $ttl + DAY_IN_SECONDS);
+    return $body;
+}
+
+/** Lam moi 1 khoa cache: chay sau khi da tra trang (neu ha tang cho phep) hoac qua WP-Cron. */
+function pplus_api_queue_refresh(string $key, string $method, string $url, ?array $payload, int $ttl, int $timeout): void {
+    if (get_transient($key . '_lock') !== false) {
+        return; // dang co request khac lam moi khoa nay (chong don dap khi nhieu nguoi vao cung luc)
+    }
+    set_transient($key . '_lock', 1, 90);
+
+    static $queue = [];
+    static $registered = false;
+    $queue[$key] = [$key, $method, $url, $payload, $ttl, $timeout];
+
+    if (function_exists('fastcgi_finish_request')) {
+        if (!$registered) {
+            $registered = true;
+            register_shutdown_function(static function () use (&$queue) {
+                if (function_exists('fastcgi_finish_request')) {
+                    fastcgi_finish_request();
+                }
+                foreach ($queue as $job) {
+                    pplus_api_refresh_job(...$job);
+                }
+            });
+        }
+        return;
+    }
+    wp_schedule_single_event(time(), 'pplus_api_refresh', [$key, $method, $url, $payload, $ttl, $timeout]);
+}
+
+function pplus_api_refresh_job(string $key, string $method, string $url, ?array $payload, int $ttl, int $timeout): void {
+    $body = pplus_api_http($method, $url, $payload, max($timeout, 15));
+    $old  = get_transient($key);
+    if ($body !== null) {
+        set_transient($key, ['b' => $body, 'f' => time() + $ttl], $ttl + DAY_IN_SECONDS);
+    } elseif (is_array($old) && array_key_exists('b', $old)) {
+        // Refresh loi: giu ban cu, thu lai sau 60s (khong xoa, khong lam trang cham).
+        set_transient($key, ['b' => $old['b'], 'f' => time() + 60], $ttl + DAY_IN_SECONDS);
+    }
+    delete_transient($key . '_lock');
+}
+add_action('pplus_api_refresh', 'pplus_api_refresh_job', 10, 6);
+
+/**
  * Goi 1 endpoint .NET, JSON GET, co cache transient. Dung chung cho moi man hinh.
  *
  * @param string $path   Vi du "vi/Home/HeaderInvokeAsync" hoac "Office/_GetDetail"
@@ -362,34 +530,7 @@ function pplus_api_get(string $path, array $query = [], int $cache_seconds = 600
     if (!empty($query)) {
         $url = add_query_arg($query, $url);
     }
-
-    $cache_key = 'pplus_api_' . md5($url);
-    if ($cache_seconds > 0) {
-        $cached = get_transient($cache_key);
-        if ($cached !== false) {
-            return $cached;
-        }
-    }
-
-    $response = wp_remote_get($url, [
-        'timeout' => 6,
-        'headers' => ['Accept' => 'application/json'],
-    ]);
-
-    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) >= 400) {
-        return null;
-    }
-
-    $body = json_decode(wp_remote_retrieve_body($response), true);
-    if (!is_array($body)) {
-        return null;
-    }
-
-    if ($cache_seconds > 0) {
-        set_transient($cache_key, $body, $cache_seconds);
-    }
-
-    return $body;
+    return pplus_api_cached('GET', $url, null, $cache_seconds, 6);
 }
 
 /**
@@ -409,7 +550,17 @@ function pplus_get_header_data(): ?array {
         return $cache[$lang];
     }
     $data = pplus_api_get("{$lang}/Home/HeaderInvokeAsync", [], 900);
-    return $cache[$lang] = ($data['result'] ?? null);
+    $result = $data['result'] ?? null;
+
+    // Chan biet thu TAN GOC (14/9, theo yeu cau nguoi dung): parts/header.php da THOI khong render
+    // $header['apartmentVilla'] tu 13/9, nhung du lieu THAT (alias/id biet thu that) van con nguyen
+    // trong chinh ket qua nay - xoa han khoi day de KHONG CON noi nao trong theme doc duoc mang nay
+    // nua du co, vd 1 doan code cu duoc khoi phuc nham hoac copy lai vo tinh.
+    if (is_array($result)) {
+        unset($result['apartmentVilla']);
+    }
+
+    return $cache[$lang] = $result;
 }
 
 /**
@@ -582,12 +733,346 @@ function pplus_get_footer_data(): ?array {
 }
 
 /**
- * @return array|null Shape (tu home.component.ts/ControlHome): { dataList, dataListHCM, listOffice,
- *   listVideos, danhSachNhanVien, listBaoChis, listBlogNews }
+ * @return array|null Shape that thuc te (xac nhan qua goi truc tiep API, KHONG phai shape cua ban
+ *   Van phong): { datalistApartment, datalistApartmentVila, danhSachNhanVien, listBaoChis,
+ *   khamPhaVietNamList, listApartmentType, ... }. Moi phan tu cua datalistApartment/
+ *   datalistApartmentVila la { data: { id, title, subTitle, alias, jsonSearch }, apartmentList: null }
+ *   - danh sach can ho CHUA duoc giai quyet, xem pplus_get_home_apartment_groups().
  */
 function pplus_get_home_data(): ?array {
     $lang = pplus_current_lang();
     $data = pplus_api_get("{$lang}/Home/GetIndex", [], 300);
+    return $data['result'] ?? null;
+}
+
+/**
+ * Danh sach goi y "hot" (quan + loai can ho tron lan, co anh icon rieng, sap theo stT_GOIY) -
+ * port tu search-base.component.ts GetDataSuccess() -> homeService.GetListSucces() ->
+ * {lang}/Home/_GetIndexSuccess. Hien thi o hang "suggest-header" tren cung cua trang A3/A4 (VA
+ * ca trang chu, nhung trang chu chua dung toi ham nay). KHONG PHAI cung du lieu voi
+ * $header['dataLists']/$header['apartmentType'] (2 mang do la TOAN BO quan/loai cho mega-menu,
+ * con day la 1 danh sach RIENG, ngan hon, do BE chon "hot" thu cong - xac nhan qua goi API that:
+ * co ca item khong phai quan/loai chuan nhu "Phố Người Nhật"/"Căn Hộ Hồ Tây").
+ *
+ * @return array Moi item: {img, title, subTitle, alias, loai, stT_GOIY, ...}
+ */
+function pplus_get_index_success(): array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/Home/_GetIndexSuccess", [], 600);
+    return $data['result'] ?? [];
+}
+
+/**
+ * Danh sach "gợi ý" DAY DU (16 muc: quan/loai/vung dac biet) hien trong luoi "Hoặc chọn theo gợi ý"
+ * cua #searchModal (them 17/9, theo yeu cau nguoi dung) - port tu search-base.component.ts
+ * GetAllDistrict() -> officeService.GetAllDistrict() -> {lang}/Apartment/_GetAllDistrict. KHAC
+ * pplus_get_index_success() (12 muc, rieng cho hang pill "suggest-header") - endpoint nay tra ve
+ * NHIEU HON (16 muc, xac nhan qua goi API that): them "04 Bedrooms" va 3 "vung dac biet" (loai=3,
+ * "Lake View Apartment"/"Near Japanese School Hanoi"/"Easy Access To Industrial Parks") khong co
+ * trong danh sach pill. Moi item co "alias" dung THANG duoc voi route /cho-thue-can-ho/ha-noi/
+ * {alias}/ da co san (KHONG can route/logic moi - da xac nhan cung 1 co che voi cac pill hien tai,
+ * inc/reference-index-route.php xu ly chung moi "loai": 1=quan, 3=vung, 9=so phong).
+ *
+ * "jsonSearch" (chuoi JSON filter: bedroom_qty/price_from/price_to/area_from/area_to) CHUA dung
+ * toi trong lan nay - chi dung "alias" de dieu huong don gian, giong het cach hang pill dang lam.
+ * Deferred: loc chi tiet theo jsonSearch se can page-reference.php doc them cac query var tuong
+ * ung (ngoai pham vi hien tai, xem TODO trong parts/search-modal.php).
+ *
+ * @return array Moi item: {img, title, subTitle, alias, loai, jsonSearch, ...}
+ */
+function pplus_get_all_districts(): array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/Apartment/_GetAllDistrict", [], 600);
+    return $data['result'] ?? [];
+}
+
+/**
+ * Danh sach video/bai viet o cot phai trang Dich vu (page-service.php) - PORT
+ * ListServiceComponent.ngOnInit() (list-service.component.ts dong 32-39): goi 1 lan cho MOI
+ * TypeSite (1-4), KHONG PHAI du lieu cua chinh noi dung tab dang xem (3 component tinh
+ * the-management/housekeeping/techical KHONG goi API nao ca - chi component nay).
+ *
+ * @param int $type_site 1-4, xem TypeSite trong inc/service-route.php.
+ * @return array<int,array{id:mixed,img:string,title:string,subTitle:string,content:string}>
+ */
+function pplus_get_service_type_list(int $type_site): array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/Service/ServiceType", ['ListIdSiteBase' => $type_site], 600);
+    return $data['result'] ?? [];
+}
+
+/**
+ * Bang gia/tuy chon dich vu cho TypeSite 4 (Dang ky dich vu) - PORT
+ * RegisterServiceComponent.ngOnInit() (register-service.component.ts dong 62-125): API tra ve
+ * servicePrice[] voi "name" dang "Nhan|Ghi_chu" (ghep boi "|") va "type" 1-4 quyet dinh kieu input
+ * (1=so, 2=Co/Khong, 3=select tu 1 chuoi JSON-nhu cac gia tri "Ten|Gia", 4=text/gia thuan) - chuan
+ * hoa lai y het logic Angular truoc khi tra ve de parts/service-register.php chi viec lap va render,
+ * KHONG lap lai logic parse o 2 noi.
+ *
+ * @return array{servicePrice: array<int,array>} servicePrice moi phan tu da co them 'value'
+ *   (gia tri mac dinh) va, voi type==3, 'listSelect' (mang {nameC,priceC}).
+ */
+function pplus_get_service_regist(): array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/Service/RegistService", [], 300);
+    $result = $data['result'] ?? [];
+    $list   = $result['servicePrice'] ?? [];
+
+    foreach ($list as &$item) {
+        $name_parts   = explode('|', (string) ($item['name'] ?? ''), 2);
+        $item['name'] = $name_parts[0];
+        $type         = (int) ($item['type'] ?? 0);
+
+        if ($type === 1) { // So (number input)
+            $default_parts       = explode('|', (string) ($item['default'] ?? ''), 2);
+            $item['numberDefault'] = $default_parts[0] !== '' ? $default_parts[0] : '0';
+            $item['value']          = $item['numberDefault'];
+        } elseif ($type === 2) { // Checked (select Co/Khong)
+            $item['value'] = '1';
+        } elseif ($type === 3) { // Select tu danh sach "Ten|Gia"
+            // Ban that (register-service.component.ts dong 90) lam sach chuoi bang mot chuoi
+            // .replace() ky la (bo dau ngoac "[" dau/"]" cuoi, bo dau "\") truoc khi JSON.parse -
+            // gia tri thuc te tra ve la 1 CHUOI JSON cua 1 MANG CHUOI (vd '["Co|100000","Khong|0"]'),
+            // json_decode() PHP xu ly thang duoc dang nay ma khong can "lam sach" kieu Angular.
+            $raw_list     = (string) ($item['value'] ?? '');
+            $decoded      = json_decode($raw_list, true);
+            $list_select  = [];
+            if (is_array($decoded)) {
+                foreach ($decoded as $option) {
+                    $option_parts  = explode('|', (string) $option, 2);
+                    $list_select[] = [
+                        'nameC'  => $option_parts[0],
+                        'priceC' => $option_parts[1] ?? '',
+                    ];
+                }
+            }
+            $item['listSelect'] = $list_select;
+            $item['value']      = $list_select[0]['nameC'] ?? '';
+        }
+        // type==4 (text/gia thuan): giu nguyen $item['value'] nhu API tra ve, khong can xu ly them.
+    }
+    unset($item);
+
+    return ['servicePrice' => $list];
+}
+
+/**
+ * 1 nhom trong datalistApartment khong kem san danh sach can ho - phai goi rieng API voi filter
+ * giai ma tu data.jsonSearch cua chinh nhom do.
+ *
+ * Dung Apartment/_GetApartments (endpoint danh sach day du, se dung cho trang A1 sau nay) CHU
+ * KHONG PHAI Home/_GetApartments (endpoint "teaser" trang chu ma Angular goi) - ly do: da xac
+ * nhan qua goi API that Home/_GetApartments LUON co dinh dung 4 ket qua GIA CAO NHAT tuyet doi
+ * (tham so "take" gui len bi bo qua hoan toan), ma cac can trong CUNG 1 du an thuong co gia gan
+ * nhau -> 1 du an dat tien de chiem het ca 4 cho hien thi (bug thuc te nguoi dung bao cao: "3-4/4
+ * the la cung 1 du an"). Apartment/_GetApartments tra ve CUNG HET field/shape nhung gioi han
+ * 12 ket qua/lan goi (cung khong doi duoc qua "take", nhung "skip" CO hoat dong - da xac nhan
+ * qua API that: skip=0/12/24 tra ve 3 tap id hoan toan khac nhau) - goi 2 trang (skip 0 va 12,
+ * 24 ung vien) de co nguon rong hon truoc khi loc trung theo du an.
+ *
+ * @param array $groups Mang tu $home['datalistApartment']
+ * @return array Cung mang, moi phan tu duoc gan them khoa 'listApartments' (toi da 4 can, moi can
+ *   thuoc 1 du an khac nhau, uu tien can gia cao nhat cua tung du an, thu tu ngau nhien - chay lai
+ *   moi lan tai trang vi shuffle() nam NGOAI cache API, khong bi "dong cung" 1 bo suot 5 phut).
+ */
+function pplus_get_home_apartment_groups(array $groups): array {
+    $lang = pplus_current_lang();
+    foreach ($groups as &$group) {
+        $filter = json_decode($group['data']['jsonSearch'] ?? '', true);
+        if (!is_array($filter)) {
+            $group['listApartments'] = [];
+            continue;
+        }
+        // Chan biet thu TAN GOC (14/9) - "jsonSearch" la du lieu cau hinh qua admin .NET (khong
+        // kiem soat truc tiep tu theme), phong khi 1 nhom duoc cau hinh chua "apartmentTypeList"
+        // chua ma "3" (biet thu) - xem pplus_strip_villa_type().
+        $filter = pplus_strip_villa_type($filter);
+
+        $candidates = [];
+        foreach ([0, 12] as $skip) {
+            $page = pplus_api_post_json("{$lang}/Apartment/_GetApartments", array_merge($filter, ['skip' => $skip]), 300);
+            $candidates = array_merge($candidates, $page['result']['listApartments'] ?? []);
+        }
+
+        // Loc trung theo projectId, GIU CAN DAU TIEN gap cho moi du an - danh sach da sap gia
+        // giam dan tu API nen "dau tien" = can gia cao nhat cua chinh du an do.
+        $by_project = [];
+        foreach ($candidates as $apartment) {
+            $project_id = $apartment['projectId'] ?? null;
+            if ($project_id !== null && !isset($by_project[$project_id])) {
+                $by_project[$project_id] = $apartment;
+            }
+        }
+        $diverse = array_values($by_project);
+        shuffle($diverse);
+
+        $group['listApartments'] = array_slice($diverse, 0, 4);
+    }
+    unset($group);
+    return $groups;
+}
+
+/**
+ * Danh sach can ho cho trang A3/A4 (page-reference.php - landing theo tinh/quan/loai-can-ho).
+ * Goi Apartment/_GetApartments voi $filter (nguyen ban tra ve tu pplus_get_reference_index(),
+ * chi ghi de skip/price_sort_type theo trang/sap xep nguoi dung dang chon).
+ *
+ * Loc trung theo du an TRONG PHAM VI 1 trang (lay rong gap doi - 2 lan goi API, dung ky thuat
+ * giong pplus_get_home_apartment_groups() - nhung KHONG shuffle, giu nguyen thu tu sap xep nguoi
+ * dung dang chon vi day la danh sach that can phan trang on dinh, khong phai 1 khoi "gioi thieu").
+ * Ly do can loc: 1 toa nha thuong co nhieu can cung toa do (vd, lng) gan nhu trung nhau -> tren
+ * ban do cac marker gia chong len nhau nhin nhu chi co vai diem (bug thuc te nguoi dung bao cao:
+ * "vao 1 quan...1 du an hien nhieu can roi long vao nhau, lam ban do chi co vai du an").
+ *
+ * QUAN TRONG - danh doi da biet (nguoi dung da duoc giai thich va chon huong don gian hon): loc
+ * trung chi trong PHAM VI 1 trang, KHONG dam bao 1 du an chi xuat hien DUY NHAT 1 lan tren toan
+ * bo cac trang (vd du an X co the vua o trang 1 vua o trang 3 neu co nhieu can trai gia rong) -
+ * de lam dung nghia toan site can quet het (692 can ~ 58 lan goi API) roi cache lai, qua nang cho
+ * 1 lan tai trang dau tien.
+ *
+ * @return array{listApartments: array, total_count: int} total_count dung de tinh so trang (van
+ *   la tong so can THAT tu API, KHONG phai so can sau khi loc trung - xem ghi chu ben tren).
+ *
+ * SUA 22/9 (theo yeu cau nguoi dung): "$per_page" truoc day CO DINH "12" NGAY TRONG HAM nay (trung
+ * lap voi hang so cung gia tri trong page-reference.php) - chuyen thanh THAM SO ($per_page, mac
+ * dinh 12 de an toan neu con noi goi khac trong tuong lai) de page-reference.php tang len 18
+ * (3 cot x 6 hang) ma KHONG can sua 2 noi. API THAT van CO DINH tra ve 12/lan goi bat ke gui gi
+ * (xac nhan qua curl truc tiep voi "take"/"pageSize"/"limit" - deu bi bo qua, luon 12) nen ham nay
+ * van phai GOI NHIEU LAN de gom du "$per_page" muc, KHONG the chi doi so lan goi.
+ */
+function pplus_get_apartment_list(array $filter, int $skip, int $price_sort_type, int $per_page = 12): array {
+    $lang = pplus_current_lang();
+    $api_page_size = 12; // CO DINH phia API that, KHONG doi duoc - xem docblock ham nay.
+
+    // Chan biet thu TAN GOC (14/9) - phong khi $filter (nguyen ban tra ve tu
+    // pplus_get_reference_index()) bi lot qua nhanh chan o do (vd goi truc tiep ham nay tu 1 noi
+    // khac trong tuong lai, khong di qua pplus_get_reference_index()). Xac nhan qua goi API that:
+    // "apartmentTypeList"="3" la ma loai biet-thu (khac "1,2"=can ho binh thuong); ep ve "1,2" bat
+    // ky khi nao thay "3" xuat hien, KHONG chi xoa di (giu dung dinh dang chuoi CSV ham API can).
+    $filter = pplus_strip_villa_type($filter);
+
+    // Loc theo dung tọa độ 4 goc cua vung (zone_stringify) TAN GOC - theo yeu cau nguoi dung (17/9):
+    // "ne_lat/ne_lng/sw_lat/sw_lng" tra ve san trong $filter (tu Reference/GetIndex) la BUG PHIA
+    // .NET, LUON dinh o 1 gia tri co dinh cho toan Ha Noi bat ke alias nao (da xac nhan qua goi API
+    // that: 3 alias khac nhau ra CUNG HET 4 so) - dung THANG 4 so do se KHONG loc duoc gi ca, du an
+    // ngoai vung van hien (dung y het bug nguoi dung bao cao). "zone_stringify" (4 goc THAT, tinh
+    // rieng dung tung alias) moi la nguon dang tin cay - GIAI MA LAI qua pplus_zone_to_bounds() (ham
+    // da co san, dung on dinh cho nhanh Van phong/pplus_province_bounds()) va GHI DE 4 truong tren
+    // truoc khi goi API, KHONG dung nguyen 4 gia tri "loi" co san trong $filter.
+    $zone_bounds = pplus_zone_to_bounds($filter['zone_stringify'] ?? null);
+    if ($zone_bounds !== null) {
+        $filter = array_merge($filter, $zone_bounds);
+    }
+
+    // So lan goi API that can de gom du "$per_page" can SAU KHI loc trung du an - giu dung ty le
+    // "2x" cua ban goc (12 muc dich -> 2 lan goi 12/lan = 24 tho), tang theo khi "$per_page" lon
+    // hon 12 (18 muc dich -> 3 lan goi = 36 tho) thay vi co dinh "2 lan" nhu truoc (se khong du tho
+    // cho 18 muc dich, ty le tho/dich giam tu 2x xuong ~1.3x).
+    $api_calls = (int) ceil(($per_page * 2) / $api_page_size);
+
+    $candidates = [];
+    $total_count = 0;
+    for ($i = 0; $i < $api_calls; $i++) {
+        $page_filter = $filter;
+        $page_filter['skip'] = $skip + ($i * $api_page_size);
+        $page_filter['price_sort_type'] = $price_sort_type;
+        $result = pplus_api_post_json("{$lang}/Apartment/_GetApartments", $page_filter, 300);
+        $candidates = array_merge($candidates, $result['result']['listApartments'] ?? []);
+        $total_count = max($total_count, (int) ($result['result']['total_count'] ?? 0));
+    }
+
+    // SUA 30/9 (bug thuc te nguoi dung bao cao: trang "Dự án cụ thể" - page-project-detail.php -
+    // "38 chỗ ở" nhung MOI TRANG CHI HIEN 1 SAN PHAM): loc trung theo projectId o duoi day GIA DINH
+    // $filter dang loc theo QUAN/KHU VUC (nhieu du an khac nhau, can tranh 1 du an chiem het trang -
+    // xem docblock tren, theo dung yeu cau nguoi dung 17/9) - nhung khi $filter DA TU LOC SAN theo
+    // DUNG 1 "project_id" (trang du an cu the, pplus_get_project_detail()'s filter), TOAN BO ket qua
+    // deu CUNG 1 projectId, nen loc trung se giu lai DUY NHAT 1 can/trang, xoa mat 37/38 can con lai.
+    // Bo qua buoc loc trung trong truong hop nay - dung nghia "hien tat ca can cua CHINH du an dang
+    // xem", khong phai "da dang hoa danh sach nhieu du an".
+    if (!empty($filter['project_id'])) {
+        return [
+            'listApartments' => array_slice($candidates, 0, $per_page),
+            'total_count'    => $total_count,
+        ];
+    }
+
+    // Giu thu tu (KHONG shuffle) - "dau tien" trong moi projectId van la can dung vi tri sap xep
+    // (gia cao/thap/moi nhat...) da chon, chi bo cac can trung du an DUNG SAU can dau tien do.
+    $seen_projects = [];
+    $diverse = [];
+    foreach ($candidates as $apartment) {
+        $project_id = $apartment['projectId'] ?? null;
+        if ($project_id !== null && isset($seen_projects[$project_id])) {
+            continue;
+        }
+        if ($project_id !== null) {
+            $seen_projects[$project_id] = true;
+        }
+        $diverse[] = $apartment;
+    }
+
+    return [
+        'listApartments' => array_slice($diverse, 0, $per_page),
+        'total_count'    => $total_count,
+    ];
+}
+
+/**
+ * (A2) Chi tiet 1 can ho - /cho-thue-can-ho/{province}/{district}/{project}/{id}. Doi chieu
+ * office.service.ts GetDetail() (dong 37-44 - GET Apartment/_GetDetail?id=&province=&district=
+ * &project=, KHAC HAN pplus_get_office_detail() dung "alias" cho van phong: o day tham so la
+ * "project" khong phai "alias", va khong co field "alias" rieng - alias du an nam san trong
+ * URL query "project" giong nguyen chuoi tren URL).
+ *
+ * Xac nhan qua goi API that (curl truc tiep id=3267): response GOM 7 khoa cap 1, nhung CHI
+ * "apartmentDetail"/"markers"/"listUser" thuc su duoc detail.component.html/.ts dung toi -
+ * "dataSelected"/"projectDetail"/"otherApartmentInProject"/"servicePrice" deu la field CHET (khong
+ * xuat hien o bat ky dau trong .html/.ts that, xac nhan qua grep toan bo 2 file do) - KHONG bia
+ * them section nao cho 4 khoa chet nay khi port (giu dung y that, khong lam "day du hon ban goc").
+ *
+ * @return array|null Shape: { apartmentDetail: {apartmentId, projectId, projectName, title,
+ *   address, area, bedRoomQty, bathRoomQty, hasBathtub, price, priceString, description,
+ *   projectDesc, lat, lng, photoList[], specialLocationList[], serviceIncludedList[],
+ *   serviceNotIncludedList[], utilityList[], alasDistrict, alasProject, alasUrlBase, alasUrlBaseVi,
+ *   videoUrl, ...}, markers: [{lat,lng,...}], listUser: [{img,title,content}] }
+ */
+function pplus_get_apartment_detail(int $id, string $province, string $district, string $project): ?array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/Apartment/_GetDetail", [
+        'id'       => $id,
+        'province' => $province,
+        'district' => $district,
+        'project'  => $project,
+    ], 600);
+    return $data['result'] ?? null;
+}
+
+/**
+ * (A3/A4 nhanh "Dự án cụ thể") Trang 1 du an cu the - /cho-thue-can-ho/{province}/{district}/{project}.
+ * Doi chieu project.service.ts GetDetail() (dong 50-53: GET Project/Detail?id=) + reference-index.
+ * component.ts nhanh "else" (dong 122-186, khi route co tham so "project"): id tach tu DOAN CUOI
+ * cua alias sau dau "-" cuoi cung (giong het pplus_get_apartment_detail_from_query_vars(), xem
+ * inc/apartment-detail-route.php).
+ *
+ * QUAN TRONG - xac nhan qua doc toan bo reference-index.component.html (189 dong, KHONG co 1 dong
+ * nao doc "Model.projectDetail"/"Model.apartmentsInProject"): du response co ca 2 khoa nay (thong
+ * tin toa nha rat day du: address/areas/beedRoom/powerBackup/ownership/photoList rieng cua du
+ * an/specialLocationList/serviceIncludedList...), TRANG THAT KHONG HIEN THI chung o dau ca - trang
+ * nay dung LAI y HET template cua trang "province/alias" (pplus_get_reference_index()): breadcrumb +
+ * suggest-header + <app-search-base> (danh sach + ban do, loc theo "filter" - da co san "project_id"
+ * dung san trong do) + bai viet SEO "dataSelected". "apartmentsInProject" thuc chat la du lieu THUA -
+ * danh sach can ho HIEN THI THAT lai di qua search-base.loadData() tu chinh "filter" nay (goi
+ * Apartment/_GetApartments binh thuong), KHONG doc truc tiep "apartmentsInProject". KHONG bia them
+ * section "Giới thiệu dự án" nao tu projectDetail - giu dung nhu ban that.
+ *
+ * @return array|null Shape: { dataSelected: {title, content, metaTitle, metaDescription, subTitle,
+ *   alias, isIndex}, filter: {...co san "project_id", dung THANG cho pplus_get_apartment_list()} }
+ *   (projectDetail/apartmentsInProject/markers/questionList: co trong response nhung KHONG dung -
+ *   xem ghi chu tren).
+ */
+function pplus_get_project_detail(int $id): ?array {
+    $lang = pplus_current_lang();
+    $data = pplus_api_get("{$lang}/Project/Detail", ['id' => $id], 600);
     return $data['result'] ?? null;
 }
 
@@ -599,35 +1084,7 @@ function pplus_get_home_data(): ?array {
  */
 function pplus_api_post_json(string $path, array $payload, int $cache_seconds = 300): ?array {
     $url = pplus_api_base_url() . '/' . ltrim($path, '/');
-
-    $cache_key = 'pplus_api_' . md5($url . wp_json_encode($payload));
-    if ($cache_seconds > 0) {
-        $cached = get_transient($cache_key);
-        if ($cached !== false) {
-            return $cached;
-        }
-    }
-
-    $response = wp_remote_post($url, [
-        'timeout' => 8,
-        'headers' => ['Content-Type' => 'application/json; charset=utf-8', 'Accept' => 'application/json'],
-        'body'    => wp_json_encode($payload),
-    ]);
-
-    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) >= 400) {
-        return null;
-    }
-
-    $body = json_decode(wp_remote_retrieve_body($response), true);
-    if (!is_array($body)) {
-        return null;
-    }
-
-    if ($cache_seconds > 0) {
-        set_transient($cache_key, $body, $cache_seconds);
-    }
-
-    return $body;
+    return pplus_api_cached('POST', $url, $payload, $cache_seconds, 8);
 }
 
 /**
@@ -823,7 +1280,14 @@ function pplus_get_reference_index(string $province, string $alias, string $alia
         // do la du (da xac nhan qua goi API that truc tiep: "en/Reference/GetIndex?alias=hoan-kiem-
         // district" tra ve dung dataSelected, khac han vi du "alias=hoan-kiem" o tren).
         $resolved_alias = $alias;
-        if ($lang === 'en' && $alias_lang !== 'en') {
+        // SUA 30/9 (kiem tra da ngon ngu theo yeu cau nguoi dung): dieu kien truoc day CHI xu ly
+        // "$lang === 'en'" - "$lang === 'ja'" bi BO SOT hoan toan, khien URL VI-form duoi tien to
+        // "/ja/" (vd "/ja/cho-thue-can-ho/ha-noi/quan-tay-ho", tuong thich nguoc voi link VI cu -
+        // xem ghi chu tren) luon 404/trang trang (goi thang "ja/Reference/GetIndex?alias=quan-tay-ho"
+        // that su tra ve dataSelected RONG - xac nhan qua curl truc tiep). "aliasJa" that (xac nhan
+        // qua API) LUON BANG "aliasEn" (chua co ban dich rieng cho JA o CSDL goc), nen dung LAI
+        // chinh "aliasEn" tu cuoc "do tham" - khong can goi rieng 1 truong "aliasJa" nao khac.
+        if (($lang === 'en' || $lang === 'ja') && $alias_lang !== 'en') {
             $vi_probe   = pplus_api_get('vi/Reference/GetIndex', ['province' => $province, 'alias' => $alias], 600);
             $alias_en   = $vi_probe['result']['dataSelected']['aliasEn'] ?? '';
             if ($alias_en !== '') {
@@ -834,7 +1298,23 @@ function pplus_get_reference_index(string $province, string $alias, string $alia
     } else {
         $data = pplus_api_get("{$lang}/Reference/GetIndexProvince", ['alias' => $province], 600);
     }
-    return $data['result'] ?? null;
+    $result = $data['result'] ?? null;
+
+    // Chan biet thu TAN GOC (14/9, theo yeu cau nguoi dung): san pham biet thu da bo khoi menu tu
+    // 13/9 nhung CHI o tang hien thi (parts/header.php khong render $header['apartmentVilla'] nua) -
+    // du lieu THAT van con nguyen tren backend va van con URL cu (vd
+    // /cho-thue-can-ho/ha-noi/biet-thu-ciputra/) van goi dung ham nay vi rewrite rule khong loc theo
+    // loai. Xac nhan qua goi API that: dataSelected cua BAT KY alias biet-thu nao (con hang trong
+    // apartmentVilla[] tra ve tu Home/HeaderInvokeAsync) LUON co "loai"="8" (khac han "1"=quan,
+    // "9"=loai-can-ho) - chan tai day (tra ve null) de page-reference.php tu 404 (dung LAI y het
+    // nhanh 404 co san cho alias khong ton tai, KHONG can sua rieng page-reference.php), ap dung cho
+    // CA URL cu LAN bat ky URL nao khac co the con tro toi 1 alias biet-thu trong tuong lai - khong
+    // dua vao 1 danh sach alias biet-thu can liet ke thu cong (se sot khi co alias moi).
+    if (is_array($result) && (string) ($result['dataSelected']['loai'] ?? '') === '8') {
+        return null;
+    }
+
+    return $result;
 }
 
 /**
@@ -961,9 +1441,17 @@ function pplus_get_blog_list(array $args = []): ?array {
  * (B3) Chi tiet 1 bai tin - doi chieu blog.service.ts GetDetail(): GET ?id=&alias=.
  * $alias PHAI la phan KHONG co "-{id}" o cuoi - dung pplus_parse_alias_id() truoc khi goi.
  *
- * @return array|null Shape: { dataSelected: {id,title,subTitle,content,alias,aliasVi,aliasEn,
- *   metaTitle,metaDescription,img,isIndex,isShowProduct,htmlHeader}, dataList: [related blogs],
- *   projectList: [...] } - hoac { isRedirect:true, redirectUrl, redirectType } neu bai da doi alias.
+ * QUAN TRONG (sua 17/9, xac nhan qua goi API THAT bang curl - KHONG doan tu .ts vi .ts chi cho
+ * thay REQUEST, khong cho thay ro shape RESPONSE): ham nay tra ve NGUYEN VEN body cua
+ * pplus_api_get() (KHONG tu unwrap them), shape THAT la:
+ * {result: {catalog: {id, nameCatalog, ...}, data: {id, title, subTitle, content, alias, aliasVi,
+ * aliasEn, aliasJa, dateUpdate, metaTitle, metaDescription, isIndex, dataModel? (tac gia, LONG
+ * BEN TRONG data, KHONG PHAI sibling)}, listLQ: [...cung shape voi data, bai lien quan]},
+ * isRedirect?, redirectUrl?, redirectType?}. Truoc day docblock (va single-news.php) gia dinh SAI
+ * la "dataSelected"/"dataList"/"dataModel" (dataSelected khong bao gio ton tai trong response
+ * that -> trang chi tiet LUON hien "loi API" du du lieu that co that su).
+ *
+ * @return array|null Shape: { result: { catalog, data, listLQ }, isRedirect?, redirectUrl?, redirectType? }
  */
 function pplus_get_blog_detail(int $id, string $alias): ?array {
     $lang = pplus_current_lang();
@@ -987,10 +1475,13 @@ function pplus_get_blog_author(string $alias): ?array {
 
 /**
  * (B5) Trang "Ve chung toi" - doi chieu abount.service.ts GetIndex(): GET, khong query param.
- * Phan lon noi dung trang la text tinh (xem about-index.component.html) - endpoint nay chi
- * tra ve phan dong: doi ngu nhan vien (listUser) + hoat dong cong ty (listDataAboutUs).
+ * Phan lon noi dung trang la text tinh (xem about-index.component.html) - endpoint nay tra ve 3
+ * phan dong: doi ngu nhan vien (listUser), hoat dong cong ty (listDataAboutUs), va carousel "Kham
+ * pha Property Plus" (model.listKhamPhaPP - LONG MOT CAP duoi khoa "model", KHAC 2 mang tren nam
+ * thang o cap ngoai cung - xac nhan qua doc about-index.component.ts dong 263:
+ * "Model.model.listKhamPhaPP").
  *
- * @return array|null Shape: { listUser: [{title,content,img,imgSize}], listDataAboutUs: [{title,content,img}] }
+ * @return array|null Shape: { listUser: [{title,content,img,imgSize}], listDataAboutUs: [{title,content,img}], model: { listKhamPhaPP: [{title,subTitle,img}] } }
  */
 function pplus_get_about_index(): ?array {
     $lang = pplus_current_lang();
@@ -999,18 +1490,28 @@ function pplus_get_about_index(): ?array {
 }
 
 /**
- * Trang con /ve-chung-toi/{alias} (vd "chinh-sach-bao-mat-thong-tin", "dieu-khoan-su-dung",
- * "chinh-sach-thue-van-phong" - lay tu $footer['myHistories'] trong parts/footer.php, cung API
- * FooterInvokeAsync). Doi chieu abount.service.ts GetNewsAbout(): GET
- * About/TinTucHoatDong?alias=... - port tu about-new.component (chua lam truoc day, xem TODO
- * trong page-about.php + inc/about-subpage-route.php).
+ * Trang con /ve-chung-toi/{alias}-{id} (vd "chinh-sach-bao-mat-thong-tin-12", lay tu
+ * $footer['myHistories'] trong parts/footer.php, cung API FooterInvokeAsync). Doi chieu
+ * abount.service.ts GetNewsAbout(): GET About/TinTucHoatDong?id=...&alias=... - CA 2 tham so deu
+ * bat buoc (xac nhan qua doc truc tiep about-new.component.ts dong 26-30: URL segment duoc tach
+ * "{id la phan sau dau '-' cuoi cung}" + "{alias la phan con lai, DA BO '-{id}'}" truoc khi goi,
+ * y het co che A2 (office-detail)/B3 (blog-detail) - dung lai pplus_parse_alias_id() da co san,
+ * KHONG tu viet lai logic tach rieng o day).
+ *
+ * QUAN TRONG (xac nhan bang goi API THAT 14/9, KHONG doan tu .ts vi .ts khong the hien ro shape
+ * response): du lieu that nam LONG THEM 1 CAP duoi khoa "model" - {result:{model:{id,img,content,
+ * idParent,title,description,lang,alias,websiteType,stt,metaTitle,metaDescription,isIndex},
+ * listLQ:[...]}} - KHONG PHAI {result:{title,content,...}} phang nhu ban truoc day gia dinh (bug
+ * thuc te: trang con luon hien trang trang vi doc nham $data['result']['title'] la null). "listLQ"
+ * (co le "lien quan") KHONG dung toi - xac nhan qua about-new.component.html: cot phai (col-md-4)
+ * de RONG, khong co sidebar bai lien quan nao.
  *
  * @return array|null Shape: { id, title, content (HTML), metaTitle, metaDescription, alias, ... }
  */
-function pplus_get_about_subpage(string $alias): ?array {
+function pplus_get_about_subpage(int $id, string $alias): ?array {
     $lang = pplus_current_lang();
-    $data = pplus_api_get("{$lang}/About/TinTucHoatDong", ['alias' => $alias], 900);
-    return $data['result'] ?? null;
+    $data = pplus_api_get("{$lang}/About/TinTucHoatDong", ['id' => $id, 'alias' => $alias], 900);
+    return $data['result']['model'] ?? null;
 }
 
 /**
@@ -1018,17 +1519,24 @@ function pplus_get_about_subpage(string $alias): ?array {
  * giong pplus_office_list_url() dung cho A1.
  */
 function pplus_blog_list_url(array $override = []): string {
-    $lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
+    // SUA 30/9 (kiem tra da ngon ngu - cung 1 bug voi pplus_blog_detail_url(), xem ghi chu day du o
+    // do): bo sot tien to "/ja", lam link phan trang/loc theo danh muc tren trang Blog JA roi ve VI.
     $params = array_merge($_GET, $override);
     $params = array_filter($params, fn($v) => $v !== '' && $v !== null);
-    return add_query_arg($params, home_url($lang_prefix . '/blogs/'));
+    return add_query_arg($params, home_url(pplus_lang_prefix() . '/blogs/'));
 }
 
 /**
- * Sinh URL chi tiet 1 bai tin dang /blogs/{alias}-{id}, giong het routerLink ben Angular
- * (vd trong blog-list.component.html, home.component.html).
+ * Sinh URL chi tiet 1 bai tin dang /blog/{alias}-{id} (SO IT - sua 17/9, truoc day sai thanh
+ * "/blogs/" so nhieu, xac nhan qua doc truc tiep app-routing.module.ts + moi routerLink that
+ * trong blog-list.component.html/blog-detail.component.html/home.component.html DEU dung "blog"
+ * so it cho trang chi tiet, "blogs" so nhieu CHI danh cho trang danh sach - 2 goc khac nhau,
+ * KHONG phai 1 loi go nham).
  */
 function pplus_blog_detail_url(string $alias, int $id): string {
-    $lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
-    return home_url($lang_prefix . '/blogs/' . $alias . '-' . $id);
+    // SUA 30/9 (kiem tra da ngon ngu theo yeu cau nguoi dung): "=== 'en' ? '/en' : ''" bo sot hoan
+    // toan tien to "/ja" - moi link bai blog tren 1 trang JA (carousel trang chu, danh sach blog,
+    // bai lien quan trong trang chi tiet blog) truoc day roi thang ve ban VI khi bam vao. Dung
+    // pplus_lang_prefix() (xu ly dung ca 3 ngon ngu) thay vi tu so sanh lai.
+    return home_url(pplus_lang_prefix() . '/blog/' . $alias . '-' . $id);
 }

@@ -1,0 +1,236 @@
+.service-regis {
+  margin-top: 0px;
+}
+.service-regis #service-TinhGiaTri table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 50px;
+}
+.service-regis #service-TinhGiaTri table thead td,
+.service-regis #service-TinhGiaTri table tbody td {
+  padding: 10px 15px;
+}
+.service-regis #service-TinhGiaTri table tbody td {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 19px;
+  color: #000000;
+  opacity: 0.85;
+}
+.service-regis #service-TinhGiaTri table tbody td.table-row-2 {
+  background: #F5F5F5;
+}
+.service-regis #service-TinhGiaTri table tbody td.table-row-2 select {
+  border: none;
+  background-color: #f7f7f7;
+}
+.service-regis #service-TinhGiaTri table tbody td label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+.service-regis #service-TinhGiaTri table thead {
+  background: #E0E6EF;
+  font-weight: bold;
+  font-size: 15px;
+  line-height: 19px;
+}
+.service-regis #service-TinhGiaTri table thead td {
+  padding: 20px 15px;
+}
+.service-regis #service-TinhGiaTri table,
+.service-regis #service-TinhGiaTri th,
+.service-regis #service-TinhGiaTri td {
+  border: 0.5px solid #B4B4B4;
+}
+.service-regis .service-regis-title {
+  text-align: center;
+  padding: 15px 0px 10px 0px;
+  z-index: 1;
+}
+.service-regis .service-regis-title h3 {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 21px;
+  color: #2D5185;
+  text-align: center;
+}
+.service-regis .service-hr-cus2 {
+  width: 85px;
+  height: 1px;
+  background-color: #2D5185;
+  margin: auto;
+  margin-bottom: 30px;
+}
+.service-regis img {
+  max-height: inherit;
+}
+.service-regis .form-control {
+  border-radius: 5px !important;
+}
+.service-regis .service-regis-title-c1 h3 {
+  color: #2D5185;
+  font-size: 15px;
+  text-align: left;
+  font-weight: 600;
+}
+.service-regis .service-regis-title-c1 hr {
+  border-bottom: 1px solid #2D5185;
+  padding-left: 0px;
+  margin-bottom: 15px;
+  width: 70%;
+}
+.service-regis .form-control-cus {
+  margin-top: 10px;
+}
+.service-regis .form-control-cus input {
+  box-shadow: 0 0 3px 1px #eae6e6 !important;
+  height: 40px;
+}
+.service-regis .form-group label {
+  color: #2D5185;
+  font-size: 14px;
+  font-weight: 600;
+}
+@media (max-width: 768px) {
+  .service-regis .text-in-row {
+    float: left;
+    width: 100%;
+  }
+}
+.service-regis .text-in-row label {
+  float: left;
+  width: 140px;
+  margin-top: 5px;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 17px;
+  color: #000000;
+  opacity: 0.75;
+}
+.service-regis .text-in-row input {
+  float: right;
+  width: 165px;
+}
+.service-regis .text-in-row .input-group {
+  float: right;
+  width: 120px;
+}
+@media (max-width: 768px) {
+  .service-regis .text-in-row-cus {
+    float: left;
+    width: 100%;
+  }
+}
+.service-regis .text-in-row-cus label {
+  float: left;
+  width: 140px;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 17px;
+  color: #000000;
+  opacity: 0.75;
+  margin-top: 15px;
+}
+.service-regis .text-in-row-cus input {
+  float: right;
+  width: calc(100% - 140px);
+  height: 50px;
+}
+@media (max-width: 768px) {
+  .service-regis .text-in-row-cus-number {
+    float: left;
+    width: 100%;
+  }
+}
+.service-regis .text-in-row-2 {
+  /*.serive-price::before {
+            content: attr(data-content);
+            position: absolute;
+            left: 5px;
+            top: 0px;
+        }*/
+}
+.service-regis .text-in-row-2 .service-label {
+  float: left;
+  margin-top: 5px;
+}
+.service-regis .text-in-row-2 .serice-input {
+  float: left;
+}
+.service-regis .text-in-row-2 .serive-price {
+  text-align: right;
+}
+.service-regis .text-in-row-2 .input-group {
+  float: left;
+}
+.service-regis .text-in-row-3 .title-row-3 {
+  float: left;
+  width: 80%;
+  margin-top: 5px;
+}
+.service-regis .text-in-row-3 .serive-price {
+  text-align: right;
+  float: left;
+  width: 20%;
+}
+.service-regis .note-row-3 {
+  font-size: 14px;
+  font-weight: 400;
+  font-style: italic;
+  margin-top: 5px;
+  display: inline-block;
+}
+.service-regis .serive-price {
+  font-weight: 400 !important;
+}
+.service-regis .btn-send-service {
+  width: 200px;
+  margin: 30px 0px;
+  background-color: #2D5185;
+  border-radius: 5px !important;
+  transition: 0.3s ease-in-out;
+}
+.service-regis .btn-send-service:hover {
+  background-color: #065498;
+}
+.service-regis .input-group {
+  float: right;
+  border: none;
+  max-width: 135px;
+}
+.service-regis .input-group input {
+  border: 0;
+  width: calc(100% - 60px) !important;
+  font-size: 16px;
+  float: left;
+  color: #2D5185;
+  font-weight: 600;
+}
+.service-regis .input-group .input-group-append button {
+  border: 1px solid #cccccc;
+  border-radius: 50% !important;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  float: left;
+  background-color: #fff;
+}
+.service-regis .input-group .input-group-prepend button {
+  border: 1px solid #cccccc;
+  border-radius: 50% !important;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  float: left;
+  background-color: #fff;
+}
+.service-regis .input-group .btn-outline-secondary:hover {
+  color: #000000;
+}

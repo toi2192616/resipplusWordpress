@@ -18,6 +18,8 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
 }
+/* pointer-events:auto de ghi de ".modal-dialog{pointer-events:none}" cua Bootstrap (trung ten
+   class, nap toan site) - xem giai thich chi tiet trong favourite-component.css. */
 .pplus-modal .modal-dialog {
   position: relative;
   z-index: 1;
@@ -25,14 +27,6 @@
   max-width: 92vw;
   background: #fff;
   border-radius: 12px;
-  /* Bootstrap (assets/officebase/assets/boostrap-5.1.3/bootstrap.min.css, nap toan site) co san
-     ".modal-dialog { pointer-events: none }" (trung ten class voi he thong modal tu viet nay) -
-     Bootstrap tu "mo" lai qua ".modal-content" (pointer-events:auto) ben trong, nhung khung modal
-     tu viet o day khong co ".modal-content" nen thua huong nguyen "pointer-events:none", khien MOI
-     nut/input ben trong (vd "Bo suu tap moi", "Them vao") click chuot that KHONG AN DUOC (click
-     "xuyen qua" toi .pplus-modal-backdrop phia sau) - bug thuc te: bam "Bo suu tap moi" nhu khong
-     co gi xay ra. document.elementFromPoint() xac nhan dung nguyen nhan nay (JS .click() lap trinh
-     khong bi anh huong vi khong qua hit-test that, nen de bo sot khi test bang script). */
   pointer-events: auto;
 }
 body.pplus-modal-active {
@@ -98,16 +92,10 @@ body.pplus-modal-active {
 .item-office.pplus-liked .item-like svg path {
   fill: #e0245e;
 }
-/* Da BO ".item-compare"/".item-compare img"/".ic-name"/".ic-remove" (CSS cua ban "So sanh" GOC
-   cua Dev A, da xoa JS/HTML luc merge - xem parts/office-card.php) - ".item-compare img
-   { width:56px; height:44px }" KHONG scope van con nam day, TRUNG TEN CLASS voi markup Dev B
-   (assets/js/compare.js) nen ca 2 rule "width/height" tron lan nhau theo TUNG THUOC TINH (khong
-   theo CA RULE): width 190px thang (compare-component.css specificity cao hon) nhung height 44px
-   van thang (chi 1 noi dinh nghia height) - ra o anh 190x44 (ep dep) thay vi 190x142.5 (dung ty le
-   4:3 dinh) - bug thuc te: anh trong modal "So sanh thong tin toa nha" bi bop det. Doan CSS con
-   scope sau hon ".modal-list-compare .modal-dialog..." (ban goc Dev A) van con trong file nay
-   nhung KHONG con class "modal-list-compare" nao trong DOM nua nen that su chet han, khong gay
-   xung dot - de danh cho dot don CSS chet rieng sau nay. */
+/* Da BO ".item-compare"/".item-compare img"/".ic-name"/".ic-remove" (CSS ban "So sanh" GOC cua
+   Dev A, da xoa JS/HTML luc merge) - trung ten class voi markup Dev B (assets/js/compare.js) gay
+   bop det anh trong modal "So sanh thong tin toa nha" - xem giai thich chi tiet trong
+   favourite-component.css. */
 .item-favourite {
   display: block;
   padding: 6px 0;
@@ -284,13 +272,7 @@ body.pplus-modal-active {
 }
 .content-favourite .favourite .detail-favourite .header-f {
   height: 230px;
-  /* File nay o "assets/css/favourite-component.css" (2 cap toi theme root) - component-source/
-     favourite.less o SAU hon 1 cap ("assets/css/component-source/") nen dung dung "../../../"
-     (3 cap). Duong dan nay bi chep nguyen tu .less khi "bien dich tay" ma khong tru bot 1 cap,
-     thanh "../../../" (4 cap tu day, ra ngoai ca theme "propertyplus/") - anh 404, banner
-     "Van phong yeu thich" mat nen (bug thuc te: banner trang /office-favourite thieu anh so voi
-     ban chinh). */
-  background-image: url('../../assets/officebase/Common/Images/Rectangle 3268.png');
+  background-image: url('../../../assets/officebase/Common/Images/Rectangle 3268.png');
   position: relative;
   border-radius: 10px;
 }
@@ -581,15 +563,6 @@ body.pplus-modal-active {
   display: inline-block;
   z-index: 2;
 }
-/* Gioi han trong #mapfarourite (ban do trang Yeu thich) - selector khong scope truoc day de
-   ".office-marker .marker-title" (0,2,0) thang ".marker-title { display:none }" (0,1,0, layout.css)
-   tren MOI trang co ban do (bug thuc te: nhan ten toa nha hien het thay vi chi hien khi hover).
-   PHAI dung "flex" (khong phai "block") - dung "display:flex" ma main.css dung cho 3 trang thai
-   :hover/:focus/.active-hover (xem ghi chu chi tiet o do): o "block", ".class-label" (badge hang)
-   van float:left ep "<p>" (ten du an) vao 1 Block Formatting Context rieng nen bi CO HEP lai, VA
-   margin mac dinh cua "<p>" khong con collapse duoc vao ".marker-title" nhu luc block, day chu
-   TRAN xuong duoi khung cao co dinh 24px - dung bug thuc te: "chưa hiện tên dự án" (chu that ra co
-   render, chi bi day/co hep ra ngoai vung nhin thay cua khung trang). */
 #mapfarourite .office-marker .marker-title {
   display: flex;
 }
@@ -885,4 +858,376 @@ body.pplus-modal-active {
   width: 18px;
   margin-right: 5px;
   margin-top: -3px;
+}
+/* --- favourite.component.less (them 22/9, trang "Danh sách yêu thích" that - luoi bo suu tap,
+   KHAC HAN bo cuc sidebar+map+detail o TREN cua file nay, vo tinh xay cho favourite-detail chua
+   ton tai - xem docblock day du trong page-favourite.php) --- */
+.center-box {
+  width: 1470px;
+  margin: auto;
+  min-height: 400px;
+  margin-bottom: 100px;
+}
+@media (max-width: 1366px) {
+  .center-box {
+    width: 980px;
+  }
+}
+@media (max-width: 480px) {
+  .center-box {
+    width: 100%;
+  }
+}
+.favourite-container {
+  padding: 0px 15px;
+}
+.title-group {
+  font-size: 22px;
+  font-weight: bold;
+  color: #395e94;
+  margin-bottom: 15px;
+  margin-top: -15px;
+}
+@media (min-width: 0px) and (max-width: 800px) {
+  .title-group {
+    margin-top: 30px;
+  }
+}
+.collection-gridbox {
+  float: left;
+  margin: 20px 15px 15px 5px;
+}
+@media (min-width: 0px) and (max-width: 800px) {
+  .collection-gridbox {
+    margin: 15px;
+  }
+}
+#btnAddCollectionGrid {
+  float: right;
+  background: #2D5185;
+  border-radius: 10px !important;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0px 8px;
+}
+#btnAddCollectionGrid i {
+  margin-right: 0;
+  min-width: 15px;
+}
+.collection-header {
+  margin-bottom: 15px;
+}
+.collection-header .collection-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 19px;
+}
+.collection-header .item-count {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 19px;
+}
+.collection-toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+@media (min-width: 0px) and (max-width: 800px) {
+  .collection-toolbar {
+    justify-content: flex-start;
+  }
+}
+.collection-photos {
+  display: grid;
+  grid-template-areas: 'photo1 photo2 photo2' 'photo1 photo3 photo4';
+  grid-gap: 6px;
+  width: 460px;
+}
+.collection-photos img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 1px solid #ccc;
+}
+.collection-photos .photo1 {
+  grid-area: photo1;
+  width: 126px;
+  height: 266px;
+}
+.collection-photos .photo1 img {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+.collection-photos .photo2 {
+  grid-area: photo2;
+  width: 328px;
+  height: 120px;
+}
+.collection-photos .photo2 img {
+  border-top-right-radius: 10px;
+}
+.collection-photos .photo3 {
+  grid-area: photo3;
+  width: 161px;
+  height: 140px;
+}
+.collection-photos .photo4 {
+  grid-area: photo4;
+  width: 161px;
+  height: 140px;
+  position: relative;
+}
+.collection-photos .photo4 img {
+  border-bottom-right-radius: 10px;
+}
+.collection-photos .photo4 .bg-count {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  opacity: 0.3;
+  border-bottom-right-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+.collection-photos .photo4 .count-plus {
+  color: white;
+  font-size: 33px;
+  line-height: 39px;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-bottom-right-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+@media (max-width: 480px) {
+  .collection-photos {
+    width: 100%;
+  }
+  .collection-photos .photo1 {
+    width: auto;
+    height: 226px;
+  }
+  .collection-photos .photo2 {
+    width: auto;
+    height: 100px;
+  }
+  .collection-photos .photo3 {
+    width: auto;
+    height: 120px;
+  }
+  .collection-photos .photo4 {
+    width: auto;
+    height: 120px;
+  }
+}
+.collection-area {
+  clear: both;
+  margin: 15px auto 50px;
+  padding: 0px 10px;
+}
+.collection-area:after {
+  content: ' ';
+  display: table;
+  clear: both;
+}
+.collection-des {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.collection-des .collec-infos {
+  color: #000;
+}
+.collection-des .collec-infos:hover,
+.collection-des .collec-infos:active {
+  text-decoration: none;
+  color: #000;
+}
+.collection-des .collection-created {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 19px;
+  opacity: 0.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+.collection-des .collection-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21px;
+  opacity: 0.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+.collection-des .collection-item-count {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 19px;
+  opacity: 0.6;
+}
+.toolbox {
+  height: 35px;
+  position: relative;
+}
+.toolbox.open button {
+  background: #ccc;
+}
+.toolbox.open button > div {
+  background: #FFF;
+}
+.toolbox button {
+  width: 30px;
+  height: 30px;
+  background: #EBEBEB;
+  border-radius: 50%;
+  border: 0;
+  position: relative;
+}
+.toolbox button::after {
+  display: none;
+}
+.toolbox button > div {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #C1C1C1;
+  position: absolute;
+}
+.toolbox button > div:nth-child(1) {
+  left: calc(50% - 1.5px);
+  top: 8px;
+}
+.toolbox button > div:nth-child(2) {
+  left: calc(50% - 1.5px);
+  top: 14px;
+}
+.toolbox button > div:nth-child(3) {
+  left: calc(50% - 1.5px);
+  top: 20px;
+}
+.toolbox .dropdown-menu {
+  min-width: 125px;
+  box-shadow: 0px 4px 16px 0px #00000030;
+  border-radius: 10px;
+  border: 0;
+  padding: 9px 7px;
+  font-size: 14px;
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #fff;
+  z-index: 10;
+  list-style: none;
+  margin: 0;
+}
+.toolbox .dropdown-menu > li > a {
+  color: #000000;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.6;
+  border-radius: 10px;
+  text-align: center;
+  width: 100%;
+  display: block;
+  cursor: pointer;
+}
+.toolbox .dropdown-menu > li > a:hover {
+  background-color: #EBEBEB;
+}
+.toolbox.open .dropdown-menu {
+  display: block;
+}
+@media (max-width: 768px) {
+  .collec-infos {
+    padding: 0 15px;
+    width: 100%;
+  }
+  .collection-des {
+    margin-top: 15px;
+    padding: 15px 0;
+    margin: 0;
+  }
+  .collection-des .collection-header {
+    margin: 0;
+  }
+}
+.action-find {
+  width: 70px;
+  float: right;
+}
+.action-find .sort-list {
+  font-size: 17px;
+  margin-left: 10px;
+  margin-top: 5px;
+  color: #878484;
+  cursor: pointer;
+}
+.action-find .sort-list.active {
+  color: #141414;
+}
+#collection-area-data-table table {
+  width: 100%;
+  padding: 0px 10px;
+}
+#collection-area-data-table table tr {
+  border-top: none;
+  border-bottom: none !important;
+}
+#collection-area-data-table table thead th {
+  border-top: none;
+  border-bottom: none !important;
+  vertical-align: bottom;
+  padding: 10px;
+  font-size: 15px;
+}
+#collection-area-data-table table tbody tr:hover {
+  background: rgba(0, 123, 255, 0.03);
+}
+#collection-area-data-table table tbody tr td {
+  position: relative;
+  transition: 0.3s all ease;
+  color: #4c4848;
+  font-weight: 300;
+  padding: 10px;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+#search-favorite {
+  position: relative;
+}
+#search-favorite img {
+  position: absolute;
+  top: -4px;
+  width: 20px;
+  margin-left: 6px;
+}
+#search-favorite input {
+  padding-left: 30px;
+  height: 36px;
+}
+@media (min-width: 0px) and (max-width: 800px) {
+  .favourite-container.row {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }

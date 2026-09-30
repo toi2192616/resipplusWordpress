@@ -914,3 +914,440 @@ body.pplus-modal-active { overflow:hidden; }
         }
     }
 }
+
+/* --- favourite.component.less (them 22/9, trang "Danh sách yêu thích" that - luoi bo suu tap,
+   KHAC HAN bo cuc sidebar+map+detail o TREN cua file nay, vo tinh xay cho favourite-detail chua
+   ton tai - xem docblock day du trong page-favourite.php) --- */
+.center-box {
+    width: 1470px;
+    margin: auto;
+    min-height: 400px;
+    margin-bottom: 100px;
+
+    @media(max-width: 1366px) {
+        width: 980px;
+    }
+
+    @media(max-width: 480px) {
+        width: 100%;
+    }
+}
+
+.favourite-container {
+    padding: 0px 15px;
+}
+
+.title-group {
+    font-size: 22px;
+    font-weight: bold;
+    color: #395e94;
+    margin-bottom: 15px;
+    margin-top: -15px;
+
+    @media (min-width: 0px) and (max-width: 800px) {
+        margin-top: 30px;
+    }
+}
+
+.collection-gridbox {
+    float: left;
+    margin: 20px 15px 15px 5px;
+
+    @media (min-width: 0px) and (max-width: 800px) {
+        margin: 15px;
+    }
+}
+
+#btnAddCollectionGrid {
+    float: right;
+    background: #2D5185;
+    border-radius: 10px !important;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px 8px;
+
+    i {
+        margin-right: 0;
+        min-width: 15px;
+    }
+}
+
+.collection-header {
+    margin-bottom: 15px;
+
+    .collection-title {
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 19px;
+    }
+
+    .item-count {
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 19px;
+    }
+}
+
+.collection-toolbar {
+    display: flex;
+    justify-content: flex-end;
+
+    @media (min-width: 0px) and (max-width: 800px) {
+        justify-content: flex-start;
+    }
+}
+
+.collection-photos {
+    display: grid;
+    grid-template-areas: 'photo1 photo2 photo2' 'photo1 photo3 photo4';
+    grid-gap: 6px;
+    width: 460px;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border: 1px solid #ccc;
+    }
+
+    .photo1 {
+        grid-area: photo1;
+        width: 126px;
+        height: 266px;
+
+        img {
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+    }
+
+    .photo2 {
+        grid-area: photo2;
+        width: 328px;
+        height: 120px;
+
+        img {
+            border-top-right-radius: 10px;
+        }
+    }
+
+    .photo3 {
+        grid-area: photo3;
+        width: 161px;
+        height: 140px;
+    }
+
+    .photo4 {
+        grid-area: photo4;
+        width: 161px;
+        height: 140px;
+        position: relative;
+
+        img {
+            border-bottom-right-radius: 10px;
+        }
+
+        .bg-count {
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            opacity: 0.3;
+            border-bottom-right-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .count-plus {
+            color: white;
+            font-size: 33px;
+            line-height: 39px;
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border-bottom-right-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+    }
+
+    @media(max-width: 480px) {
+        width: 100%;
+
+        .photo1 {
+            width: auto;
+            height: 226px;
+        }
+
+        .photo2 {
+            width: auto;
+            height: 100px;
+        }
+
+        .photo3 {
+            width: auto;
+            height: 120px;
+        }
+
+        .photo4 {
+            width: auto;
+            height: 120px;
+        }
+    }
+}
+
+.collection-area {
+    clear: both;
+    margin: 15px auto 50px;
+    padding: 0px 10px;
+
+    &:after {
+        content: ' ';
+        display: table;
+        clear: both;
+    }
+}
+
+.collection-des {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+
+    .collec-infos {
+        color: #000;
+
+        &:hover, &:active {
+            text-decoration: none;
+            color: #000;
+        }
+    }
+
+    .collection-created {
+        font-size: 15px;
+        font-weight: 300;
+        line-height: 19px;
+        opacity: 0.35;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+    }
+
+    .collection-title {
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 21px;
+        opacity: 0.6;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+    }
+
+    .collection-item-count {
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 19px;
+        opacity: 0.6;
+    }
+}
+
+.toolbox {
+    height: 35px;
+    position: relative;
+
+    &.open {
+        button {
+            background: #ccc;
+
+            > div {
+                background: #FFF;
+            }
+        }
+    }
+
+    button {
+        width: 30px;
+        height: 30px;
+        background: #EBEBEB;
+        border-radius: 50%;
+        border: 0;
+        position: relative;
+
+        &::after {
+            display: none;
+        }
+
+        > div {
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: #C1C1C1;
+            position: absolute;
+
+            &:nth-child(1) {
+                left: calc(50% - 1.5px);
+                top: 8px;
+            }
+
+            &:nth-child(2) {
+                left: calc(50% - 1.5px);
+                top: 14px;
+            }
+
+            &:nth-child(3) {
+                left: calc(50% - 1.5px);
+                top: 20px;
+            }
+        }
+    }
+
+    .dropdown-menu {
+        min-width: 125px;
+        box-shadow: 0px 4px 16px 0px #00000030;
+        border-radius: 10px;
+        border: 0;
+        padding: 9px 7px;
+        font-size: 14px;
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background: #fff;
+        z-index: 10;
+        list-style: none;
+        margin: 0;
+
+        > li > a {
+            color: #000000;
+            padding: 6px 10px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.6;
+            border-radius: 10px;
+            text-align: center;
+            width: 100%;
+            display: block;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #EBEBEB;
+            }
+        }
+    }
+
+    &.open .dropdown-menu {
+        display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .collec-infos {
+        padding: 0 15px;
+        width: 100%;
+    }
+
+    .collection-des {
+        margin-top: 15px;
+        padding: 15px 0;
+        margin: 0;
+
+        .collection-header {
+            margin: 0;
+        }
+    }
+}
+
+.action-find {
+    width: 70px;
+    float: right;
+
+    .sort-list {
+        font-size: 17px;
+        margin-left: 10px;
+        margin-top: 5px;
+        color: #878484;
+        cursor: pointer;
+
+        &.active {
+            color: #141414;
+        }
+    }
+}
+
+#collection-area-data-table {
+    table {
+        width: 100%;
+        padding: 0px 10px;
+
+        tr {
+            border-top: none;
+            border-bottom: none !important;
+        }
+
+        thead {
+            th {
+                border-top: none;
+                border-bottom: none !important;
+                vertical-align: bottom;
+                padding: 10px;
+                font-size: 15px;
+            }
+        }
+
+        tbody {
+            tr {
+                &:hover {
+                    background: rgba(0, 123, 255, 0.03);
+                }
+
+                td {
+                    position: relative;
+                    transition: .3s all ease;
+                    color: #4c4848;
+                    font-weight: 300;
+                    padding: 10px;
+                    vertical-align: top;
+                    border-top: 1px solid #dee2e6;
+                }
+            }
+        }
+    }
+}
+
+#search-favorite {
+    position: relative;
+
+    img {
+        position: absolute;
+        top: -4px;
+        width: 20px;
+        margin-left: 6px;
+    }
+
+    input {
+        padding-left: 30px;
+        height: 36px;
+    }
+}
+
+// SUA 24/9: ".row" cua Bootstrap co margin am hai ben (-gutter/2) ma "center-box" khong co "container"/padding bao ngoai -> hang lan ra ngoai man hinh 10px tren mobile, lam trang tran ngang (scrollWidth 385 > 375) va keo theo thanh menu chan trang/thanh tim kiem "position:fixed" bi tinh sai kich thuoc (Chrome mobile phong to vung layout). Bo margin am o man hinh nho (".favourite-container" da co san padding 0 15px).
+@media (min-width: 0px) and (max-width: 800px) {
+    .favourite-container.row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}

@@ -188,7 +188,7 @@
                 position: absolute;
                 right: 15px;
                 top: 17px;
-                background: url(../../../assets/Content/Img/icon-menu-1.svg);
+                background: url(../Content/Img/icon-menu-1.svg);
                 width: 9px;
                 height: 9px;
 
@@ -200,7 +200,7 @@
 
             &:hover {
                 i.icon-menu-link {
-                    background: url(../../../assets/Content/Img/icon-menu-2.svg);
+                    background: url(../Content/Img/icon-menu-2.svg);
                 }
             }
         }
@@ -391,6 +391,25 @@
         }
     }
 
+    // SUA 22/9 (nguoi dung phat hien qua anh chup: khung tim kiem trang chu cao hon ban goc, khien
+    // icon kinh lup bi "lech len tren"). Do dac truc tiep tren production that (element.matches()
+    // qua toan bo document.styleSheets): ".search-input-group{padding-top:20px;padding-bottom:20px}"
+    // (that, search-base.component.less) HOAN TOAN KHONG khop voi phan tu nay tren trang chu that -
+    // trang chu chi dung "search-home.component" (form nay, class "form-search-destop", that tu
+    // search-home.component.html dong 1), KHONG dung "search-base" component, nen CSS cua search-
+    // base (kem theo padding do) khong duoc Angular nap vao trang nay (lazy-load theo route that).
+    // O WP theme nay, header.less/search-base.less deu nap CHUNG 1 bundle toan site, nen rule
+    // ".search-input-group{padding:20px}" (dung cho #searchModal/trang danh sach) VO TINH ro ri sang
+    // ca khung tim kiem trang chu - cung LOP loi "trung ten class giua 2 component that khac nhau"
+    // da gap nhieu lan (".box-search", ".pplus-show-district"...). Do dac xac nhan: thanh that cao
+    // 82px (".searching-bar"), con ban WP nay dang 123px (+41px, dung bang 20+20 padding ro ri) -
+    // nut kinh lup (fixed "margin-top:14px", khong doi theo chieu cao container) vi vay bi nam qua
+    // gan mep tren so voi container cao hon that. Sua: xoa rieng padding do trong pham vi trang chu.
+    .search-input-group {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
     @media (min-width: 0px) and (max-width: 880px) {
         display: none;
     }
@@ -574,6 +593,21 @@
     opacity: 1;
     top: 100%;
     bottom: auto;
+}
+
+// SUA 22/9 (nguoi dung phat hien qua anh chup: bam 1 goi y roi chuyen sang "Chi tiết" nhung thi
+// thoang luoi goi y KHONG bien mat, ca 2 popup cung hien mot luc - trai nghiem xau). Nguyen nhan:
+// co che ":hover" o tren (".search-option .focus-popup:hover") ton tai ĐỂ giu popup mo khi nguoi
+// dung dang RE CHUOT ben trong no (vd cuon danh sach dai) - nhung khi bam 1 goi y, chuot VAN DANG
+// nam ngay tren popup do (khong di chuyen ra ngoai), nen ":hover" tiep tuc giu no mo NGAY CA SAU
+// KHI focus da chuyen sang o "Chi tiết" ben canh - 2 popup chong nhau. Day KHONG phai loi CSS con
+// thieu, ma la 1 XUNG DOT that giua 2 muc dich khac nhau cua cung 1 co che ":hover" (giu mo khi
+// tuong tac vs. dong khi da chon xong) - can 1 class JS "force-hide" (xem pplus-search-modal.js)
+// de CHU DONG dong popup ngay khi bam chon, bat ke chuot con dang hover hay khong, ghi de CA 2 rule
+// ":focus-within" va ":hover" o tren bang "!important".
+.focus-popup.pplus-force-hide {
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 .search-controls {
@@ -785,9 +819,19 @@ ul.office-list {
 .menu-quan-group {
     background: #F0F0F0;
     border-radius: 10px;
+    // 24/9 (theo yeu cau nguoi dung): 4 cot BANG NHAU (moi cot 25%), rong 1005px o moi man hinh PC rong (truoc thu 1180px nhung qua rong, nguoi dung yeu cau giam ~15% ke ca man hinh lon).
     width: 1005px;
     display: flex;
     margin-top: 5px;
+
+    @media only screen and (max-width: 1380px) {
+        width: 1005px;
+    }
+
+    // Man hinh hep gan moc 1025px: giam them 15% (1005px -> 855px) de menu khong tran qua mep phai (o 1025px mep trai menu ~37px, 1005px se tran ~27px).
+    @media only screen and (max-width: 1200px) and (min-width: 801px) {
+        width: 855px;
+    }
 
     @media only screen and (max-width: 800px) {
         background: none;
@@ -797,6 +841,7 @@ ul.office-list {
 
     .menu-quan-from {
         float: left;
+        width: 25%;
         padding-top: 10px;
 
         @media only screen and (max-width: 800px) {
@@ -804,7 +849,7 @@ ul.office-list {
         }
 
         &.aparment-l {
-            width: 250px;
+            width: 25%;
             @media only screen and (max-width: 800px) {
                 width: 100%;
            }
@@ -813,7 +858,7 @@ ul.office-list {
 
     .menu-hang-from {
         float: left;
-        width: 200px;
+        width: 25%;
         padding-top: 10px;
 
         @media only screen and (max-width: 800px) {
@@ -821,7 +866,7 @@ ul.office-list {
         }
 
         &.aparment-2 {
-            width: 305px;
+            width: 25%;
 
             @media only screen and (max-width: 800px) {
                 width: 100%;
@@ -925,7 +970,7 @@ ul.office-list {
                 position: absolute;
                 right: 15px;
                 top: 5px;
-                background: url(../../../assets/Content/Img/icon-menu-1.svg);
+                background: url(../Content/Img/icon-menu-1.svg);
                 width: 9px;
                 height: 9px;
 
@@ -940,7 +985,7 @@ ul.office-list {
                 border-radius: 6px;
 
                 i.icon-menu-link {
-                    background: url(../../../assets/Content/Img/icon-menu-2.svg);
+                    background: url(../Content/Img/icon-menu-2.svg);
                 }
             }
         }
@@ -1351,24 +1396,46 @@ ul.office-list {
     text-align: left;
     padding: 10px 0px;
 
+    // 30/9/2026 (yeu cau nguoi dung): chu + mui ten net (bo opacity 0.6), mui ten canh giua theo chieu cao chu
+    // (flex + align-items:center thay cho <img> nam tren baseline), khoang cach bang gap thay &nbsp;.
     .url-content-list {
-        display: inherit;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        row-gap: 4px;
 
         @media only screen and (max-width: 800px) {
-            display: inherit;
+            flex-wrap: nowrap;
         }
 
         a,
         span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
             color: rgba(84, 84, 85, 1);
-            opacity: 0.6;
             font-family: 'SF Pro Display';
             font-style: normal;
             font-weight: 500;
             font-size: 13px;
+            line-height: 20px;
             text-align: left;
             width: max-content;
-            margin-right: 5px;
+            margin-right: 8px;
+
+            .pplus-bc-arrow {
+                display: inline-flex;
+                align-items: center;
+                margin: 0;
+
+                svg {
+                    display: block;
+                    width: 20px;
+                    height: 8px;
+                    fill: none;
+                }
+            }
 
             i {
                 svg {
@@ -1886,6 +1953,17 @@ ul.office-list {
             overflow-y: hidden;
             display: flex;
             align-items: center;
+            // "justify-content:safe center" (them 17/9, theo yeu cau nguoi dung - KHONG co trong ban
+            // that, ban goc de mac dinh "flex-start" nen hang pill dinh sat trai, con du khoang trong
+            // ben phai truoc nut tim kiem). Nguoi dung muon CA CUM pill nam GIUA khoang trong tu mep
+            // trai man hinh toi nut tim kiem, khong dinh sat trai NHUNG chi khi con du cho (man hinh
+            // rong). Dung "safe center" (khong phai "center" thuong) - da thu "center" truoc, man
+            // hinh hep hon (nhieu pill hon do rong container) lam trinh duyet canh giua ke ca khi TRAN,
+            // cuon lech sang phai, an mat "Tất cả" (muc dang active) ngay khi tai trang - bug thuc te
+            // phat hien khi kiem tra o do rong hep hon. "safe" la tu khoa CSS Box Alignment danh RIENG
+            // cho truong hop nay: canh giua khi ĐU cho, tu dong lui ve "start" (hien day du tu muc dau)
+            // khi khong du (tran) - khong con rui ro an noi dung dau danh sach.
+            justify-content: safe center;
             margin-right: 35px;
 
             @media only screen and (max-width: 800px) {
@@ -1997,8 +2075,75 @@ ul.office-list {
     }
 }
 
+// (them 17/9, theo yeu cau nguoi dung) #searchModal (markup o parts/search-modal.php) DUNG LAI
+// nguyen ven ".searching-bar"/".box-search"/".search-controls"/".focus-popup"/".search-option"
+// (da co san TRONG CHINH FILE NAY tu truoc, dong ~353-625 - xay cho form tim kiem trang chu, port
+// tu teamplate-header.component.less that) - KHONG can them rule moi.
+//
+// SUA 18/9 (nguoi dung phat hien nut kinh lup "khong can doi nhu ban chinh" qua anh chup so sanh):
+// da TUNG them 1 override "#searchModal .btn-search{position:static;width:60px;height:52px;
+// margin-top:14px}" o day, ly do ghi rang ban goc ".office-form .btn-search" (width:121px,
+// position:absolute;right:20px) se "khong hop" voi cot ".col-md-1.s4" hep nen can reset - NHUNG
+// do dac truc tiep tren production (matches()-based rule lookup qua document.styleSheets) cho
+// thay ".office-form .btn-search" **KHONG BAO GIO khop voi nut nay ca o ban that lan ban WP nay**:
+// selector doi hoi ancestor co CLASS "office-form", nhung the "search-base.component.html dong
+// 225" (component dung chung cho ca #searchModal LAN trang danh sach) chi co "id=office-form",
+// KHONG co "class=office-form" (chi "search-home.component.html dong 20" - rieng cho form trang
+// chu - moi co CA HAI). Tuc la nut nay tren production hoan toan KHONG co CSS rieng nao, chi don
+// gian la Bootstrap ".btn.btn-primary" mac dinh (size tu nhien theo icon SVG + padding Bootstrap,
+// do dac that: ~51x44px) - override 60x52 cua ta la BIA THEM, sai vi tri/kich thuoc so voi that.
+// XOA HAN override nay - de nut tu nhien dung kich thuoc Bootstrap mac dinh, dung y het production.
+// Vi tri "thap xuong" thuc ra la do CSS THAT cua chinh ".s4" (xem search-base.less, cung sua trong
+// lan nay) - "float:right;margin:24px 20px 0 0" - KHONG phai do nut can override rieng.
+
+// Luoi "Hoặc chọn theo gợi ý" cua #searchModal - LICH SU: 2 lan sua truoc (17/9 lan 2, lan 3) tung
+// dua luoi nay RA NGOAI ".search-option"/cot "s1" thanh khoi rieng ".pplus-search-suggest-always"
+// de "luon hien" - nhung nguoi dung xem lai anh chup, xac nhan ban goc CHI hien khoi nay khi CHINH
+// o Location dang duoc focus (khong phai luon hien). SUA LAN 4 (17/9): bo HAN class/rule
+// ".pplus-search-suggest-always", markup (parts/search-modal.php) chuyen luoi VE LAI DUNG vi tri
+// goc trong ".search-option" cua o Location, dang ".focus-popup.first-popup" - dung LAI 100% CSS
+// ".focus-popup"/".search-option:focus-within .focus-popup" co san o TREN (dong ~353-625), khong
+// can rule rieng nao o day nua.
+
+// Panel "Chi tiết" cua #searchModal (".long-term-s3" - dong 1457+ o TREN, cung file): da co san TU
+// TRUOC (mot phien khac da port day du cho form tim kiem trang chu), KHONG can them gi nua - lan
+// dau da THU them 1 ban SAO GIONG HET o day (grep "^\.long-term-s3" ra 2 ket qua) truoc khi phat
+// hien, da xoa. Markup moi (parts/search-modal.php) dung LAI dung cac class nay.
+
 .loading-base-menu {
     @media only screen and (max-width: 800px) {
         display: none;
+    }
+}
+
+// 30/9/2026 (yeu cau nguoi dung): nut dong menu mobile (parts/header.php ".pplus-menu-back") la vien "Quay lại" + mui ten,
+// cung kieu nut "Quay lại" o che do ban do (.action-close-map-label), thay cho vong tron 3 gach mo nhat cua metronic
+// (".header .mobi-toggler": border-radius 100% !important, nen/hover toggler.png).
+.header .header-navigation .mobi-toggler.pplus-menu-back {
+    width: auto;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 18px !important;
+    background: #3e5fb4;
+    color: #FFFFFF;
+    font-family: 'SF Pro Display';
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2);
+
+    &:hover {
+        background: #2D5185;
+        color: #FFFFFF;
+    }
+
+    img {
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+        vertical-align: -3px;
     }
 }

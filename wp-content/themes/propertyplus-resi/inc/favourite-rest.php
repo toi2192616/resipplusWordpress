@@ -5,10 +5,18 @@
  * endpoint duoi proxy sang API .NET that (giu nguyen guard API base + chuan hoa URL anh ve domain
  * qua pplus_admin_asset_url, KHONG lo port noi bo ra trinh duyet khach - xem inc/api-client.php).
  *
- * Doi chieu office.service.ts:
- *   GetOfficesInputDto(ids)      -> POST {lang}/Office/_GetOfficesInputDto?isdislike=1&inputstring={ids}
- *   OfficeMarkerByInputDto(ids)  -> POST {lang}/Office/_OfficeMarkerByInputDto?isdislike=1&inputstring={ids}
- *   DowloadPdfFavourite(data)    -> POST {lang}/Favourite/DowloadPdf  (body JsonInput, tra ve blob PDF)
+ * CANH BAO 22/9 (CHUA SUA - file nay hien KHONG duoc require o functions.php, xem
+ * page-favourite.php doc dau du ve pham vi sua lan nay): 2 endpoint "offices-by-ids"/
+ * "office-markers-by-ids" duoi day goi "{lang}/Office/_GetOfficesInputDto"/"{lang}/Office/
+ * _OfficeMarkerByInputDto" - DAY LA SAI cho Resi, tan du copy tu theme Van phong. Doi chieu THAT
+ * qua office.service.ts (PPlusAngularResi, ham nay DUNG CHUNG ten class "officeService" giua 2
+ * vertical nhung tro endpoint khac nhau):
+ *   GetInputDto(ids)       -> POST {lang}/Apartment/_GetApartmentInputDto?isdislike=1&inputstring={ids}
+ *   MarkerByInputDto(ids)  -> POST {lang}/Apartment/_ApartmentMarkerByInputDto?isdislike=1&inputstring={ids}
+ *   DowloadPdfFavourite(data) -> POST {lang}/Favourite/DowloadPdf (body JsonInput, tra ve blob PDF) - CAI NAY DUNG, khong doi.
+ * Se can sua 2 endpoint tren (+ doi ten bien/response tu "office"/"projectId" sang "apartment"/
+ * "apartmentId" cho dung ngu canh) khi xay favourite-detail.component that (trang RIENG
+ * "/favourite/favourite-detail", chua lam - xem page-favourite.php).
  */
 
 if (!defined('ABSPATH')) {

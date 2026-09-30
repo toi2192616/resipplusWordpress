@@ -263,7 +263,101 @@ function &pplus_toc_find_parent(array &$items, int $level) {
 }
 
 /**
- * In "Muc Luc" dang cay (h2 = cap 1, h1/h3/h5/h6 long lam con) - port template
+ * In hang "goi y nhanh" (".suggest-header") - port dung tu search-base.component.html dong 1-35
+ * (<app-search-base>), thanh phan CHUNG xuat hien tren CA trang danh sach can ho/quan
+ * (page-reference.php) LAN trang Dich vu (page-service.php) - xac nhan qua doi chieu truc tiep
+ * ban that (cung 1 hang icon "Tất cả/Quận Tây Hồ/.../01 Phòng Ngủ" xuat hien nguyen ven tren ca 2
+ * trang), TRUOC DAY chi ton tai rieng trong page-reference.php nen tach ra day de dung chung, tranh
+ * lap code.
+ *
+ * Nguon du lieu la Home/_GetIndexSuccess qua pplus_get_index_success() (BE tu chon "hot", KHONG
+ * PHAI danh sach quan/loai day du cua mega-menu header).
+ *
+ * @param string|null $active_alias Alias dang xem de gan class "active" (nhu page-reference.php).
+ *   Truyen null (mac dinh) khi trang khong thuoc he thong loc quan/loai nao (vd trang Dich vu) -
+ *   se KHONG co muc nao active, ke ca "Tất cả" (khac voi truyen '' - truong hop do "Tất cả" SE
+ *   active, dung y het hanh vi goc cua page-reference.php khi dang o trang goc "ha-noi/" khong
+ *   alias).
+ */
+function pplus_render_suggest_header(?string $active_alias = null): void {
+    $lang_prefix    = pplus_lang_prefix();
+    $index_success  = pplus_get_index_success();
+    ?>
+    <?php // SUA 17/9: them 3 phan tu truoc day BI THIEU HOAN TOAN (chi co ".suggest-list-data" o
+    // giua) - ".btn-prev-search"/".btn-next-search" (cuon hang pill) va ".suggest-item.btn-modal-
+    // search" (nut tim kiem tron xanh, mo tam #searchModal - modal nay CHUA lam, xem TODO plan Blog/
+    // Dich vu - nut van hien de dung layout that, click chua co tac dung) - CSS 3 phan tu nay da co
+    // san tu truoc (header.less dong 1900-1996, dung), chi thieu markup PHP nen ".suggest-list-data"
+    // (width:calc(100% - 135px), da chua san 135px cho 2 nut nay) truoc day hien nhu 1 khoang trang
+    // rong o mep phai, khong "can doi" - bug thuc te nguoi dung bao cao khi doi chieu ban that. ?>
+    <div class="suggest-header">
+        <div class="suggest-heade-list">
+            <div class="btn-prev-search">
+                <button class="btn" aria-label="<?php echo esc_attr(pplus_localize('Trước')); ?>"><i class="fa fa-chevron-left"></i></button>
+            </div>
+            <div class="suggest-list-data">
+                <a href="<?php echo esc_url(home_url($lang_prefix . '/cho-thue-can-ho/ha-noi/')); ?>" class="suggest-item<?php echo ($active_alias === '') ? ' active' : ''; ?>">
+                    <i class="item-img">
+                        <?php // "fill" tren <path> them vao (ban goc fill="none" tren the <svg> cha, khong co
+                        // CSS nao gan mau mac dinh cho trang thai KHONG active - chi co ".active .item-img
+                        // svg{fill:#BF913D}" trong header-component.css, nen icon nay vo hinh khi khong phai
+                        // trang dang xem - bug thuc te nguoi dung bao cao khi doi chieu). Dung #545454 khop
+                        // mau chu mac dinh cua ".item-title" ben canh cho dong bo. ?>
+                        <svg width="14" height="18" viewBox="0 0 14 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill="#545454" d="M7 0.5C3.13 0.5 0 3.63 0 7.5C0 11.67 4.42 17.42 6.24 19.61C6.64 20.09 7.37 20.09 7.77 19.61C9.58 17.42 14 11.67 14 7.5C14 3.63 10.87 0.5 7 0.5ZM7 10C5.62 10 4.5 8.88 4.5 7.5C4.5 6.12 5.62 5 7 5C8.38 5 9.5 6.12 9.5 7.5C9.5 8.88 8.38 10 7 10Z" />
+                        </svg>
+                    </i>
+                    <div class="item-title"><?php echo esc_html(pplus_localize('Tất cả')); ?></div>
+                </a>
+                <?php foreach ($index_success as $item) :
+                    $item_alias = (string) ($item['alias'] ?? '');
+                    if ($item_alias === '') continue; ?>
+                    <a href="<?php echo esc_url(home_url($lang_prefix . '/cho-thue-can-ho/ha-noi/' . $item_alias . '/')); ?>" class="suggest-item<?php echo ($active_alias !== null && $item_alias === $active_alias) ? ' active' : ''; ?>">
+                        <i class="item-img">
+                            <img src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="<?php echo esc_attr($item['subTitle'] ?? ''); ?>" loading="lazy" />
+                        </i>
+                        <div class="item-title"><?php echo esc_html($item['subTitle'] ?? ''); ?></div>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+            <div class="btn-next-search">
+                <button class="btn" aria-label="<?php echo esc_attr(pplus_localize('Sau')); ?>"><i class="fa fa-chevron-right"></i></button>
+            </div>
+            <div class="suggest-item btn-modal-search">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchModal" aria-label="searchModal"><i class="search-ico"></i></button>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+
+/**
+ * Cac tham so loc tren URL danh sach can ho (xem page-apartment-list.php / page-reference.php). Dung de giu lai
+ * khi doi "Lọc theo" (form GET chi co o "sort" - truoc day bam doi sap xep la mat het bo loc).
+ */
+function pplus_listing_query_keys(): array {
+    return ['price_from', 'price_to', 'bedroom_qty', 'bathroom_qty', 'area_from', 'area_to', 'floor_from', 'floor_to',
+        'apartment_type', 'has_bathtub', 'project_id', 'ne_lat', 'ne_lng', 'sw_lat', 'sw_lng', 'q'];
+}
+
+function pplus_render_preserved_query_inputs(): void {
+    foreach (pplus_listing_query_keys() as $key) {
+        if (isset($_GET[$key]) && is_scalar($_GET[$key]) && $_GET[$key] !== '') {
+            printf('<input type="hidden" name="%s" value="%s" />', esc_attr($key), esc_attr(sanitize_text_field(wp_unslash((string) $_GET[$key]))));
+        }
+    }
+}
+
+/**
+ * Mui ten "⟶" giua cac muc breadcrumb (.url-content-list). SVG theo mau chu (currentColor) - thay anh
+ * arrow-29.png 21x8px bi mo khi phong to tren man hinh mat do cao.
+ */
+function pplus_breadcrumb_arrow(): string {
+    return '<i class="pplus-bc-arrow" aria-hidden="true"><svg width="20" height="8" viewBox="0 0 20 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.75 4H18.5M15.25 0.75L18.5 4L15.25 7.25" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></i>';
+}
+
+/**
+ * In khoi "Muc Luc" dang cay (h2 = cap 1, h1/h3/h5/h6 long lam con) - port template
  * table-of-contents.component.html. Dung CSS co san #bg-toc/.toc-container/.toc-list/.toc-link
  * trong style/layout.css (da ported tu src/assets/officebase, enqueue toan site).
  */
@@ -286,4 +380,79 @@ function pplus_render_toc_nested(array $items): void {
         echo '</li>';
     }
     echo '</ul></div></div></div>';
+}
+
+/**
+ * Phan trang - port DUNG cau truc/class that cua <ngb-pagination> (search-base.component.html
+ * dong 162-164: [maxSize]="5" [boundaryLinks]="true") - KHONG dung WordPress paginate_links() mac
+ * dinh (bug thuc te nguoi dung bao cao qua anh chup: ra 1 danh sach cham dau dong "<ul class=
+ * page-numbers">" khong co style gi, vi CSS THAT (".pagination-ctn"/".pagination"/".paging-btn"/
+ * ".paging-btn--prev"/".paging-btn--next"/".threedot"/".current-page", da co san tu truoc trong
+ * assets/officebase/style/layout.less, dong ~1018-1105) khong khop TEN CLASS voi ".page-numbers"/
+ * ".current" ma paginate_links() tu sinh ra - CSS khong bao gio ap dung duoc, dung LOP loi
+ * "CSS that co san nhung markup dung sai class" da gap nhieu lan trong theme nay.
+ *
+ * ngb-bootstrap khong co API cong khai de "port dung 100% thuat toan windowing that" (closed-source
+ * component), nen ham nay CHU DONG lam 1 windowing hop ly tuong duong (luon hien trang 1/trang
+ * cuoi - "boundaryLinks", toi da 5 nut trang giua - "maxSize=5", "..." khi co khoang trong) - khop
+ * DUNG class/giao dien that, khong nhat thiet khop tung pixel thuat toan noi bo cua ngb-pagination.
+ *
+ * @param int    $current    Trang hien tai (1-based).
+ * @param int    $total      Tong so trang.
+ * @param string $url_format URL trang, chua "%d" thay cho so trang (vd "...&paged=%d").
+ */
+function pplus_render_pagination(int $current, int $total, string $url_format): void {
+    if ($total <= 1) {
+        return;
+    }
+    $current = max(1, min($current, $total));
+
+    // Cua so toi da 5 trang giua (maxSize=5), luon bao gom trang 1 va trang cuoi (boundaryLinks).
+    $window = 2; // so trang moi ben cua trang hien tai trong cua so giua
+    $mid_start = max(2, $current - $window);
+    $mid_end   = min($total - 1, $current + $window);
+
+    $pages = [1];
+    if ($mid_start > 2) {
+        $pages[] = '...';
+    }
+    for ($p = $mid_start; $p <= $mid_end; $p++) {
+        $pages[] = $p;
+    }
+    if ($mid_end < $total - 1) {
+        $pages[] = '...';
+    }
+    if ($total > 1) {
+        $pages[] = $total;
+    }
+    $pages = array_values(array_unique($pages, SORT_REGULAR));
+
+    $page_url = static fn (int $p): string => str_replace('%d', (string) $p, $url_format);
+    ?>
+    <div class="pagination-ctn">
+        <div class="pagination">
+            <?php if ($current > 1) : ?>
+                <a class="paging-btn paging-btn--prev" href="<?php echo esc_url($page_url($current - 1)); ?>" aria-label="<?php echo esc_attr(pplus_localize('Trước')); ?>">&laquo;</a>
+            <?php else : ?>
+                <span class="paging-btn paging-btn--prev" disabled>&laquo;</span>
+            <?php endif; ?>
+
+            <?php foreach ($pages as $p) : ?>
+                <?php if ($p === '...') : ?>
+                    <span class="threedot">&hellip;</span>
+                <?php elseif ((int) $p === $current) : ?>
+                    <span class="paging-btn current-page"><?php echo (int) $p; ?></span>
+                <?php else : ?>
+                    <a class="paging-btn" href="<?php echo esc_url($page_url((int) $p)); ?>"><?php echo (int) $p; ?></a>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
+            <?php if ($current < $total) : ?>
+                <a class="paging-btn paging-btn--next" href="<?php echo esc_url($page_url($current + 1)); ?>" aria-label="<?php echo esc_attr(pplus_localize('Sau')); ?>">&raquo;</a>
+            <?php else : ?>
+                <span class="paging-btn paging-btn--next" disabled>&raquo;</span>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php
 }

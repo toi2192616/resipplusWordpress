@@ -309,32 +309,5 @@ function getCookie(cname) {
     return "";
 }
 
-
-
-abp.event.on("userAction", function (btn, e) {
-    abp.ui.setBusy();
-
-    $.post("/Account/CheckLoggedIn", function (res) {
-        if (res.success && res.result === true) {
-            $(btn).parent().toggleClass('open');
-        }
-        else if (res.success && res.result === false) {
-            _loginAndRegisterModal.open();
-        }
-        else {
-            showMessObject();
-        }
-    })
-        .always(function () {
-            abp.ui.clearBusy();
-        });
-});
-
-abp.event.on("openUserProfile", function (btn) {
-    if (mobileCheck()) {
-        location.href = '/tai-khoan-cua-toi';
-    }
-    else {
-        $(btn).parent().toggleClass('open');
-    }
-});
+// (30/9/2026) Bo 2 handler abp.event.on("userAction"/"openUserProfile") o day - logic dang nhap .NET (Account/CheckLoggedIn) cua
+// Angular Office/Resi goc, KHONG co trang nao trong ban WP goi abp.event.trigger; abp.js da duoc bo khoi theme (xem functions.php).
