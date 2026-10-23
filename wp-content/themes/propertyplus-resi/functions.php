@@ -176,6 +176,32 @@ add_action('wp_enqueue_scripts', function () {
         $version = in_array($path, $ob_compiled_files, true) ? pplus_asset_version('assets/officebase/' . $path) : PPLUS_THEME_VERSION;
         wp_enqueue_style($handle, $ob_uri . $path, $prev ? [$prev] : [], $version);
         $prev = $handle;
+
+        // Font Awesome cat gon (23/10/2026, port tu ban Van phong cad3da9): 27 glyph theme Resi that su dung
+        // (2.6 KB) thay cho font day du 77 KB. @font-face nay khai bao SAU font-awesome.css nen trinh duyet
+        // uu tien no cho cac ky tu trong unicode-range; icon ngoai danh sach (vd icon trong noi dung CMS) tu
+        // roi ve font day du cua font-awesome.css. Them icon FA moi: them ma vao unicode-range va tao lai file:
+        //   python -m fontTools.subset fontawesome-webfont.woff2 --unicodes=<danh sach> --flavor=woff2
+        //     --output-file=fontawesome-subset.woff2 --layout-features= --no-hinting --name-IDs=
+        // U+0020 (dau cach) co trong danh sach vi breadcrumb dung content:"\f105 " (style.css metronic) - thieu
+        // no thi dau cach do se keo ca font day du ve.
+        // Simple Line Icons: theme chi dung DUY NHAT 1 icon (".icon-location-pin" U+E096, parts/apartment-card.php)
+        // trong 189 icon - ban cat gon 0.5 KB thay 30 KB, cung co che roi ve font day du nhu Font Awesome ben duoi.
+        if ($path === 'assets/simple-line-icons/css/simple-line-icons.css') {
+            $sli_subset = 'assets/officebase/assets/simple-line-icons/fonts/simple-line-icons-subset.woff2';
+            wp_add_inline_style($handle, sprintf(
+                '@font-face{font-family:"simple-line-icons";src:url(%s) format("woff2");font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0020,U+E096}',
+                esc_url(PPLUS_THEME_URI . '/' . $sli_subset . '?ver=' . pplus_asset_version($sli_subset))
+            ));
+        }
+        if ($path === 'assets/font-awesome/css/font-awesome.css') {
+            $fa_subset = 'assets/officebase/assets/font-awesome/fonts/fontawesome-subset.woff2';
+            wp_add_inline_style($handle, sprintf(
+                '@font-face{font-family:FontAwesome;src:url(%s) format("woff2");font-weight:400;font-style:normal;font-display:swap;unicode-range:%s}',
+                esc_url(PPLUS_THEME_URI . '/' . $fa_subset . '?ver=' . pplus_asset_version($fa_subset)),
+                'U+0020,U+F002,U+F005,U+F007,U+F009,U+F00B,U+F00D,U+F016,U+F053,U+F054,U+F055,U+F064,U+F067,U+F095,U+F099,U+F09A,U+F0C1,U+F0E0,U+F0E1,U+F100,U+F101,U+F104,U+F105,U+F110,U+F112,U+F16A,U+F16D,U+F1F8'
+            ));
+        }
     }
 
     // CSS goc cua component header/footer Angular (compile bang lessc, khong nam trong officebase).

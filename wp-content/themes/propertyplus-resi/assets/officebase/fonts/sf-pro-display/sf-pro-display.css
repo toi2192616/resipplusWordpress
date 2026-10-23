@@ -23,16 +23,26 @@
 /*}*/
 
 
+/* 9/10/2026 - SF Pro Display tach 2 file theo unicode-range (PageSpeed: font la 1 trong cac tai nguyen LCP phai cho):
+   - <weight>-vn.woff2   : Latin + tieng Viet (ca dau to hop U+0300-036F) + dau cau + tien te  (~16KB thay vi ~27KB)
+   - <weight>-rest.woff2 : phan con lai (Latin mo rong, chu cai ngoai tieng Viet...) - trinh duyet CHI tai khi trang co ky tu do
+   Hai file cung 1 ban font goc, khong chong lan, khong thieu ky tu (kiem tra tung glyph: ve + do rong giong het ban goc).
+   Rollback: tra lai khoi @font-face cu (1 file/weight, co eot/woff/ttf) bang git. File font cu (regular.woff2...) van con trong thu muc. */
 @font-face {
     font-family: "SF Pro Display";
     font-style: normal;
     font-weight: 300;
-    src: url("light.eot"); /* IE9*/
-    src: url("light.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
-    url("light.woff2") format("woff2"), /* chrome、firefox */
-    url("light.woff") format("woff"), /* chrome、firefox */
-    url("light.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-    url("light.svg#SFProDisplay-Light") format("svg"); /* iOS 4.1- */
+    src: url("light-vn.woff2") format("woff2");
+    unicode-range: U+0020-007E,U+00A0-00FF,U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+02C6-02C7,U+02D8-02DD,U+0300-036F,U+1EA0-1EF9,U+2000-206F,U+20AB-20AC,U+2122,U+2190-2193,U+2212;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 300;
+    src: url("light-rest.woff2") format("woff2");
+    unicode-range: U+0100-0101,U+0104-010F,U+0112-0127,U+012A-0137,U+0139-013E,U+0141-0148,U+014C-0167,U+016A-017E,U+018F,U+0192,U+01C4-01E3,U+01E6-01ED,U+01F1-01F5,U+01F8-021B,U+021E-021F,U+0226-0233,U+0237,U+1E00-1E99,U+1E9E,U+20A1-20AA,U+20AD-20AE,U+20B1-20B5,U+20B8-20BA,U+20BC-20BF;
     font-display: swap;
 }
 
@@ -40,12 +50,17 @@
     font-family: "SF Pro Display";
     font-style: normal;
     font-weight: 400;
-    src: url("regular.eot"); /* IE9*/
-    src: url("regular.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
-    url("regular.woff2") format("woff2"), /* chrome、firefox */
-    url("regular.woff") format("woff"), /* chrome、firefox */
-    url("regular.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-    url("regular.svg#SFProDisplay-Regular") format("svg"); /* iOS 4.1- */
+    src: url("regular-vn.woff2") format("woff2");
+    unicode-range: U+0020-007E,U+00A0-00FF,U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+02C6-02C7,U+02D8-02DD,U+0300-036F,U+1EA0-1EF9,U+2000-206F,U+20AB-20AC,U+2122,U+2190-2193,U+2212;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 400;
+    src: url("regular-rest.woff2") format("woff2");
+    unicode-range: U+0100-0101,U+0104-010F,U+0112-0127,U+012A-0137,U+0139-013E,U+0141-0148,U+014C-0167,U+016A-017E,U+018F,U+0192,U+01C4-01E3,U+01E6-01ED,U+01F1-01F5,U+01F8-021B,U+021E-021F,U+0226-0233,U+0237,U+1E00-1E99,U+1E9E,U+20A1-20AA,U+20AD-20AE,U+20B1-20B5,U+20B8-20BA,U+20BC-20BF;
     font-display: swap;
 }
 
@@ -53,12 +68,17 @@
     font-family: "SF Pro Display";
     font-style: normal;
     font-weight: 500;
-    src: url("medium.eot"); /*IE9*/
-    src: url("medium.eot?#iefix") format("embedded-opentype"), /*IE6-IE8*/
-    url("medium.woff2") format("woff2"), /*chrome、firefox*/
-    url("medium.woff") format("woff"), /*chrome、firefox*/
-    url("medium.ttf") format("truetype"), /*chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-    url("medium.svg#SFProDisplay-Medium") format("svg"); /*iOS 4.1-*/
+    src: url("medium-vn.woff2") format("woff2");
+    unicode-range: U+0020-007E,U+00A0-00FF,U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+02C6-02C7,U+02D8-02DD,U+0300-036F,U+1EA0-1EF9,U+2000-206F,U+20AB-20AC,U+2122,U+2190-2193,U+2212;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 500;
+    src: url("medium-rest.woff2") format("woff2");
+    unicode-range: U+0100-0101,U+0104-010F,U+0112-0127,U+012A-0137,U+0139-013E,U+0141-0148,U+014C-0167,U+016A-017E,U+018F,U+0192,U+01C4-01E3,U+01E6-01ED,U+01F1-01F5,U+01F8-021B,U+021E-021F,U+0226-0233,U+0237,U+1E00-1E99,U+1E9E,U+20A1-20AA,U+20AD-20AE,U+20B1-20B5,U+20B8-20BA,U+20BC-20BF;
     font-display: swap;
 }
 
@@ -66,12 +86,17 @@
     font-family: "SF Pro Display";
     font-style: normal;
     font-weight: 600;
-    src: url("semibold.eot"); /* IE9*/
-    src: url("semibold.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
-    url("semibold.woff2") format("woff2"), /* chrome、firefox */
-    url("semibold.woff") format("woff"), /* chrome、firefox */
-    url("semibold.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-    url("semibold.svg#SFProDisplay-Semibold") format("svg"); /* iOS 4.1- */
+    src: url("semibold-vn.woff2") format("woff2");
+    unicode-range: U+0020-007E,U+00A0-00FF,U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+02C6-02C7,U+02D8-02DD,U+0300-036F,U+1EA0-1EF9,U+2000-206F,U+20AB-20AC,U+2122,U+2190-2193,U+2212;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 600;
+    src: url("semibold-rest.woff2") format("woff2");
+    unicode-range: U+0100-0101,U+0104-010F,U+0112-0127,U+012A-0137,U+0139-013E,U+0141-0148,U+014C-0167,U+016A-017E,U+018F,U+0192,U+01C4-01E3,U+01E6-01ED,U+01F1-01F5,U+01F8-021B,U+021E-021F,U+0226-0233,U+0237,U+1E00-1E99,U+1E9E,U+20A1-20AA,U+20AD-20AE,U+20B1-20B5,U+20B8-20BA,U+20BC-20BF;
     font-display: swap;
 }
 
@@ -79,12 +104,17 @@
     font-family: "SF Pro Display";
     font-style: normal;
     font-weight: 700;
-    src: url("bold.eot"); /* IE9*/
-    src: url("bold.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
-    url("bold.woff2") format("woff2"), /* chrome、firefox */
-    url("bold.woff") format("woff"), /* chrome、firefox */
-    url("bold.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-    url("bold.svg#SFProDisplay-Bold") format("svg"); /* iOS 4.1- */
+    src: url("bold-vn.woff2") format("woff2");
+    unicode-range: U+0020-007E,U+00A0-00FF,U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+02C6-02C7,U+02D8-02DD,U+0300-036F,U+1EA0-1EF9,U+2000-206F,U+20AB-20AC,U+2122,U+2190-2193,U+2212;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 700;
+    src: url("bold-rest.woff2") format("woff2");
+    unicode-range: U+0100-0101,U+0104-010F,U+0112-0127,U+012A-0137,U+0139-013E,U+0141-0148,U+014C-0167,U+016A-017E,U+018F,U+0192,U+01C4-01E3,U+01E6-01ED,U+01F1-01F5,U+01F8-021B,U+021E-021F,U+0226-0233,U+0237,U+1E00-1E99,U+1E9E,U+20A1-20AA,U+20AD-20AE,U+20B1-20B5,U+20B8-20BA,U+20BC-20BF;
     font-display: swap;
 }
 
