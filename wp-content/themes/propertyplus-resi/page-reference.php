@@ -189,8 +189,8 @@ get_header();
         // CSS grid that cua ".list-product-office" (search-base-component.css, compile tu chinh
         // search-base.component.less cua Resi) chi khop khi nam trong dung 3 lop nay. ?>
         <div class="list-product-office">
-            <?php foreach ($listApartments as $item) : ?>
-                <?php get_template_part('parts/apartment-card', null, ['item' => $item]); ?>
+            <?php foreach ($listApartments as $i => $item) : ?>
+                <?php get_template_part('parts/apartment-card', null, ['item' => $item, 'index' => $i]); ?>
             <?php endforeach; ?>
         </div>
 

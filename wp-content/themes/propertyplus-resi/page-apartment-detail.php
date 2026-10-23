@@ -50,6 +50,24 @@ $photos = array_values(array_filter(array_map(
 )));
 $fotorama_photos = array_map(static fn(string $url): array => ['img' => $url], $photos);
 
+// 23/10/2026 (port tu ban Van phong 3759b6c): video YouTube o o anh lon .c1 tai NGAY trinh phat (~860KB JS/CSS
+// + cookie ben thu ba) du nguoi dung khong bam phat. Thay iframe bang "facade" (thumbnail + nut phat, bam moi tao
+// iframe autoplay). Chi ap dung voi link embed YouTube dung dinh dang; link la giu iframe nhung loading="lazy".
+$pplus_yt_id = '';
+if (!empty($detail['videoUrl']) && preg_match('~^https?://(?:www\.)?youtube(?:-nocookie)?\.com/embed/([A-Za-z0-9_-]{6,20})(?:[/?#]|$)~i', (string) $detail['videoUrl'], $pplus_yt_match) === 1) {
+    $pplus_yt_id = $pplus_yt_match[1];
+}
+
+// Phan tu LCP (Lighthouse mobile: anh .c1 - "Load Delay" 2,3s vi chi duoc phat hien sau CSS/HTML dau trang).
+// Preload trong <head> de tai song song voi CSS; co video thi preload thumbnail cua video thay anh dau.
+$pplus_lcp_image = $pplus_yt_id !== '' ? 'https://i.ytimg.com/vi/' . $pplus_yt_id . '/hqdefault.jpg'
+    : (empty($detail['videoUrl']) && !empty($photos[0]) ? $photos[0] : '');
+if ($pplus_lcp_image !== '') {
+    add_action('wp_head', static function () use ($pplus_lcp_image) {
+        printf('<link rel="preload" as="image" href="%s" fetchpriority="high" />' . "\n", esc_url($pplus_lcp_image));
+    }, 2);
+}
+
 $project_id   = (int) ($detail['projectId'] ?? 0);
 $district_url = home_url($lang_prefix . '/' . pplus_office_url('cho-thue-can-ho/ha-noi/' . ($detail['alasDistrict'] ?? '')));
 // LinkProject - xem TODO dau file (trang "Dự án cụ thể" chua co route, se 404 khi bam).
@@ -100,8 +118,30 @@ get_header();
                     <div class="c1">
                         <div class="photo1-ctn">
                             <div class="youtube">
-                                <iframe width="560" height="315" src="<?php echo esc_url($detail['videoUrl']); ?>" title="YouTube video player" frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <?php if ($pplus_yt_id !== '') : ?>
+                                    <button type="button" class="yt-facade" data-yt-embed="<?php echo esc_url('https://www.youtube.com/embed/' . $pplus_yt_id . '?autoplay=1&rel=0'); ?>" aria-label="<?php echo esc_attr(pplus_t('Phát video', 'Play video')); ?>">
+                                        <img src="<?php echo esc_url('https://i.ytimg.com/vi/' . $pplus_yt_id . '/hqdefault.jpg'); ?>" alt="<?php echo esc_attr($detail['projectName'] ?? ''); ?>" width="480" height="360" fetchpriority="high" decoding="async" />
+                                        <span class="yt-play" aria-hidden="true"></span>
+                                    </button>
+                                    <noscript><iframe width="560" height="315" src="<?php echo esc_url($detail['videoUrl']); ?>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></noscript>
+                                    <script>
+                                    document.addEventListener('click', function (e) {
+                                        var b = e.target.closest ? e.target.closest('.yt-facade') : null;
+                                        if (!b) { return; }
+                                        var f = document.createElement('iframe');
+                                        f.src = b.getAttribute('data-yt-embed');
+                                        f.title = 'YouTube video player';
+                                        f.width = '560'; f.height = '315';
+                                        f.setAttribute('frameborder', '0');
+                                        f.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+                                        f.setAttribute('allowfullscreen', '');
+                                        b.parentNode.replaceChild(f, b);
+                                    });
+                                    </script>
+                                <?php else : ?>
+                                    <iframe width="560" height="315" src="<?php echo esc_url($detail['videoUrl']); ?>" title="YouTube video player" frameborder="0" loading="lazy"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -109,7 +149,7 @@ get_header();
                     <div class="c1">
                         <div class="photo1-ctn">
                             <a class="photoLink" href="<?php echo esc_url($photos[0]); ?>" data-photo-index="0" target="_blank" rel="noopener">
-                                <img src="<?php echo esc_url($photos[0]); ?>" alt="<?php echo esc_attr($detail['projectName'] ?? ''); ?>" />
+                                <img src="<?php echo esc_url($photos[0]); ?>" alt="<?php echo esc_attr($detail['projectName'] ?? ''); ?>" fetchpriority="high" />
                             </a>
                         </div>
                     </div>
@@ -266,8 +306,10 @@ get_header();
                                         <?php foreach ($items as $item) : ?>
                                             <div class="ttcoban">
                                                 <div class="fix-icon-div">
-                                                    <?php if (!empty($item['iconOn'])) : ?>
-                                                        <i class="ttcoban-ico" style="background-image:url('<?php echo esc_attr($item['iconOn']); ?>')"></i>
+                                                    <?php // Icon base64 tu API -> file tinh dung chung (xem pplus_data_uri_to_url()); '' = du lieu hong -> icon mac dinh. ?>
+                                                    <?php $pplus_icon = pplus_data_uri_to_url((string) ($item['iconOn'] ?? '')); ?>
+                                                    <?php if ($pplus_icon !== '') : ?>
+                                                        <i class="ttcoban-ico" style="background-image:url('<?php echo esc_attr($pplus_icon); ?>')"></i>
                                                     <?php else : ?>
                                                         <i class="ttcoban-ico default-service-ico"></i>
                                                     <?php endif; ?>
@@ -310,8 +352,9 @@ get_header();
                                     <?php foreach ($special_head as $item) : ?>
                                         <div class="ttcoban">
                                             <div class="fix-icon-div">
-                                                <?php if (!empty($item['icon'])) : ?>
-                                                    <i class="ttcoban-ico" style="background-image:url('<?php echo esc_attr($item['icon']); ?>')"></i>
+                                                <?php $pplus_icon = pplus_data_uri_to_url((string) ($item['icon'] ?? '')); ?>
+                                                <?php if ($pplus_icon !== '') : ?>
+                                                    <i class="ttcoban-ico" style="background-image:url('<?php echo esc_attr($pplus_icon); ?>')"></i>
                                                 <?php else : ?>
                                                     <i class="ttcoban-ico special-location-type<?php echo (int) ($item['type'] ?? 0); ?>-ico"></i>
                                                 <?php endif; ?>
@@ -340,8 +383,9 @@ get_header();
                                     <?php foreach ($special_rest as $item) : ?>
                                         <div class="ttcoban">
                                             <div class="fix-icon-div">
-                                                <?php if (!empty($item['icon'])) : ?>
-                                                    <i class="ttcoban-ico" style="background-image:url('<?php echo esc_attr($item['icon']); ?>')"></i>
+                                                <?php $pplus_icon = pplus_data_uri_to_url((string) ($item['icon'] ?? '')); ?>
+                                                <?php if ($pplus_icon !== '') : ?>
+                                                    <i class="ttcoban-ico" style="background-image:url('<?php echo esc_attr($pplus_icon); ?>')"></i>
                                                 <?php else : ?>
                                                     <i class="ttcoban-ico special-location-type<?php echo (int) ($item['type'] ?? 0); ?>-ico"></i>
                                                 <?php endif; ?>

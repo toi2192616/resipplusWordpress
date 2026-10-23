@@ -23,6 +23,14 @@ if (empty($item)) return;
 $photo = !empty($item['photoList'][0]) ? pplus_admin_asset_url($item['photoList'][0]) : '';
 $title = $item['title'] ?? ($item['projectName'] ?? '');
 
+// 23/10/2026 (port tu ban Van phong b4a7104): luoi danh sach (A1/A3/A4/Du an) truyen $args['index'] - the 0
+// la phan tu LCP tren mobile (Lighthouse do: anh nay "Load Delay" 15s vi loading=lazy, trinh duyet chi tai
+// sau khi layout xong) -> bo lazy + fetchpriority=high. The 1-2 cung nam trong man hinh dau (desktop 3 cot)
+// nen bo lazy nhung KHONG uu tien. Carousel trang chu/ban do khong truyen index -> giu lazy nhu cu.
+$card_index = $args['index'] ?? null;
+$img_loading_attr = $card_index === 0 ? 'fetchpriority="high"'
+    : ((is_int($card_index) && $card_index < 3) ? '' : 'loading="lazy"');
+
 // pplus_office_url() tra ve duong dan TUONG DOI, KHONG CO dau "/" dau (vd "cho-thue-can-ho/ha-noi/
 // .../3267/"). esc_url() cua WordPress khi gap chuoi kieu nay (khong "/" dau, khong scheme) se TU
 // Y them "http://" vao truoc, bien "cho-thue-can-ho" thanh TEN MIEN gia (href sai thanh
@@ -67,9 +75,9 @@ if ($apartment_type === 1) {
 ?>
 <a class="item-office" href="<?php echo esc_url($apartment_url); ?>" data-marker-id="<?php echo esc_attr($marker_id); ?>">
     <?php if ($photo) : ?>
-        <img class="lazy" src="<?php echo esc_url($photo); ?>" alt="<?php echo esc_attr($title); ?>" loading="lazy" />
+        <img class="lazy" src="<?php echo esc_url($photo); ?>" alt="<?php echo esc_attr($title); ?>" <?php echo $img_loading_attr; ?> />
     <?php else : ?>
-        <img class="lazy" src="<?php echo esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/Rectangle 2936.png'); ?>" alt="<?php echo esc_attr($title); ?>" loading="lazy" />
+        <img class="lazy" src="<?php echo esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/Rectangle 2936.png'); ?>" alt="<?php echo esc_attr($title); ?>" <?php echo $img_loading_attr; ?> />
     <?php endif; ?>
 
     <?php if ($badge_label) : ?>

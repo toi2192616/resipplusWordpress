@@ -48,7 +48,85 @@ function pplus_kses_content(string $html): string {
     $protocols   = wp_allowed_protocols();
     $protocols[] = 'data';
     $html = wp_kses($html, 'post', $protocols);
+    $html = pplus_externalize_inline_images($html);
     return pplus_add_lazy_loading_to_images($html);
+}
+
+/**
+ * 23/10/2026: anh base64 nhung thang trong du lieu API (src="data:image/...;base64,...") -> file tinh trong
+ * uploads/pplus-inline-img/<md5>.<ext>, tra ve URL cua file do. Do thuc te: mo ta quan Ba Dinh (A3) co 3 anh JPEG
+ * base64 = 445KB nam NGAY TRONG HTML (trang 716KB, base64 gan nhu khong nen gzip duoc, tai het truoc khi trinh
+ * duyet thay duoc anh LCP; loading="lazy" cung vo tac dung voi data URI); trang chi tiet can ho co 57 icon tien
+ * ich SVG base64 = 265KB, LAP LAI tren MOI trang chi tiet. Thanh file thi: anh duoi man hinh dau lazy duoc that,
+ * icon duoc trinh duyet cache dung chung giua cac trang.
+ *
+ * Them: du lieu API doi khi la CA THE "<img alt="" src="data:...">" thay vi URL (icon "Tiện ích" trang chi tiet,
+ * trinh duyet hieu la URL tuong doi -> request 404 132KB) - lay rieng gia tri src.
+ *
+ * Loi ghi file (uploads khong ghi duoc, SVG co script) -> tra lai NGUYEN gia tri cu, khong bao gio lam mat anh.
+ * Base64 hong (anh von da khong hien duoc) -> ''.
+ */
+function pplus_data_uri_to_url(string $value): string {
+    $value = trim($value);
+    if (stripos($value, '<img') === 0 && preg_match('/\ssrc\s*=\s*(["\'])(.*?)\1/is', $value, $src_match)) {
+        $value = trim(html_entity_decode($src_match[2], ENT_QUOTES | ENT_HTML5));
+    }
+    if (!preg_match('~^data:image/(png|jpe?g|gif|webp|svg\+xml);base64,~i', $value, $m)) {
+        return $value;
+    }
+
+    static $memo = [];
+    $key = md5($value);
+    if (isset($memo[$key])) {
+        return $memo[$key];
+    }
+    $memo[$key] = $value;
+
+    $ext     = ['png' => 'png', 'jpeg' => 'jpg', 'jpg' => 'jpg', 'gif' => 'gif', 'webp' => 'webp', 'svg+xml' => 'svg'][strtolower($m[1])];
+    $uploads = wp_upload_dir(null, false);
+    if (!empty($uploads['error'])) {
+        return $value;
+    }
+    $dir  = $uploads['basedir'] . '/pplus-inline-img';
+    $name = $key . '.' . $ext;
+    if (!is_file($dir . '/' . $name)) {
+        $bin = base64_decode((string) preg_replace('/\s+/', '', substr($value, strlen($m[0]))), true);
+        if ($bin === false || $bin === '') {
+            // Base64 hong (vd du lieu CMS bi cat cut, ket thuc bang "...") - trinh duyet cung khong hien duoc
+            // (ERR_INVALID_URL) -> '' de noi goi dung icon/anh mac dinh.
+            return $memo[$key] = '';
+        }
+        // SVG phuc vu tu chinh domain: mo truc tiep URL thi script trong SVG se chay -> chi tach file SVG "sach".
+        if ($ext === 'svg' && preg_match('/<script|<foreignObject|\son[a-z]+\s*=|javascript:/i', $bin)) {
+            return $value;
+        }
+        if (!wp_mkdir_p($dir)) {
+            return $value;
+        }
+        $tmp = $dir . '/' . $name . '.' . uniqid('', true) . '.tmp';
+        if (@file_put_contents($tmp, $bin) === false || (!@rename($tmp, $dir . '/' . $name) && !is_file($dir . '/' . $name))) {
+            @unlink($tmp);
+            return $value;
+        }
+        @unlink($tmp);
+    }
+    return $memo[$key] = $uploads['baseurl'] . '/pplus-inline-img/' . $name;
+}
+
+/** Ap dung pplus_data_uri_to_url() cho src cua moi <img> base64 trong 1 chuoi HTML (noi dung CMS). */
+function pplus_externalize_inline_images(string $html): string {
+    if (stripos($html, 'data:image/') === false) {
+        return $html;
+    }
+    return (string) preg_replace_callback(
+        '/(<img\b[^>]*?\ssrc=)(["\'])(data:image\/[^"\']+)\2/i',
+        static function (array $m): string {
+            $data_uri = html_entity_decode($m[3], ENT_QUOTES | ENT_HTML5);
+            $url      = pplus_data_uri_to_url($data_uri);
+            return ($url === $data_uri || $url === '') ? $m[0] : $m[1] . $m[2] . esc_url($url) . $m[2];
+        },
+        $html
+    );
 }
 
 /**

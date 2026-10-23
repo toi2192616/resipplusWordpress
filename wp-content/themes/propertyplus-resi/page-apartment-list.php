@@ -140,8 +140,8 @@ get_header();
                         <div class="pplus-notice"><?php echo esc_html(pplus_localize('Không tìm thấy căn hộ phù hợp.')); ?></div>
                     <?php else : ?>
                         <div class="list-product-office">
-                            <?php foreach ($listApartments as $item) : ?>
-                                <?php get_template_part('parts/apartment-card', null, ['item' => $item]); ?>
+                            <?php foreach ($listApartments as $i => $item) : ?>
+                                <?php get_template_part('parts/apartment-card', null, ['item' => $item, 'index' => $i]); ?>
                             <?php endforeach; ?>
                         </div>
 
