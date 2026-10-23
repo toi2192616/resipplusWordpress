@@ -63,7 +63,7 @@ $render_alias_items = static function (array $items, string $base_slug) {
           <div class="additional-nav-mobile">
             <div id="LanguageDropDown" class="btn-group dropdown pull-left">
               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-delay="1000" data-close-others="true">
-                <img src="<?php echo esc_url($theme_uri . '/assets/Content/Img/langue-icon.png'); ?>" width="18" height="18" alt="" /><span> <?php echo esc_html($cur_lang); ?></span>
+                <img src="<?php echo esc_url($theme_uri . '/assets/Content/Img/langue-icon.svg'); ?>" width="18" height="18" alt="" /><span> <?php echo esc_html($cur_lang); ?></span>
               </button>
               <ul class="dropdown-menu dropdown-menu-right LanguageDropDown LanguageDropDown-link" role="menu">
                 <?php foreach (pplus_language_options() as $lg) : if ($lg['Name'] === $cur_lang) { continue; } ?>
@@ -178,7 +178,7 @@ $render_alias_items = static function (array $items, string $base_slug) {
           <div class="moblie-show"></div>
           <div class="pc-show">
             <a href="<?php echo esc_url(pplus_lang_url('danh-sach-yeu-thich')); ?>" class="action-yeu-thich" aria-label="<?php echo esc_attr(pplus_localize('Yêu thích')); ?>">
-              <img src="<?php echo esc_url($theme_uri . '/assets/Content/Img/heart-circle.png'); ?>" width="18" alt="" />
+              <img src="<?php echo esc_url($theme_uri . '/assets/Content/Img/heart-circle.svg'); ?>" width="18" height="18" alt="" />
               <div class="dot-like"></div>
             </a>
             <div class="additional-nav pull-left action-langue">
