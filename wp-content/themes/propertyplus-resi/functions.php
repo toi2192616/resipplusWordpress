@@ -50,6 +50,7 @@ require_once PPLUS_THEME_DIR . '/inc/seo-head.php';                // SEO/GEO ta
 require_once PPLUS_THEME_DIR . '/inc/noindex.php';                 // Chan index toan site cho server TEST (PPLUS_NOINDEX / o tich trong Giao dien > PropertyPlus)
 require_once PPLUS_THEME_DIR . '/inc/sitemap.php';                // Sitemap XML: can ho (VI+EN), blog, trang khu vuc/dich vu - tinh san qua WP-Cron theo dot nho
 require_once PPLUS_THEME_DIR . '/inc/search-group-route.php';      // REST goi y "Tìm theo tên dự án" khi go o tim kiem (Apartment/_GetFilterGroupList)
+require_once PPLUS_THEME_DIR . '/inc/asset-bundle.php';            // Gop CSS/JS lien ke cung nhom thanh 1 file (tu sinh lai khi file nguon doi)
 
 /*
  * TODO Phase 1+: A1/A2 da xong (29/9, xem 2 dong require o tren) - bat dan tiep khi convert:
@@ -75,6 +76,21 @@ add_action('init', function () {
     remove_action('wp_head', 'wlwmanifest_link');
     remove_action('wp_head', 'wp_shortlink_wp_head');
 });
+
+/**
+ * 23/10/2026: bo CSS inline cua block editor (wp-block-library ~4KB, global-styles ~9KB, classic-theme-styles)
+ * in vao <head> MOI trang - theme nay render toan bo tu API .NET, khong co noi dung block nao (chi index.php du
+ * phong goi the_content()). Giu lai neu trang that su co block (bai viet WP soan bang Gutenberg).
+ */
+add_action('wp_enqueue_scripts', function () {
+    if (is_singular() && has_blocks()) {
+        return;
+    }
+    foreach (['wp-block-library', 'wp-block-library-theme', 'global-styles', 'classic-theme-styles'] as $handle) {
+        wp_dequeue_style($handle);
+    }
+}, 100);
+remove_action('wp_footer', 'wp_enqueue_global_styles', 1); // ban "block styles in footer" cua global-styles
 
 /**
  * Thu vien vendor chi 1-2 loai trang dung - khong nap site-wide (select2 ~85KB, fotorama ~54KB).
@@ -103,7 +119,6 @@ function pplus_officebase_asset_needed(string $path): bool {
 function pplus_officebase_styles(): array {
     return [
         'assets/simple-line-icons/css/simple-line-icons.css',
-        'assets/select2/dist/css/select2.min.css',
         'assets/font-awesome/css/font-awesome.css',
         'assets/boostrap-5.1.3/bootstrap.min.css',
         'assets/toastr/build/toastr.css',
@@ -111,6 +126,12 @@ function pplus_officebase_styles(): array {
         'assets/slick/slick.css',          // compiled tu slick.less
         'assets/slick/slick-theme.css',    // compiled tu slick-theme.less (CSS san sang, xem
                                             // pplus_officebase_scripts() ben duoi cho slick.min.js)
+        // select2 (23/10/2026) chuyen tu ngay sau simple-line-icons xuong day: chi 1 so trang dung, dat
+        // canh fotorama de 7 file vendor phia tren lien ke nhau tren MOI trang -> gop thanh 1 bundle
+        // giong het nhau (inc/asset-bundle.php). An toan cascade: moi selector cua select2.min.css deu
+        // chua "select2", khong file nao trong 5 file nam giua (font-awesome/bootstrap/toastr/sf-pro/
+        // slick) style class do (bootstrap chi co [type=search] 0,1,0 < moi rule select2 >= 0,2,0).
+        'assets/select2/dist/css/select2.min.css',
         'assets/fotorama/fotorama.css',
         'metronic/assets/frontend/layout/css/style.css',
         'metronic/assets/frontend/layout/css/style-responsive.css',
