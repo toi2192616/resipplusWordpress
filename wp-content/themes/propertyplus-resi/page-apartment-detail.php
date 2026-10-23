@@ -455,7 +455,8 @@ get_header();
                 <div class="list-user">
                     <?php foreach ($model['listUser'] as $item) : ?>
                         <div class="item">
-                            <div><img src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" /></div>
+                            <?php // Anh tu van vien (PNG 146-172KB/anh tu admin) - luon duoi man hinh dau -> hoan toi load+1s. ?>
+                            <div><?php echo pplus_defer_lazy_imgs('<img src="' . esc_url(pplus_admin_asset_url($item['img'] ?? '')) . '" alt="' . esc_attr($item['title'] ?? '') . '" loading="lazy" />'); ?></div>
                             <div class="item-content">
                                 <label class="text-1"><?php echo esc_html($item['title'] ?? ''); ?></label>
                                 <br />

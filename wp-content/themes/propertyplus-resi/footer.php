@@ -1,5 +1,7 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 </main>
+<?php // 23/10/2026: footer + popup lien he/tim kiem/yeu thich deu nam duoi man hinh dau hoac an cho toi khi bam -> hoan moi anh lazy toi load+1s / tuong tac dau tien (xem pplus_defer_lazy_imgs()). Dong buffer ngay truoc wp_footer(). ?>
+<?php ob_start(); ?>
 <footer class="pplus-footer">
     <?php get_template_part('parts/footer'); ?>
 </footer>
@@ -38,6 +40,7 @@ get_template_part('parts/search-mobile');
     </div>
 </div>
 <?php
+echo pplus_defer_lazy_imgs((string) ob_get_clean());
 wp_footer();
 ?>
 </body>

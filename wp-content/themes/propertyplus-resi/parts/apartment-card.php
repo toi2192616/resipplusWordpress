@@ -75,7 +75,9 @@ if ($apartment_type === 1) {
 ?>
 <a class="item-office" href="<?php echo esc_url($apartment_url); ?>" data-marker-id="<?php echo esc_attr($marker_id); ?>">
     <?php if ($photo) : ?>
-        <img class="lazy" src="<?php echo esc_url($photo); ?>" alt="<?php echo esc_attr($title); ?>" <?php echo $img_loading_attr; ?> />
+        <?php // Danh sach chinh, the thu 4 tro di: hoan anh toi load+1s (port 004cbfe, xem pplus_defer_lazy_imgs()). ?>
+        <?php $img_tag = '<img class="lazy" src="' . esc_url($photo) . '" alt="' . esc_attr($title) . '" ' . $img_loading_attr . ' />'; ?>
+        <?php echo (is_int($card_index) && $card_index >= 3) ? pplus_defer_lazy_imgs($img_tag) : $img_tag; ?>
     <?php else : ?>
         <img class="lazy" src="<?php echo esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/Rectangle 2936.png'); ?>" alt="<?php echo esc_attr($title); ?>" <?php echo $img_loading_attr; ?> />
     <?php endif; ?>

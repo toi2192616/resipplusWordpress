@@ -29,6 +29,10 @@ if (!defined('ABSPATH')) exit;
 
 get_header();
 
+// 23/10/2026: moi anh loading="lazy" cua trang chu deu nam duoi man hinh dau (>= 1167px tren mobile) -> hoan toi load+1s
+// (xem pplus_defer_lazy_imgs()); anh hero (<picture>, khong lazy) giu nguyen. Dong buffer ngay truoc get_footer().
+ob_start();
+
 $home        = pplus_get_home_data();
 $lang        = pplus_current_lang();
 $lang_prefix = pplus_lang_prefix($lang);
@@ -367,4 +371,5 @@ $customer_logos = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg'
 </div>
 <?php endif; ?>
 
+<?php echo pplus_defer_lazy_imgs((string) ob_get_clean()); ?>
 <?php get_footer(); ?>

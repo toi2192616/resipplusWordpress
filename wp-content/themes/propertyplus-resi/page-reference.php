@@ -321,7 +321,8 @@ get_header();
                 // nhau (bug thuc te nguoi dung bao cao: "Muc luc co 2 khung"). ?>
                 <?php pplus_render_toc_nested($toc['items']); ?>
                 <div class="content-1 table-mg blog-p-no-margin" id="content-ckedit">
-                    <?php echo pplus_kses_content($toc['html']); ?>
+                    <?php // Bai viet SEO nam duoi danh sach the - hoan anh toi load+1s (xem pplus_defer_lazy_imgs()). ?>
+                    <?php echo pplus_defer_lazy_imgs(pplus_kses_content($toc['html'])); ?>
                 </div>
             </div>
         </div>

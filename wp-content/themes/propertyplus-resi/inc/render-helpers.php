@@ -113,6 +113,57 @@ function pplus_data_uri_to_url(string $value): string {
     return $memo[$key] = $uploads['baseurl'] . '/pplus-inline-img/' . $name;
 }
 
+/** GIF trong suot 1x1 - o giu cho cua anh da hoan (xem pplus_defer_lazy_imgs()). */
+if (!defined('PPLUS_BLANK_GIF')) {
+    define('PPLUS_BLANK_GIF', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
+}
+
+/**
+ * 23/10/2026 (port tu ban Van phong 004cbfe): hoan anh "loading=lazy" nam DUOI man hinh dau - src = GIF 1x1, anh that o
+ * data-pplus-src (+ data-pplus-srcset) va <noscript>, nap lai boi pplus_print_deferred_img_loader() 1 GIAY sau "load"
+ * hoac ngay khi nguoi dung cuon/cham/bam phim.
+ *
+ * Vi sao: Chrome tai SOM ca anh loading=lazy trong vong ~1250-3000px quanh man hinh (3000px khi chua uoc luong duoc toc
+ * do mang - dung truong hop PageSpeed), nen trang chu Resi (150 anh lazy, ~3,2MB: carousel can ho/nhan vien/doi tac/am
+ * thuc - TAT CA nam tu 1167px tro xuong tren mobile) van tai gan het ngay tu dau, gianh bang thong voi anh/chu LCP va bi
+ * Lighthouse tinh vao LCP (moi request xong truoc moc LCP deu tinh). "+1s" thay vi dung "load": anh LCP thuong ve sau
+ * "load" vai chuc ms (do cua ban Van phong). Googlebot van thay anh that (loader chay theo dong ho, khong can cuon) va
+ * <noscript> giu ban goc cho crawler khong chay JS. Chi dung cho HTML ma MOI anh lazy deu nam duoi man hinh dau.
+ */
+function pplus_defer_lazy_imgs(string $html): string {
+    if (defined('PPLUS_DEFER_IMGS') && !PPLUS_DEFER_IMGS) {
+        return $html; // tat han: define('PPLUS_DEFER_IMGS', false) trong wp-config.php
+    }
+    // <iframe loading="lazy"> cung vay (ban do Google "Địa chỉ" o footer: Chrome van tai trong nguong lazy -> ~600KB script
+    // Maps tren MOI trang): bo han src (khung trong) cho toi khi loader nap lai.
+    return (string) preg_replace_callback(
+        '/<(img|iframe)\b[^>]*>(<\/iframe>)?/i',
+        static function (array $m): string {
+            $tag = $m[0];
+            if (stripos($tag, 'loading="lazy"') === false || stripos($tag, 'data-pplus-src') !== false
+                || !preg_match('/\ssrc=(["\'])((?:https?:)?\/[^"\']+)\1/i', $tag, $src)) {
+                return $tag;
+            }
+            $GLOBALS['pplus_img_deferred'] = true;
+            $is_img = strtolower($m[1]) === 'img';
+            $new = str_replace($src[0], ($is_img ? ' src="' . PPLUS_BLANK_GIF . '"' : '') . ' data-pplus-src="' . $src[2] . '"', $tag);
+            $new = (string) preg_replace('/\ssrcset=(["\'])/i', ' data-pplus-srcset=$1', $new);
+            return $new . '<noscript>' . $tag . '</noscript>';
+        },
+        $html
+    );
+}
+
+/** Script nap lai anh da hoan (chi in khi trang co it nhat 1 anh duoc hoan). <noscript><style> an o GIF khi khong co JS. */
+function pplus_print_deferred_img_loader(): void {
+    if (empty($GLOBALS['pplus_img_deferred'])) {
+        return;
+    }
+    echo '<noscript><style>img[data-pplus-src],iframe[data-pplus-src]{display:none!important}</style></noscript>' . "\n";
+    echo "<script>(function(){var d=document,done=0;function go(){if(done)return;done=1;var l=d.querySelectorAll('img[data-pplus-src],iframe[data-pplus-src]');for(var i=0;i<l.length;i++){var s=l[i].getAttribute('data-pplus-srcset');if(s){l[i].srcset=s;l[i].removeAttribute('data-pplus-srcset');}l[i].src=l[i].getAttribute('data-pplus-src');l[i].removeAttribute('data-pplus-src');}}function later(){setTimeout(go,1000)}if(d.readyState==='complete')later();else addEventListener('load',later);['scroll','touchstart','keydown','mousedown'].forEach(function(t){addEventListener(t,go,{once:true,passive:true});});})();</script>\n";
+}
+add_action('wp_footer', 'pplus_print_deferred_img_loader', 5);
+
 /** Ap dung pplus_data_uri_to_url() cho src cua moi <img> base64 trong 1 chuoi HTML (noi dung CMS). */
 function pplus_externalize_inline_images(string $html): string {
     if (stripos($html, 'data:image/') === false) {
