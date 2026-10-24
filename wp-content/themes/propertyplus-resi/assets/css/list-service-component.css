@@ -7,7 +7,7 @@
 .info-list {
   display: flex;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .info-list {
     display: block;
   }
@@ -41,7 +41,7 @@
   color: #2D5185;
   opacity: 1;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .info-list {
     display: block;
     overflow-x: auto;
@@ -157,7 +157,7 @@
   padding: 10px 60px 10px 30px;
   min-height: 235px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .service-1-body-2 .col-md-4.mobile-50-w {
     padding: 10px 15px 10px 30px;
     width: 50%;
@@ -204,7 +204,7 @@
   border-radius: 10px;
   padding: 30px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .service-2-body-2 .col-md-4 .service-2-body-2-box {
     max-width: 100%;
   }
@@ -407,7 +407,7 @@
 .mt-60 {
   margin-top: 60px !important;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .service-box-1 {
     display: block;
     margin: 0px -10px;
@@ -435,7 +435,7 @@
     margin-right: 25px;
   }
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .service-regis .text-in-row-3 {
     display: flow-root;
   }

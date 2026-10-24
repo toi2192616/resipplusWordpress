@@ -120,7 +120,7 @@
   display: inherit;
   margin-right: 15px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .catalog-content .content-list-children {
     display: none;
     margin-top: 0px;
@@ -142,7 +142,7 @@
   cursor: pointer;
   margin-bottom: 10px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .catalog-content .content-list-children .blog-name {
     width: max-content;
   }
@@ -161,7 +161,7 @@
   margin-top: 10px;
   margin-left: -10px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .btn-search-mobile {
     display: block;
   }
@@ -200,7 +200,7 @@
   width: 100%;
   display: none;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .dropdownListCatalog {
     display: block;
   }

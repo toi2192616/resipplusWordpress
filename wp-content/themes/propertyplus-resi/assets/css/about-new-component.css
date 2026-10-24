@@ -12,7 +12,7 @@
 .about-new {
   margin-top: 0px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .about-new {
     margin-top: 0px;
   }
@@ -25,7 +25,7 @@
   font-family: 'SF Pro Display';
   padding: 0px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .datalist .data-content {
     padding: 0px 0px;
     margin: 0px -5px;
@@ -82,7 +82,7 @@
   margin: auto;
   display: block;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .datalist .data-content img {
     width: 100% !important;
     height: auto !important;
@@ -91,7 +91,7 @@
 .datalist .data-content .content-1 {
   margin: 0px;
 }
-@media (min-width: 1024px) and (max-width: 1380px) {
+@media (min-width: 1025px) and (max-width: 1380px) {
   .datalist .data-content .content-1 {
     margin-top: 15px;
   }
@@ -117,7 +117,7 @@
   top: 0;
   background-image: linear-gradient(to bottom, #7ed858, #e7838b, #737aa0, #5270fb);
 }
-@media (min-width: 1024px) and (max-width: 1380px) {
+@media (min-width: 1025px) and (max-width: 1380px) {
   .datalist .container {
     width: 1250px !important;
   }
@@ -157,7 +157,7 @@
   width: 100%;
   margin-top: 15px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .header-right {
     padding-left: 0px;
     display: inline-grid;

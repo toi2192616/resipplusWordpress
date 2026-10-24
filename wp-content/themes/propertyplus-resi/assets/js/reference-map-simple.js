@@ -99,7 +99,7 @@
     // marker KHONG dieu huong ngay ma cuon dai the o duoi toi dung the tuong ung (port
     // touchendListMobile() cua search-base.component.ts). Tren PC van dieu huong thang nhu truoc.
     function isMobileMapMode() {
-        return document.documentElement.clientWidth <= 880 && !!document.querySelector('.box-list-body-mobile');
+        return document.documentElement.clientWidth <= 1024 && !!document.querySelector('.box-list-body-mobile'); // 24/10/2026: <=1024 = mobile
     }
 
     function stripEl() {
@@ -222,7 +222,7 @@
             setTimeout(function () { ready = true; }, 600);
         });
         function showAreaBtn() {
-            if (ready && areaBtn && document.documentElement.clientWidth <= 768) {
+            if (ready && areaBtn && document.documentElement.clientWidth <= 1024) {
                 areaBtn.style.display = 'block';
             }
         }
@@ -371,7 +371,7 @@
     }
 
     function pplusInitReferenceMapTrigger() {
-        if (document.documentElement.clientWidth > 800) {
+        if (document.documentElement.clientWidth > 1024) { // 24/10/2026: >=1025 = PC
             pplusLoadReferenceMap();
         } else {
             document.addEventListener('pplus:map-view-opened', pplusLoadReferenceMap, { once: true });
@@ -402,7 +402,7 @@
         // "document.documentElement.clientWidth" (khong phai "window.innerWidth") - do that voi
         // scrollbar/toolbar nen dung hon cho ngat responsive (cung 1 quy uoc da dung o cac diem khac
         // trong theme nay khi can biet chinh xac chieu rong khung nhin).
-        if (document.documentElement.clientWidth > 800) {
+        if (document.documentElement.clientWidth > 1024) { // 24/10/2026: >=1025 = PC
             var el = document.querySelector('.box-map.invision-map');
             if (el && el.querySelector('#pplus-reference-map')) {
                 el.classList.remove('invision-map');

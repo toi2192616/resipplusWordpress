@@ -87,8 +87,8 @@ function pplus_render_home_apartment_groups(array $groups, string $list_slug, st
 <div class="langdingpage-header">
     <div class="bg-img">
         <picture>
-            <source media="(max-width: 800px)" type="image/webp" srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/Img/home-600x1000.webp'); ?>" />
-            <source media="(max-width: 800px)" srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/Img/home-600x1000.png'); ?>" />
+            <source media="(max-width: 768px)" type="image/webp" srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/Img/home-600x1000.webp'); ?>" />
+            <source media="(max-width: 768px)" srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/Img/home-600x1000.png'); ?>" />
             <source type="image/webp" srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/Img/home-1920x1080.webp'); ?>" />
             <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/Img/home-1920x1080.png'); ?>" alt="<?php echo esc_attr(pplus_t('Căn hộ cho thuê cao cấp tại Hà Nội', 'Luxury apartments for rent in Hanoi')); ?>" width="1920" height="1080" fetchpriority="high" decoding="async" />
         </picture>

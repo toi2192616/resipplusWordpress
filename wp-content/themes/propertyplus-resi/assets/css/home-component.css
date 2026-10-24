@@ -1,9 +1,9 @@
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .main {
     margin-top: 0px;
   }
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .distric-col1-scroll {
     overflow: auto;
   }
@@ -23,7 +23,7 @@
   column-gap: 40px;
   display: grid;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .distric-col1 {
     grid-template-columns: repeat(6, minmax(0, 1fr));
     width: 900px;
@@ -40,7 +40,7 @@
 .distric-col1 .district-name:nth-child(6) {
   margin-bottom: 120px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .distric-col1 .district-name:nth-child(4),
   .distric-col1 .district-name:nth-child(5),
   .distric-col1 .district-name:nth-child(6) {
@@ -85,7 +85,7 @@
   line-height: 13px;
   color: #10214E;
 }
-@media (min-width: 1024px) {
+@media (min-width: 1025px) {
   .distric-col2 {
     padding-left: 50px;
   }
@@ -93,7 +93,7 @@
 .searching-engine {
   padding: 80px 15px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .searching-engine {
     padding: 0px 0px;
     margin-top: 50px;
@@ -103,7 +103,7 @@
   margin-bottom: 42px;
   text-align: center;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .tite-box {
     margin-bottom: 0px;
   }
@@ -116,7 +116,7 @@
   margin-bottom: 20px;
   color: #2449A8;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .tite-box .title {
     font-size: 26px;
     line-height: 30px;
@@ -139,7 +139,7 @@
   margin-bottom: 42px;
   text-align: right;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .tite-box-2 {
     margin-bottom: 0px;
   }
@@ -149,7 +149,7 @@
   border-right: 5px solid #dfb54c;
   padding-right: 40px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .tite-box-2 .group-title {
     margin-bottom: 40px;
   }
@@ -162,7 +162,7 @@
   margin-bottom: 10px;
   color: #2449A8;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .tite-box-2 .group-title .title {
     font-size: 26px;
     line-height: 30px;
@@ -174,7 +174,7 @@
   line-height: 26px;
   color: #545455;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .tite-box-2 .group-title .sub-title {
     display: none;
   }
@@ -187,7 +187,7 @@
 .tite-box-2 .sile-img img {
   max-width: 100%;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .tite-box-2 .sile-img {
     display: none;
   }
@@ -196,7 +196,7 @@
   margin-bottom: 42px;
   text-align: left;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .tite-box-3 {
     margin-bottom: 0px;
   }
@@ -206,7 +206,7 @@
   border-left: 5px solid #dfb54c;
   padding-left: 40px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .tite-box-3 .group-title {
     margin-bottom: 40px;
   }
@@ -219,7 +219,7 @@
   margin-bottom: 10px;
   color: #2449A8;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .tite-box-3 .group-title .title {
     font-size: 26px;
     line-height: 30px;
@@ -231,7 +231,7 @@
   line-height: 26px;
   color: #545455;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .tite-box-3 .group-title .sub-title {
     display: none;
   }
@@ -244,7 +244,7 @@
 .tite-box-3 .sile-img img {
   max-width: 100%;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .tite-box-3 .sile-img {
     display: none;
   }
@@ -263,7 +263,7 @@
   border: none;
   background: none;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .client-slider .slick-arrow {
     right: 0px;
   }
@@ -312,7 +312,7 @@
   padding-top: 0px;
   padding-bottom: 80px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .offices-engine {
     padding: 30px 15px;
   }
@@ -333,7 +333,7 @@
   padding: 78px 0px 121px 0px;
   background-color: #F3F3F3;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .why-choose-us {
     padding: 20px 0px 20px 0px;
   }
@@ -342,7 +342,7 @@
   border: 1px solid #CECECE !important;
   width: 62px !important;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .why-choose-us .a-u-c-1-item {
     margin-bottom: 10px;
   }
@@ -356,7 +356,7 @@
 .why-choose-us .a-u-c-1-item .a-u-cus-t3 {
   margin: 30px 0px 12px 0px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .why-choose-us .a-u-c-1-item .a-u-cus-t3 {
     margin: 15px 0px 12px 0px;
     min-height: auto;
@@ -365,7 +365,7 @@
 .achievement-box {
   padding: 78px 0px 70px 0px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .achievement-box {
     padding: 20px 0px 70px 0px;
   }
@@ -522,7 +522,7 @@
   height: auto;
   margin-left: 50px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .achievement-box-2 .img-right {
     margin-left: 0px;
   }
@@ -565,7 +565,7 @@
   width: 190px;
   margin: 44px auto;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .a-u-cus-hr {
     margin: 15px auto;
   }
@@ -574,7 +574,7 @@
   background: radial-gradient(circle at center, rgba(209, 213, 219, 0.6) 0%, /* xám nhạt (gray-300) */ rgba(229, 231, 235, 0.8) 40%, /* sáng hơn chút */ #f3f4f6 100% /* trắng xám (gray-100) */);
   padding: 100px 0px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .sale-nhanvien {
     margin-bottom: 30px;
   }
@@ -589,12 +589,12 @@
   text-align: center;
   margin-top: -20px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .sale-nhanvien h2 {
     font-size: 25px;
   }
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .sale-nhanvien .list-nhanvien .col-sm-6 {
     flex: 0 0 auto;
     width: 50%;
@@ -635,7 +635,7 @@
   background-size: cover;
   padding: 70px 0px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .nhanvien-box {
     padding: 30px 15px;
   }
@@ -646,7 +646,7 @@
   color: #2449A8;
   text-align: center;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .nhanvien-box .data-header .title-1 {
     font-size: 30px;
   }
@@ -700,7 +700,7 @@
   padding: 70px 0px;
   background: rgba(247, 250, 253, 0.7);
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .advise-box {
     padding: 30px 15px;
   }
@@ -720,7 +720,7 @@
   border-left: 5px solid #dfb54c;
   padding-left: 40px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .advise-box .content-right .group-title {
     margin-bottom: 30px;
   }
@@ -733,7 +733,7 @@
   margin-bottom: 20px;
   color: #2449A8;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .advise-box .content-right .group-title .title {
     font-size: 26px;
     line-height: 30px;
@@ -750,7 +750,7 @@
   column-gap: 40px;
   display: grid;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .advise-box .content-right .list-data-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -782,7 +782,7 @@
 .videos-box {
   padding: 70px 0px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .videos-box {
     padding: 30px 15px;
   }
@@ -793,7 +793,7 @@
   color: #2449A8;
   text-align: center;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .videos-box .data-header .title-1 {
     font-size: 30px;
   }
@@ -894,7 +894,7 @@
   background: rgba(247, 250, 253, 0.7);
   padding: 70px 0px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .newspapers-box {
     padding: 30px 15px;
   }
@@ -905,7 +905,7 @@
   color: #2449A8;
   text-align: center;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .newspapers-box .data-header .title-1 {
     font-size: 26px;
   }
@@ -924,7 +924,7 @@
   column-gap: 20px;
   display: grid;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .newspapers-box .silder-newspapers:not(.slick-slider) {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -1062,12 +1062,12 @@
   background: #e7eef8;
   padding: 15px 0px 100px 0px;
 }
-@media only screen and (max-width: 1620px) and (min-width: 1024px) {
+@media only screen and (max-width: 1620px) and (min-width: 1025px) {
   .story-project-client {
     padding: 15px 0px 10px 0px;
   }
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .story-project-client {
     padding: 15px 15px 100px 15px;
   }
@@ -1123,7 +1123,7 @@
     height: 140px;
   }
 }
-@media only screen and (max-width: 1380px) and (min-width: 1024px) {
+@media only screen and (max-width: 1380px) and (min-width: 1025px) {
   .story-project-client ._partner ._partner-silder ._partner-item {
     height: 115px;
   }
@@ -1137,7 +1137,7 @@
   right: 0;
   bottom: 0;
 }
-@media only screen and (max-width: 1380px) and (min-width: 1024px) {
+@media only screen and (max-width: 1380px) and (min-width: 1025px) {
   .story-project-client ._partner ._partner-silder ._partner-item ._partner-img {
     width: 105px;
   }
@@ -1145,12 +1145,12 @@
 .box-sucssess {
   margin-top: 180px;
 }
-@media (min-width: 1024px) and (max-width: 4000px) {
+@media (min-width: 1025px) and (max-width: 4000px) {
   .workspaces {
     margin-bottom: 50px;
   }
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .list-workspaces {
     padding: 5px;
   }
@@ -1249,7 +1249,7 @@
   color: #dbdada;
   text-decoration: none;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .action-link-new-vp {
     display: none;
   }
@@ -1257,12 +1257,12 @@
 .isMobile {
   display: none;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .isMobile {
     display: block;
   }
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .isWebPC {
     display: none;
   }
@@ -1294,7 +1294,7 @@
   background-color: #ffffff00;
   border: none;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .cuisines-silder-track .slick-next {
     right: 0;
   }
@@ -1371,7 +1371,7 @@
   padding-bottom: 0px;
   margin-top: -7px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .search-tab .content-1 {
     font-size: 22px;
     line-height: 26px;
@@ -1399,7 +1399,7 @@
   margin: 20px 15px;
   width: 70px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   ._interesting ._interesting-hr-1 {
     margin: 20px auto;
   }
@@ -1417,7 +1417,7 @@
   text-align: left;
   color: #B18E4E;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   ._interesting ._interesting-title {
     text-align: left;
     font-size: 26px;
@@ -1451,7 +1451,7 @@
   position: relative;
   padding-left: 10px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   ._interesting ._interesting-title-data {
     margin-top: 20px;
     display: flow-root;
@@ -1468,7 +1468,7 @@
   right: 5px;
   color: #4473b7;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   ._interesting ._interesting-title-data .see-all {
     position: inherit;
     margin-top: 15px;
@@ -1480,7 +1480,7 @@
   margin: 0px 10px;
   margin-bottom: 40px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   ._interesting ._interesting-silder {
     margin: 0px 0px;
   }
@@ -1488,12 +1488,12 @@
 ._interesting ._interesting-silder .silder-aparment-loop {
   padding-bottom: 20px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   ._interesting ._interesting-silder .silder-aparment-loop {
     max-width: 290px;
   }
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .offices-engine .offices-col .apt-card-slide {
     width: 290px;
     max-width: 290px;
@@ -1521,4 +1521,20 @@
 .nhanvien-box .item-nhanvien {
   position: relative;
   margin-bottom: 15px;
+}
+
+/* 24/10/2026 - Mobi Resi: logo doi tac/khach hang chi co max-width:96% (khong gioi han chieu cao) trong o cao co dinh 182/140/115px
+   -> logo dang dung (vd Mitsubishi) bi cat mat phan duoi khi o rong (may tinh bang 2 logo/luot). Gioi han ca chieu cao, giu ti le. */
+.story-project-client ._partner ._partner-silder ._partner-item ._partner-img {
+  max-height: 90%;
+  object-fit: contain;
+}
+
+/* 24/10/2026 - Mobi Resi: the "Kham pha dat nuoc" (.cuisine-item float:left) co theo be rong tu nhien cua anh -> tren may tinh
+   bang (2 the/luot, main.js) the khong phu het o. Chi o 768-1024px: the rong het o slide. PC giu nguyen. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .blog-box .cuisine-item {
+    float: none;
+    width: 100%;
+  }
 }

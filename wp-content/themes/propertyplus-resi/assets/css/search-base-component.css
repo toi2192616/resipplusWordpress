@@ -26,7 +26,7 @@
 .action-close-search:hover {
   background: #2f4b91;
 }
-@media (min-width: 0px) and (max-width: 768px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .action-close-search {
     display: none !important;
   }
@@ -54,7 +54,7 @@
   cursor: pointer;
   transition: 0.3s ease-in-out;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .action-close-map {
     display: block;
     top: 20px;
@@ -68,7 +68,7 @@
 .action-close-map-label {
   display: none;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .action-close-map-label {
     display: flex;
     align-items: center;
@@ -111,7 +111,7 @@
   right: 0px;
   transition: 0.7s ease-in-out;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   #box-search-base.box-search {
     width: 100vw;
     right: -100%;
@@ -136,7 +136,7 @@
 #box-search-base.box-search .search-option .choose-price {
   padding: 20px 0px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   #box-search-base.box-search .search-option .choose-price {
     padding: 10px 0px;
   }
@@ -168,7 +168,7 @@
 #box-search-base.box-search .class-action {
   padding: 0 12px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   #box-search-base.box-search .class-action {
     margin-bottom: 200px;
   }
@@ -183,7 +183,7 @@
 #box-search-base.box-search .pplus-mobile-top-bar {
   display: none;
 }
-@media (min-width: 0px) and (max-width: 768px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   #box-search-base.box-search .pplus-mobile-top-bar {
     display: block;
   }
@@ -222,7 +222,7 @@
   z-index: 0;
   position: relative;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .box-content {
     margin-top: 65px !important;
     position: initial;
@@ -231,12 +231,12 @@
 .box-content .box-list-header {
   margin-bottom: 45px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .box-content .box-list-header {
     margin-bottom: 10px;
   }
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .box-content .box-list-header {
     position: relative;
     z-index: 1001;
@@ -257,7 +257,7 @@
   float: left;
   width: calc(100% - 450px);
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .box-content .box-list-header .text-find .title-search {
     margin-bottom: 10px;
     max-height: 30px;
@@ -283,7 +283,7 @@
   transform: translateY(-50%);
   font-size: 14px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .box-content .box-list-header .text-find .group-oder {
     position: inherit;
     width: 100%;
@@ -299,7 +299,7 @@
   margin-left: 10px;
   cursor: pointer;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .box-content .box-list-header .text-find .group-oder .order-right {
     min-width: 70px;
     padding: 6px 10px;
@@ -326,7 +326,7 @@
   text-align: left;
   opacity: 0.35;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .box-content .box-list-header .text-find .group-oder .order-label {
     display: none;
   }
@@ -381,7 +381,7 @@
   justify-content: flex-start;
   gap: 10px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .box-content .box-list-header .text-find .action-search {
     display: none;
   }
@@ -443,7 +443,7 @@
   display: grid;
   margin-top: 15px;
 }
-@media (min-width: 0px) and (max-width: 768px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .office-popup-search3 .pplus-show-district {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -517,7 +517,7 @@
   display: grid;
   margin-top: 15px;
 }
-@media (min-width: 0px) and (max-width: 768px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .office-list-base {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -547,7 +547,7 @@
   fill: white;
   stroke: white;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .box-map.invision-map ~ .box-list-body-mobile {
     display: none !important;
   }
@@ -555,7 +555,7 @@
 .box-list-body-mobile {
   display: none;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .box-list-body-mobile {
     display: block;
     position: fixed;
@@ -632,7 +632,7 @@
     font-size: 14px;
   }
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .mobileFull {
     min-height: auto !important;
     border-top-left-radius: 30px;
@@ -648,7 +648,7 @@
     min-height: 100vh;
   }
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .mobileFull .box-list-body.drapClass {
     display: none !important;
   }
@@ -685,7 +685,7 @@
 .btn-action-search-base:hover {
   color: white;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .btn-action-search-base {
     display: none !important;
   }
@@ -751,7 +751,7 @@
 .url-content-list-children .district-name.pplus-price-pill-clear:hover a {
   color: #d9534f;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .url-content-list-children {
     display: flex;
     flex-wrap: nowrap;
@@ -989,7 +989,7 @@
   opacity: 0;
   animation: sparkle 2s infinite;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   #pplus-roam-toggle,
   #pplus-roam-panel,
   #pplus-roam-hand {
@@ -1163,7 +1163,7 @@
 .pplus-filter-bottom-bar {
   padding: 15px 15.5px 8px;
 }
-@media (min-width: 0px) and (max-width: 768px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .pplus-filter-bottom-bar {
     padding: 15px 8px 90px;
   }
@@ -1652,7 +1652,7 @@
   padding: 0;
   border: none;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   #search-tab-mobile .long-term-s3 .long-term-s3-item {
     display: inline-grid;
   }
@@ -1838,4 +1838,19 @@
 #search-tab-mobile .pplus-easyliving-box.show-data .content-data {
   height: auto;
   overflow: initial;
+}
+
+/* 24/10/2026 - Mobi Resi: PC hep (1025-1365px) - tieu de H1 chi con "100% - 450px" ben canh cum nut Can ho/Du an/Loc theo
+   (position:absolute ben phai) -> o 1025px chi ~130px, H1 bi bop thanh 7 dong (1280px: 3 dong). Cho tieu de rong het khung,
+   cum nut xuong hang ngay duoi (giong ban Van phong d1cc90b). Tu 1366px giu nguyen bo cuc 1 hang. */
+@media (min-width: 1025px) and (max-width: 1365px) {
+  .box-content .box-list-header .text-find .title-search {
+    float: none;
+    width: 100%;
+  }
+  .box-content .box-list-header .text-find .group-oder {
+    position: static;
+    transform: none;
+    margin-top: 12px;
+  }
 }

@@ -108,7 +108,7 @@ body.pplus-modal-active {
   width: 100%;
   display: flex;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite {
     display: inline-block;
     margin-top: 0px;
@@ -122,7 +122,7 @@ body.pplus-modal-active {
   background: #E9E4F4;
   min-height: calc(100vh - 160px);
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite .list-favourite {
     width: 100%;
     margin-bottom: 15px;
@@ -263,7 +263,7 @@ body.pplus-modal-active {
   width: calc(100% - 355px);
   padding: 20px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite .detail-favourite {
     width: calc(100%);
     margin-left: 0px;
@@ -276,7 +276,7 @@ body.pplus-modal-active {
   position: relative;
   border-radius: 10px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite .detail-favourite .header-f {
     height: 160px;
   }
@@ -286,7 +286,7 @@ body.pplus-modal-active {
   bottom: 40px;
   left: 40px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite .detail-favourite .header-f .header-f-right {
     display: none;
     bottom: 80px;
@@ -311,7 +311,7 @@ body.pplus-modal-active {
   right: 20px;
   bottom: 20px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite .detail-favourite .header-f .header-f-left {
     right: 0px;
     left: 0px;
@@ -326,7 +326,7 @@ body.pplus-modal-active {
   height: 40px;
   font-size: 14px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite .detail-favourite .header-f .header-f-left .see-map-favorite {
     margin-bottom: 10px;
   }
@@ -338,7 +338,7 @@ body.pplus-modal-active {
   font-size: 14px;
   margin-right: 5px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite .detail-favourite .header-f .header-f-left .export-favorite {
     margin-bottom: 10px;
   }
@@ -351,7 +351,7 @@ body.pplus-modal-active {
   padding: 8px;
   margin-right: 5px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite .detail-favourite .header-f .header-f-left .share-link {
     margin-bottom: 10px;
   }
@@ -367,12 +367,12 @@ body.pplus-modal-active {
   column-gap: 10px;
   display: grid;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite .detail-favourite .content-f .list-product-office {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 }
-@media only screen and (max-width: 1200px) and (min-width: 900px) {
+@media only screen and (max-width: 1200px) and (min-width: 1025px) {
   .content-favourite .favourite .detail-favourite .content-f .list-product-office {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -410,7 +410,7 @@ body.pplus-modal-active {
   margin-top: 100px;
   margin-bottom: 35px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite .detail-favourite .no-list .text-1 {
     margin-top: 20px;
   }
@@ -427,7 +427,7 @@ body.pplus-modal-active {
   height: calc(100vh - 225px);
   opacity: 1;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite .box-map {
     width: 100vw;
     position: fixed !important;
@@ -442,7 +442,7 @@ body.pplus-modal-active {
   width: 100%;
   height: 100%;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .content-favourite .favourite .box-map #mapfarourite {
     right: 0px;
   }
@@ -459,7 +459,7 @@ body.pplus-modal-active {
   left: -15px;
   z-index: 999;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .content-favourite .favourite .box-map .action-show-off-map {
     display: none;
   }
@@ -496,7 +496,7 @@ body.pplus-modal-active {
   z-index: 999;
   left: 0px;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .content-favourite .favourite .toggleTopGroup {
     display: block;
     position: fixed;
@@ -692,7 +692,7 @@ body.pplus-modal-active {
   max-width: 100%;
   margin-top: 10vh;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .modal-list-compare .modal-dialog {
     width: auto;
   }
@@ -701,7 +701,7 @@ body.pplus-modal-active {
   padding: 18px 55px;
   background: #F5F4F5;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .modal-list-compare .modal-dialog .modal-header {
     padding: 18px 25px;
   }
@@ -712,7 +712,7 @@ body.pplus-modal-active {
   font-weight: 500;
   color: #23182B;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .modal-list-compare .modal-dialog .modal-header .modal-title {
     font-size: 20px;
   }
@@ -720,7 +720,7 @@ body.pplus-modal-active {
 .modal-list-compare .modal-dialog .modal-body {
   padding: 40px 55px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .modal-list-compare .modal-dialog .modal-body {
     padding: 25px 25px;
   }
@@ -735,7 +735,7 @@ body.pplus-modal-active {
   border-radius: 8px;
   box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.22);
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .modal-list-compare .modal-dialog .modal-body .list-compare .item-compare img {
     width: 120px;
   }
@@ -744,7 +744,7 @@ body.pplus-modal-active {
   width: calc(100% - 210px);
   float: right;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m {
     width: calc(100% - 140px);
     margin-top: -5px;
@@ -778,7 +778,7 @@ body.pplus-modal-active {
 .modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .RateTing .RateTingContent.classC {
   color: #3E5FB4;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .RateTing .RateTingContent {
     margin-top: 0px;
   }
@@ -807,7 +807,7 @@ body.pplus-modal-active {
   font-weight: 500;
   color: #000000;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .modal-list-compare .modal-dialog .modal-body .list-compare .item-compare .item-content-m .item-content .item-price {
     display: none;
   }
@@ -888,7 +888,7 @@ body.pplus-modal-active {
   margin-bottom: 15px;
   margin-top: -15px;
 }
-@media (min-width: 0px) and (max-width: 800px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .title-group {
     margin-top: 30px;
   }
@@ -897,7 +897,7 @@ body.pplus-modal-active {
   float: left;
   margin: 20px 15px 15px 5px;
 }
-@media (min-width: 0px) and (max-width: 800px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .collection-gridbox {
     margin: 15px;
   }
@@ -934,7 +934,7 @@ body.pplus-modal-active {
   display: flex;
   justify-content: flex-end;
 }
-@media (min-width: 0px) and (max-width: 800px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .collection-toolbar {
     justify-content: flex-start;
   }
@@ -1157,7 +1157,7 @@ body.pplus-modal-active {
 .toolbox.open .dropdown-menu {
   display: block;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .collec-infos {
     padding: 0 15px;
     width: 100%;
@@ -1225,9 +1225,14 @@ body.pplus-modal-active {
   padding-left: 30px;
   height: 36px;
 }
-@media (min-width: 0px) and (max-width: 800px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .favourite-container.row {
     margin-left: 0;
     margin-right: 0;
   }
+}
+
+/* 24/10/2026 - Mobi Resi: khung trang Yeu thich rong co dinh 980px (<=1366px) lam tran ngang 768-980px (do that: tran 80-212px). */
+.center-box {
+  max-width: 100%;
 }

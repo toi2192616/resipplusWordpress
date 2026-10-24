@@ -1,4 +1,4 @@
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .gmap-search .footer {
     display: none;
   }
@@ -48,7 +48,7 @@ body {
 .main {
   min-height: 750px;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .main {
     margin-top: 85px;
   }
@@ -743,7 +743,7 @@ select.form-control {
         z-index: 1;
     }*/
 }
-@media only screen and (max-width: 1380px) and (min-width: 1024px) {
+@media only screen and (max-width: 1380px) and (min-width: 1025px) {
   .pane-left {
     width: 735px;
     padding: 25px 0px 25px 20px;
@@ -766,7 +766,7 @@ select.form-control {
   width: calc(100% - 970px);
   height: calc(100vh - 100px);
 }
-@media only screen and (max-width: 1380px) and (min-width: 1024px) {
+@media only screen and (max-width: 1380px) and (min-width: 1025px) {
   .pane-right {
     width: calc(100% - 740px);
   }
@@ -1006,7 +1006,7 @@ select.form-control {
 .no-border {
   border-right: 1px solid #ccc;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .no-border {
     border-right: 0px solid #ccc;
   }
@@ -1023,7 +1023,7 @@ select.form-control {
 .mb-0 {
   margin-bottom: 0px !important;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .hidden-mobile {
     display: none;
   }
@@ -1233,7 +1233,7 @@ input[type=number] {
   position: relative;
   top: 2px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .action-yeu-thich {
     display: none;
   }
@@ -1266,7 +1266,7 @@ input[type=number] {
   overflow: auto;
   padding: 0px 20px 25px 40px;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .box-content .box-list {
     padding: 0px 5px !important;
     position: fixed;
@@ -1289,7 +1289,7 @@ input[type=number] {
 .box-content .box-list .box-list-header {
   width: 100%;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .box-content .box-list .box-list-header {
     display: none;
   }
@@ -1301,7 +1301,7 @@ input[type=number] {
   color: #000000;
   font-weight: bold;
 }
-@media (max-width: 800px) and (min-width: 0px) {
+@media (max-width: 1024px) and (min-width: 0px) {
   .box-content .box-list .box-list-header .text-find {
     width: 100%;
   }
@@ -1324,7 +1324,7 @@ input[type=number] {
 .box-content .box-list .box-list-header .action-find .sort-list.active {
   color: #141414;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .box-content .box-list .result-box {
     min-height: 300px;
     padding: 0 10px;
@@ -1337,7 +1337,7 @@ input[type=number] {
   width: 100%;
   z-index: 99;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .box-content .box-list .box-list-body {
     position: relative;
   }
@@ -1348,7 +1348,7 @@ input[type=number] {
   color: #000000;
   opacity: 0.5;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .box-content .box-list .box-list-body .text-1 {
     display: none;
   }
@@ -1421,7 +1421,7 @@ input[type=number] {
     background-color: white;
   }
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .box-content .box-map {
     margin-top: 0;
     position: fixed;
@@ -1472,7 +1472,7 @@ input[type=number] {
   top: 7px;
   left: calc(50% - 22px);
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .box-list.init {
     min-height: 100vh;
     position: inherit;
@@ -1738,12 +1738,12 @@ input[type=number] {
   display: flex;
   justify-content: space-between;
 }
-@media only screen and (max-width: 1380px) and (min-width: 1024px) {
+@media only screen and (max-width: 1380px) and (min-width: 1025px) {
   .item-office .item-content .object--info {
     font-size: 13px;
   }
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .item-office .item-content .object--info {
     font-size: 13px;
   }
@@ -1807,12 +1807,12 @@ input[type=number] {
   font-size: 14px;
   justify-content: space-between;
 }
-@media only screen and (max-width: 1380px) and (min-width: 1024px) {
+@media only screen and (max-width: 1380px) and (min-width: 1025px) {
   .item-office .item-content .object--info-style2 {
     font-size: 13px;
   }
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .item-office .item-content .object--info-style2 {
     font-size: 13px;
   }
@@ -2002,7 +2002,7 @@ input[type=number] {
 .searching-tool-button {
   display: none;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .searching-tool-button {
     display: block;
     position: fixed;
@@ -2051,7 +2051,7 @@ input[type=number] {
   box-sizing: border-box;
   border-radius: 9px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .searching-tool {
     display: block;
   }
@@ -2117,7 +2117,7 @@ input[type=number] {
   border: none;
   background: #E1E1E1;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .searching-tool.resultOnTop {
     display: none;
   }
@@ -2145,7 +2145,7 @@ input[type=number] {
   z-index: 99;
   display: none;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .GroupMoblieActive {
     display: block;
   }
@@ -2257,7 +2257,7 @@ input[type=number] {
   padding-bottom: 6px;
   padding-left: 9px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .swiper-custom-css .swiper-button-prev {
     display: none;
   }
@@ -2285,7 +2285,7 @@ input[type=number] {
   padding-bottom: 6px;
   padding-left: 12px;
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .swiper-custom-css .swiper-button-next {
     display: none;
   }
@@ -2531,7 +2531,7 @@ input[type=number] {
   padding: 50px;
   padding-bottom: 50px;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .rentApartmentModal .modal-body,
   .registOwnerModal .modal-body,
   .registSeviceModal .modal-body {
@@ -2665,12 +2665,12 @@ input[type=number] {
   color: #000000;
   opacity: 0.75;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   iframe {
     max-width: 100%;
   }
 }
-@media only screen and (max-width: 880px) {
+@media only screen and (max-width: 1024px) {
   .slick-slider .slick-next {
     right: 0 !important;
   }
@@ -2678,12 +2678,57 @@ input[type=number] {
     left: 0 !important;
   }
 }
-@media (max-width: 800px) {
+@media (max-width: 1024px) {
   body.gmap-search .searching-tool,
   body.gmap-search .searching-tool-button {
     z-index: 1004;
   }
   body.gmap-search #search-tab-mobile {
     z-index: 1006;
+  }
+}
+
+/* ===== 24/10/2026 - Mobi Resi: 1 cong tac duy nhat <=1024px = giao dien mobile, >=1025px = PC (giong ban Van phong d1cc90b) =====
+   Luoi an toan chong tran ngang: 1 phan tu tran (vd iframe ban do co width co dinh) khien trinh duyet cam ung thu nho CA trang
+   (do that 900-1025px: tran 71-141px). Phai dat tren CA html va body moi chan duoc. "clip" (khong phai "hidden") de khong tao
+   khung cuon moi - position:sticky van chay. */
+html,
+body {
+  overflow-x: clip;
+}
+/* 768-1024px: giao dien mobile (menu duoi, nut Ban do/Danh sach...) nhung cot Bootstrap col-md-* (bat tu 768px) van chia cot
+   kieu PC -> danh sach chi chiem 58% man hinh (con lai de trong vi ban do an sau nut), trang chi tiet/blog/dich vu/chu nha con cot
+   phai bi bop (vd khung gia "3.27 / 5$ / thán / g"). Cho cac khung chinh ve 1 cot nhu dien thoai. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .box-content .box-list.init.col-md-7,
+  .box-content .box-map.col-md-5,
+  .office-detail > .col-md-8.detail-content,
+  .office-detail > .col-md-4.detail-right,
+  .datalist > .container > .row > .col-md-8,
+  .datalist > .container > .row > .col-md-4,
+  .service-box-1 > .col-md-9,
+  .service-box-1 > .col-md-3,
+  .owner-box > .col-md-9,
+  .owner-box > .col-md-3 {
+    flex: 0 0 100%;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+/* So cot luoi danh sach theo DO RONG THE (yeu cau nguoi dung 24/10/2026): hang 3 o "Dien tich / Phong tam / Phong ngu" tren the
+   chi nam gon 1 dong khi the rong >= ~245px (do that, tieng Viet: 247px khong gay dong, 232-233px gay 36-48/72 o; tieng Anh ngan
+   hon). Bop 3 cot qua muc lam lech thiet ke the -> giam cot thay vi bop the:
+   - May tinh bang (danh sach da chiem het chieu ngang, xem tren): 3 cot tu 820px (834px -> the 255px); 766-819px giu 2 cot
+     (rule <=1024px co san), <=765px 1 cot nhu dien thoai.
+   - PC co ban do canh ben (cot danh sach chi 58%): 3 cot tu 1440px (the 247px); 1025-1439px 2 cot (truoc day 3 cot, the chi
+     166-232px). */
+@media (min-width: 820px) and (max-width: 1024px) {
+  .box-content .box-list .box-list-body .list-product-office {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1025px) and (max-width: 1439px) {
+  .box-content .box-list .box-list-body .list-product-office {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

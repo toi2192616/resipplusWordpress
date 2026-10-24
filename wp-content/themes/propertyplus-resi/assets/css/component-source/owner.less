@@ -34,7 +34,7 @@
                 position: relative;
                 right: -55%;
 
-                @media only screen and (max-width: 800px) and (min-width: 0px) {
+                @media only screen and (max-width: 1024px) and (min-width: 0px) {
                     width: 100%;
                     height: auto;
                     right: 0;
@@ -48,7 +48,7 @@
                 max-width: 480px;
                 padding-right: 30px;
 
-                @media only screen and (max-width: 800px) and (min-width: 0px) {
+                @media only screen and (max-width: 1024px) and (min-width: 0px) {
                     position: initial;
                     padding: 10px;
                 }
@@ -243,7 +243,7 @@
             opacity: 0.35;
         }
 
-        @media only screen and (max-width: 800px) and (min-width: 0px) {
+        @media only screen and (max-width: 1024px) and (min-width: 0px) {
             .form-group {
                 display: flex;
             }
@@ -279,7 +279,7 @@
     width: 50%;
     float: left;
 
-    @media only screen and (max-width: 800px) and (min-width: 0px) {
+    @media only screen and (max-width: 1024px) and (min-width: 0px) {
         width: 100%;
     }
 }
@@ -338,4 +338,14 @@
 
 .margin-top-30 {
     margin-top: 30px !important;
+}
+
+/* 24/10/2026 - Mobi Resi: anh minh hoa banner Chu nha (goc 406x306) o giao dien mobile "width:100%" - dien thoai vua dung, nhung
+   may tinh bang (768-1024px) phong to toi ~940px, mo. Gioi han dung kich thuoc goc, can giua. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .owner-box .service-1 .service-1-banner img {
+    display: block;
+    max-width: 406px;
+    margin: 0 auto;
+  }
 }

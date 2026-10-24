@@ -523,11 +523,11 @@ add_action('wp_head', function () {
         printf('<link rel="dns-prefetch" href="//%1$s" />' . "\n", esc_attr($host));
     }
 
-    // Preload anh hero trang chu (LCP) - dung dung <source> WebP trong front-page.php (nguong 800px); Angular goc
+    // Preload anh hero trang chu (LCP) - dung dung <source> WebP trong front-page.php (nguong 768px - 24/10/2026: may tinh bang 769-1024 dung giao dien mobile nhung anh ngang 1920 phu kin khung, anh doc 600x1000 phong to se mo); Angular goc
     // cung preload anh mobile trong index.html. fetchpriority=high de trinh duyet tai truoc CSS/JS khac.
     if (is_front_page()) {
         $img = PPLUS_THEME_URI . '/assets/Content/Img/';
-        printf('<link rel="preload" as="image" href="%s" type="image/webp" media="(max-width: 800px)" fetchpriority="high" />' . "\n", esc_url($img . 'home-600x1000.webp'));
-        printf('<link rel="preload" as="image" href="%s" type="image/webp" media="(min-width: 801px)" fetchpriority="high" />' . "\n", esc_url($img . 'home-1920x1080.webp'));
+        printf('<link rel="preload" as="image" href="%s" type="image/webp" media="(max-width: 768px)" fetchpriority="high" />' . "\n", esc_url($img . 'home-600x1000.webp'));
+        printf('<link rel="preload" as="image" href="%s" type="image/webp" media="(min-width: 769px)" fetchpriority="high" />' . "\n", esc_url($img . 'home-1920x1080.webp'));
     }
 }, 1);

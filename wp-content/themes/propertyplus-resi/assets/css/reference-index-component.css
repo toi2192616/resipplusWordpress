@@ -25,7 +25,7 @@
   display: inline-block;
   margin-left: 10px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .header-right .data-search-price {
     overflow: auto !important;
     margin-right: -24px !important;
@@ -68,7 +68,7 @@
   margin-top: 80px;
   font-family: 'SF Pro Display';
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .datalist .data-content {
     margin-top: 20px;
     margin-bottom: 80px;
@@ -123,7 +123,7 @@
   margin: auto;
   display: block;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .datalist .data-content img {
     width: 100% !important;
     height: auto !important;
@@ -133,7 +133,7 @@
   margin: 0px;
   margin-top: 30px;
 }
-@media (min-width: 1024px) and (max-width: 1380px) {
+@media (min-width: 1025px) and (max-width: 1380px) {
   .datalist .data-content .content-1 {
     margin-top: 15px;
   }
@@ -159,7 +159,7 @@
   top: 0;
   background-image: linear-gradient(to bottom, #7ed858, #e7838b, #737aa0, #5270fb);
 }
-@media (min-width: 1024px) and (max-width: 1380px) {
+@media (min-width: 1025px) and (max-width: 1380px) {
   .datalist .container {
     width: 1250px !important;
   }
@@ -258,7 +258,7 @@
 #web-content {
   display: block;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   #web-content {
     position: fixed;
     width: 100vw;
@@ -428,7 +428,7 @@
 .banner-blog .img-responsive {
   min-height: 150px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .banner-blog .banner-blog-title {
     top: 30% !important;
   }

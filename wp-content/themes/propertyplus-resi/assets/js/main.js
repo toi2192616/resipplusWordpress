@@ -17,12 +17,15 @@
         // doi chieu anh chup voi propertyplus.com.vn (hien 3 the/hang thay vi 4).
         $('.offices-col').slick($.extend({
           slidesToShow: 4, slidesToScroll: 1, infinite: true, autoplaySpeed: 5000, autoplay: true, lazyLoad: 'ondemand',
+          // 24/10/2026 (Mobi Resi: <=1024px = giao dien mobile, >=1025px = PC; Slick ap dung "breakpoint: X" khi do rong < X):
+          // - <1025px: ban goc mobile (LoadList() home.component.ts + .silder-aparment-loop max-width:290px) - 1 slide rong
+          //   290px + lo dau slide ke tiep (peek), KHONG mui ten; variableWidth de Slick dung dung 290px (xem home.less).
+          //   Truoc day chi <800px, 800-1024px hien 1 the 290px giua khoang trong / 4 the hep.
+          // - 1025-1279px: 3 the. 4 the o day chi rong 215-220px -> hang "Dien tich / Phong tam / Phong ngu" gay dong
+          //   12-13/24 o (do that); hang nay can the >= ~245px. Tu 1280px 4 the rong >= 265px, khong gay.
           responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 1, slidesToScroll: 1 } },
-            // <=800px: ban goc (LoadList() home.component.ts + .silder-aparment-loop max-width:290px) chi
-            // 1 slide rong 290px + de lo dau slide ke tiep (peek), KHONG co mui ten (khong khai bao
-            // navigation) - variableWidth de Slick dung dung be rong 290px cua moi slide (xem home.less).
-            { breakpoint: 800, settings: { slidesToShow: 1, slidesToScroll: 1, variableWidth: true, arrows: false } },
+            { breakpoint: 1280, settings: { slidesToShow: 3, slidesToScroll: 1 } },
+            { breakpoint: 1025, settings: { slidesToShow: 1, slidesToScroll: 1, variableWidth: true, arrows: false } },
           ],
         }, slickArrows));
       }
@@ -30,7 +33,7 @@
         $('.item-blog').slick($.extend({
           slidesToShow: 4, slidesToScroll: 1, infinite: true, autoplaySpeed: 10000, autoplay: true, lazyLoad: 'ondemand',
           responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+            { breakpoint: 1025, settings: { slidesToShow: 2, slidesToScroll: 1 } }, // 24/10/2026: 1024 -> 1025 (iPad ngang = mobile)
             { breakpoint: 768, settings: { slidesToShow: 1, slidesToScroll: 1 } },
             { breakpoint: 480, settings: { slidesToShow: 1, slidesToScroll: 1 } },
           ],
@@ -46,7 +49,7 @@
           slidesToShow: 4, slidesToScroll: 1, infinite: true, autoplaySpeed: 10000, autoplay: true, lazyLoad: 'ondemand',
           responsive: [
             // 24/9: ban goc Swiper breakpoints {0:N,1024:M} (home.component.ts) - duoi 1024px CO DINH N slide, KHONG co mui ten nhin thay tren mobile (nut swiper-button-* nam ngoai khung left/right:-65px).
-            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
+            { breakpoint: 1025, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
           ],
         }, slickArrows));
       }
@@ -56,7 +59,7 @@
         $('.silder-nhanvien-track').slick($.extend({
           slidesToShow: 4, slidesToScroll: 1, infinite: true, autoplaySpeed: 6000, autoplay: true, lazyLoad: 'ondemand',
           responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
+            { breakpoint: 1025, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
           ],
         }, slickArrows));
       }
@@ -64,7 +67,7 @@
         $('.partner-silder-track').slick($.extend({
           slidesToShow: 6, slidesToScroll: 1, infinite: true, autoplaySpeed: 5000, autoplay: true, lazyLoad: 'ondemand',
           responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
+            { breakpoint: 1025, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
           ],
         }, slickArrows));
       }
@@ -72,15 +75,18 @@
         $('.customer-silder-track').slick($.extend({
           slidesToShow: 6, slidesToScroll: 1, infinite: true, autoplaySpeed: 5000, autoplay: true, lazyLoad: 'ondemand',
           responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
+            { breakpoint: 1025, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
           ],
         }, slickArrows));
       }
       if ($('.cuisines-silder-track').length) {
         $('.cuisines-silder-track').slick($.extend({
           slidesToShow: 3, slidesToScroll: 1, infinite: true, autoplaySpeed: 7000, autoplay: true, lazyLoad: 'ondemand',
+          // 24/10/2026: may tinh bang (768-1024px, giao dien mobile) 2 the/luot - 1 the thi the (co theo anh) nam lech trai, nua
+          // khung trong; dien thoai (<768px) giu 1 the nhu cu.
           responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false } },
+            { breakpoint: 1025, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
+            { breakpoint: 768, settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false } },
           ],
         }, slickArrows));
       }
@@ -93,7 +99,7 @@
         $('.blog-silder-loop').slick($.extend({
           slidesToShow: 4, slidesToScroll: 1, infinite: true, autoplaySpeed: 8000, autoplay: true, lazyLoad: 'ondemand',
           responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+            { breakpoint: 1025, settings: { slidesToShow: 2, slidesToScroll: 1 } },
           ],
         }, slickArrows));
       }
@@ -101,7 +107,7 @@
         $('.silder-about-loop').slick($.extend({
           slidesToShow: 4, slidesToScroll: 1, infinite: true, autoplaySpeed: 8000, autoplay: true, lazyLoad: 'ondemand',
           responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+            { breakpoint: 1025, settings: { slidesToShow: 2, slidesToScroll: 1 } },
           ],
         }, slickArrows));
       }

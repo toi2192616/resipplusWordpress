@@ -2,12 +2,12 @@
   margin: auto;
   padding: 0px 0px 30px 0px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail {
     padding: 0px 0px 30px 0px;
   }
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .office-detail .btn-check-like {
     display: none;
   }
@@ -16,7 +16,7 @@
   display: flex;
   margin: 25px 0px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .content-detail-1 {
     display: inline-block;
     position: relative;
@@ -27,7 +27,7 @@
 .office-detail .content-detail-1 .title-1 {
   width: calc(100% - 170px);
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .content-detail-1 .title-1 {
     width: 100%;
   }
@@ -43,7 +43,7 @@
   display: initial;
   font-weight: 500;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .content-detail-1 .title-1 .title-1-c h1 {
     font-size: 18px;
   }
@@ -59,7 +59,7 @@
   top: 0px;
   margin-left: 10px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .content-detail-1 .title-1 .title-1-c label {
     position: absolute;
     top: 0px;
@@ -70,12 +70,12 @@
   font-size: 16px;
   color: #757575;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .content-detail-1 .title-1 .title-adress {
     font-size: 15px;
   }
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .content-detail-1 .actine-share {
     position: absolute;
     top: 0px;
@@ -199,7 +199,7 @@
   margin-bottom: 25px;
   font-size: 14px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .detail-content .project-info {
     font-size: 16px;
   }
@@ -230,13 +230,13 @@
     padding: 2px 10px;
   }
 }
-@media only screen and (max-width: 1366px) and (min-width: 802px) {
+@media only screen and (max-width: 1366px) and (min-width: 1025px) {
   .office-detail .detail-content .group-content .info-grid {
     grid-template-columns: calc(33.33% - 13px) calc(33.33% - 13px) calc(33.33% - 13px);
     -ms-grid-template-columns: calc(33.33% - 13px) calc(33.33% - 13px) calc(33.33% - 13px);
   }
 }
-@media only screen and (max-width: 800px) and (min-width: 0px) {
+@media only screen and (max-width: 1024px) and (min-width: 0px) {
   .office-detail .detail-content .group-content .info-grid {
     grid-template-columns: calc(50% - 7.5px) calc(50% - 7.5px);
     -ms-grid-template-columns: calc(50% - 7.5px) calc(50% - 7.5px);
@@ -252,7 +252,7 @@
   color: #000000;
   opacity: 0.75;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .detail-content .group-content ._header ._titlePage {
     font-size: 18px;
   }
@@ -262,7 +262,7 @@
   right: 0px;
   top: -10px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .detail-content .group-content ._header ._contentid {
     position: inherit;
     margin-top: 20px;
@@ -281,7 +281,7 @@
   font-size: 22px;
   color: #264879;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .detail-content .group-content ._header ._contentid .content-id {
     font-size: 14px;
     margin-left: 6px;
@@ -360,7 +360,7 @@
   border-radius: 10px;
   padding: 30px 50px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .detail-content .group-content .apart_service-content-1 .apart_service-data-1 {
     padding: 20px 10px;
   }
@@ -380,7 +380,7 @@
   border-radius: 10px;
   padding: 30px 50px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .detail-content .group-content .apart_service-content-2 .apart_service-data-2 {
     padding: 20px 10px;
   }
@@ -439,7 +439,7 @@
   padding: 20px;
   margin-top: -20px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .detail-right {
     padding: 12px;
   }
@@ -456,7 +456,7 @@
   margin-right: -15px;
   box-shadow: 0px 37px 47px -20px rgba(0, 0, 0, 0.3);
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .detail-right .card {
     margin-right: 0px;
   }
@@ -593,7 +593,7 @@
   height: 50px;
   border-radius: 10px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .office-detail .detail-right .card .table-mobile {
     display: none;
   }
@@ -615,7 +615,7 @@
   margin-bottom: 15px;
   margin-top: 10px;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .photoContainer {
     height: auto;
     min-height: fit-content;
@@ -635,7 +635,7 @@
   width: 50%;
   height: 100%;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .photoContainer .c1 {
     width: 100%;
     height: auto;
@@ -649,7 +649,7 @@
   padding-left: 8px;
   height: 100%;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .photoContainer .c2 {
     display: none;
   }
@@ -662,7 +662,7 @@
   padding-left: 8px;
   height: 100%;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .photoContainer .c3 {
     display: none;
   }
@@ -670,7 +670,7 @@
 .photoContainer .photo1-ctn {
   height: 100%;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .photoContainer .photo1-ctn {
     height: auto;
   }
@@ -768,7 +768,7 @@
   overflow: auto !important;
   scroll-snap-type: x mandatory !important;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .photoContainer-mobile {
     display: flex;
   }
@@ -790,7 +790,7 @@
 .footer-detail {
   display: none;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .footer-detail {
     display: block;
     position: fixed;
@@ -965,7 +965,7 @@
   border-radius: 8px;
   padding: 30px 15px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .data-content {
     margin-bottom: 20px;
   }
@@ -1024,7 +1024,7 @@
   margin: auto;
   display: block;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .data-content img:not(.icon) {
     width: 100% !important;
     height: auto !important;
@@ -1040,7 +1040,7 @@
   overflow: hidden;
   background-image: linear-gradient(white, white, white, #9a9a9ab3);
 }
-@media (min-width: 1024px) and (max-width: 1380px) {
+@media (min-width: 1025px) and (max-width: 1380px) {
   .data-content .content-1 {
     margin-top: 15px;
   }
@@ -1079,7 +1079,7 @@
   column-gap: 60px;
   display: grid;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .data-content-vp {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -1121,7 +1121,7 @@
   font-size: 18px;
   color: #000000;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .result-box-detail {
     overflow: auto !important;
   }
@@ -1134,7 +1134,7 @@
   column-gap: 20px;
   display: grid;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .result-box-detail .list-product-office {
     margin-top: 25px;
     align-items: center;
@@ -1181,7 +1181,7 @@
   transition: 0.3s ease-in-out;
   display: none;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .action-close-map {
     display: block;
     top: 20px;
@@ -1195,7 +1195,7 @@
 .rentApartmentModal .modal-dialog {
   width: 550px;
 }
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
   .rentApartmentModal .modal-dialog {
     width: 100%;
   }
@@ -1204,7 +1204,7 @@
 .pplus-back-btn {
   display: none;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   body.pplus-has-price-bar {
     padding-bottom: 84px;
   }
@@ -1292,5 +1292,15 @@
   .pplus-back-btn:active {
     color: #FFFFFF;
     text-decoration: none;
+  }
+}
+
+/* 24/10/2026 - Mobi Resi (<=1024px = giao dien mobile): khung gia/tu van cot phai (".card", max-width 350px + float:right) sau khi
+   cot ve 1 hang (layout.css) bi dat lech phai chi 350px tren may tinh bang - cho rong het cot nhu cac khoi khac cua trang. Dien
+   thoai (<=~400px) von da gan het chieu ngang nen khong doi. */
+@media only screen and (max-width: 1024px) {
+  .office-detail .detail-right .card {
+    max-width: 100%;
+    float: none;
   }
 }

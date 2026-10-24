@@ -55,7 +55,7 @@
 
     // Duoi 768px: an han nut tron nay - da co ".title-seach"/".close-search" o tren cung panel
     // lam cach dong dung theo ban goc that (khong con can nut tron nay tren mobile nua).
-    @media (min-width: 0px) and (max-width: 768px) {
+    @media (min-width: 0px) and (max-width: 1024px) {
         display: none !important;
     }
 }
@@ -94,7 +94,7 @@
     cursor: pointer;
     transition: 0.3s ease-in-out;
 
-    @media (min-width: 0px) and (max-width: 880px) {
+    @media (min-width: 0px) and (max-width: 1024px) {
         display: block;
         top: 20px;
         left: 15px;
@@ -113,7 +113,7 @@
 .action-close-map-label {
     display: none;
 
-    @media (min-width: 0px) and (max-width: 880px) {
+    @media (min-width: 0px) and (max-width: 1024px) {
         display: flex;
         align-items: center;
         gap: 6px;
@@ -183,7 +183,7 @@
         transition: 0.7s ease-in-out;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
         width: 100vw;
         right: -100%;
 
@@ -210,7 +210,7 @@
         .choose-price {
             padding: 20px 0px;
 
-            @media (min-width: 0px) and (max-width: 880px) {
+            @media (min-width: 0px) and (max-width: 1024px) {
                 padding: 10px 0px;
             }
         }
@@ -249,7 +249,7 @@
     .class-action {
         padding: 0 12px;
 
-        @media (min-width: 0px) and (max-width: 880px) {
+        @media (min-width: 0px) and (max-width: 1024px) {
             margin-bottom: 200px;
         }
     }
@@ -270,7 +270,7 @@
     .pplus-mobile-top-bar {
         display: none;
 
-        @media (min-width: 0px) and (max-width: 768px) {
+        @media (min-width: 0px) and (max-width: 1024px) {
             display: block;
         }
     }
@@ -335,7 +335,7 @@
     // the (!important vs !important, thu tu sau de) - port dung ca 2 de giu dung hanh vi that.
     position: relative;
 
-    @media (min-width: 0px) and (max-width: 880px) {
+    @media (min-width: 0px) and (max-width: 1024px) {
         margin-top: 65px !important;
         position: initial;
     }
@@ -343,7 +343,7 @@
     .box-list-header {
         margin-bottom: 45px;
 
-        @media (min-width: 0px) and (max-width: 880px) {
+        @media (min-width: 0px) and (max-width: 1024px) {
             margin-bottom: 10px;
         }
 
@@ -361,7 +361,7 @@
         // nen do de len tren ca breadcrumb/tieu de tren mobile (bug thuc te da bao cao). Dung 1001
         // (khong phai 1000, trung voi .box-map che do ban do - xem layout.css) de vua cao hon
         // header vua khong trung voi cac z-index mobile khac.
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             position: relative;
             z-index: 1001;
             background-color: #fff;
@@ -390,7 +390,7 @@
                 float: left;
                 width: calc(100% - 450px);
 
-                @media (min-width: 0px) and (max-width: 880px) {
+                @media (min-width: 0px) and (max-width: 1024px) {
                     margin-bottom: 10px;
                     max-height: 30px;
                     overflow: hidden;
@@ -433,7 +433,7 @@
                 transform: translateY(-50%);
                 font-size: 14px;
 
-                @media (min-width: 0px) and (max-width: 880px) {
+                @media (min-width: 0px) and (max-width: 1024px) {
                     position: inherit;
                     width: 100%;
                     top: 5px;
@@ -451,7 +451,7 @@
                     margin-left: 10px;
                     cursor: pointer;
 
-                    @media (min-width: 0px) and (max-width: 880px) {
+                    @media (min-width: 0px) and (max-width: 1024px) {
                         min-width: 70px;
                         padding: 6px 10px;
                     }
@@ -481,7 +481,7 @@
                     text-align: left;
                     opacity: 0.35;
 
-                    @media (min-width: 0px) and (max-width: 880px) {
+                    @media (min-width: 0px) and (max-width: 1024px) {
                         display: none;
                     }
                 }
@@ -597,7 +597,7 @@
                 // thua chi la du 0px cua rieng nut dau (".btn-action-search-base") nen khong gay lech).
                 gap: 10px;
 
-                @media (min-width: 0px) and (max-width: 880px) {
+                @media (min-width: 0px) and (max-width: 1024px) {
                     display: none;
                 }
 
@@ -707,7 +707,7 @@
         // Duoi 768px: tra lai 3 cot dung ban goc Angular/propertyplus.vn that (4 cot lam ten dai
         // nhu "Bắc Từ Liêm" bi vo dong tren man hinh hep - da xac nhan qua screenshot thuc te tu
         // nguoi dung, doi chieu voi search-base.component.less dong 320 ben Angular goc).
-        @media (min-width: 0px) and (max-width: 768px) {
+        @media (min-width: 0px) and (max-width: 1024px) {
             grid-template-columns: repeat(3, minmax(0, 1fr));
         }
 
@@ -734,7 +734,7 @@
             margin-left: 3%;
         }
 
-        @media (min-width: 0px) and (max-width: 880px) {}
+        @media (min-width: 0px) and (max-width: 1024px) {}
 
         .district-item {
             margin-bottom: 15px;
@@ -775,7 +775,7 @@
     display: grid;
     margin-top: 15px;
 
-    @media (min-width: 0px) and (max-width: 880px) {}
+    @media (min-width: 0px) and (max-width: 1024px) {}
 
     .search-rating {
         margin-bottom: 15px;
@@ -812,7 +812,7 @@
     // Duoi 768px: tra lai 1 cot (2 nut xep chong) dung ban goc Angular/propertyplus.vn that - da
     // xac nhan qua kiem tra truc tiep tren live site (Van phong truyen thong/Van phong tron goi
     // xep chong full-width, khong canh nhau).
-    @media (min-width: 0px) and (max-width: 768px) {
+    @media (min-width: 0px) and (max-width: 1024px) {
         grid-template-columns: repeat(1, minmax(0, 1fr));
     }
 
@@ -866,7 +866,7 @@
 // dinh trang vao la che do danh sach, dai the van hien de len, trung lap voi luoi san pham binh
 // thuong ben duoi) - dung selector anh em (~), khong can JS, tu dong an/hien theo dung class
 // ".invision-map" ma nut "Bản đồ"/nut "<" da toggle san.
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
     .box-map.invision-map ~ .box-list-body-mobile {
         display: none !important;
     }
@@ -875,7 +875,7 @@
 .box-list-body-mobile {
     display: none;
 
-    @media (min-width: 0px) and (max-width: 880px) {
+    @media (min-width: 0px) and (max-width: 1024px) {
         display: block;
         position: fixed;
         // 24/9: khop Angular goc (search-base.component.less dong 540-632: the 300px, ho 1 phan the ke
@@ -972,7 +972,7 @@
 }
 
 .mobileFull {
-    @media (min-width: 0px) and (max-width: 880px) {
+    @media (min-width: 0px) and (max-width: 1024px) {
         min-height: auto !important;
         border-top-left-radius: 30px;
         border-top-right-radius: 30px;
@@ -989,7 +989,7 @@
     }
 
     .box-list-body {
-        @media (min-width: 0px) and (max-width: 880px) {
+        @media (min-width: 0px) and (max-width: 1024px) {
             &.drapClass {
                 display: none !important;
             }
@@ -1032,7 +1032,7 @@
         color: white;
     }
 
-    @media (min-width: 0px) and (max-width: 880px) {
+    @media (min-width: 0px) and (max-width: 1024px) {
         display: none !important;
     }
 }
@@ -1124,7 +1124,7 @@
         }
     }
 
-    @media (min-width: 0px) and (max-width: 880px) {
+    @media (min-width: 0px) and (max-width: 1024px) {
         display: flex;
         flex-wrap: nowrap;
         overflow-x: auto;
@@ -1405,7 +1405,7 @@
 // duoi 880px) nhung 2 phan tu con lai (panel + nut "ban tay") KHONG nam trong do (la sibling cua
 // ".box-list"/".box-map") nen truoc day van co the tu hien qua restoreFromUrl() (khi mo 1 URL da
 // co san ne_lat/sw_lat... tren man hinh mobile) du nut mo panel da bi an.
-@media (min-width: 0px) and (max-width: 880px) {
+@media (min-width: 0px) and (max-width: 1024px) {
     #pplus-roam-toggle,
     #pplus-roam-panel,
     #pplus-roam-hand {
@@ -1634,7 +1634,7 @@
     // du 65px (chieu cao thanh dieu huong) + 25px khoang trong theo yeu cau nguoi dung.
     // Padding trai/phai giu nguyen 8px tren mobile (khong doi theo ban PC) vi nguoi dung xac
     // nhan giao dien mobile da on.
-    @media (min-width: 0px) and (max-width: 768px) {
+    @media (min-width: 0px) and (max-width: 1024px) {
         padding: 15px 8px 90px;
     }
 }
@@ -2258,7 +2258,7 @@
             padding: 0;
             border: none;
 
-            @media only screen and (max-width: 800px) {
+            @media only screen and (max-width: 1024px) {
                 display: inline-grid;
             }
 
@@ -2447,4 +2447,19 @@
             }
         }
     }
+}
+
+/* 24/10/2026 - Mobi Resi: PC hep (1025-1365px) - tieu de H1 chi con "100% - 450px" ben canh cum nut Can ho/Du an/Loc theo
+   (position:absolute ben phai) -> o 1025px chi ~130px, H1 bi bop thanh 7 dong (1280px: 3 dong). Cho tieu de rong het khung,
+   cum nut xuong hang ngay duoi (giong ban Van phong d1cc90b). Tu 1366px giu nguyen bo cuc 1 hang. */
+@media (min-width: 1025px) and (max-width: 1365px) {
+  .box-content .box-list-header .text-find .title-search {
+    float: none;
+    width: 100%;
+  }
+  .box-content .box-list-header .text-find .group-oder {
+    position: static;
+    transform: none;
+    margin-top: 12px;
+  }
 }

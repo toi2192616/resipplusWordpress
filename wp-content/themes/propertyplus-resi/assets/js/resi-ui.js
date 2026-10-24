@@ -8,7 +8,7 @@
     'use strict';
 
     function isMobile() {
-        return window.matchMedia && window.matchMedia('(max-width: 991px)').matches;
+        return window.matchMedia && window.matchMedia('(max-width: 1024px)').matches; // 24/10/2026: cong tac mobile/PC duy nhat 1024/1025 (giong ban Van phong)
     }
 
     $(function () {
