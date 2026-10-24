@@ -48,7 +48,13 @@ get_template_part('parts/url-box-content', null, [
 ?>
 <div class="about-us-tab">
     <div class="a-u-banner">
-        <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/f669e1eff6ee2cb075ff.jpg'); ?>" class="img-responsive a-u-banner-img" alt="Property Plus" />
+        <?php // 24/10/2026: anh banner (phan tu LCP trang nay) goc 3200x2133 nang 1,2MB -> srcset 800/1600 (WebP ~81/244KB, JPG
+        // du phong), giu ban goc cho man hinh rat rong; width/height de giu cho (CLS), fetchpriority=high.
+        $au_img = get_template_directory_uri() . '/assets/Content/ImgAboutUs/f669e1eff6ee2cb075ff'; ?>
+        <picture>
+            <source type="image/webp" srcset="<?php echo esc_url($au_img . '-800.webp'); ?> 800w, <?php echo esc_url($au_img . '-1600.webp'); ?> 1600w" sizes="100vw" />
+            <img src="<?php echo esc_url($au_img . '.jpg'); ?>" srcset="<?php echo esc_url($au_img . '-800.jpg'); ?> 800w, <?php echo esc_url($au_img . '-1600.jpg'); ?> 1600w, <?php echo esc_url($au_img . '.jpg'); ?> 3200w" sizes="100vw" width="3200" height="2133" class="img-responsive a-u-banner-img" alt="Property Plus" fetchpriority="high" />
+        </picture>
         <div class="a-u-banner-backgroud"></div>
         <div class="a-u-banner-t">
             <h1><?php echo esc_html(pplus_t('Về chúng tôi', 'About us')); ?></h1>
@@ -120,7 +126,7 @@ get_template_part('parts/url-box-content', null, [
     <div class="a-u-c-3">
         <div class="row">
             <div class="col-md-6 a-u-c-3-img p-0 hidden-pc">
-                <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/Group1217.png'); ?>" alt="Phạm Văn Lợi" loading="lazy" />
+                <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/Group1217.jpg'); ?>" alt="Phạm Văn Lợi" loading="lazy" />
             </div>
             <div class="col-md-6 a-u-c-3-content">
                 <div class="a-u-c-2-c1"><?php echo esc_html(pplus_t('Nhà sáng lập & Chủ tịch HĐQT', 'Founder & Chairman')); ?></div>
@@ -133,12 +139,12 @@ get_template_part('parts/url-box-content', null, [
                 </div>
             </div>
             <div class="col-md-6 a-u-c-3-img hidden-moblie p-0">
-                <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/Group1217.png'); ?>" alt="Phạm Văn Lợi" loading="lazy" />
+                <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/Group1217.jpg'); ?>" alt="Phạm Văn Lợi" loading="lazy" />
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 p-0 a-u-c-3-img">
-                <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/Group1218.png'); ?>" alt="Trần Thị Hoa" loading="lazy" />
+                <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/Group1218.jpg'); ?>" alt="Trần Thị Hoa" loading="lazy" />
             </div>
             <div class="col-md-6 a-u-c-3-content">
                 <div class="a-u-c-2-c1"><?php echo esc_html(pplus_t('Giám đốc kinh doanh', 'Sales Director')); ?></div>

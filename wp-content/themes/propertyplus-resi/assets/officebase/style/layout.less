@@ -2014,6 +2014,12 @@ input[type=number] {
         box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.22);
     }
 
+    /* 24/10/2026: anh the khong dung ti le 4:3 bi KEO MEO (Lighthouse "image-aspect-ratio", vd carousel trang chu) -> cat vua khung
+       nhu trang danh sach da lam (.list-product-office .item-office img). Chi anh the (con truc tiep), khong dung icon tim. */
+    > img {
+        object-fit: cover;
+    }
+
     .item-like {
         position: absolute;
         bottom: 15px;

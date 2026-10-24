@@ -244,7 +244,7 @@ get_header();
                     </div>
                     <div class="ttcoban">
                         <div class="from-icon">
-                            <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/Img/icon-detail-1.png'); ?>" width="100" alt="tyle" style="width: 45px; height:auto; margin-left: 8px; margin-top: 6px;" />
+                            <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/Img/icon-detail-1.png'); ?>" width="100" height="100" alt="" style="width: 45px; height:auto; margin-left: 8px; margin-top: 6px;" />
                         </div>
                         <div class="ttcoban_info">
                             <div class="ttcoban_name"><?php echo esc_html(pplus_localize('Tiện nghi')); ?></div>
@@ -339,7 +339,7 @@ get_header();
                     <div class="_titleInfo">
                         <?php echo esc_html(pplus_localize('Tiện ích xung quanh')); ?>
                         <?php if (!empty($special_rest)) : ?>
-                            <a class="utilities_link" data-bs-toggle="collapse" data-bs-target="#SpecialLocations" aria-expanded="false" aria-controls="SpecialLocations">
+                            <a class="utilities_link" href="#SpecialLocations" role="button" data-bs-toggle="collapse" data-bs-target="#SpecialLocations" aria-expanded="false" aria-controls="SpecialLocations">
                                 <?php echo esc_html(pplus_localize('Xem thêm')); ?>
                                 <i class="fa fa-angle-double-right"></i>
                             </a>
@@ -374,7 +374,7 @@ get_header();
                         <?php if (!empty($special_rest)) : ?>
                             <div id="SpecialLocations" class="collapse">
                                 <div class="_titleInfo" style="width: 100%; height: 15px;">
-                                    <a class="utilities_link customCollape" data-bs-toggle="collapse" data-bs-target="#SpecialLocations">
+                                    <a class="utilities_link customCollape" href="#SpecialLocations" role="button" data-bs-toggle="collapse" data-bs-target="#SpecialLocations">
                                         <?php echo esc_html(pplus_localize('Đóng')); ?>
                                         <i class="fa fa-angle-double-left"></i>
                                     </a>

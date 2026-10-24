@@ -9,7 +9,8 @@ if (!defined('ABSPATH')) exit;
 $img = get_template_directory_uri() . '/assets/Content/ImgOwer/';
 ?>
 <div class="service-1-banner">
-    <img class="img-responsive" src="<?php echo esc_url($img . 'Thinking_Monochromatic 1.png'); ?>" alt="" loading="lazy" />
+    <?php // 24/10/2026: anh banner dau trang - khong lazy + width/height (giong service-the-management.php). ?>
+    <img class="img-responsive" src="<?php echo esc_url($img . 'Thinking_Monochromatic 1.png'); ?>" alt="" width="406" height="306" fetchpriority="high" />
     <div class="service-1-banner-c">
         <h1><?php echo esc_html(pplus_localize('Bạn đang băn khoăn')); ?>?</h1>
         <h3><?php echo esc_html(pplus_localize('Property Plus sẽ làm được gì cho bạn?')); ?></h3>

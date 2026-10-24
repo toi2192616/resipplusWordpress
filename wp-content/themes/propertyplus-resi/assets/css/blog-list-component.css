@@ -62,6 +62,7 @@
 .customer-list .customer-item img {
   width: 100%;
   aspect-ratio: 4/3;
+  object-fit: cover; /* 24/10/2026: anh bai viet khong phai 4:3 (vd anh vuong) bi keo meo -> cat vua khung (Office b63c0d6) */
   border-radius: 6px;
   transition: 0.3s all;
 }

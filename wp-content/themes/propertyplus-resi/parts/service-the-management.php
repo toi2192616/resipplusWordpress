@@ -11,7 +11,12 @@ if (!defined('ABSPATH')) exit;
 $img = get_template_directory_uri() . '/assets/Content/ImgService/';
 ?>
 <div class="service-1-banner">
-    <img class="img-responsive" src="<?php echo esc_url($img . 'Group 1194.png'); ?>" alt="" loading="lazy" />
+    <?php // 24/10/2026: anh banner = phan tu LCP trang Dich vu - KHONG lazy (Lighthouse: "LCP image was lazily loaded") +
+    // width/height (thieu thi khoi ben duoi nhay xuong khi anh tai xong: CLS 0,103) + WebP 240KB -> nhe hon. ?>
+    <picture>
+        <source type="image/webp" srcset="<?php echo esc_url($img . 'Group 1194.webp'); ?>" />
+        <img class="img-responsive" src="<?php echo esc_url($img . 'Group 1194.png'); ?>" alt="" width="1099" height="344" fetchpriority="high" />
+    </picture>
     <div class="service-1-banner-c">
         <h1><?php echo esc_html(pplus_localize('Dịch vụ')); ?></h1>
         <h3><?php echo esc_html(pplus_localize('Quản lý của Property Plus')); ?></h3>
