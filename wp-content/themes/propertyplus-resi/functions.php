@@ -416,6 +416,7 @@ add_action('wp_enqueue_scripts', function () {
             'pdfConfirm2'       => pplus_localize('Bạn xác nhận muốn tải file PDF bộ sưu tập này?'),
             'pdfOk'             => pplus_localize('Tải file PDF thành công!'),
             'pdfErr'            => pplus_localize('Không tải được file PDF!'),
+            'pdfWait'           => pplus_t('Đang tạo file PDF, vui lòng chờ...', 'Generating PDF, please wait...'),
             'pdfNoOffice'       => pplus_localize('Không thấy căn hộ nào'),
             'editBtn'           => pplus_localize('Sửa'),
             'editTitle'         => pplus_localize('Đổi tên bộ sưu tập'),

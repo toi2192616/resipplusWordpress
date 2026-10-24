@@ -145,16 +145,29 @@ function pplus_rest_favourite_pdf(WP_REST_Request $request) {
     ]);
     $url = pplus_api_base_url() . '/' . $lang . '/Favourite/DowloadPdf';
 
-    $response = wp_remote_post($url, [
-        'timeout' => 30,
-        'headers' => ['Content-Type' => 'application/json; charset=utf-8'],
-        'body'    => wp_json_encode(['JsonInput' => $json_input]),
-    ]);
-    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) >= 400) {
-        return new WP_REST_Response(['error' => 'upstream'], 502);
+    // Tao PDF phia .NET cham (do thuc te: hang chuc giay); PHP mac dinh dung o 30s (max_execution_time) va bao "critical
+    // error" thay vi tra loi JSON -> noi han muc rieng cho request nay, cho API toi da 45s roi tra loi ro rang.
+    if (function_exists('set_time_limit')) {
+        @set_time_limit(60);
     }
+    $response = wp_remote_post($url, [
+        'timeout'     => 45,
+        'redirection' => 0,
+        'headers'     => ['Content-Type' => 'application/json; charset=utf-8'],
+        'body'        => wp_json_encode(['JsonInput' => $json_input]),
+    ]);
+    $pdf = is_wp_error($response) ? '' : (string) wp_remote_retrieve_body($response);
 
-    $pdf = wp_remote_retrieve_body($response);
+    // 24/10/2026 (port ban Van phong c09df2f): CHI tra file khi than response THAT la PDF (bat dau "%PDF").
+    // Do thuc te API Resi: id khong ton tai -> 301 (sang trang dang nhap admin, HTML); id that hien tai -> cho
+    // 122s roi 502 (HTML nginx). Truoc day moi response 200 deu bi gan "application/pdf" -> nguoi dung tai ve
+    // file .pdf HONG ma khong biet vi sao. Gio tra JSON {success:false, message} de JS hien dung thong bao.
+    if (wp_remote_retrieve_response_code($response) !== 200 || strncmp($pdf, '%PDF', 4) !== 0) {
+        return new WP_REST_Response([
+            'success' => false,
+            'message' => $lang === 'en' ? 'Could not export PDF, please try again later!' : 'Không tải được file PDF, vui lòng thử lại sau!',
+        ], 502);
+    }
     // Tra binary PDF truc tiep (khong qua JSON) de JS tao blob tai file.
     header('Content-Type: application/pdf');
     header('Content-Disposition: attachment; filename="favourite.pdf"');

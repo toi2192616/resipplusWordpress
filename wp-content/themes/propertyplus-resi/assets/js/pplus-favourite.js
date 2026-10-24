@@ -256,7 +256,10 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: office.projectName || 'Văn phòng', ids: String(office.projectId), lang: CFG.lang || 'vi' })
-            }).then(function (r) { if (!r.ok) throw new Error(); return r.blob(); })
+            }).then(function (r) {
+                if ((r.headers.get('Content-Type') || '').indexOf('application/pdf') === -1) throw new Error();
+                return r.blob();
+            })
                 .then(function (blob) {
                     var url = URL.createObjectURL(blob);
                     var a = document.createElement('a');
@@ -412,18 +415,28 @@
             var ids = apartments().filter(function (o) { return o.IdFavourite === collId; }).map(function (o) { return o.apartmentId; });
             if (!ids.length) { toast('error', T.pdfNoOffice || 'Không thấy căn hộ nào'); return; }
             if (!window.confirm(T.pdfConfirm2 || 'Bạn xác nhận muốn tải file PDF bộ sưu tập này?')) return;
+            // API tao PDF co the mat vai chuc giay - bao truoc de nguoi dung khong tuong nut khong an (Office abe1965).
+            toast('info', T.pdfWait || 'Đang tạo file PDF, vui lòng chờ...');
             fetch(CFG.restUrl + 'favourite-pdf', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: name || 'Căn hộ yêu thích', ids: ids.join(','), lang: CFG.lang || 'vi' })
-            }).then(function (r) { if (!r.ok) throw new Error(); return r.blob(); })
+            }).then(function (r) {
+                // Chi coi la PDF khi server tra dung "application/pdf"; nguoc lai doc thong bao loi JSON (inc/favourite-rest.php).
+                if ((r.headers.get('Content-Type') || '').indexOf('application/pdf') === -1) {
+                    return r.json().catch(function () { return null; }).then(function (data) {
+                        throw new Error((data && data.message) || '');
+                    });
+                }
+                return r.blob();
+            })
                 .then(function (blob) {
                     var url = URL.createObjectURL(blob);
                     var a = document.createElement('a');
                     a.href = url; a.download = (name || 'YeuThich') + '-' + fmtDate() + '-PDFYeuThich.pdf';
                     document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
                     toast('success', T.pdfOk || 'Tải file PDF thành công!');
-                }).catch(function () { toast('error', T.pdfErr || 'Không tải được file PDF!'); });
+                }).catch(function (err) { toast('error', (err && err.message) || T.pdfErr || 'Không tải được file PDF!'); });
         }
 
         /* ----- Delegated clicks (toolbox menu tren tung the/dong) ----- */
