@@ -52,10 +52,21 @@ function pplus_seo_canonical_url(): string {
     $canonical = pplus_canonical_path(pplus_original_path(), pplus_current_lang()) ?? pplus_original_path();
     $url       = home_url($canonical);
     $paged     = (int) ($_GET['paged'] ?? 0);
-    if ($paged > 1) {
+    // Chi trang DANH SACH co phan trang that moi giu ?paged=N; trang khac ("/?paged=5"...) bo tham so rac.
+    if ($paged > 1 && pplus_seo_is_paginated_page()) {
         $url = add_query_arg('paged', $paged, $url);
     }
     return $url;
+}
+
+/** So trang hien tai (?paged=N hoac /page/N): 0/1 = trang dau. */
+function pplus_seo_paged(): int {
+    return max((int) ($_GET['paged'] ?? 0), (int) get_query_var('paged'));
+}
+
+/** Trang danh sach co phan trang o server (khu vuc/loai, danh sach can ho, danh sach cua du an, danh sach van phong). */
+function pplus_seo_is_paginated_page(): bool {
+    return (bool) (get_query_var('pplus_reference_index') || get_query_var('pplus_apartment_list') || get_query_var('pplus_project_detail') || is_page_template('page-office-list.php'));
 }
 
 /** Loai trang hien tai (de chon title/mo ta/schema du phong). */
@@ -170,7 +181,7 @@ add_filter('pre_get_document_title', function (string $title): string {
 
 // --- Robots: them max-snippet/video (cho phep AI/snippet trich dan day du), 404 -> noindex -------
 add_filter('wp_robots', function (array $robots): array {
-    if (http_response_code() === 404) {
+    if (in_array(http_response_code(), [404, 410], true)) {
         return ['noindex' => true, 'nofollow' => true];
     }
     $robots['max-snippet']       = '-1';
@@ -231,6 +242,12 @@ add_action('wp_head', function () {
         if ($description !== '' && stripos($buf, 'name="description"') === false) {
             $emit_desc = '<meta name="description" content="' . esc_attr(pplus_seo_trim($description, 200)) . '" />' . "\n";
         }
+    }
+    // Trang 2 tro di cua danh sach: web chinh phan trang ngay trong trang (Google chi thay trang 1) -> de tap URL duoc index khop,
+    // trang 2+ la "noindex, follow" (van theo link toi tung can ho, canonical van tu tro ve chinh no).
+    if (pplus_seo_paged() > 1 && pplus_seo_is_paginated_page() && http_response_code() < 400) {
+        $buf  = preg_replace('#<meta\s+name=(["\'])robots\1[^>]*>\s*#i', '', $buf);
+        $buf .= '<meta name="robots" content="noindex, follow" />' . "\n";
     }
     echo $buf . $emit_desc;
 

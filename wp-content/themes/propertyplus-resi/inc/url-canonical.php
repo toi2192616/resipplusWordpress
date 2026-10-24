@@ -8,8 +8,9 @@
  *     -> toan bo URL tieng Viet cua web chinh (/vi/cho-thue-can-ho/...) tra 404 tren WP.
  *  2. KHONG co dau "/" cuoi: canonical cua web chinh la "https://propertyplus.com.vn/vi/cho-thue-can-ho/ha-noi"
  *     (sitemap + link noi bo deu khong co "/" cuoi). WP mac dinh (permalink /%postname%/) them "/" -> moi URL lech 1 ky tu.
- *  3. Trang chu: "/" = trang chu TIENG ANH (khong tien to -> Angular mac dinh "en", canonical "/"); "/vi" = tieng Viet
- *     (canonical "/vi"); "/en", "/ja" tuong tu. Giu y het de Google khong thay doi tap URL da index.
+ *  3. Trang chu: "/" = trang chu TIENG ANH MAC DINH (khong tien to -> Angular mac dinh "en", canonical "/", la URL duy nhat
+ *     co trong sitemap web chinh); "/vi" = tieng Viet, "/ja" = tieng Nhat. "/en" (web chinh van phuc vu y het "/") bi gop ve "/"
+ *     bang 301 de khong trung noi dung; cac trang con van la "/en/...", "/vi/...", "/ja/..." nhu web chinh.
  *
  * File nay CHI chua ham thuan + 1 bo loc home_url - khong goi API, khong phu thuoc template. Duoc nap TRUOC
  * inc/language-route.php.
@@ -46,6 +47,12 @@ function pplus_canonical_path(string $path, string $current_lang = 'vi'): ?strin
         if ($p === '') {
             return '/';
         }
+    }
+
+    // "/en" (trang chu tieng Anh co tien to) trung het noi dung "/" - "/" moi la trang chu mac dinh (web chinh chi dua "/" vao sitemap,
+    // site huong toi nguoi nuoc ngoai) -> gop ve "/" (301). Cac trang con van giu "/en/..." nhu web chinh.
+    if ($p === '/en') {
+        return '/';
     }
 
     // Co tien to ngon ngu tuong minh: chi bo "/" cuoi ("/vi/" -> "/vi").
@@ -151,7 +158,8 @@ function pplus_redirect_to_canonical_request(): void {
         wp_redirect(home_url($legacy) . $tail, 301, 'PropertyPlus-Legacy');
         exit;
     }
-    $canonical = pplus_canonical_path($path, 'vi');
+    // Mac dinh ngon ngu cua site la TIENG ANH: duong dan dung chung khong tien to (/blogs, /service/...) -> /en/... (goc rieng cua tieng Viet van ra /vi/...).
+    $canonical = pplus_canonical_path($path, 'en');
     if ($canonical !== null) {
         // Goc BIET THU ("biet-thu-cho-thue" / "villa-for-rent"): san pham biet thu da bo khoi web Resi (quyet dinh 13/9) nhung web chinh
         // van phuc vu ~280 URL kieu nay (sitemap_villa.xml), da so la TRANG CAN HO bi gan nham goc biet thu -> 301 sang trang tuong ung o

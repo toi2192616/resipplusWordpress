@@ -96,6 +96,6 @@ add_action('wp_head', function () {
     printf('<link rel="alternate" hreflang="vi" href="%s" />' . "\n", esc_url($vi_url));
     printf('<link rel="alternate" hreflang="en" href="%s" />' . "\n", esc_url(pplus_language_switch_url('en')));
     printf('<link rel="alternate" hreflang="ja" href="%s" />' . "\n", esc_url(pplus_language_switch_url('ja')));
-    // x-default: o trang chu goc "/" (tieng Anh, giong web chinh) la chinh "/", cac trang con = ban tieng Viet (nhu truoc).
-    printf('<link rel="alternate" hreflang="x-default" href="%s" />' . "\n", esc_url(pplus_is_root_home() ? home_url('/') : $vi_url));
+    // x-default = ban TIENG ANH (ngon ngu mac dinh cua site huong toi nguoi nuoc ngoai; trang chu = "/").
+    printf('<link rel="alternate" hreflang="x-default" href="%s" />' . "\n", esc_url(pplus_language_switch_url('en')));
 }, 5);

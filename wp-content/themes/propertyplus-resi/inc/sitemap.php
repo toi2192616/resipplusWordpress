@@ -55,8 +55,8 @@ function pplus_sitemap_urls(string $set): array {
     $urls = get_option('pplus_sitemap_set_' . $set, []);
     $urls = is_array($urls) ? $urls : [];
     if ($set === 'areas') {
-        // Trang chu: "/" (tieng Anh, giong web chinh), "/vi", "/en", "/ja" - luon co, ke ca truoc khi cron chay lan dau.
-        $urls = array_merge([home_url('/'), home_url('/vi'), home_url('/en'), home_url('/ja')], $urls);
+        // Trang chu: "/" (tieng Anh mac dinh, giong web chinh), "/vi", "/ja" - luon co, ke ca truoc khi cron chay lan dau. KHONG co "/en" (301 ve "/").
+        $urls = array_merge([home_url('/'), home_url('/vi'), home_url('/ja')], $urls);
     }
     // Du lieu cron cu (truoc 24/10) luu URL dang WP cu (khong /vi, co "/" cuoi) -> chuan hoa luc doc, khong can cho dot tinh lai.
     return array_values(array_unique(array_map('pplus_sitemap_canonicalize', $urls)));

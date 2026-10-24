@@ -1381,6 +1381,7 @@ function pplus_get_reference_index(string $province, string $alias, string $alia
     // CA URL cu LAN bat ky URL nao khac co the con tro toi 1 alias biet-thu trong tuong lai - khong
     // dua vao 1 danh sach alias biet-thu can liet ke thu cong (se sot khi co alias moi).
     if (is_array($result) && (string) ($result['dataSelected']['loai'] ?? '') === '8') {
+        $GLOBALS['pplus_gone'] = true; // page-reference.php: tra 410 Gone (san pham da bo han) thay vi 404 chung chung
         return null;
     }
 

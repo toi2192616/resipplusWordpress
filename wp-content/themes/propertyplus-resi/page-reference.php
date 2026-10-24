@@ -33,10 +33,16 @@ if (!defined('ABSPATH')) exit;
 $model = pplus_get_reference_index_from_query_vars();
 
 if (empty($model['dataSelected'])) {
-    status_header(404);
+    // Biet thu (loai 8): san pham da bo khoi web Resi -> 410 Gone (Google go khoi index nhanh hon 404). Con lai: 404 / thong bao loi API.
+    $gone = !empty($GLOBALS['pplus_gone']);
+    status_header($gone ? 410 : 404);
     get_header();
     echo '<div class="container" style="padding:40px 0;">';
-    pplus_render_api_error();
+    if ($gone) {
+        echo '<div class="pplus-notice">' . esc_html(pplus_t('Trang này không còn tồn tại.', 'This page is no longer available.')) . '</div>';
+    } else {
+        pplus_render_api_error();
+    }
     echo '</div>';
     get_footer();
     return;
