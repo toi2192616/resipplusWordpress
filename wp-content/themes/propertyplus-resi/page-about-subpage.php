@@ -17,6 +17,11 @@ if (!defined('ABSPATH')) exit;
 
 $model = pplus_get_about_subpage_from_query_vars();
 
+// 24/10/2026: trang con khong ton tai -> 404 that (truoc day 200 + thong bao = soft-404).
+if ($model === null) {
+    status_header(404);
+}
+
 get_header();
 pplus_render_suggest_header();
 ?>

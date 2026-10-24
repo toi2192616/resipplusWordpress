@@ -36,7 +36,7 @@
  */
 if (!defined('ABSPATH')) exit;
 
-$lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
+$lang_prefix = pplus_lang_prefix();
 $header      = pplus_get_header_data();
 $provinces   = (array) ($header['listMenu'] ?? []);
 // Gia tri LOC (Province/District/WardName gui len Office/_GetOffices) PHAI LUON la ten tieng

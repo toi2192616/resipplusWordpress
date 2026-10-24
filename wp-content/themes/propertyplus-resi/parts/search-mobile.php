@@ -32,7 +32,7 @@ $pplus_sm_values      = range(1, 8); // listValue = [1..8] (search-base.componen
 // che do ban do (fullContent=false) - xem main.js. ?>
 <div class="searching-tool resultOnTop"><a href="<?php echo esc_url(home_url($pplus_sm_lang_prefix . '/')); ?>"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/logo.png'); ?>" alt="logoPP" width="100" height="94" /></a><input class="txt-search" type="text" aria-label="<?php echo esc_attr(pplus_localize('Tìm kiếm')); ?>" value="" readonly="readonly" data-pplus-search-mobile="1" /><button id="btnSearchMore" type="button" data-pplus-search-mobile="2"><?php echo esc_html(pplus_localize('Bộ lọc')); ?></button></div>
 
-<div class="tab-container search-tab-mobile" step="1" id="search-tab-mobile" data-base-url="<?php echo esc_url(home_url($pplus_sm_lang_prefix . '/cho-thue-can-ho/ha-noi/')); ?>">
+<div class="tab-container search-tab-mobile" step="1" id="search-tab-mobile" data-base-url="<?php echo esc_url(home_url($pplus_sm_lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi')); ?>">
     <div class="tab-header">
         <button type="button" class="btnBackStep">
             <i class="fa fa-angle-left" aria-hidden="true" title="prev"></i>

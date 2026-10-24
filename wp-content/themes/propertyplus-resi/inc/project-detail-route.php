@@ -135,3 +135,24 @@ add_action('wp_head', function () {
         printf('<meta name="description" content="%s" />' . "\n", esc_attr($description));
     }
 }, 1);
+
+/**
+ * Doi ngon ngu tren trang du an "{tinh}/{quan}/{alias}-{id}": alias QUAN khac nhau theo ngon ngu (quan-ba-dinh / ba-dinh-district), alias
+ * du an (alias-id) giu nguyen (khop sitemap web chinh). Web chinh tu sinh URL "ha-noi//{quan}/{du-an}" (loi noi suy chuoi, giu nguyen alias
+ * quan cua ngon ngu hien tai) - o day sinh dung dang. Khong tra cuu duoc alias quan -> giu mac dinh.
+ */
+add_filter('pplus_language_switch_url', function (string $default, string $target_lang) {
+    if (!get_query_var('pplus_project_detail')) {
+        return $default;
+    }
+    $segs = array_values(array_filter(explode('/', pplus_original_path()), 'strlen')); // [lang, root, tinh, quan, du-an-id]
+    if (count($segs) !== 5) {
+        return $default;
+    }
+    [, , $province, $district, $project] = $segs;
+    $target_district = pplus_area_alias_for_lang(rawurldecode($province), rawurldecode($district), $target_lang);
+    if ($target_district === null) {
+        return $default;
+    }
+    return home_url('/' . $target_lang . '/' . pplus_apartment_list_root($target_lang) . '/' . $province . '/' . $target_district . '/' . $project);
+}, 10, 2);

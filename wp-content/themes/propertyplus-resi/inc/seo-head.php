@@ -44,14 +44,14 @@ function pplus_seo_business(): array {
     ];
 }
 
-/** URL canonical cua request hien tai: co tien to ngon ngu, bo query, giu ?paged=N (N>1). */
+/**
+ * URL canonical cua request hien tai: dang chuan cua web chinh (tien to /vi|/en|/ja, KHONG "/" cuoi; trang chu goc
+ * "/" giu "/"), bo query, giu ?paged=N (N>1). Lay tu duong dan GOC (truoc khi strip tien to) - xem inc/url-canonical.php.
+ */
 function pplus_seo_canonical_url(): string {
-    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-    if (substr($path, -1) !== '/' && !preg_match('#\.[a-z0-9]{2,5}$#i', $path)) {
-        $path .= '/';
-    }
-    $url   = home_url(pplus_lang_prefix() . $path);
-    $paged = (int) ($_GET['paged'] ?? 0);
+    $canonical = pplus_canonical_path(pplus_original_path(), pplus_current_lang()) ?? pplus_original_path();
+    $url       = home_url($canonical);
+    $paged     = (int) ($_GET['paged'] ?? 0);
     if ($paged > 1) {
         $url = add_query_arg('paged', $paged, $url);
     }

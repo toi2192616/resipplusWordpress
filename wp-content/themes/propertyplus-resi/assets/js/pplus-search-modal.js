@@ -130,7 +130,8 @@
         }
       });
 
-      var baseUrl = $modal.data('base-url') + (selectedAlias ? selectedAlias + '/' : '');
+      // 24/10/2026: URL chuan khong co \"/\" cuoi (khop web chinh, xem inc/url-canonical.php).
+      var baseUrl = String($modal.data('base-url')).replace(/\/+$/, '') + (selectedAlias ? '/' + selectedAlias : '');
       window.location.href = baseUrl + (params.length ? '?' + params.join('&') : '');
     });
   });

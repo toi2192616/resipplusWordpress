@@ -1,70 +1,99 @@
 <?php
 /**
- * Seed 301 redirect cho URL cu (tu cac lan doi domain-serving-layer TRUOC DAY, khong rieng gi
- * Angular->WordPress lan nay) tu API .NET that "Home/GetLogUrlSite" - doi chieu tu
- * home.service.ts GetLogUrlSite() + app.component.ts GetListRedirect() (Angular tu goi API nay
- * luc khoi dong, so khop URL hien tai voi bang "LogUrlSite" trong SQL Server de tu redirect).
+ * 301 cho URL CU -> URL moi, KHOP web chinh (propertyplus.com.vn).
  *
- * 2 DIEU KHAC BIET QUAN TRONG DA XAC NHAN QUA TEST THAT (khong doan):
- * 1. Endpoint nay KHONG co tien to "{lang}/" nhu MOI endpoint khac trong theme (home.service.ts
- *    goi thang "Home/GetLogUrlSite", khong phai "{lang}/Home/GetLogUrlSite") - goi co tien to lang
- *    se bi redirect sang trang dang nhap admin (khop 1 route MVC admin khac, khong phai loi that).
- * 2. Response CO bao trong { result: [...] } giong da so endpoint khac (xac nhan lai qua
- *    pplus_api_get() that - lan curl thu cong dau tien nhin nham vi terminal cat bot dong dau).
- *    Tung phan tu co dang {alias, aliasRedirect, lang, isActive, ...}. "alias" la URL CU (path),
- *    "aliasRedirect" la URL nen tro toi.
+ * Web chinh (Angular SSR, server.ts) co 1 middleware: moi request so khop `req.url` voi cot `alias` cua bang "LogUrlSite"
+ * (API .NET `Home/GetLogUrlSite`, ~144 dong: /vi/du-an/..., /vi/du-ans/..., /en/projects/..., /ja/du-ans/... -> URL du an hien tai)
+ * va tra 301 sang `aliasRedirect`. Cac URL cu nay Google DA index -> neu ban WP khong lam y het, chung roi vao 404 va mat thu hang.
  *
- * Dung lai Ppwh_Redirect_Manager (plugin ppplus-seo-sync, DA hoat dong that qua webhook cho cac
- * lan doi slug SAU NAY) lam noi luu tru + noi thuc hien redirect - CHI seed du lieu vao day, khong
- * viet lai co che redirect. Chay qua WP-Cron (giong inc/sitemap.php) de tranh goi API luc co
- * request that (endpoint nay chi 1 request/khong phan trang nen it rui ro timeout hon sitemap,
- * nhung van giu nguyen tac "khong goi API ngoai luc dang phuc vu Googlebot/nguoi dung that").
+ * Cach lam o ban WP (khong phu thuoc plugin ppplus-seo-sync, khong goi API luc co request that):
+ *  - Du lieu MAC DINH nam san trong inc/legacy-redirects-data.php (snapshot 24/10/2026) -> co hieu luc ngay tu request dau tien.
+ *  - WP-Cron lam moi tu API 1 lan/ngay vao option `pplus_legacy_redirect_map` (uu tien hon file). API loi/rong -> giu nguyen ban cu.
+ *  - Tra cuu chay RAT SOM (pplus_redirect_to_canonical_request() trong inc/url-canonical.php, truoc khi WP parse request).
+ *
+ * Luu y da xac nhan bang test that: endpoint `Home/GetLogUrlSite` KHONG co tien to "{lang}/" khi goi tu theme (goi voi tien to
+ * thi ra trang dang nhap admin), response co bao { result: [...] }, moi dong {alias, aliasRedirect, lang, isActive}.
+ * Khac web chinh: khong phan biet hoa/thuong, bo "/" cuoi, giu nguyen query string (utm...) khi chuyen huong.
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-const PPLUS_LEGACY_REDIRECT_CRON_HOOK = 'pplus_legacy_redirect_seed';
+const PPLUS_LEGACY_REDIRECT_CRON_HOOK = 'pplus_legacy_redirect_refresh';
+const PPLUS_LEGACY_REDIRECT_OPTION    = 'pplus_legacy_redirect_map';
+/** Dich SAI trong bang cua web chinh: alias du an "istay-hotel-apartment-5" bi hieu nham thanh id=5 (thuc te la ten, id du an = 1001 - xem sitemap web chinh). */
+const PPLUS_LEGACY_REDIRECT_OVERRIDES = [
+    '/vi/du-an/istay-hotel-apartment-5-dong-me-1001' => '/vi/cho-thue-can-ho/ha-noi/nam-tu-liem/istay-hotel-apartment-5-1001',
+];
 
-/**
- * Chay that trong WP-Cron: goi API, ghi tung cap alias/aliasRedirect vao Ppwh_Redirect_Manager.
- * Neu plugin ppplus-seo-sync chua active (lop Ppwh_Redirect_Manager khong ton tai), thoat som,
- * khong loi.
- */
-function pplus_legacy_redirect_seed(): void {
-    if (!class_exists('Ppwh_Redirect_Manager')) {
-        return;
+/** Khoa tra cuu cua 1 duong dan: giai ma %-encoding, chu thuong, bo "/" o 2 dau (vd "/vi/du-ans/abc/" -> "/vi/du-ans/abc"). */
+function pplus_legacy_redirect_key(string $path): string {
+    $path = strtolower(rawurldecode(trim($path)));
+    return '/' . trim($path, '/');
+}
+
+/** Bang chuyen huong hien hanh: option (do cron cap nhat) neu co, khong thi snapshot di kem theme. */
+function pplus_legacy_redirect_map(): array {
+    static $map = null;
+    if ($map !== null) {
+        return $map;
     }
-
-    $response = pplus_api_get('Home/GetLogUrlSite', [], 0); // cache_seconds=0: khong can cache rieng, da co WP-Cron dieu tiet tan suat goi
-    $data     = $response['result'] ?? null;
-    if (!is_array($data)) {
-        return;
+    $stored = get_option(PPLUS_LEGACY_REDIRECT_OPTION, []);
+    if (is_array($stored) && $stored) {
+        $map = $stored;
+    } else {
+        $bundled = include __DIR__ . '/legacy-redirects-data.php';
+        $map     = is_array($bundled) ? $bundled : [];
     }
+    // Sua tay nhung dich SAI trong bang cua web chinh (de nguyen thi 301 -> 404): ap dung ca cho ban cron lan snapshot.
+    return $map = array_merge($map, array_intersect_key(PPLUS_LEGACY_REDIRECT_OVERRIDES, $map));
+}
 
-    $manager = Ppwh_Redirect_Manager::instance();
-    $seeded  = 0;
-    foreach ($data as $item) {
-        if (empty($item['isActive']) || empty($item['alias']) || empty($item['aliasRedirect'])) {
+/** Duong dan dich neu `$path` la URL cu can 301, nguoc lai null. */
+function pplus_legacy_redirect_target(string $path): ?string {
+    $map = pplus_legacy_redirect_map();
+    $key = pplus_legacy_redirect_key($path);
+    return isset($map[$key]) && $map[$key] !== $key ? $map[$key] : null;
+}
+
+/** Dua danh sach dong API ({alias, aliasRedirect, isActive}) ve bang khoa => duong dan dich. Dong dau tien khop thang (nhu web chinh), tru khi dich thieu "-<id>" du an. */
+function pplus_legacy_redirect_build_map(array $rows): array {
+    $map = [];
+    foreach ($rows as $row) {
+        if (empty($row['isActive']) || empty($row['alias']) || empty($row['aliasRedirect'])) {
             continue;
         }
-        $old_path = home_url($item['alias']);
-        $new_url  = home_url($item['aliasRedirect']);
-        $manager->record_alias_change($old_path, $new_url);
-        $seeded++;
+        $key    = pplus_legacy_redirect_key((string) preg_replace('#^https?://[^/]+#i', '', (string) $row['alias']));
+        $target = '/' . trim((string) preg_replace('#^https?://[^/]+#i', '', (string) $row['aliasRedirect']), '/');
+        if ($key === pplus_legacy_redirect_key($target)) {
+            continue;
+        }
+        // 3 URL cu co 2 dong: dong dau tro toi trang du an THIEU id (khong ton tai) -> uu tien dong co "-<id>".
+        if (!isset($map[$key]) || (!preg_match('#-[0-9]+$#', $map[$key]) && preg_match('#-[0-9]+$#', $target))) {
+            $map[$key] = $target;
+        }
     }
-
-    update_option('pplus_legacy_redirect_seeded_count', $seeded, false);
-    update_option('pplus_legacy_redirect_seeded_at', time(), false);
+    return $map;
 }
-add_action(PPLUS_LEGACY_REDIRECT_CRON_HOOK, 'pplus_legacy_redirect_seed');
 
-/**
- * Dang ky cron: chay 1 lan dau 15s sau khi active (khong chan request hien tai), sau do lai 1
- * lan/ngay (danh sach nay hiem khi doi, khac voi office/news moi lien tuc them - khong can 6
- * tieng/lan nhu sitemap).
- */
+/** Chay trong WP-Cron: goi API, thay bang chuyen huong. API loi / tra rong -> KHONG dong vao ban dang co. */
+function pplus_legacy_redirect_refresh(): void {
+    $response = pplus_api_get('Home/GetLogUrlSite', [], 0);
+    $rows     = $response['result'] ?? null;
+    if (!is_array($rows)) {
+        return;
+    }
+    $map = pplus_legacy_redirect_build_map($rows);
+    if (count($map) < 10) { // API tra gan nhu rong = nhieu kha nang loi/doi cau truc, khong ghi de
+        return;
+    }
+    update_option(PPLUS_LEGACY_REDIRECT_OPTION, $map, true);
+    update_option('pplus_legacy_redirect_refreshed_at', time(), false);
+}
+add_action(PPLUS_LEGACY_REDIRECT_CRON_HOOK, 'pplus_legacy_redirect_refresh');
+
+/** Lan dau: chay sau 15s (khong chan request hien tai); sau do 1 lan/ngay (danh sach hiem khi doi). */
 add_action('init', function () {
     if (wp_next_scheduled(PPLUS_LEGACY_REDIRECT_CRON_HOOK)) {
         return;

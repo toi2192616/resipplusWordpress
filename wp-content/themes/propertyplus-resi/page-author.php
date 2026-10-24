@@ -18,7 +18,7 @@ get_header();
         <?php pplus_render_api_error(); ?>
     <?php else : ?>
         <?php
-        $lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
+        $lang_prefix = pplus_lang_prefix();
         get_template_part('parts/url-box-content', null, [
             'breadcrumb' => [
                 ['name' => pplus_t('Trang chủ', 'Home'), 'url' => home_url('/')],

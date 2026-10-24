@@ -90,7 +90,9 @@ function pplus_office_url(?string $url_herf): string {
     if ($url_herf === '') {
         return '#';
     }
-    return trailingslashit($url_herf);
+    // 24/10/2026: web chinh KHONG co "/" cuoi (canonical + sitemap + link noi bo) -> giu nguyen dang API tra ve, chi
+    // bo "/" cuoi neu co. Truoc day them "/" cuoi (WP permalink dep) -> moi URL lech web chinh 1 ky tu.
+    return rtrim($url_herf, '/');
 }
 
 /**
@@ -272,12 +274,12 @@ function pplus_language_options(): array {
 }
 
 /**
- * Tien to duong dan theo ngon ngu hien tai: '' cho vi, '/en' hoac '/ja'. Angular Resi dat tien to
- * cho CA vi (urlLang='vi') nhung ban WP dung 'vi' = mac dinh khong tien to (xem language-route.php).
+ * Tien to duong dan theo ngon ngu hien tai: '/vi', '/en' hoac '/ja' (khop Angular Resi: urlLang cho ca vi).
  */
 function pplus_lang_prefix(?string $lang = null): string {
     $lang = $lang ?: pplus_current_lang();
-    return $lang === 'vi' ? '' : ('/' . $lang);
+    // 24/10/2026: CA 3 ngon ngu deu co tien to tuong minh (/vi, /en, /ja) - giong web chinh (xem inc/url-canonical.php).
+    return in_array($lang, ['vi', 'en', 'ja'], true) ? ('/' . $lang) : '/vi';
 }
 
 /**
@@ -344,6 +346,14 @@ function pplus_t(string $vi, string $en): string {
  * ghi thang chuoi "cho-thue-van-phong" - xem cac rewrite rule EN moi trong inc/reference-index-
  * route.php + functions.php (A1/A3) khop nguoc lai dung segment nay.
  */
+/**
+ * Goc URL danh sach can ho cua ngon ngu hien tai: VI "cho-thue-can-ho", EN/JA "rental-apartment" (khop route Angular
+ * Resi). KHONG nham voi pplus_office_list_base_slug() ben duoi (cua ban Van phong cu, "cho-thue-van-phong"/"office-for-rent").
+ */
+function pplus_apartment_list_root(?string $lang = null): string {
+    return ($lang ?: pplus_current_lang()) === 'vi' ? 'cho-thue-can-ho' : 'rental-apartment';
+}
+
 function pplus_office_list_base_slug(): string {
     return pplus_current_lang() === 'en' ? 'office-for-rent' : 'cho-thue-van-phong';
 }
@@ -371,6 +381,36 @@ function pplus_current_path(): string {
     return $path ?: '/';
 }
 
+/** Doi goc duong dan (doan dau, KHONG co tien to ngon ngu) sang goc cua ngon ngu dich. Goc dung chung / khong biet -> giu nguyen. */
+function pplus_switch_root(string $path, string $target_lang): string {
+    $map = [
+        'vi' => ['rental-apartment' => 'cho-thue-can-ho', 'about-us' => 've-chung-toi', 'contact' => 'lien-he'],
+        'en' => ['cho-thue-can-ho' => 'rental-apartment', 've-chung-toi' => 'about-us', 'lien-he' => 'contact'],
+    ];
+    $to   = $target_lang === 'vi' ? 'vi' : 'en'; // ja dung chung goc voi en
+    $segs = explode('/', ltrim($path, '/'), 2);
+    if (isset($map[$to][$segs[0]])) {
+        $segs[0] = $map[$to][$segs[0]];
+        return '/' . implode('/', $segs);
+    }
+    return $path;
+}
+
+/**
+ * Alias cua 1 khu vuc (quan/loai can ho/...) o ngon ngu dich, tra cuu qua Reference/GetIndex (aliasVi/aliasEn/aliasJa; co cache 10 phut).
+ * Dung cho trang du an ("{tinh}/{quan}/{du-an}"): alias quan khac nhau theo ngon ngu (quan-ba-dinh / ba-dinh-district).
+ */
+function pplus_area_alias_for_lang(string $province, string $alias, string $target_lang): ?string {
+    $model = pplus_get_reference_index($province, $alias, pplus_current_lang());
+    $data  = $model['dataSelected'] ?? [];
+    $key   = ['vi' => 'aliasVi', 'en' => 'aliasEn', 'ja' => 'aliasJa'][$target_lang] ?? 'aliasEn';
+    $found = (string) ($data[$key] ?? '');
+    if ($found === '' && $target_lang === 'ja') {
+        $found = (string) ($data['aliasEn'] ?? ''); // JA khong co alias rieng -> dung alias EN (giong API)
+    }
+    return $found !== '' ? $found : null;
+}
+
 /**
  * Sinh URL doi ngon ngu, GIU NGUYEN trang hien tai (chi doi/bo tien to /en).
  *
@@ -384,8 +424,12 @@ function pplus_current_path(): string {
  */
 function pplus_language_switch_url(string $target_lang): string {
     $path    = pplus_current_path();
-    $prefix  = ($target_lang === 'en' || $target_lang === 'ja') ? ('/' . $target_lang) : '';
-    $default = home_url($prefix . $path);
+    $prefix  = pplus_lang_prefix($target_lang);
+    // 24/10/2026: ngoai tien to con phai doi GOC duong dan (web chinh: vi/cho-thue-can-ho <-> en/rental-apartment, vi/ve-chung-toi
+    // <-> en/about-us, vi/lien-he <-> en/contact). Chi doi tien to se ra URL cheo ngon ngu -> 404 (xem pplus_root_allowed_for_lang()).
+    // Alias doan sau giu nguyen; cac trang co alias khac nhau theo ngon ngu (khu vuc, blog, can ho, dich vu...) tu ghi de qua filter.
+    $path = pplus_switch_root($path, $target_lang);
+    $default = home_url($prefix . ($path === '/' ? '' : $path)); // trang chu: /vi, /en, /ja (home_url bo "/" cuoi)
     return apply_filters('pplus_language_switch_url', $default, $target_lang);
 }
 
@@ -431,11 +475,31 @@ function pplus_api_http(string $method, string $url, ?array $payload, int $timeo
             'headers' => ['Accept' => 'application/json'],
         ]);
     }
-    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) >= 400) {
+    // 24/10/2026 (port ban Van phong ba05c18): ghi lai LOAI loi de response-headers.php quyet dinh HTTP status/Cache-Control.
+    //  - 'api-failure' = CHAC CHAN tam thoi (loi mang/timeout, HTTP 408/429/502/503/504) -> trang loi se tra 503 + Retry-After.
+    //  - 'api-error'   = mo ho (5xx khac, body khong phai JSON). Backend tra 302 -> trang dang nhap (HTML 200) cho bai viet/can ho
+    //    KHONG TON TAI nen KHONG coi la su co: chi gan no-store, khong doi ma trang thai.
+    //  - HTTP 4xx khac: khong danh dau (khong ton tai that su).
+    $code = is_wp_error($response) ? 0 : (int) wp_remote_retrieve_response_code($response);
+    if (is_wp_error($response) || $code >= 400) {
+        $kind = (is_wp_error($response) || in_array($code, [408, 429, 502, 503, 504], true)) ? 'api-failure' : ($code >= 500 ? 'api-error' : '');
+        pplus_api_note_failure($kind);
         return null;
     }
     $body = json_decode(wp_remote_retrieve_body($response), true);
-    return is_array($body) ? $body : null;
+    if (!is_array($body)) {
+        pplus_api_note_failure('api-error');
+        return null;
+    }
+    return $body;
+}
+
+/** Ghi nho loai loi cua lan goi API gan nhat + danh dau response hien tai (xem inc/response-headers.php). */
+function pplus_api_note_failure(string $kind): void {
+    $GLOBALS['pplus_api_last_failure'] = $kind;
+    if ($kind !== '' && function_exists('pplus_response_flags')) {
+        pplus_response_flags($kind);
+    }
 }
 
 /**
@@ -465,13 +529,19 @@ function pplus_api_cached(string $method, string $url, ?array $payload, int $ttl
         return $entry['b'];
     }
 
-    if (get_transient($key . '_fail') !== false) {
+    $failed = get_transient($key . '_fail');
+    if ($failed !== false) {
+        // Dang trong cua so "nho loi 30s": van phai danh dau response nhu luc loi that (cung loai loi da nho).
+        if (is_string($failed) && $failed !== '' && $failed !== '1') {
+            pplus_api_note_failure($failed);
+        }
         return null;
     }
 
+    $GLOBALS['pplus_api_last_failure'] = '';
     $body = pplus_api_http($method, $url, $payload, $timeout);
     if ($body === null) {
-        set_transient($key . '_fail', 1, 30);
+        set_transient($key . '_fail', ($GLOBALS['pplus_api_last_failure'] ?? '') !== '' ? $GLOBALS['pplus_api_last_failure'] : 'none', 30);
         return null;
     }
     set_transient($key, ['b' => $body, 'f' => time() + $ttl], $ttl + DAY_IN_SECONDS);
@@ -1389,7 +1459,7 @@ function pplus_resolve_street_code(string $province_text, string $street_name): 
 function pplus_office_list_url(array $override = []): string {
     $params = array_merge($_GET, $override);
     $params = array_filter($params, fn($v) => $v !== '' && $v !== null);
-    return add_query_arg($params, home_url((pplus_current_lang() === 'en' ? '/en' : '') . '/' . pplus_office_list_base_slug()));
+    return add_query_arg($params, home_url(pplus_lang_prefix() . '/' . pplus_office_list_base_slug()));
 }
 
 /**

@@ -42,7 +42,7 @@ get_template_part('parts/url-box-content', null, [
                     <?php echo esc_html(pplus_t('Quay lại', 'Back')); ?>
                 </a>
                 <div class="text-1"><?php echo esc_html(pplus_t('Chúng tôi hân hạnh được tư vấn cho bạn', 'We are delighted to advise you')); ?></div>
-                <a class="link-1" href="<?php echo esc_url(home_url((pplus_current_lang() === 'en' ? '/en' : '') . '/' . pplus_office_list_base_slug() . '/')); ?>">
+                <a class="link-1" href="<?php echo esc_url(home_url(pplus_lang_prefix() . '/' . pplus_apartment_list_root())); ?>">
                     <?php echo esc_html(pplus_t('Tìm kiếm trên bản đồ', 'Search on the map')); ?>
                 </a>
 

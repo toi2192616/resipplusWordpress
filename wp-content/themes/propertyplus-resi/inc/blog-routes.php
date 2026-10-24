@@ -141,3 +141,23 @@ add_action('wp_head', function () {
     $robots = ($selected['isIndex'] === false) ? 'noindex, nofollow' : 'index, follow';
     printf('<meta name="robots" content="%s" />' . "\n", esc_attr($robots));
 }, 1);
+
+/**
+ * Doi ngon ngu tren trang chi tiet blog: alias moi ngon ngu khac nhau (vi "...-8" / en "Property-Plus's-Success-Stories-8"), web chinh
+ * (blog-detail.component.ts) dung aliasVi/aliasEn/aliasJa cua bai. Neu thieu alias o ngon ngu dich -> giu mac dinh (doi goc + alias hien tai).
+ */
+add_filter('pplus_language_switch_url', function (string $default, string $target_lang) {
+    if (!get_query_var('pplus_blog_detail')) {
+        return $default;
+    }
+    $data = pplus_get_blog_detail_from_query_vars();
+    $post = $data['result']['data'] ?? null;
+    if (!is_array($post) || empty($post['id'])) {
+        return $default;
+    }
+    $alias = (string) ($post['alias' . ucfirst($target_lang)] ?? '');
+    if ($alias === '') {
+        return $default;
+    }
+    return home_url(pplus_lang_prefix($target_lang) . '/blog/' . $alias . '-' . (int) $post['id']);
+}, 10, 2);

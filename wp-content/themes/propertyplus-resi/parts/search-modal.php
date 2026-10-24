@@ -68,7 +68,7 @@ $all_districts  = pplus_get_all_districts();
 $bedbath_values = range(1, 8); // listValue = [1..8] (search-base.component.ts dong 63)
 ?>
 <div class="modal fade" tabindex="-1" id="searchModal" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true"
-    data-base-url="<?php echo esc_url(home_url($lang_prefix . '/cho-thue-can-ho/ha-noi/')); ?>">
+    data-base-url="<?php echo esc_url(home_url($lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi')); ?>">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body">

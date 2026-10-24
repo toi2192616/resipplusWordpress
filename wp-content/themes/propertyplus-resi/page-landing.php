@@ -30,7 +30,7 @@ if (empty($model['dataSelected'])) {
 }
 
 $data        = $model['dataSelected'];
-$lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
+$lang_prefix = pplus_lang_prefix();
 // "district.alias" tu Reference/GetIndexProvinceProduct CUNG khac nhau theo ngon ngu dang goi
 // (giong het bug o header.php), can doi lai ve alias VI truoc khi dung lam URL - xem ghi chu chi
 // tiet trong pplus_get_header_vi_alias_map() (inc/api-client.php).

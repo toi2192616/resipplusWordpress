@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) exit;
 
 get_header();
 
-$lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
+$lang_prefix = pplus_lang_prefix();
 
 $province      = sanitize_text_field($_GET['province'] ?? 'Hà Nội');
 $district      = sanitize_text_field($_GET['district'] ?? '');

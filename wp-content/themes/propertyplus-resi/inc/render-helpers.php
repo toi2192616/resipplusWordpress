@@ -26,6 +26,7 @@ function pplus_format_area(?float $value): string {
  * dung cho truong hop back4office cham/down (xem rui ro trong plan).
  */
 function pplus_render_api_error(): void {
+    pplus_response_flags('error-notice'); // xem inc/response-headers.php (503 neu API loi tam thoi that)
     echo '<div class="pplus-notice">' . esc_html__('Du lieu dang duoc cap nhat, vui long quay lai sau.', 'propertyplus') . '</div>';
 }
 

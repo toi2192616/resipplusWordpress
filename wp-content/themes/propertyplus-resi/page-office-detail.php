@@ -24,7 +24,7 @@ if (!$model) {
     return;
 }
 
-$lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
+$lang_prefix = pplus_lang_prefix();
 $is_vpdv     = ((int) ($model['subType'] ?? 0)) === 1; // van phong dich vu (tron goi)
 $unit        = $is_vpdv ? pplus_t('người', 'people') : 'm2';
 // API tra ve "url" da la link tuyet doi (khac photoList cua listOffice, la duong dan tuong doi) -

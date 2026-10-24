@@ -45,6 +45,12 @@ if (!empty($data['isRedirect']) && !empty($data['redirectUrl'])) {
     exit;
 }
 
+// 24/10/2026: bai khong ton tai (alias/id sai) truoc day tra 200 + thong bao "dang cap nhat" = soft-404 (web chinh cung vay
+// va bi index ca trang rong). Tra 404 that, cung cach page-apartment-detail.php da lam.
+if ($result === null || $selected === null) {
+    status_header(404);
+}
+
 get_header();
 pplus_render_suggest_header();
 
@@ -61,7 +67,7 @@ $toc = pplus_generate_toc($content);
         <?php pplus_render_api_error(); ?>
     <?php else : ?>
         <?php
-        $lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
+        $lang_prefix = pplus_lang_prefix();
         // Breadcrumb - them crumb "catalog" con thieu (giua "Blog" va tieu de bai) theo dung
         // ListUrlMenu THAT (blog-detail.component.ts dong 56-70): Trang chu > Blog > {ten catalog,
         // link ve danh sach loc theo catalogid} > {tieu de bai, trang hien tai khong link}.

@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) exit;
 get_header();
 pplus_render_suggest_header();
 
-$lang_prefix = (pplus_current_lang() === 'en') ? '/en' : '';
+$lang_prefix = pplus_lang_prefix();
 $catalogid   = sanitize_text_field($_GET['catalogid'] ?? '');
 $paged       = max(1, (int) ($_GET['page'] ?? 1));
 

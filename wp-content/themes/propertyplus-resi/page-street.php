@@ -26,7 +26,7 @@ if (empty($model['menuData']) || empty($model['list'])) {
 }
 
 $menu         = $model['menuData'];
-$lang_prefix  = (pplus_current_lang() === 'en') ? '/en' : '';
+$lang_prefix  = pplus_lang_prefix();
 $province_url = home_url($lang_prefix . '/' . pplus_office_list_base_slug() . '/' . ($menu['alias'] ?? ''));
 
 get_header();

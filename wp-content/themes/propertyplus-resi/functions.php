@@ -27,7 +27,10 @@ function pplus_asset_version(string $relative_path): string {
 
 // --- Nen tang dung chung (Phase 0) ---
 require_once PPLUS_THEME_DIR . '/inc/api-client.php';       // pplus_api_get, lang, localize, header/footer data
-require_once PPLUS_THEME_DIR . '/inc/language-route.php';   // strip tien to /en /ja + hreflang (dung PPLUS_LANG)
+require_once PPLUS_THEME_DIR . '/inc/url-canonical.php';     // chuan hoa URL: tien to ngon ngu, bo "/" cuoi, 301 (khop web chinh)
+require_once PPLUS_THEME_DIR . '/inc/legacy-redirects.php';    // 301 URL cu (/vi/du-an/..., /en/projects/...) -> URL moi, khop bang LogUrlSite cua web chinh (nap TRUOC language-route)
+require_once PPLUS_THEME_DIR . '/inc/language-route.php';   // nhan tien to /vi /en /ja + hreflang (dung PPLUS_LANG)
+require_once PPLUS_THEME_DIR . '/inc/response-headers.php';   // 503 + Retry-After khi API loi tam thoi that, no-store cho ban loi, ETag (port Van phong ba05c18)
 require_once PPLUS_THEME_DIR . '/inc/settings-page.php';    // trang cau hinh API base / map key
 require_once PPLUS_THEME_DIR . '/inc/render-helpers.php';   // helper render dung chung
 require_once PPLUS_THEME_DIR . '/inc/breadcrumb.php';       // breadcrumb dung chung

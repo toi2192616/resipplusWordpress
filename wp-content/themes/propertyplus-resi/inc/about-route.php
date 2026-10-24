@@ -24,11 +24,13 @@ if (!defined('ABSPATH')) {
 
 add_action('init', function () {
     add_rewrite_rule('^about-us/?$', 'index.php?pagename=ve-chung-toi', 'top');
+    // 24/10/2026: web chinh co /en/contact + /ja/contact (Angular route 'en/contact') - cung Page "lien-he" (template "Lien he") nhu /vi/lien-he.
+    add_rewrite_rule('^contact/?$', 'index.php?pagename=lien-he', 'top');
 });
 
 add_action('init', function () {
-    if (get_option('pplus_rewrite_flushed_about_en_v1') !== '1') {
+    if (get_option('pplus_rewrite_flushed_about_en_v2') !== '1') {
         flush_rewrite_rules();
-        update_option('pplus_rewrite_flushed_about_en_v1', '1');
+        update_option('pplus_rewrite_flushed_about_en_v2', '1');
     }
 }, 20);

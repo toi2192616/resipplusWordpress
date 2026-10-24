@@ -161,13 +161,17 @@ add_filter('pplus_language_switch_url', function (string $default, string $targe
     $data     = $model['dataSelected'] ?? [];
     $alias_vi = (string) ($data['aliasVi'] ?? '');
     $alias_en = (string) ($data['aliasEn'] ?? '');
+    $alias_ja = (string) ($data['aliasJa'] ?? '');
 
     if ($target_lang === 'en' || $target_lang === 'ja') {
-        if ($alias_en === '') {
+        // 24/10/2026: web chinh (reference-index.component.ts) dung aliasJa rieng cho JA (API co tra; thuong = aliasEn nhung
+        // nhieu trang JA co alias tieng Nhat that, vd /ja/rental-apartment/ha-noi/ファイブレジデンス...) - ghi chu cu "khong co aliasJa" da loi thoi.
+        $target = $target_lang === 'ja' ? ($alias_ja !== '' ? $alias_ja : $alias_en) : $alias_en;
+        if ($target === '') {
             return $default;
         }
         $prefix = $target_lang === 'ja' ? '/ja' : '/en';
-        return home_url($prefix . '/rental-apartment/' . $province . '/' . $alias_en . '/');
+        return home_url($prefix . '/rental-apartment/' . $province . '/' . $target . '/');
     }
 
     $target_alias = $alias_vi !== '' ? $alias_vi : $alias;

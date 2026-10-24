@@ -31,7 +31,7 @@ pplus_render_suggest_header();
 
 get_template_part('parts/url-box-content', null, [
     'breadcrumb' => [
-        ['name' => pplus_t('Trang chủ', 'Home'), 'url' => home_url((pplus_current_lang() === 'en' ? '/en' : '') . '/')],
+        ['name' => pplus_t('Trang chủ', 'Home'), 'url' => home_url(pplus_lang_prefix() . '/')],
         // Nhan that: ListUrlMenu = [{linkUrl:'#', nameUrl: Localizer("Yêu thích")}] (favourite.
         // component.ts dong 33-38) - "Yêu thích", KHONG PHAI "Danh sách yêu thích" (nhan do la
         // tieu de ".collection-title" o duoi, khac muc breadcrumb).
