@@ -48,7 +48,7 @@ body.modal-active {
   font-size: 15px;
   line-height: 25px;
   color: #FFFFFF;
-  opacity: 0.6;
+  opacity: 0.75;
   margin-bottom: 15px;
 }
 @media only screen and (max-width: 1380px) and (min-width: 1025px) {

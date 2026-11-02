@@ -447,7 +447,7 @@ function pplus_render_suggest_header(?string $active_alias = null): void {
                     if ($item_alias === '') continue; ?>
                     <a href="<?php echo esc_url(home_url($lang_prefix . '/cho-thue-can-ho/ha-noi/' . $item_alias . '/')); ?>" class="suggest-item<?php echo ($active_alias !== null && $item_alias === $active_alias) ? ' active' : ''; ?>">
                         <i class="item-img">
-                            <img src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="<?php echo esc_attr($item['subTitle'] ?? ''); ?>" loading="lazy" />
+                            <img src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="" loading="lazy" />
                         </i>
                         <div class="item-title"><?php echo esc_html($item['subTitle'] ?? ''); ?></div>
                     </a>
