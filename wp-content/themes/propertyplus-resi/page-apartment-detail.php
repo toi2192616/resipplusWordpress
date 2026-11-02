@@ -44,13 +44,13 @@ $lang_prefix = pplus_lang_prefix();
 
 // photoList o day la MANG CHUOI URL truc tiep (khac han Office: mang {url,alt}) - xac nhan qua
 // curl truc tiep. "\" trong duong dan (bug .NET goc) da duoc pplus_admin_asset_url() tu chuan hoa.
-$photos = array_values(array_filter(array_map(
-    static fn($p) => pplus_admin_asset_url((string) $p),
-    $detail['photoList'] ?? []
-)));
+// pplus_photo_variants(): anh chinh (800x600) + ban 400x300 THAT neu backend co (ten "<ten>_400x300.<duoi>"); chua co thi theme tu tao tu anh 800.
+$pplus_variants = pplus_photo_variants($detail);
+$photos         = $pplus_variants['photos'];
+$photos_small   = $pplus_variants['small'];
 // 5 anh dau (anh lon + 4 thumbnail) xep hang doi tao WebP 400/800 TRUOC danh sach lightbox (hang doi co gioi han tung request).
-foreach (array_slice($photos, 0, 5) as $pplus_warm_photo) {
-    pplus_photo_sources($pplus_warm_photo, '');
+foreach (array_slice($photos, 0, 5) as $pplus_warm_i => $pplus_warm_photo) {
+    pplus_photo_sources($pplus_warm_photo, '', $photos_small[$pplus_warm_i] ?? '');
 }
 // Lightbox: ban WebP 800 neu da cache (xem inc/image-webp.php), khong thi anh goc.
 $fotorama_photos = array_map(static fn(string $url): array => ['img' => pplus_webp_url($url, 800)], $photos);
@@ -71,7 +71,7 @@ $pplus_lcp_image = $pplus_yt_id !== '' ? 'https://i.ytimg.com/vi/' . $pplus_yt_i
     : (empty($detail['videoUrl']) && !empty($photos[0]) ? $photos[0] : '');
 if ($pplus_lcp_image !== '') {
     // Anh dau co ban 400w/800w (xem pplus_photo_sources): preload DUNG bo srcset/sizes cua <img> de trinh duyet chi tai 1 ban.
-    $pplus_lcp_src = $pplus_lcp_image === ($photos[0] ?? null) ? pplus_photo_sources($pplus_lcp_image, $pplus_hero_sizes) : ['src' => $pplus_lcp_image, 'srcset' => '', 'sizes' => ''];
+    $pplus_lcp_src = $pplus_lcp_image === ($photos[0] ?? null) ? pplus_photo_sources($pplus_lcp_image, $pplus_hero_sizes, $photos_small[0] ?? '') : ['src' => $pplus_lcp_image, 'srcset' => '', 'sizes' => ''];
     add_action('wp_head', static function () use ($pplus_lcp_src) {
         if ($pplus_lcp_src['srcset'] !== '') {
             printf('<link rel="preload" as="image" href="%s" imagesrcset="%s" imagesizes="%s" fetchpriority="high" />' . "\n", esc_url($pplus_lcp_src['src']), esc_attr($pplus_lcp_src['srcset']), esc_attr($pplus_lcp_src['sizes']));
@@ -162,7 +162,7 @@ get_header();
                     <div class="c1">
                         <div class="photo1-ctn">
                             <a class="photoLink" href="<?php echo esc_url($photos[0]); ?>" data-photo-index="0" target="_blank" rel="noopener">
-                                <img <?php echo pplus_photo_img_attrs($photos[0], $pplus_hero_sizes); ?> alt="<?php echo esc_attr($detail['projectName'] ?? ''); ?>" fetchpriority="high" />
+                                <img <?php echo pplus_photo_img_attrs($photos[0], $pplus_hero_sizes, $photos_small[0] ?? ''); ?> alt="<?php echo esc_attr($detail['projectName'] ?? ''); ?>" fetchpriority="high" />
                             </a>
                         </div>
                     </div>
@@ -181,7 +181,7 @@ get_header();
                     <?php for ($i = $thumb_offset; $i < $thumb_offset + 2; $i++) : if (empty($photos[$i])) continue; ?>
                         <div class="photo<?php echo ($i - $thumb_offset + 2); ?>-ctn">
                             <a class="photoLink" href="<?php echo esc_url($photos[$i]); ?>" data-photo-index="<?php echo (int) $i; ?>" target="_blank" rel="noopener">
-                                <img <?php echo pplus_photo_img_attrs($photos[$i], $pplus_thumb_sizes); ?> alt="" loading="lazy" />
+                                <img <?php echo pplus_photo_img_attrs($photos[$i], $pplus_thumb_sizes, $photos_small[$i] ?? ''); ?> alt="" loading="lazy" />
                             </a>
                         </div>
                     <?php endfor; ?>
@@ -190,7 +190,7 @@ get_header();
                     <?php for ($i = $thumb_offset + 2; $i < $thumb_offset + 4; $i++) : if (empty($photos[$i])) continue; ?>
                         <div class="photo<?php echo ($i - $thumb_offset + 2); ?>-ctn">
                             <a class="photoLink" href="<?php echo esc_url($photos[$i]); ?>" data-photo-index="<?php echo (int) $i; ?>" target="_blank" rel="noopener">
-                                <img <?php echo pplus_photo_img_attrs($photos[$i], $pplus_thumb_sizes); ?> alt="" loading="lazy" />
+                                <img <?php echo pplus_photo_img_attrs($photos[$i], $pplus_thumb_sizes, $photos_small[$i] ?? ''); ?> alt="" loading="lazy" />
                             </a>
                         </div>
                     <?php endfor; ?>
@@ -469,7 +469,7 @@ get_header();
                     <?php foreach ($model['listUser'] as $item) : ?>
                         <div class="item">
                             <?php // Anh tu van vien (PNG 146-172KB/anh tu admin) - luon duoi man hinh dau -> hoan toi load+1s. ?>
-                            <div><?php echo pplus_defer_lazy_imgs('<img src="' . esc_url(pplus_admin_asset_url($item['img'] ?? '')) . '" alt="' . esc_attr($item['title'] ?? '') . '" loading="lazy" />'); ?></div>
+                            <div><?php echo pplus_defer_lazy_imgs('<img src="' . esc_url(pplus_webp_url(pplus_admin_asset_url($item['img'] ?? ''), 110)) . '" alt="' . esc_attr($item['title'] ?? '') . '" loading="lazy" />'); ?></div>
                             <div class="item-content">
                                 <label class="text-1"><?php echo esc_html($item['title'] ?? ''); ?></label>
                                 <br />

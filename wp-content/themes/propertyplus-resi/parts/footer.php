@@ -207,7 +207,7 @@ $rsEmail    = !empty($company['email']) ? explode('|', (string) $company['email'
         <?php foreach ((array) ($footer['listUser'] ?? []) as $item) : ?>
           <div class="action-2 show-contact-user" data-id="modal-container4" data-pplus-open-modal="modal-container4" data-content="<?php echo esc_attr(pplus_localize('Gửi') . ' ' . ($item['title'] ?? '')); ?>">
             <div class="item">
-              <div><img src="<?php echo esc_url($asset_base . '/' . ltrim((string) ($item['imgSizeV'] ?? ''), '/')); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" /></div>
+              <div><img src="<?php echo esc_url(pplus_webp_url($asset_base . '/' . ltrim((string) ($item['imgSizeV'] ?? ''), '/'), 110)); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" /></div>
               <div class="item-content">
                 <label class="text-1"><?php echo esc_html($item['title'] ?? ''); ?></label><br />
                 <div class="text-2"><?php echo wp_kses_post($item['content'] ?? ''); ?></div>

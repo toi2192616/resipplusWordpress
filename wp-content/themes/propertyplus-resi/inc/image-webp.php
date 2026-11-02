@@ -22,7 +22,8 @@ if (!defined('ABSPATH')) {
 
 const PPLUS_WEBP_QUALITY   = 80;
 const PPLUS_WEBP_MAX_BYTES = 4194304; // nguon > 4MB: bo qua
-const PPLUS_WEBP_BATCH     = 32;
+const PPLUS_WEBP_BATCH     = 24; // so anh moi lan WP-Cron (nhieu hon thi chia nhieu su kien)
+const PPLUS_WEBP_QUEUE_MAX = 72; // so anh toi da xep hang trong 1 request
 const PPLUS_WEBP_CRON_HOOK = 'pplus_webp_batch';
 const PPLUS_WEBP_CLEAN_HOOK = 'pplus_webp_cleanup';
 
@@ -114,7 +115,13 @@ function pplus_webp_url(string $url, int $max_w = 0): string {
  *
  * @return array{src:string,srcset:string,sizes:string}
  */
-function pplus_photo_sources(string $url, string $sizes): array {
+function pplus_photo_sources(string $url, string $sizes, string $small = ''): array {
+    if ($small !== '') {
+        // Co file 400x300 THAT (backend da bo sung): dung no lam ung vien 400w (WebP neu da cache, khong thi chinh file do) - co srcset ngay tu lan xem dau.
+        $big = pplus_webp_url($url, 800);
+        $lit = pplus_webp_url($small, 400);
+        return ['src' => $big, 'srcset' => $lit . ' 400w, ' . $big . ' 800w', 'sizes' => $sizes];
+    }
     $w400 = pplus_webp_cached($url, 400);
     $w800 = pplus_webp_cached($url, 800);
     if ($w400 !== '' && $w800 !== '') {
@@ -124,8 +131,8 @@ function pplus_photo_sources(string $url, string $sizes): array {
 }
 
 /** Chuoi thuoc tinh `src="..." [srcset="..." sizes="..."]` cho <img> tu pplus_photo_sources(). */
-function pplus_photo_img_attrs(string $url, string $sizes): string {
-    $s   = pplus_photo_sources($url, $sizes);
+function pplus_photo_img_attrs(string $url, string $sizes, string $small = ''): string {
+    $s   = pplus_photo_sources($url, $sizes, $small);
     $out = 'src="' . esc_url($s['src']) . '"';
     if ($s['srcset'] !== '') {
         $out .= ' srcset="' . esc_attr($s['srcset']) . '" sizes="' . esc_attr($s['sizes']) . '"';
@@ -138,7 +145,7 @@ function pplus_webp_enqueue(string $url, int $max_w): void {
     static $queue = [];
     static $registered = false;
     $key = pplus_webp_key($url, $max_w);
-    if (isset($queue[$key]) || count($queue) >= PPLUS_WEBP_BATCH) {
+    if (isset($queue[$key]) || count($queue) >= PPLUS_WEBP_QUEUE_MAX) {
         return;
     }
     // Chong xep trung giua cac request dong thoi (khoa 10 phut).
@@ -159,8 +166,12 @@ function pplus_webp_enqueue(string $url, int $max_w): void {
         if (function_exists('fastcgi_finish_request')) {
             fastcgi_finish_request();
             pplus_webp_process($jobs);
-        } elseif (!wp_next_scheduled(PPLUS_WEBP_CRON_HOOK, [$jobs])) {
-            wp_schedule_single_event(time(), PPLUS_WEBP_CRON_HOOK, [$jobs]);
+        } else {
+            foreach (array_chunk($jobs, PPLUS_WEBP_BATCH) as $i => $chunk) {
+                if (!wp_next_scheduled(PPLUS_WEBP_CRON_HOOK, [$chunk])) {
+                    wp_schedule_single_event(time() + $i, PPLUS_WEBP_CRON_HOOK, [$chunk]);
+                }
+            }
         }
     });
 }
@@ -176,9 +187,9 @@ function pplus_webp_process(array $jobs): void {
     }
     $dirs = pplus_webp_dir();
     if (function_exists('set_time_limit')) {
-        @set_time_limit(60);
+        @set_time_limit(120);
     }
-    foreach (array_slice($jobs, 0, PPLUS_WEBP_BATCH) as $job) {
+    foreach ($jobs as $job) {
         [$url, $max_w] = [(string) ($job[0] ?? ''), (int) ($job[1] ?? 0)];
         $parts = wp_parse_url($url);
         if ($url === '' || empty($parts['host']) || !pplus_webp_allowed_host($parts['host'])) {
@@ -241,6 +252,46 @@ function pplus_webp_convert(string $url, string $file, int $max_w): bool {
         return is_file($file);
     }
     return true;
+}
+
+/**
+ * Tach anh trang chi tiet thanh danh sach "chinh" (800x600) + ban 400x300 THAT neu backend co: quet photoList va moi khoa photoList2/photoList3/...
+ * (phan tu la URL hoac {url}); URL co hau to "_400x300" la ban nho, ghep voi anh chinh cung TEN (bo duoi file, bo hau to _NxM/_type1..3, khong
+ * phan biet hoa/thuong); moi anh khac (ke ca "_800x600") la anh chinh. API Resi hien chi co photoList (800x600) nen "small" rong -> theme tu tao
+ * ban 400 tu anh 800. Khi bo sung anh 400x300 (dat ten file "<ten>_400x300.<duoi>", tra ve trong photoList hoac photoList2/3) tu dung ban that.
+ *
+ * @return array{photos:string[],small:string[]} small[i] la URL ban 400x300 cua photos[i] hoac ''
+ */
+function pplus_photo_variants(array $detail): array {
+    $key_of = static function (string $url): string {
+        $name = pathinfo(rawurldecode((string) wp_parse_url($url, PHP_URL_PATH)), PATHINFO_FILENAME);
+        return strtolower((string) preg_replace('~([-_](?:\d+x\d+|type\d))+$~i', '', $name));
+    };
+    $masters = [];
+    $smalls  = [];
+    foreach ($detail as $field => $list) {
+        if (!is_array($list) || !preg_match('~^photoList\d*$~i', (string) $field)) {
+            continue;
+        }
+        foreach ($list as $p) {
+            $u = pplus_admin_asset_url((string) (is_array($p) ? ($p['url'] ?? $p['Url'] ?? '') : $p));
+            if ($u === '') {
+                continue;
+            }
+            if (preg_match('~_400x300\.[a-z0-9]+$~i', (string) wp_parse_url($u, PHP_URL_PATH))) {
+                $smalls[$key_of($u)] = $u;
+            } elseif (strcasecmp((string) $field, 'photoList') === 0) {
+                $masters[] = $u; // photoList2/3... chi dong gop ban "_400x300"; anh chinh khac o do khong dung lam anh hien thi
+            }
+        }
+    }
+    $photos = [];
+    $small  = [];
+    foreach ($masters as $u) {
+        $photos[] = $u;
+        $small[]  = $smalls[$key_of($u)] ?? '';
+    }
+    return ['photos' => $photos, 'small' => $small];
 }
 
 /**
