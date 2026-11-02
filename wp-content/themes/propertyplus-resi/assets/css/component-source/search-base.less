@@ -890,15 +890,19 @@
         // .box-map (position:fixed, z-index:1002) tu tao stacking context - phai cao hon.
         z-index: 1003;
         scroll-snap-type: x mandatory;
+        scroll-padding: 0 15px;
         -webkit-overflow-scrolling: touch;
 
         .list-product-office {
             display: inline-flex;
 
+            // 2/11/2026: the rong hon 10px (300 -> 310 o man 375px) va canh TRAI (snap "start" + scroll-padding 15px): luon thay 1 the day du +
+            // mot doan nho (~35px) cua the ke tiep o ben phai de nguoi dung biet vuot duoc. Rong = man hinh - 65px (gioi han 280-340px).
             .item-office {
                 float: left;
-                width: 300px;
-                scroll-snap-align: center;
+                flex: 0 0 auto;
+                width: clamp(280px, calc(100vw - 65px), 340px);
+                scroll-snap-align: start;
                 margin-right: 15px;
                 padding: 10px;
                 box-shadow: 0px 3px 6.5px 0px #00000033;
@@ -910,14 +914,14 @@
                 }
 
                 img {
-                    width: 95px;
+                    width: 103px;
                     margin-right: 0px;
                     border-radius: 8px;
                     margin-top: 7px;
                 }
 
                 .item-content-m {
-                    width: calc(100% - 100px);
+                    width: calc(100% - 108px);
                     float: right;
 
                     .object--info {

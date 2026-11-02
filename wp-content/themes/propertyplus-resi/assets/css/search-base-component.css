@@ -566,15 +566,20 @@
     padding: 0 15px;
     z-index: 1003;
     scroll-snap-type: x mandatory;
+    scroll-padding: 0 15px;
     -webkit-overflow-scrolling: touch;
   }
   .box-list-body-mobile .list-product-office {
     display: inline-flex;
   }
+  /* 2/11/2026: the rong hon 10px (300 -> 310 o man 375px) va canh TRAI (snap "start" + scroll-padding 15px): thay vi chia deu 2 ben nhu truoc,
+     luon thay 1 the day du + mot doan nho (~35px) cua the ke tiep o ben phai de nguoi dung biet vuot duoc. Rong = man hinh - 65px (gioi han
+     280-340px): the 1 chiem 15px le trai + the + 15px khoang cach, phan con lai la "mat" the ke tiep. */
   .box-list-body-mobile .list-product-office .item-office {
     float: left;
-    width: 300px;
-    scroll-snap-align: center;
+    flex: 0 0 auto;
+    width: clamp(280px, calc(100vw - 65px), 340px);
+    scroll-snap-align: start;
     margin-right: 15px;
     padding: 10px;
     box-shadow: 0px 3px 6.5px 0px #00000033;
@@ -585,13 +590,13 @@
     display: none;
   }
   .box-list-body-mobile .list-product-office .item-office img {
-    width: 95px;
+    width: 103px;
     margin-right: 0px;
     border-radius: 8px;
     margin-top: 7px;
   }
   .box-list-body-mobile .list-product-office .item-office .item-content-m {
-    width: calc(100% - 100px);
+    width: calc(100% - 108px);
     float: right;
   }
   .box-list-body-mobile .list-product-office .item-office .item-content-m .object--info {

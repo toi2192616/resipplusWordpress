@@ -253,7 +253,7 @@
       if (window.matchMedia('(max-width: 880px)').matches) {
         var card = document.querySelector('.box-list-body-mobile .item-office[data-id="' + item.id + '"]');
         if (card) {
-          card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          card.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
           return;
         }
       }

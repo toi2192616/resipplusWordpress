@@ -176,7 +176,7 @@
                     if (!card) {
                         return false;
                     }
-                    card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    card.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
                     setActiveMarker(m.id);
                     return true;
                 });
