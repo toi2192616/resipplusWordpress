@@ -30,16 +30,66 @@
         return null;
       }
     }
-    function writeStore(label, alias) {
+    function writeStore(label, alias, filter) {
       try {
-        window.sessionStorage.setItem(STORE_KEY, JSON.stringify({ label: label, alias: alias }));
+        window.sessionStorage.setItem(STORE_KEY, JSON.stringify({ label: label, alias: alias, filter: filter || null }));
       } catch (e) { /* private mode: bo qua */ }
     }
+    // Goi y -> man "tuy chon": cac truong loc ma goi y mang theo (data-filter, xem pplus_suggestion_option_filter()) duoc dien san vao man tuy chon
+    // (so phong ngu/tam to mau nut tuong ung, dien tich, gia, tang). mapped = cac truong DO GOI Y dat - chon goi y khac thi tra ve mac dinh dung
+    // cac truong do (khong dong vao cac o nguoi dung tu nhap).
+    var mapped = [];
+    var CHIP_FIELDS = { bedroom_qty: 'pplus-m-bedroom-qty', bathroom_qty: 'pplus-m-bathroom-qty' };
+    var INPUT_FIELDS = {
+      price_from: '#pplus-m-price-from', price_to: '#pplus-m-price-to',
+      area_from: '#pplus-m-area-from', area_to: '#pplus-m-area-to',
+      floor_from: '#pplus-m-floor-from', floor_to: '#pplus-m-floor-to'
+    };
+    function setChip(inputId, value) {
+      var $group = $('.list-value-select[data-input="' + inputId + '"]');
+      var $items = $group.find('.list-value-item');
+      var $match = value === '' ? $items.filter('.value-item-all') : $items.filter(function () { return String($(this).attr('data-value')) === String(value); });
+      if (!$match.length) {
+        $match = $items.filter('.value-item-all');
+        value = '';
+      }
+      $items.removeClass('action');
+      $match.addClass('action');
+      $('#' + inputId).val(value);
+      var scroller = $group.closest('.rs-mobile-list-value')[0];
+      if (scroller && $match[0]) {
+        window.setTimeout(function () { scroller.scrollLeft = Math.max(0, $match[0].offsetLeft - 24); }, 60);
+      }
+    }
+    function applySuggestionFilter(filter) {
+      $.each(mapped, function (_, key) {
+        if (CHIP_FIELDS[key]) {
+          setChip(CHIP_FIELDS[key], '');
+        } else if (INPUT_FIELDS[key]) {
+          $(INPUT_FIELDS[key]).val('');
+        }
+      });
+      mapped = [];
+      if (!filter || typeof filter !== 'object') {
+        return;
+      }
+      $.each(filter, function (key, value) {
+        if (CHIP_FIELDS[key]) {
+          setChip(CHIP_FIELDS[key], value);
+          mapped.push(key);
+        } else if (INPUT_FIELDS[key]) {
+          $(INPUT_FIELDS[key]).val(value);
+          mapped.push(key);
+        }
+      });
+    }
+
     var saved = readStore();
     if (saved && saved.alias && window.location.pathname.indexOf('/' + saved.alias) > -1) {
       $toolInput.val(saved.label);
       $filter.val(saved.label);
       selectedAlias = saved.alias;
+      applySuggestionFilter(saved.filter);
     }
 
     function syncFilterButtons() {
@@ -100,10 +150,12 @@
         onType: function () {
           selection = null;
           selectedAlias = '';
+          applySuggestionFilter(null);
         },
         onPick: function (sel) {
           selection = sel;
           selectedAlias = '';
+          applySuggestionFilter(null);
           $toolInput.val(sel.label);
           syncFilterButtons();
           applyStep(currentStep() + 1);
@@ -120,6 +172,7 @@
     $btnDelete.on('click', function () {
       $filter.val('').trigger('input').trigger('focus');
       selectedAlias = '';
+      applySuggestionFilter(null);
       syncFilterButtons();
     });
 
@@ -133,9 +186,11 @@
       selection = null;
       selectedAlias = $item.data('alias') || '';
       var label = $item.data('label') || '';
+      var optionFilter = $item.data('filter') || null;
       $filter.val(label);
       $toolInput.val(label);
-      writeStore(label, selectedAlias);
+      applySuggestionFilter(optionFilter);
+      writeStore(label, selectedAlias, optionFilter);
       syncFilterButtons();
       applyStep(currentStep() + 1);
     });

@@ -129,7 +129,7 @@ $bedbath_values = range(1, 8); // listValue = [1..8] (search-base.component.ts d
                                                                             if ($item_alias === '') continue;
                                                                             $item_label = trim((string) ($item['subTitle'] ?? ''));
                                                                         ?>
-                                                                            <div class="item-content-district-data item-suggest" role="button" tabindex="0" data-alias="<?php echo esc_attr(trim($item_alias)); ?>" data-label="<?php echo esc_attr($item_label); ?>">
+                                                                            <div class="item-content-district-data item-suggest" role="button" tabindex="0" data-alias="<?php echo esc_attr(trim($item_alias)); ?>" data-label="<?php echo esc_attr($item_label); ?>"<?php $pplus_sm_filter = pplus_suggestion_option_filter($item); echo $pplus_sm_filter ? ' data-filter="' . esc_attr(wp_json_encode($pplus_sm_filter)) . '"' : ''; ?>>
                                                                                 <figure class="icon-suggest">
                                                                                     <img title="ListProject" src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="" onerror="this.src='<?php echo esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/logo-96.webp'); ?>'" loading="lazy" />
                                                                                 </figure>

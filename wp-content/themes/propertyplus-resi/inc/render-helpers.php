@@ -120,6 +120,49 @@ if (!defined('PPLUS_BLANK_GIF')) {
 }
 
 /**
+ * Bo loc ma 1 GOI Y tim kiem (quan / loai phong / khu vuc, API Apartment/_GetAllDistrict) mang san trong "jsonSearch", CHI giu cac truong
+ * co o man "tuy chon" cua panel tim kiem (so phong ngu/tam, dien tich, gia, tang) - de chon "03 Phong Ngu" o man goi y thi sang man tuy chon
+ * o "Phong ngu" tu to mau "3" (Studio -> 1 phong ngu + dien tich toi da 49m2). Gia tri mac dinh (gia 0..12000/15000, dien tich toi da
+ * 1000 = "khong gioi han") bi bo - chi hien khi goi y thuc su gioi han.
+ *
+ * @return array<string,int>
+ */
+function pplus_suggestion_option_filter(array $item): array {
+    $raw = json_decode((string) ($item['jsonSearch'] ?? ''), true);
+    if (!is_array($raw)) {
+        return [];
+    }
+    $num = static function (string $key) use ($raw): int {
+        return isset($raw[$key]) && is_numeric($raw[$key]) ? (int) $raw[$key] : 0;
+    };
+    $out = [];
+    foreach (['bedroom_qty', 'bathroom_qty'] as $key) {
+        if ($num($key) >= 1 && $num($key) <= 8) {
+            $out[$key] = $num($key);
+        }
+    }
+    if ($num('area_from') > 0) {
+        $out['area_from'] = $num('area_from');
+    }
+    if ($num('area_to') > 0 && $num('area_to') < 1000) {
+        $out['area_to'] = $num('area_to');
+    }
+    if ($num('floor_from') > 0) {
+        $out['floor_from'] = $num('floor_from');
+    }
+    if ($num('floor_to') > 0) {
+        $out['floor_to'] = $num('floor_to');
+    }
+    if ($num('price_from') > 0) {
+        $out['price_from'] = $num('price_from');
+    }
+    if ($num('price_to') > 0 && $num('price_to') < 12000) {
+        $out['price_to'] = $num('price_to');
+    }
+    return $out;
+}
+
+/**
  * 23/10/2026 (port tu ban Van phong 004cbfe): hoan anh "loading=lazy" nam DUOI man hinh dau - src = GIF 1x1, anh that o
  * data-pplus-src (+ data-pplus-srcset) va <noscript>, nap lai boi pplus_print_deferred_img_loader() 1 GIAY sau "load"
  * hoac ngay khi nguoi dung cuon/cham/bam phim.

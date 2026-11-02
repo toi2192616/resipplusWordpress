@@ -16,6 +16,51 @@
     var $detailInput = $('#search-modal-input2');
     var selectedAlias = '';
 
+    // Goi y -> o "Chi tiết": cac truong loc ma goi y mang theo (data-filter, xem pplus_suggestion_option_filter()) duoc dien san (so phong
+    // ngu/tam to mau nut tuong ung, dien tich, gia, tang). mapped = cac truong DO GOI Y dat - chon goi y khac thi tra ve mac dinh dung cac
+    // truong do, khong dong vao o nguoi dung tu nhap. (Cung co che voi pplus-search-mobile.js.)
+    var mapped = [];
+    var CHIP_FIELDS = { bedroom_qty: 'pplus-bedroom-qty', bathroom_qty: 'pplus-bathroom-qty' };
+    var INPUT_FIELDS = {
+      price_from: '#pplus-price-from', price_to: '#pplus-price-to',
+      area_from: '#pplus-area-from', area_to: '#pplus-area-to',
+      floor_from: '#pplus-floor-from', floor_to: '#pplus-floor-to'
+    };
+    function setChip(inputId, value) {
+      var $group = $('.list-value-select[data-input="' + inputId + '"]');
+      var $items = $group.find('.list-value-item');
+      var $match = value === '' ? $items.filter('.value-item-all') : $items.filter(function () { return String($(this).attr('data-value')) === String(value); });
+      if (!$match.length) {
+        $match = $items.filter('.value-item-all');
+        value = '';
+      }
+      $items.removeClass('action');
+      $match.addClass('action');
+      $('#' + inputId).val(value);
+    }
+    function applySuggestionFilter(filter) {
+      $.each(mapped, function (_, key) {
+        if (CHIP_FIELDS[key]) {
+          setChip(CHIP_FIELDS[key], '');
+        } else if (INPUT_FIELDS[key]) {
+          $(INPUT_FIELDS[key]).val('');
+        }
+      });
+      mapped = [];
+      if (!filter || typeof filter !== 'object') {
+        return;
+      }
+      $.each(filter, function (key, value) {
+        if (CHIP_FIELDS[key]) {
+          setChip(CHIP_FIELDS[key], value);
+          mapped.push(key);
+        } else if (INPUT_FIELDS[key]) {
+          $(INPUT_FIELDS[key]).val(value);
+          mapped.push(key);
+        }
+      });
+    }
+
     // Bam 1 goi y: dien ten vao o Location, chuyen focus sang o "Chi tiết" - viec doi focus nay TU
     // KICH HOAT ":focus-within" CSS co san (header.less): dong luoi goi y cua Location (khong con
     // ":focus-within" tren ".search-option" cua no), mo panel "Chi tiết" (".long-term-s3") cua o
@@ -39,6 +84,7 @@
       selection = null;
       selectedAlias = $item.data('alias') || '';
       $locationInput.val($item.data('label') || '');
+      applySuggestionFilter($item.data('filter') || null);
       $suggestList.addClass('pplus-force-hide');
       $detailInput.trigger('focus');
     });
@@ -59,10 +105,12 @@
         onType: function () {
           selection = null;
           selectedAlias = '';
+          applySuggestionFilter(null);
         },
         onPick: function (sel) {
           selection = sel;
           selectedAlias = '';
+          applySuggestionFilter(null);
           $suggestList.addClass('pplus-force-hide');
           $detailInput.trigger('focus');
         }

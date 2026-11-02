@@ -2072,27 +2072,40 @@
 
     .search-home-mobile {
         display: flex;
-        position: unset;
+        align-items: center;
+        position: relative;
         background: white;
         height: 55px;
         border-radius: 10px;
         width: 100%;
         border: 1px solid #DFDFDF;
 
+        &:focus-within {
+            border-color: #2D5185;
+        }
+
+        // 2/11/2026: nut xoa chu (x) va kinh lup nam TRONG o (truoc day dich ra ngoai khung bang right:-25px).
         button {
-            width: 55px;
+            width: 40px;
+            height: 100%;
+            flex: 0 0 auto;
             background-color: transparent;
             border: none;
             padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            right: -25px;
+            position: static;
         }
 
         .btn-delete-text {
             color: #000000b3;
+            order: 1;
+        }
+
+        .btn-search-notext {
+            order: 2;
+            margin-right: 4px;
         }
     }
 
@@ -2110,7 +2123,18 @@
         font-weight: 400;
         line-height: 21px;
         border: none;
-        width: calc(100% - 55px);
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+        height: 100%;
+        padding-right: 6px;
+        outline: none;
+        box-shadow: none;
+
+        &:focus {
+            outline: none;
+            box-shadow: none;
+        }
     }
 
     .tab-header {
@@ -2329,8 +2353,42 @@
             width: calc(100% + 28px);
         }
 
+        .rs-mobile-list-value {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
         .rs-mobile-list-value::-webkit-scrollbar {
             display: none;
+        }
+
+        // 2/11/2026: 2 o gia chia deu 1 hang, ngan gon (bo chu "Nhap so" trong o, nhan khong xuong dong).
+        .choose-price > div {
+            display: flex;
+            gap: 8px;
+        }
+
+        .choose-price .group-price-ranger-item {
+            flex: 1 1 0;
+            min-width: 0;
+            float: none;
+            margin-right: 0;
+            padding: 6px 10px;
+            justify-content: flex-start;
+            gap: 6px;
+        }
+
+        .choose-price .ranger-label {
+            width: auto;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .choose-price .ranger-input.group-price-ranger-item-c1 {
+            flex: 1 1 auto;
+            width: 100%;
+            min-width: 0;
+            text-align: right;
         }
     }
 

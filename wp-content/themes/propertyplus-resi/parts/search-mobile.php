@@ -66,7 +66,7 @@ $pplus_sm_values      = range(1, 8); // listValue = [1..8] (search-base.componen
                             if ($pplus_sm_alias === '') continue;
                             $pplus_sm_label = trim((string) ($pplus_sm_item['subTitle'] ?? ''));
                         ?>
-                            <div class="item-content-district-data item-suggest" role="button" tabindex="0" data-alias="<?php echo esc_attr($pplus_sm_alias); ?>" data-label="<?php echo esc_attr($pplus_sm_label); ?>">
+                            <div class="item-content-district-data item-suggest" role="button" tabindex="0" data-alias="<?php echo esc_attr($pplus_sm_alias); ?>" data-label="<?php echo esc_attr($pplus_sm_label); ?>"<?php $pplus_sm_filter = pplus_suggestion_option_filter($pplus_sm_item); echo $pplus_sm_filter ? ' data-filter="' . esc_attr(wp_json_encode($pplus_sm_filter)) . '"' : ''; ?>>
                                 <figure class="icon-suggest">
                                     <img title="ListProject" src="<?php echo esc_url(pplus_admin_asset_url($pplus_sm_item['img'] ?? '')); ?>" alt="" onerror="this.src='<?php echo esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/logo-96.webp'); ?>'" loading="lazy" />
                                 </figure>
@@ -101,12 +101,12 @@ $pplus_sm_values      = range(1, 8); // listValue = [1..8] (search-base.componen
                             <div>
                                 <div class="group-price-ranger-item">
                                     <label class="ranger-label group-price-ranger-item-t1" for="pplus-m-price-from"><?php echo esc_html(pplus_localize('Giá tối thiểu')); ?></label>
-                                    <input class="ranger-input group-price-ranger-item-c1 min" name="price_from" id="pplus-m-price-from" type="text" inputmode="numeric" min="0" max="15000" placeholder="<?php echo esc_attr(pplus_localize('Nhập số')); ?> ..." />
+                                    <input class="ranger-input group-price-ranger-item-c1 min" name="price_from" id="pplus-m-price-from" type="text" inputmode="numeric" min="0" max="15000" aria-label="<?php echo esc_attr(pplus_localize('Giá tối thiểu')); ?>" />
                                     <span class="ranger-currency">$</span>
                                 </div>
                                 <div class="group-price-ranger-item group-price-ranger-item2">
                                     <label class="ranger-label group-price-ranger-item-t1" for="pplus-m-price-to"><?php echo esc_html(pplus_localize('Giá tối đa')); ?></label>
-                                    <input class="ranger-input group-price-ranger-item-c1 max" name="price_to" id="pplus-m-price-to" type="text" inputmode="numeric" min="0" max="15000" placeholder="<?php echo esc_attr(pplus_localize('Nhập số')); ?> ..." />
+                                    <input class="ranger-input group-price-ranger-item-c1 max" name="price_to" id="pplus-m-price-to" type="text" inputmode="numeric" min="0" max="15000" aria-label="<?php echo esc_attr(pplus_localize('Giá tối đa')); ?>" />
                                     <span class="ranger-currency">$</span>
                                 </div>
                             </div>
