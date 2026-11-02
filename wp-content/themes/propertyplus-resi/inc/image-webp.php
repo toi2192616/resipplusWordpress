@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
 
 const PPLUS_WEBP_QUALITY   = 80;
 const PPLUS_WEBP_MAX_BYTES = 4194304; // nguon > 4MB: bo qua
-const PPLUS_WEBP_BATCH     = 12;
+const PPLUS_WEBP_BATCH     = 32;
 const PPLUS_WEBP_CRON_HOOK = 'pplus_webp_batch';
 const PPLUS_WEBP_CLEAN_HOOK = 'pplus_webp_cleanup';
 
@@ -76,18 +76,17 @@ function pplus_webp_key(string $url, int $max_w): string {
 }
 
 /**
- * URL anh WebP da cache neu co; chua co thi tra ve $url goc va xep hang doi tao SAU khi tra trang.
- * Khong bao gio chan request hien tai.
+ * URL anh WebP (chieu rong toi da $max_w) neu DA co trong cache, nguoc lai '' - va xep hang doi tao SAU khi tra trang (khong chan request).
  */
-function pplus_webp_url(string $url, int $max_w = 0): string {
+function pplus_webp_cached(string $url, int $max_w = 0): string {
     if ($url === '' || !pplus_webp_enabled() || !preg_match('#^https?://#i', $url)) {
-        return $url;
+        return '';
     }
     $parts = wp_parse_url($url);
     $host  = $parts['host'] ?? '';
     $path  = $parts['path'] ?? '';
     if ($host === '' || !pplus_webp_allowed_host($host) || !preg_match('#\.(jpe?g|png)$#i', $path)) {
-        return $url;
+        return '';
     }
     $dirs = pplus_webp_dir();
     $key  = pplus_webp_key($url, $max_w);
@@ -96,11 +95,42 @@ function pplus_webp_url(string $url, int $max_w = 0): string {
         return $dirs['url'] . '/' . $key . '.webp';
     }
     $skip = $file . '.skip';
-    if (is_file($skip) && filemtime($skip) > time() - 6 * HOUR_IN_SECONDS) {
-        return $url;
+    if (!is_file($skip) || filemtime($skip) <= time() - 6 * HOUR_IN_SECONDS) {
+        pplus_webp_enqueue($url, $max_w);
     }
-    pplus_webp_enqueue($url, $max_w);
-    return $url;
+    return '';
+}
+
+/** Nhu pplus_webp_cached() nhung chua co thi tra ve $url goc. */
+function pplus_webp_url(string $url, int $max_w = 0): string {
+    $cached = pplus_webp_cached($url, $max_w);
+    return $cached !== '' ? $cached : $url;
+}
+
+/**
+ * Anh 2 co 400w / 800w cho 1 anh nguon 800x600: API Resi chi tra 1 danh sach anh (800x600, ~120KB/anh) nen theme TU TAO 2 ban WebP
+ * (800w ~50KB, 400w ~15KB) - mobile/man thuong lay 400w, man retina/lon lay 800w qua srcset. Chua du 2 ban trong cache -> anh goc,
+ * khong srcset (lan xem sau co du).
+ *
+ * @return array{src:string,srcset:string,sizes:string}
+ */
+function pplus_photo_sources(string $url, string $sizes): array {
+    $w400 = pplus_webp_cached($url, 400);
+    $w800 = pplus_webp_cached($url, 800);
+    if ($w400 !== '' && $w800 !== '') {
+        return ['src' => $w800, 'srcset' => $w400 . ' 400w, ' . $w800 . ' 800w', 'sizes' => $sizes];
+    }
+    return ['src' => $w800 !== '' ? $w800 : $url, 'srcset' => '', 'sizes' => ''];
+}
+
+/** Chuoi thuoc tinh `src="..." [srcset="..." sizes="..."]` cho <img> tu pplus_photo_sources(). */
+function pplus_photo_img_attrs(string $url, string $sizes): string {
+    $s   = pplus_photo_sources($url, $sizes);
+    $out = 'src="' . esc_url($s['src']) . '"';
+    if ($s['srcset'] !== '') {
+        $out .= ' srcset="' . esc_attr($s['srcset']) . '" sizes="' . esc_attr($s['sizes']) . '"';
+    }
+    return $out;
 }
 
 /** Hang doi tao WebP cua request hien tai, xu ly sau khi tra trang. */
