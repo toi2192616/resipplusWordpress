@@ -274,6 +274,25 @@ body.modal-active {
   color: #3E5FB4;
 }
 @media only screen and (max-width: 1024px) {
+  /* Nut "Tim kiem" noi bat nhu thanh duoi cua web Office (propertyplus.vn): khung nen xanh logo (#3E5FB4) bo goc, icon + chu trang.
+     3 nut con lai (Lien he / Da luu / Menu) giu nen trong, icon + chu xanh. margin am + padding-top + height de khung cao hon vi tri
+     tu nhien 5px moi phia ma icon/chu van thang hang voi 3 nut kia. */
+  .footer-mobile .action-footer.action-search {
+    background-color: #3E5FB4;
+    border-radius: 14px;
+    margin: -5px 15px;
+    padding-top: 5px;
+    height: 54px;
+    box-sizing: border-box;
+  }
+  .footer-mobile .action-footer.action-search svg path {
+    fill: #fff;
+  }
+  .footer-mobile .action-footer.action-search span {
+    color: #fff;
+  }
+}
+@media only screen and (max-width: 1024px) {
   .hidden-bottom .footer-mobile {
     display: none;
   }

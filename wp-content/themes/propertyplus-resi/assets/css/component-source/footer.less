@@ -303,6 +303,26 @@ body {
             line-height: 12px;
             color: #3E5FB4;
         }
+
+        // Nut "Tim kiem" noi bat nhu thanh duoi cua web Office: khung nen xanh logo bo goc, icon + chu trang (3 nut con lai giu nguyen).
+        &.action-search {
+            @media only screen and (max-width: 1024px) {
+                background-color: #3E5FB4;
+                border-radius: 14px;
+                margin: -5px 15px;
+                padding-top: 5px;
+                height: 54px;
+                box-sizing: border-box;
+
+                svg path {
+                    fill: #fff;
+                }
+
+                span {
+                    color: #fff;
+                }
+            }
+        }
     }
 }
 
