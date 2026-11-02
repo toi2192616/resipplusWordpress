@@ -50,7 +50,7 @@ $render_alias_items = static function (array $items, string $base_slug) {
     <div class="row">
       <div class="col-md-12">
         <a href="<?php echo esc_url(pplus_lang_url('/')); ?>" class="site-logo">
-          <img src="<?php echo esc_url($theme_uri . '/assets/officebase/Common/Images/logo.png'); ?>" width="100" height="94" alt="logo" />
+          <img src="<?php echo esc_url($theme_uri . '/assets/officebase/Common/Images/logo-96.webp'); ?>" width="96" height="90" alt="logo" />
         </a>
         <div class="header-navigation font-transform-inherit" data-pplus-menu>
           <?php // Nut dong menu mobile: "Quay lại" + mui ten (giong nut "Quay lại" o che do ban do) thay cho vong tron 3 gach

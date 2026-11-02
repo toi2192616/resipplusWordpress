@@ -30,7 +30,7 @@ $pplus_sm_values      = range(1, 8); // listValue = [1..8] (search-base.componen
 // truc tiep, xem ghi chu cu trong page-reference.php). Class "resultOnTop" LUON co san luc dau (tren
 // mobile that "fullContent=true" mac dinh - ngOnInit dong 137); page-reference.php go class nay khi mo
 // che do ban do (fullContent=false) - xem main.js. ?>
-<div class="searching-tool resultOnTop"><a href="<?php echo esc_url(home_url($pplus_sm_lang_prefix . '/')); ?>"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/logo.png'); ?>" alt="logoPP" width="100" height="94" /></a><input class="txt-search" type="text" aria-label="<?php echo esc_attr(pplus_localize('Tìm kiếm')); ?>" value="" readonly="readonly" data-pplus-search-mobile="1" /><button id="btnSearchMore" type="button" data-pplus-search-mobile="2"><?php echo esc_html(pplus_localize('Bộ lọc')); ?></button></div>
+<div class="searching-tool resultOnTop"><a href="<?php echo esc_url(home_url($pplus_sm_lang_prefix . '/')); ?>"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/logo-96.webp'); ?>" alt="logoPP" width="100" height="94" /></a><input class="txt-search" type="text" aria-label="<?php echo esc_attr(pplus_localize('Tìm kiếm')); ?>" value="" readonly="readonly" data-pplus-search-mobile="1" /><button id="btnSearchMore" type="button" data-pplus-search-mobile="2"><?php echo esc_html(pplus_localize('Bộ lọc')); ?></button></div>
 
 <div class="tab-container search-tab-mobile" step="1" id="search-tab-mobile" data-base-url="<?php echo esc_url(home_url($pplus_sm_lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi')); ?>">
     <div class="tab-header">
@@ -68,7 +68,7 @@ $pplus_sm_values      = range(1, 8); // listValue = [1..8] (search-base.componen
                         ?>
                             <div class="item-content-district-data item-suggest" role="button" tabindex="0" data-alias="<?php echo esc_attr($pplus_sm_alias); ?>" data-label="<?php echo esc_attr($pplus_sm_label); ?>">
                                 <figure class="icon-suggest">
-                                    <img title="ListProject" src="<?php echo esc_url(pplus_admin_asset_url($pplus_sm_item['img'] ?? '')); ?>" alt="<?php echo esc_attr($pplus_sm_label); ?>" onerror="this.src='<?php echo esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/logo.png'); ?>'" loading="lazy" />
+                                    <img title="ListProject" src="<?php echo esc_url(pplus_admin_asset_url($pplus_sm_item['img'] ?? '')); ?>" alt="<?php echo esc_attr($pplus_sm_label); ?>" onerror="this.src='<?php echo esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/logo-96.webp'); ?>'" loading="lazy" />
                                 </figure>
                                 <div class="content-suggest">
                                     <p class="content-suggest-text1"><?php echo esc_html($pplus_sm_label); ?></p>

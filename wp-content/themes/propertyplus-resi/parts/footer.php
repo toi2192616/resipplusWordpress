@@ -227,12 +227,12 @@ $rsEmail    = !empty($company['email']) ? explode('|', (string) $company['email'
     <div class="modal-background"><div class="modal">
       <div class="content-modal-mobile">
         <div class="action-2" data-bs-toggle="modal" data-bs-target="#FaceModal">
-          <div><img src="<?php echo esc_url(PPLUS_THEME_URI . '/assets/officebase/Common/Images/Home/messenger-icon-free-png.webp'); ?>" width="100" height="100" loading="lazy" alt="chat messenger" /><label><?php echo esc_html(pplus_localize('Messenger Chat')); ?></label></div>
+          <div><img src="<?php echo esc_url(PPLUS_THEME_URI . '/assets/officebase/Common/Images/Home/messenger-icon-70.webp'); ?>" width="35" height="35" loading="lazy" alt="chat messenger" /><label><?php echo esc_html(pplus_localize('Messenger Chat')); ?></label></div>
         </div>
       </div>
       <div class="content-modal-mobile">
         <div class="action-2" data-bs-toggle="modal" data-bs-target="#ZaloModal">
-          <div><img src="<?php echo esc_url(PPLUS_THEME_URI . '/assets/officebase/Common/Images/Home/Icon_of_Zalo.svg.webp'); ?>" width="100" height="100" loading="lazy" alt="zalo" /><label><?php echo esc_html(pplus_localize('Zalo Chat')); ?></label></div>
+          <div><img src="<?php echo esc_url(PPLUS_THEME_URI . '/assets/officebase/Common/Images/Home/zalo-icon-70.webp'); ?>" width="35" height="35" loading="lazy" alt="zalo" /><label><?php echo esc_html(pplus_localize('Zalo Chat')); ?></label></div>
         </div>
       </div>
     </div></div>

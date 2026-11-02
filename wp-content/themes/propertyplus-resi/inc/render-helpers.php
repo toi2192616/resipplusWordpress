@@ -161,7 +161,10 @@ function pplus_print_deferred_img_loader(): void {
         return;
     }
     echo '<noscript><style>img[data-pplus-src],iframe[data-pplus-src]{display:none!important}</style></noscript>' . "\n";
-    echo "<script>(function(){var d=document,done=0;function go(){if(done)return;done=1;var l=d.querySelectorAll('img[data-pplus-src],iframe[data-pplus-src]');for(var i=0;i<l.length;i++){var s=l[i].getAttribute('data-pplus-srcset');if(s){l[i].srcset=s;l[i].removeAttribute('data-pplus-srcset');}l[i].src=l[i].getAttribute('data-pplus-src');l[i].removeAttribute('data-pplus-src');}}function later(){setTimeout(go,1000)}if(d.readyState==='complete')later();else addEventListener('load',later);['scroll','touchstart','keydown','mousedown'].forEach(function(t){addEventListener(t,go,{once:true,passive:true});});})();</script>\n";
+    // Anh/khung nam TRONG modal an (".modal-container-ppus"/Bootstrap ".modal": avatar lien he, icon chat Messenger/Zalo...) khong nap luc
+    // load - chi nap khi nguoi dung bam nut mo modal (truoc day ~240KB/trang tai vo ich: 2 avatar PNG + 2 icon chat).
+    echo "<script>(function(){var d=document,done=0;function ld(e){var s=e.getAttribute('data-pplus-srcset');if(s){e.srcset=s;e.removeAttribute('data-pplus-srcset');}e.src=e.getAttribute('data-pplus-src');e.removeAttribute('data-pplus-src');}function go(){if(done)return;done=1;var l=d.querySelectorAll('img[data-pplus-src],iframe[data-pplus-src]');for(var i=0;i<l.length;i++){if(!l[i].closest('[data-pplus-modal],.modal'))ld(l[i]);}}window.pplusLoadDeferred=function(r){if(!r)return;var l=r.querySelectorAll('img[data-pplus-src],iframe[data-pplus-src]');for(var i=0;i<l.length;i++)ld(l[i]);};d.addEventListener('click',function(ev){var t=ev.target.closest&&ev.target.closest('[data-pplus-open-modal],[data-bs-target],[data-target]');if(!t)return;var id=t.getAttribute('data-pplus-open-modal')||t.getAttribute('data-bs-target')||t.getAttribute('data-target')||'';id=id.replace('#','');if(id)window.pplusLoadDeferred(d.getElementById(id));},true);function later(){setTimeout(go,1000)}if(d.readyState==='complete')later();else addEventListener('load',later);['scroll','touchstart','keydown','mousedown'].forEach(function(t){addEventListener(t,go,{once:true,passive:true});});})();</script>
+";
 }
 add_action('wp_footer', 'pplus_print_deferred_img_loader', 5);
 
@@ -233,7 +236,7 @@ function pplus_build_compare_payload(array $item): array {
         'projectName'         => $item['projectName'] ?? '',
         'urlHerf'             => pplus_office_url($item['urlHerf'] ?? ''),
         'photo'               => $photo,
-        'address'             => $item['address'] ?? '',
+        'address'             => pplus_apartment_address($item),
         'ratingLevel'         => $item['ratingLevel'] ?? '',
         'itemPrice'           => $item['itemPrice'] ?? '',
         'managerFee'          => $item['managerFee'] ?? '',

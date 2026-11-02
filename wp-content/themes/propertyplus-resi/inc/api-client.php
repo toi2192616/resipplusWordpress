@@ -258,7 +258,8 @@ function pplus_localize(string $vi_key): string {
         return $vi_key;
     }
     $dict = pplus_lang_dictionary($lang);
-    return $dict[$vi_key] ?? $vi_key;
+    // Chua co trong tu dien API -> bang bo sung cua theme (inc/i18n-extra.php) -> khoa goc.
+    return $dict[$vi_key] ?? (pplus_extra_dictionary($lang)[$vi_key] ?? $vi_key);
 }
 
 /**
@@ -330,8 +331,10 @@ function pplus_t(string $vi, string $en): string {
         return $en;
     }
     if ($lang === 'ja') {
+        // 2/11/2026: chuoi chua co trong tu dien tieng Nhat -> dung ban TIENG ANH (moi loi goi deu co $en), khong con roi ve tieng Viet
+        // (vd tieu de "/ja/blogs" tung hien "Tin tuc - PropertyPlus").
         $dict = pplus_lang_dictionary('ja');
-        return $dict[$vi] ?? $vi;
+        return $dict[$vi] ?? (pplus_extra_dictionary('ja')[$vi] ?? $en);
     }
     return $vi;
 }
@@ -979,6 +982,11 @@ function pplus_get_home_apartment_groups(array $groups): array {
         $group['listApartments'] = array_slice($diverse, 0, 4);
     }
     unset($group);
+    $shown = [];
+    foreach ($groups as $g) {
+        $shown = array_merge($shown, $g['listApartments'] ?? []);
+    }
+    pplus_prefetch_apartment_addresses($shown);
     return $groups;
 }
 
@@ -1060,8 +1068,10 @@ function pplus_get_apartment_list(array $filter, int $skip, int $price_sort_type
     // Bo qua buoc loc trung trong truong hop nay - dung nghia "hien tat ca can cua CHINH du an dang
     // xem", khong phai "da dang hoa danh sach nhieu du an".
     if (!empty($filter['project_id'])) {
+        $page_items = array_slice($candidates, 0, $per_page);
+        pplus_prefetch_apartment_addresses($page_items);
         return [
-            'listApartments' => array_slice($candidates, 0, $per_page),
+            'listApartments' => $page_items,
             'total_count'    => $total_count,
         ];
     }
@@ -1081,8 +1091,10 @@ function pplus_get_apartment_list(array $filter, int $skip, int $price_sort_type
         $diverse[] = $apartment;
     }
 
+    $page_items = array_slice($diverse, 0, $per_page);
+    pplus_prefetch_apartment_addresses($page_items);
     return [
-        'listApartments' => array_slice($diverse, 0, $per_page),
+        'listApartments' => $page_items,
         'total_count'    => $total_count,
     ];
 }
@@ -1144,6 +1156,181 @@ function pplus_get_project_detail(int $id): ?array {
     $lang = pplus_current_lang();
     $data = pplus_api_get("{$lang}/Project/Detail", ['id' => $id], 600);
     return $data['result'] ?? null;
+}
+
+/**
+ * Dia chi du an THEO NGON NGU (2/11/2026 - nguoi dung yeu cau: trang tieng Anh/Nhat khong duoc hien dia chi tieng Viet).
+ *
+ * Doi chieu API that: truong "address" trong item cua Apartment/_GetApartments va Apartment/_GetDetail LUON la tieng Viet
+ * (khong dich theo {lang}), nhung THUC THE DU AN co dia chi rieng tung ngon ngu - cung co che da dich "projectName" (ja:
+ * "サマー セット ウエスト ポイント ハノイ"): GET {lang}/Project/_Project?id={projectId} (nhe ~900B, ~0.3s) tra "address" dung ngon
+ * ngu (en: "No. 2 Tay Ho Street, Tay Ho Distric, Hanoi"). Ban JA CHUA dich dia chi trong CSDL (tra y nguyen tieng Viet) ->
+ * dung dia chi tieng Anh (chu Latin, de doc hon dau tieng Viet). Ban VI giu nguyen "address" cua can ho (khong goi them API).
+ * Web chinh KHONG hien dia chi tren the can ho - day la muc ban WP them 17/9 theo yeu cau, nen chi can dung ngon ngu.
+ */
+const PPLUS_PROJECT_ADDRESS_TTL = 43200; // 12h (dia chi du an hiem khi doi)
+
+/**
+ * Goi SONG SONG GET {lang}/Project/_Project?id= cho nhieu du an (curl_multi: 12 du an ~2.4s thay vi ~8s tuan tu).
+ * Chi tra ve cac id lay duoc (id khong ton tai -> backend 302 ve trang dang nhap -> bo qua). Loi mang KHONG lam hong trang va
+ * KHONG danh dau 503 (dung curl truc tiep, khong qua pplus_api_http). Khong co curl_multi -> goi tuan tu bang wp_remote_get.
+ * (Requests::request_multiple cua WP bi loi "unable to get local issuer certificate" du cung bo CA, nen khong dung.)
+ */
+function pplus_fetch_project_addresses(array $ids, string $lang): array {
+    $base  = pplus_api_base_url() . "/{$lang}/Project/_Project?id=";
+    $out   = [];
+    $parse = static function ($body): ?string {
+        $j = json_decode((string) $body, true);
+        return (is_array($j) && isset($j['result']) && is_array($j['result'])) ? trim((string) ($j['result']['address'] ?? '')) : null;
+    };
+    if (function_exists('curl_multi_init') && count($ids) > 1) {
+        $bundle = ABSPATH . WPINC . '/certificates/ca-bundle.crt';
+        $mh     = curl_multi_init();
+        $handles = [];
+        foreach ($ids as $id) {
+            $ch = curl_init($base . $id);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT        => 6,
+                CURLOPT_CONNECTTIMEOUT => 4,
+                CURLOPT_CAINFO         => $bundle,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
+                CURLOPT_HTTPHEADER     => ['Accept: application/json'],
+                CURLOPT_ENCODING       => '',
+            ]);
+            curl_multi_add_handle($mh, $ch);
+            $handles[$id] = $ch;
+        }
+        do {
+            $status = curl_multi_exec($mh, $running);
+            if ($running) {
+                curl_multi_select($mh, 1.0);
+            }
+        } while ($running && $status === CURLM_OK);
+        foreach ($handles as $id => $ch) {
+            if ((int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE) === 200) {
+                $addr = $parse(curl_multi_getcontent($ch));
+                if ($addr !== null) {
+                    $out[(int) $id] = $addr;
+                }
+            }
+            curl_multi_remove_handle($mh, $ch);
+            curl_close($ch);
+        }
+        curl_multi_close($mh);
+        return $out;
+    }
+    foreach ($ids as $id) {
+        $res = wp_remote_get($base . $id, ['timeout' => 6, 'headers' => ['Accept' => 'application/json']]);
+        if (!is_wp_error($res) && (int) wp_remote_retrieve_response_code($res) === 200) {
+            $addr = $parse(wp_remote_retrieve_body($res));
+            if ($addr !== null) {
+                $out[(int) $id] = $addr;
+            }
+        }
+    }
+    return $out;
+}
+
+/**
+ * Dia chi tho cua du an trong DUNG 1 ngon ngu ({lang}/Project/_Project). Cache transient 12h + cache theo request.
+ *
+ * @param int[] $project_ids
+ * @return array<int,string> projectId => dia chi ('' neu khong lay duoc)
+ */
+function pplus_project_addresses_raw(array $project_ids, string $lang): array {
+    static $mem = [];
+    $ids  = array_values(array_unique(array_filter(array_map('intval', $project_ids))));
+    $need = [];
+    foreach ($ids as $id) {
+        if (isset($mem[$lang][$id])) {
+            continue;
+        }
+        $cached = get_transient("pplus_paddr_{$lang}_{$id}");
+        if (is_string($cached)) {
+            $mem[$lang][$id] = $cached;
+            continue;
+        }
+        $need[] = $id;
+    }
+    if ($need) {
+        $fetched = pplus_fetch_project_addresses($need, $lang);
+        foreach ($need as $id) {
+            if (isset($fetched[$id])) {
+                $mem[$lang][$id] = $fetched[$id];
+                set_transient("pplus_paddr_{$lang}_{$id}", $fetched[$id], PPLUS_PROJECT_ADDRESS_TTL);
+            } else {
+                $mem[$lang][$id] = '';
+                set_transient("pplus_paddr_{$lang}_{$id}", '', 60); // loi: thu lai sau 1 phut, khong bat moi request cho
+            }
+        }
+    }
+    $out = [];
+    foreach ($ids as $id) {
+        $out[$id] = $mem[$lang][$id] ?? '';
+    }
+    return $out;
+}
+
+/** Dia chi tieng Viet chua dich -> dang chu Latin khong dau ("Số 25 Quảng Khánh, Tây Hồ, Hà Nội" -> "No. 25 Quang Khanh, Tay Ho, Hanoi"). */
+function pplus_romanize_vi_address(string $addr): string {
+    $addr = preg_replace('/^S[ốo]' . "\s" . '+/u', 'No. ', trim($addr));
+    $addr = str_replace(['Hà Nội', 'Hồ Chí Minh', 'Ngõ ', 'Ngách ', 'đường ', 'Đường '], ['Hanoi', 'Ho Chi Minh City', 'Alley ', 'Lane ', '', ''], $addr);
+    return remove_accents($addr);
+}
+
+/**
+ * @param int[] $project_ids
+ * @return array<int,string> projectId => dia chi dung ngon ngu trang ('' neu khong co du lieu).
+ *   Du lieu CSDL khong deu: nhieu du an chua dich dia chi (en tra tieng Viet) hoac nhap ban tieng Anh nham vao o tieng Nhat
+ *   (vd Westlake Residence 8). Thu tu chon: dia chi cua chinh ngon ngu (en: chi nhan chu Latin khong dau; ja: chu Nhat hoac Latin) ->
+ *   o ngon ngu con lai (en<->ja) neu dung dang -> cuoi cung la tieng Viet chuyen khong dau (pplus_romanize_vi_address).
+ */
+function pplus_project_addresses(array $project_ids, string $lang = ''): array {
+    $lang = $lang !== '' ? $lang : pplus_current_lang();
+    $out  = pplus_project_addresses_raw($project_ids, $lang);
+    if ($lang === 'vi') {
+        return $out;
+    }
+    $has_cjk  = static fn (string $a): bool => (bool) preg_match('/[぀-ヿ一-鿿]/u', $a);
+    $is_ascii = static fn (string $a): bool => !preg_match('/[^ -~]/', $a);
+    $is_ok    = static fn (string $a): bool => $a !== '' && ($is_ascii($a) || ($lang === 'ja' && $has_cjk($a)));
+    $bad      = array_keys(array_filter($out, static fn ($a) => $a !== '' && !$is_ok($a)));
+    if ($bad) {
+        $alt_lang = $lang === 'ja' ? 'en' : 'ja';
+        foreach (pplus_project_addresses_raw($bad, $alt_lang) as $id => $addr) {
+            if ($addr !== '' && $is_ascii($addr)) {
+                $out[$id] = $addr;
+            }
+        }
+        foreach ($bad as $id) {
+            if (!$is_ok($out[$id])) {
+                $out[$id] = pplus_romanize_vi_address($out[$id]);
+            }
+        }
+    }
+    // Loi chinh ta co san trong du lieu backend ("Tay Ho Distric, Hanoi").
+    return array_map(static fn ($a) => str_replace('Distric,', 'District,', $a), $out);
+}
+
+/** Nap san dia chi du an cho 1 loat can ho (1 dot goi song song) - goi truoc khi render cac the. Ban VI khong can. */
+function pplus_prefetch_apartment_addresses(array $items): void {
+    if (pplus_current_lang() === 'vi') {
+        return;
+    }
+    pplus_project_addresses(array_map(static fn ($it) => (int) ($it['projectId'] ?? 0), $items));
+}
+
+/** Dia chi hien thi cua 1 can ho theo ngon ngu trang hien tai (fallback: "address" goc cua can ho). */
+function pplus_apartment_address(array $item): string {
+    $raw = (string) ($item['address'] ?? '');
+    $pid = (int) ($item['projectId'] ?? 0);
+    if ($pid <= 0 || pplus_current_lang() === 'vi') {
+        return $raw;
+    }
+    $addr = pplus_project_addresses([$pid])[$pid] ?? '';
+    return $addr !== '' ? $addr : $raw;
 }
 
 /**

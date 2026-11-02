@@ -76,6 +76,15 @@ foreach (['PATH_INFO', 'ORIG_PATH_INFO'] as $pplus_srv_key) {
 define('PPLUS_LANG', $pplus_request_lang);
 
 /**
+ * <html lang>: theo ngon ngu cua TRANG (vi / en / ja), khong theo locale WordPress cua site (truoc day moi trang deu ra 1 gia tri co dinh
+ * - "en-US" o local, "vi" tren server test - ke ca trang tieng Anh/Nhat). Web chinh luon de lang="en" (loi); o day dung dung chuan
+ * de trinh duyet/doc man hinh/cong cu dich/Google hieu dung ngon ngu noi dung.
+ */
+add_filter('language_attributes', function ($output) {
+    return preg_replace('/lang="[^"]*"/', 'lang="' . PPLUS_LANG . '"', $output);
+});
+
+/**
  * Tat toan bo redirect "chuan hoa" cua WordPress: ta tu quan ly URL chuan (xem inc/url-canonical.php). redirect_canonical()
  * tu them "/" cuoi cho Page/route dep -> cai nhau voi dang KHONG co "/" cuoi cua web chinh (vong lap 301), con
  * redirect_guess_404_permalink() tu "doan" bai viet gan giong va 301 sang do (vd /vi/ve-chung-toi -> /ve-chung-toi/).

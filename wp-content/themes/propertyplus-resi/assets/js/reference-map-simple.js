@@ -335,7 +335,9 @@
             return;
         }
         var script = document.createElement('script');
-        script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(apiKey);
+        // Nhan ban do (ten duong, quan, POI) theo NGON NGU TRANG - web chinh truyen &language={lang}; thieu tham so nay Google dung ngon ngu trinh duyet.
+        var mapLang = (window.PPLUS_MAP_CONFIG && window.PPLUS_MAP_CONFIG.lang) || (document.documentElement.lang || 'vi').slice(0, 2);
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(apiKey) + '&language=' + encodeURIComponent(mapLang);
         script.async = true;
         script.onload = callback;
         document.head.appendChild(script);

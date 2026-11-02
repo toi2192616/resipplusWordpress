@@ -27,6 +27,7 @@ function pplus_asset_version(string $relative_path): string {
 
 // --- Nen tang dung chung (Phase 0) ---
 require_once PPLUS_THEME_DIR . '/inc/api-client.php';       // pplus_api_get, lang, localize, header/footer data
+require_once PPLUS_THEME_DIR . '/inc/i18n-extra.php';        // ban dich bo sung cho chuoi tinh ma tu dien GetLangApi khong co (en/ja)
 require_once PPLUS_THEME_DIR . '/inc/url-canonical.php';     // chuan hoa URL: tien to ngon ngu, bo "/" cuoi, 301 (khop web chinh)
 require_once PPLUS_THEME_DIR . '/inc/legacy-redirects.php';    // 301 URL cu (/vi/du-an/..., /en/projects/...) -> URL moi, khop bang LogUrlSite cua web chinh (nap TRUOC language-route)
 require_once PPLUS_THEME_DIR . '/inc/language-route.php';   // nhan tien to /vi /en /ja + hreflang (dung PPLUS_LANG)
@@ -380,7 +381,7 @@ add_action('wp_enqueue_scripts', function () {
         'lang'     => $pplus_lang,
         'mapKey'   => pplus_google_map_key(),
         'listUrl'  => home_url(pplus_lang_prefix() . ($pplus_lang === 'vi' ? '/cho-thue-can-ho/' : '/rental-apartment/')),
-        'logoIcon' => PPLUS_THEME_URI . '/assets/officebase/Common/Images/logo.png',
+        'logoIcon' => PPLUS_THEME_URI . '/assets/officebase/Common/Images/logo-96.webp',
         'pinIcon'  => PPLUS_THEME_URI . '/assets/officebase/Common/Images/makerMap.png',
         'i18n'     => [
             // "Địa điểm" khong co trong tu dien EN/JA cua API (ban goc hien chu tieng Viet o moi ngon ngu).

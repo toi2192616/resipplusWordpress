@@ -172,6 +172,6 @@ add_filter('pplus_language_switch_url', function (string $default, string $targe
     }
     $target_alias .= '-' . $model['type_site'];
 
-    $prefix = ($target_lang === 'en' || $target_lang === 'ja') ? ('/' . $target_lang) : '';
+    $prefix = pplus_lang_prefix($target_lang); // '/vi' | '/en' | '/ja' (truoc day VI = '' -> home_url() gan lai tien to NGON NGU HIEN TAI -> /en/service/dich-vu-... = 404)
     return home_url($prefix . '/service/' . $target_alias . '/');
 }, 10, 2);

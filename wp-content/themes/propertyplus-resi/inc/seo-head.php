@@ -25,11 +25,19 @@ if (!defined('ABSPATH')) {
 
 /** Thong tin doanh nghiep - lay nguyen tu 3 khoi JSON-LD trong PPlusAngularResi/src/index.html. */
 function pplus_seo_business(): array {
+    // Dia chi cong ty theo ngon ngu trang: tu dien GetLangApi cua web chinh da dich san chinh chuoi dia chi trong footer
+    // (en: "06 floor, Kinh Do building, 292 Tay Son street, Trung Liet ward, Dong Da district, Ha Noi"; ja: tieng Nhat).
+    $street   = 'Tòa nhà 292, P. Tây Sơn, Trung Liệt, Đống Đa, Hà Nội';
+    $locality = 'Hà Nội';
+    if (pplus_current_lang() !== 'vi') {
+        $street   = pplus_localize('Tầng 06, tòa nhà Kinh Đô, 292 Tây Sơn, phường Trung Liệt, quận Đống Đa, Hà Nội');
+        $locality = ['en' => 'Hanoi', 'ja' => 'ハノイ'][pplus_current_lang()] ?? 'Hà Nội';
+    }
     return [
         'name'      => 'Property Plus',
         'phone'     => '+84856662566',
-        'street'    => 'Tòa nhà 292, P. Tây Sơn, Trung Liệt, Đống Đa, Hà Nội',
-        'locality'  => 'Hà Nội',
+        'street'    => $street,
+        'locality'  => $locality,
         'postal'    => '11515',
         'lat'       => 21.0070477,
         'lng'       => 105.8228378,
@@ -124,7 +132,7 @@ function pplus_seo_apartment_description(array $d): string {
     }
     $is_vi = pplus_current_lang() === 'vi';
     $loc   = array_filter([
-        $is_vi ? ($d['address'] ?? '') : '',
+        pplus_apartment_address($d), // theo ngon ngu trang (en: dia chi du an tieng Anh; ja: tieng Anh vi CSDL chua dich)
         $is_vi ? ($d['districtName'] ?? '') : ($d['districtNameEn'] ?? $d['districtName'] ?? ''),
         $d['provinceName'] ?? '',
     ]);
@@ -385,7 +393,7 @@ add_action('wp_head', function () {
             'brand'       => ['@id' => $org_id],
             'address'     => array_filter([
                 '@type'           => 'PostalAddress',
-                'streetAddress'   => $detail['address'] ?? '',
+                'streetAddress'   => pplus_apartment_address($detail),
                 'addressLocality' => $detail['districtName'] ?? '',
                 'addressRegion'   => $detail['provinceName'] ?? '',
                 'addressCountry'  => 'VN',

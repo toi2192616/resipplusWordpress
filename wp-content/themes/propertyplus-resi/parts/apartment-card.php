@@ -22,6 +22,7 @@ if (empty($item)) return;
 
 $photo = !empty($item['photoList'][0]) ? pplus_admin_asset_url($item['photoList'][0]) : '';
 $title = $item['title'] ?? ($item['projectName'] ?? '');
+$pplus_address = pplus_apartment_address($item); // dia chi du an theo ngon ngu trang (API chi tra address tieng Viet trong item) - xem pplus_project_addresses()
 
 // 23/10/2026 (port tu ban Van phong b4a7104): luoi danh sach (A1/A3/A4/Du an) truyen $args['index'] - the 0
 // la phan tu LCP tren mobile (Lighthouse do: anh nay "Load Delay" 15s vi loading=lazy, trinh duyet chi tai
@@ -99,7 +100,7 @@ if ($apartment_type === 1) {
     $fav_payload = [
         'apartmentId'       => $item['apartmentId'] ?? null,
         'title'              => $title,
-        'address'            => $item['address'] ?? '',
+        'address'            => $pplus_address,
         'photoList'          => !empty($item['photoList']) ? array_map('pplus_admin_asset_url', array_slice($item['photoList'], 0, 4)) : [],
         'priceString'        => $item['priceString'] ?? '',
         'areaString'         => $item['areaString'] ?? '',
@@ -115,8 +116,8 @@ if ($apartment_type === 1) {
     <div class="item-content-m">
         <div class="item-content">
             <div class="item-name"><?php echo esc_html($title); ?></div>
-            <?php if (!empty($item['address'])) : ?>
-                <div class="item-address"><i class="icon-location-pin"></i> <?php echo esc_html($item['address']); ?></div>
+            <?php if ($pplus_address !== '') : ?>
+                <div class="item-address"><i class="icon-location-pin"></i> <?php echo esc_html($pplus_address); ?></div>
             <?php endif; ?>
             <div class="object--info">
                 <div class="thongtin-ctn">

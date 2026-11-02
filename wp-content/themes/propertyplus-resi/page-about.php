@@ -188,7 +188,7 @@ get_template_part('parts/url-box-content', null, [
     <div class="a-u-c-5">
         <div class="container">
             <div class="a-u-cus-t1"><?php echo esc_html(pplus_t('CƠ CẤU TỔ CHỨC', 'ORGANIZATIONAL STRUCTURE')); ?></div>
-            <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/cocautochuc.png'); ?>" alt="Cơ cấu tổ chức" loading="lazy" />
+            <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/cocautochuc.png'); ?>" alt="<?php echo esc_attr(pplus_t('Cơ cấu tổ chức', 'Organization chart')); ?>" loading="lazy" />
         </div>
     </div>
 
