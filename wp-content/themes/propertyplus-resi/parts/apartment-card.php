@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) exit;
 $item = $args['item'] ?? [];
 if (empty($item)) return;
 
-$photo = !empty($item['photoList'][0]) ? pplus_admin_asset_url($item['photoList'][0]) : '';
+$photo = !empty($item['photoList'][0]) ? pplus_webp_url(pplus_admin_asset_url($item['photoList'][0]), 640) : ''; // WebP cache (inc/image-webp.php), 640px = 2x the rong nhat
 $title = $item['title'] ?? ($item['projectName'] ?? '');
 $pplus_address = pplus_apartment_address($item); // dia chi du an theo ngon ngu trang (API chi tra address tieng Viet trong item) - xem pplus_project_addresses()
 

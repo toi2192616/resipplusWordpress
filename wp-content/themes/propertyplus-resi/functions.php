@@ -28,6 +28,7 @@ function pplus_asset_version(string $relative_path): string {
 // --- Nen tang dung chung (Phase 0) ---
 require_once PPLUS_THEME_DIR . '/inc/api-client.php';       // pplus_api_get, lang, localize, header/footer data
 require_once PPLUS_THEME_DIR . '/inc/i18n-extra.php';        // ban dich bo sung cho chuoi tinh ma tu dien GetLangApi khong co (en/ja)
+require_once PPLUS_THEME_DIR . '/inc/image-webp.php';        // anh CMS/API JPG/PNG -> WebP cache (tao sau khi tra trang), kill switch PPLUS_WEBP=false
 require_once PPLUS_THEME_DIR . '/inc/url-canonical.php';     // chuan hoa URL: tien to ngon ngu, bo "/" cuoi, 301 (khop web chinh)
 require_once PPLUS_THEME_DIR . '/inc/legacy-redirects.php';    // 301 URL cu (/vi/du-an/..., /en/projects/...) -> URL moi, khop bang LogUrlSite cua web chinh (nap TRUOC language-route)
 require_once PPLUS_THEME_DIR . '/inc/language-route.php';   // nhan tien to /vi /en /ja + hreflang (dung PPLUS_LANG)
@@ -535,3 +536,16 @@ add_action('wp_head', function () {
         printf('<link rel="preload" as="image" href="%s" type="image/webp" media="(min-width: 769px)" fetchpriority="high" />' . "\n", esc_url($img . 'home-1920x1080.webp'));
     }
 }, 1);
+
+/**
+ * Cloudflare "Email Address Obfuscation" (Scrape Shield) bien moi email trong HTML thanh `<a class="__cf_email__" data-cfemail=..>` va chen script
+ * /cdn-cgi/scripts/.../email-decode.min.js (PageSpeed: "chan hien thi" 870ms, ke cung chuoi phu thuoc ~2s) - email cong ty o footer/lien he dang
+ * can doc thang tren trang (nguoi that + Google) nen khong can giau. Boc toan bo <body> trong cap comment ma Cloudflare bo qua
+ * ("<!--email_off-->"): khong con chuoi nao bi ma hoa -> Cloudflare khong chen script giai ma. Vo hai khi KHONG co Cloudflare.
+ */
+add_action('wp_body_open', function () {
+    echo '<!--email_off-->';
+}, 0);
+add_action('wp_footer', function () {
+    echo '<!--/email_off-->';
+}, PHP_INT_MAX);

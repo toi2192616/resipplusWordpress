@@ -50,6 +50,7 @@ function pplus_kses_content(string $html): string {
     $protocols[] = 'data';
     $html = wp_kses($html, 'post', $protocols);
     $html = pplus_externalize_inline_images($html);
+    $html = pplus_webp_content($html); // anh CMS (admin./app. JPG/PNG) -> WebP cache neu da co, xem inc/image-webp.php
     return pplus_add_lazy_loading_to_images($html);
 }
 
