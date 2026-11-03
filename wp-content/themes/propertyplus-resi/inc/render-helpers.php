@@ -49,9 +49,35 @@ function pplus_kses_content(string $html): string {
     $protocols   = wp_allowed_protocols();
     $protocols[] = 'data';
     $html = wp_kses($html, 'post', $protocols);
+    $html = pplus_rewrite_content_links($html);
     $html = pplus_externalize_inline_images($html);
     $html = pplus_webp_content($html); // anh CMS (admin./app. JPG/PNG) -> WebP cache neu da co, xem inc/image-webp.php
     return pplus_add_lazy_loading_to_images($html);
+}
+
+/**
+ * 3/11/2026: link TRONG noi dung CMS (bai SEO quan/du an/blog do bien tap vien go tay) tro toi chinh domain cu dang
+ * "http://propertyplus.com.vn/en/cho-thue-can-ho/ha-noi/quan-tay-ho/fraser-suites-300": dung http (them 1 lan 301 sang https) va, tren trang
+ * EN/JA, goc TIENG VIET (cheo ngon ngu = 404, ke ca o web chinh hien tai -> nguoi doc bam vao la gap trang loi; tren trang quan Tay Ho
+ * co 17 link nhu vay). Viet lai thanh URL chuan cua site DANG CHAY (cung host nen server test khong day nguoi dung sang production):
+ * pplus_canonical_path() + pplus_fix_cross_language_root(). Chi dong toi link la route cua site; link khac cua domain (file, /admin...) va
+ * link ra ngoai giu nguyen.
+ */
+function pplus_rewrite_content_links(string $html): string {
+    if ($html === '' || stripos($html, 'propertyplus.com.vn') === false) {
+        return $html;
+    }
+    return preg_replace_callback(
+        '~(<a\b[^>]*?\shref=)(["\'])https?://(?:www\.)?propertyplus\.com\.vn(/[^"\'?#]*)?([?#][^"\']*)?\2~i',
+        static function (array $m): string {
+            $canon = pplus_canonical_path(rawurldecode($m[3] ?? '/'), 'vi');
+            if ($canon === null) {
+                return $m[0];
+            }
+            return $m[1] . $m[2] . esc_url(home_url(pplus_fix_cross_language_root($canon))) . ($m[4] ?? '') . $m[2];
+        },
+        $html
+    ) ?? $html;
 }
 
 /**

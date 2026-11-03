@@ -10,7 +10,8 @@
  *   - pplusapartments : ~2.1k trang chi tiet can ho, VI + EN (tu Apartment/_GetApartments,
  *                       apartmentTypeList="1,2" = KHONG biet thu, dung y site). Bo JA: urlHerf JA tu API
  *                       co "--" thay alias du an (link hong) - hreflang van tro toi ban JA cua trang.
- *   - pplusblogs      : bai blog VI + EN.
+ *   - pplusprojects   : ~840 trang du an x 3 ngon ngu (Project/_GetProjects, 12/trang).
+ *   - pplusblogs      : bai blog VI + EN + JA.
  *
  * KIEN TRUC: tinh san qua WP-Cron, KHONG tinh luc co request (2.1k can x 2 ngon ngu ~ 360 lan goi API
  * .NET, gioi han 12 ket qua/lan - lam trong 1 request web se vuot 30s). Cron chay THEO TUNG DOT NHO
@@ -24,6 +25,12 @@
  * inc/url-canonical.php); /sitemap.xml tra TRUC TIEP (Google da nop URL nay, khong redirect sang wp-sitemap.xml); them
  * provider "pplusprojects" (trang du an "alias-id" - tap URL "products" cua sitemap web chinh), trang chu "/", "/vi", "/en",
  * "/ja"; khu vuc co them JA (web chinh liet ke ca JA). robots.txt tro ve /sitemap.xml + giu cac Disallow cua web chinh.
+ *
+ * 3/11/2026 - DOI CHIEU VOI SITEMAP WEB CHINH (6 file: products/posts/pages/quan/type/villa): du an lay tu Project/_GetProjects thay vi suy tu
+ * can ho (du an chua co can ho van co trang; khop 838/850 du an cua web chinh, 17 con lai la du an da go + 5 du an moi hon ban chup 12/2024);
+ * blog them JA; landing EN/JA khong co link tren trang chu nap tu inc/sitemap-landing-seed.php; URL xuat ra ma hoa %XX; 6 URL sitemap con cu
+ * cua web chinh van tra 200 (xem pplus_sitemap_old_child_urls). KHONG liet ke: biet thu (301/410), /blog tran + /js/about-us + alias dich vu
+ * sai hau to (web chinh tra 200 voi trang chu rong = soft-404; WP tra 404 dung), alias "tieu de blog" lam landing (noi dung mong, trung lap).
  */
 
 if (!defined('ABSPATH')) {
@@ -37,8 +44,11 @@ if (!class_exists('WP_Sitemaps_Provider')) {
 const PPLUS_SITEMAP_STEP_HOOK  = 'pplus_sitemap_step';
 const PPLUS_SITEMAP_START_HOOK = 'pplus_sitemap_start';
 const PPLUS_SITEMAP_STATE_OPT  = 'pplus_sitemap_state';
-const PPLUS_SITEMAP_LANGS      = ['vi', 'en'];
-const PPLUS_SITEMAP_AREA_LANGS = ['vi', 'en', 'ja'];
+// Ngon ngu cua tung phase. apartments chi vi+en (JA: urlHerf tu API co "--" thay alias du an); projects/blogs du 3 ngon ngu nhu web chinh.
+const PPLUS_SITEMAP_PHASE_LANGS = ['apartments' => ['vi', 'en'], 'projects' => ['vi', 'en', 'ja'], 'blogs' => ['vi', 'en', 'ja']];
+const PPLUS_SITEMAP_AREA_LANGS  = ['vi', 'en', 'ja'];
+// Thu tu phase sau "areas": het ngon ngu cua phase nay thi sang phase ke.
+const PPLUS_SITEMAP_NEXT_PHASE  = ['apartments' => 'projects', 'projects' => 'blogs', 'blogs' => 'done'];
 
 /** Dua 1 URL (cu hoac moi) ve dang chuan: tien to ngon ngu, khong "/" cuoi. URL khong phai route cua site -> giu nguyen. */
 function pplus_sitemap_canonicalize(string $url): string {
@@ -57,9 +67,32 @@ function pplus_sitemap_urls(string $set): array {
     if ($set === 'areas') {
         // Trang chu: "/" (tieng Anh mac dinh, giong web chinh), "/vi", "/ja" - luon co, ke ca truoc khi cron chay lan dau. KHONG co "/en" (301 ve "/").
         $urls = array_merge([home_url('/'), home_url('/vi'), home_url('/ja')], $urls);
+        // Landing cua web chinh ma trang chu/footer khong link toi (backend khong co API liet ke) - xem inc/sitemap-landing-seed.php.
+        $seed = is_readable(__DIR__ . '/sitemap-landing-seed.php') ? include __DIR__ . '/sitemap-landing-seed.php' : [];
+        foreach (is_array($seed) ? $seed : [] as $path) {
+            $urls[] = home_url($path);
+        }
     }
     // Du lieu cron cu (truoc 24/10) luu URL dang WP cu (khong /vi, co "/" cuoi) -> chuan hoa luc doc, khong can cho dot tinh lai.
-    return array_values(array_unique(array_map('pplus_sitemap_canonicalize', $urls)));
+    // rawurldecode: alias JA luc thi dang UTF-8 tho (harvest tu HTML), luc dang %XX (seed/API) - dua ve 1 dang de array_unique loai trung.
+    $urls = array_values(array_unique(array_map(static fn(string $u): string => rawurldecode(pplus_sitemap_canonicalize($u)), $urls)));
+    if ($set === 'areas') {
+        // Link tren trang chu gom ca bai blog / can ho / du an noi bat - da co o nhom rieng cua chung -> bo khoi "areas" de 1 URL khong nam o 2 file.
+        $taken = [];
+        foreach (['apartments', 'projects', 'blogs'] as $other) {
+            $taken += array_fill_keys(pplus_sitemap_urls($other), true);
+        }
+        $urls = array_values(array_filter($urls, static fn(string $u): bool => !isset($taken[$u])));
+    }
+    return $urls;
+}
+
+/**
+ * Ma hoa phan khong-ASCII (alias JA) va khoang trang cua URL thanh %XX khi XUAT sitemap - giao thuc sitemap yeu cau URL da escape. (Web
+ * chinh de UTF-8 tho; Google chap nhan ca hai, ma hoa la an toan hon.) Chi dong cac byte ngoai 0x21-0x7E nen dau nhay/phay... giu nguyen.
+ */
+function pplus_sitemap_encode_loc(string $url): string {
+    return preg_replace_callback('/[^\x21-\x7E]+/', static fn(array $m): string => rawurlencode($m[0]), $url) ?? $url;
 }
 
 /** Harvest link noi bo tu HTML da render cua trang chu (header + footer + noi dung deu chua link that). */
@@ -115,7 +148,7 @@ function pplus_sitemap_step(): void {
     }
 
     while (time() < $deadline && $state['phase'] !== 'done') {
-        $lang = PPLUS_SITEMAP_LANGS[$state['lang_i']] ?? null;
+        $lang = (PPLUS_SITEMAP_PHASE_LANGS[$state['phase']] ?? [])[$state['lang_i']] ?? null;
 
         if ($state['phase'] === 'areas') {
             foreach (PPLUS_SITEMAP_AREA_LANGS as $l) {
@@ -128,7 +161,7 @@ function pplus_sitemap_step(): void {
         }
 
         if ($lang === null) { // het ngon ngu cua phase hien tai -> sang phase ke
-            $state['phase']  = ($state['phase'] === 'apartments') ? 'blogs' : 'done';
+            $state['phase']  = PPLUS_SITEMAP_NEXT_PHASE[$state['phase']] ?? 'done';
             $state['lang_i'] = 0;
             $state['skip']   = 0;
             $state['page']   = 1;
@@ -150,12 +183,33 @@ function pplus_sitemap_step(): void {
                     continue;
                 }
                 $state['sets']['apartments'][] = home_url(pplus_lang_prefix($lang) . '/' . $href);
-                // Trang DU AN "{root}/{tinh}/{quan}/{alias}-{projectId}" (tap URL "products" cua web chinh): suy ra tu chinh
-                // urlHerf can ho ({root}/{tinh}/{quan}/{alias}/{apartmentId}) + projectId.
-                $segs = explode('/', $href);
-                if (count($segs) === 5 && !empty($it['projectId'])) {
-                    $state['sets']['projects'][] = home_url(pplus_lang_prefix($lang) . '/' . implode('/', array_slice($segs, 0, 3)) . '/' . $segs[3] . '-' . (int) $it['projectId']);
+            }
+            $state['skip'] += 12;
+            if (!$items || $state['skip'] >= $total || $state['skip'] > (int) apply_filters('pplus_sitemap_max_skip', 6000)) {
+                $state['lang_i']++;
+                $state['skip'] = 0;
+            }
+            continue;
+        }
+
+        if ($state['phase'] === 'projects') {
+            // Trang DU AN "{root}/{tinh}/{quan}/{alias}-{projectId}" (tap URL "products" cua web chinh) lay tu DANH SACH DU AN cua backend
+            // (urlHerf san), KHONG suy tu can ho: du an chua co can ho van co trang, va danh sach chi gom du an dang hien (sitemap web chinh
+            // dung ban chup 12/2024 con ~17 du an da go). Khong gui khung toa do thi API chi tra du an trong "cua so" ngam dinh quanh Ha Noi
+            // (825/838) - khung rong lay du; trang 12 du an/lan.
+            $data  = pplus_api_post_json("{$lang}/Project/_GetProjects", [
+                'skip'   => (int) $state['skip'],
+                'ne_lat' => 21.5, 'ne_lng' => 106.3, 'sw_lat' => 20.5, 'sw_lng' => 105.3,
+            ], 0);
+            $items = $data['result']['listProjects'] ?? [];
+            $total = (int) ($data['result']['total_count'] ?? 0);
+            foreach ($items as $it) {
+                $href = trim((string) ($it['urlHerf'] ?? ''), '/');
+                // Du an thieu quan (".../ha-noi//alias-id": du an thu nghiem / tinh khac) -> URL hong (WP gop "//" roi 301 ve trang danh sach): bo qua.
+                if ($href === '' || strpos($href, '//') !== false) {
+                    continue;
                 }
+                $state['sets']['projects'][] = home_url(pplus_lang_prefix($lang) . '/' . $href);
             }
             $state['skip'] += 12;
             if (!$items || $state['skip'] >= $total || $state['skip'] > (int) apply_filters('pplus_sitemap_max_skip', 6000)) {
@@ -233,7 +287,7 @@ class PPlus_Sitemap_Provider extends WP_Sitemaps_Provider {
         $per_page = wp_sitemaps_get_max_urls($this->object_type);
         $list     = [];
         foreach (array_slice(pplus_sitemap_urls($this->set), ($page_num - 1) * $per_page, $per_page) as $url) {
-            $list[] = ['loc' => $url];
+            $list[] = ['loc' => pplus_sitemap_encode_loc($url)];
         }
         return $list;
     }
@@ -260,7 +314,7 @@ add_filter('wp_sitemaps_add_provider', function ($provider, string $name) {
 
 // Trang "Danh sach yeu thich" la du lieu rieng tu nguoi dung, da noindex; "sample-page" la trang mac dinh cua WP - khong dua vao sitemap.
 add_filter('wp_sitemaps_posts_query_args', function (array $args): array {
-    foreach (['danh-sach-yeu-thich', 'sample-page', 'lien-he'] as $slug) {
+    foreach (['danh-sach-yeu-thich', 'sample-page', 'trang-mau', 'lien-he'] as $slug) { // trang-mau = "Sample Page" cua WP cai ban tieng Viet
         $page = get_page_by_path($slug);
         if ($page) {
             $args['post__not_in'] = array_merge($args['post__not_in'] ?? [], [(int) $page->ID]);
@@ -270,9 +324,9 @@ add_filter('wp_sitemaps_posts_query_args', function (array $args): array {
 });
 
 add_action('init', function () {
-    if (get_option('pplus_rewrite_flushed_sitemap_resi_v2') !== '1') {
+    if (get_option('pplus_rewrite_flushed_sitemap_resi_v3') !== '1') { // v3 (3/11/2026): them rule /sitemaps/sitemap_*.xml cu cua web chinh
         flush_rewrite_rules();
-        update_option('pplus_rewrite_flushed_sitemap_resi_v2', '1');
+        update_option('pplus_rewrite_flushed_sitemap_resi_v3', '1');
     }
 }, 20);
 
@@ -296,7 +350,57 @@ add_filter('wp_sitemaps_posts_entry', function (array $entry): array {
  */
 add_action('init', function () {
     add_rewrite_rule('^sitemap\.xml$', 'index.php?sitemap=index', 'top');
+    add_rewrite_rule('^sitemaps/sitemap_(products|posts|pages|quan|type|villa)\.xml$', 'index.php?pplus_old_sitemap=$matches[1]', 'top');
 });
+
+add_filter('query_vars', function (array $vars): array {
+    $vars[] = 'pplus_old_sitemap';
+    return $vars;
+});
+
+/**
+ * 3/11/2026 - 6 file sitemap CON cua web chinh: /sitemaps/sitemap_{products,posts,pages,quan,type,villa}.xml. Web chinh co "/sitemap.xml"
+ * khong phai sitemapindex ma la 1 <urlset> liet ke 6 file nay (Google co the da nop tung file trong Search Console). Sau khi chuyen sang
+ * WP, neu cac URL nay 404 thi Search Console bao loi "Khong the lay du lieu" - nen van tra 200 voi noi dung tuong ung (khong redirect: Google
+ * khong dam bao theo redirect cua sitemap). Nguon la CUNG tap URL da tinh cho /sitemap.xml moi, chi chia lai theo ten cu.
+ */
+function pplus_sitemap_old_child_urls(string $which): array {
+    switch ($which) {
+        case 'products': // du an
+            return pplus_sitemap_urls('projects');
+        case 'posts':
+            return pplus_sitemap_urls('blogs');
+        case 'villa':    // Resi bo biet thu: URL biet thu cu da 301/410 -> khong liet ke (file rong hop le)
+        case 'type':     // "type" cua web chinh trung lap voi "quan" (cung tap landing) -> gop het vao "quan"
+            return [];
+        default:         // 'quan' = landing (/{ngon-ngu}/{goc}/ha-noi/{alias}), 'pages' = phan con lai (trang chu, gioi thieu, dich vu, chu nha, blog...)
+            $landing = [];
+            $pages   = [];
+            foreach (pplus_sitemap_urls('areas') as $url) {
+                if (preg_match('#^/(vi|en|ja)/[^/]+/ha-noi/[^/]+$#', (string) wp_parse_url($url, PHP_URL_PATH))) {
+                    $landing[] = $url;
+                } else {
+                    $pages[] = $url;
+                }
+            }
+            return $which === 'quan' ? $landing : $pages;
+    }
+}
+
+add_action('template_redirect', function () {
+    $which = (string) get_query_var('pplus_old_sitemap');
+    if ($which === '') {
+        return;
+    }
+    status_header(200);
+    header('Content-Type: application/xml; charset=UTF-8');
+    echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    foreach (pplus_sitemap_old_child_urls($which) as $url) {
+        echo '<url><loc>' . esc_url(pplus_sitemap_encode_loc($url)) . '</loc></url>';
+    }
+    echo '</urlset>';
+    exit;
+}, 0);
 
 /**
  * robots.txt: giu cac Disallow cua web chinh (https://propertyplus.com.vn/robots.txt) + chan wp-admin, tro Sitemap ve /sitemap.xml.
