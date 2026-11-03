@@ -606,12 +606,14 @@ add_action('pplus_api_refresh', 'pplus_api_refresh_job', 10, 6);
  * @param string $path   Vi du "vi/Home/HeaderInvokeAsync" hoac "Office/_GetDetail"
  * @return array|null    null neu loi (KHONG lam sap trang - template phai tu xu ly fallback)
  */
-function pplus_api_get(string $path, array $query = [], int $cache_seconds = 600): ?array {
+function pplus_api_get(string $path, array $query = [], int $cache_seconds = 600, int $timeout = 6): ?array {
     $url = pplus_api_base_url() . '/' . ltrim($path, '/');
     if (!empty($query)) {
         $url = add_query_arg($query, $url);
     }
-    return pplus_api_cached('GET', $url, null, $cache_seconds, 6);
+    // $timeout > 6 chi cho cac endpoint chi tiet NANG (3/11/2026, Search Console: bai blog co anh nhung trong noi dung tra 2-6MB JSON mat 2-6,4s -
+    // bai "cong dong nguoi Nhat" ban VI tra 5,9MB/6,4s > 6s -> 503 du la trang co traffic). Sau lan dau da co cache SWR nen khong cham lai.
+    return pplus_api_cached('GET', $url, null, $cache_seconds, $timeout);
 }
 
 /**
@@ -1162,7 +1164,7 @@ function pplus_get_apartment_detail(int $id, string $province, string $district,
  */
 function pplus_get_project_detail(int $id): ?array {
     $lang = pplus_current_lang();
-    $data = pplus_api_get("{$lang}/Project/Detail", ['id' => $id], 600);
+    $data = pplus_api_get("{$lang}/Project/Detail", ['id' => $id], 600, 15); // ban EN cua 1 so du an ~2MB (VI ~200KB): de vuot 6s luc cache lanh
     return $data['result'] ?? null;
 }
 
@@ -1724,7 +1726,7 @@ function pplus_get_blog_detail(int $id, string $alias): ?array {
     return pplus_api_get("{$lang}/Blogs/GetDetail", [
         'id'    => $id,
         'alias' => $alias,
-    ], 300);
+    ], 300, 20); // bai co anh nhung trong noi dung: den 5,9MB / 6,4s (xem pplus_api_get)
 }
 
 /**

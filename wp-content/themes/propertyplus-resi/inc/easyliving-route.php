@@ -67,7 +67,7 @@ function pplus_get_easy_living(int $id): ?array {
     if (array_key_exists($id, $cache)) {
         return $cache[$id];
     }
-    $data   = pplus_api_get(pplus_current_lang() . '/EasyLiving/_Detail', ['id' => $id], 600);
+    $data   = pplus_api_get(pplus_current_lang() . '/EasyLiving/_Detail', ['id' => $id], 600, 15); // 100-210KB/lan, co luc cham
     $result = $data['result'] ?? null;
     return $cache[$id] = (is_array($result) && !empty($result['detail']['name'])) ? $result : null;
 }

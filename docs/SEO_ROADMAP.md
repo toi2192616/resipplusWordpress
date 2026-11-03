@@ -36,7 +36,9 @@ Cập nhật: 3/11/2026. Chiến lược và số liệu gốc: `SEO_STRATEGY_JA
 **Tuần 0 — trước khi đưa Resi lên (chặn rủi ro)**
 - [x] Chuyển hướng URL có backlink, easy-living, sitemap, bộ kiểm.
 - [ ] Dev A deploy các commit mới (cần: cron WP, GD-WebP, `PPLUS_NOINDEX=false`, tạo Page `ve-chung-toi` + `lien-he`) — xem checklist.
-- [ ] Chủ site: quyết định tiêu đề trang danh sách (khuyến nghị dùng `title` của trang chính); cấp quyền Search Console.
+- [x] Search Console: đọc được qua phiên Google của chủ site (số gốc ở `SEO_STRATEGY_JA_EN.md` mục 7).
+- [ ] Chủ site: quyết định tiêu đề trang danh sách (khuyến nghị dùng `title` của trang chính).
+- [x] Sửa 503 cho bài blog/dự án nặng (nâng thời gian chờ API); thêm `tools/priority-urls.txt` (53 URL có traffic/backlink) vào bộ kiểm.
 - [ ] Chạy `node tools/post-deploy-check.mjs https://propertyplus.com.vn --warm` — không còn ✗.
 
 **Tuần 1–2 — ổn định và đo lường**
@@ -45,7 +47,8 @@ Cập nhật: 3/11/2026. Chiến lược và số liệu gốc: `SEO_STRATEGY_JA
 - Thêm 3 đối thủ vào Ahrefs; chạy Content Gap (JA/EN) và Link Intersect; bật Site Audit hằng tuần.
 - Nạp Rank Tracker (46 từ khoá: 20 JA, 15 EN, 11 tên toà) sau khi chủ site chốt.
 
-**Tuần 2–4 — cụm từ khoá đầu (KD 1–5, đối thủ yếu)**
+**Tuần 2–4 — cụm từ khoá đầu (KD 1–5, đối thủ yếu) + cửa vào "khu vực sống"**
+- Mở rộng 2 bài đang có lượt hiển thị (cộng đồng người Nhật / người Hàn tại Hà Nội) thành cẩm nang JA/EN: 日本人街・韓国人街・タイホー区 (Search Console: ハノイ 韓国人街 163 hiển thị, ハノイ 韓国 232), liên kết sang danh sách theo khu.
 - Viết bản nội dung tiếng Nhật và tiếng Anh cho các trang đích: ハノイ 賃貸（日本人向け）, ハノイ サービスアパート, ハノイ アパート 家賃相場, ハノイ 不動産; hanoi apartment for rent, serviced apartment hanoi, hanoi expat housing. Bản nháp lưu trong `docs/content/`, người bản ngữ duyệt, tôi đưa vào admin ("Bài viết các Quận/huyện", "Vùng căn hộ").
 - Thêm khối FAQ có dữ liệu có cấu trúc `FAQPage` vào các trang đích (theme).
 

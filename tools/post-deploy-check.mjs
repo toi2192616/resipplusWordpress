@@ -13,6 +13,8 @@
  * Chạy 2 lần: lần 1 ngay sau deploy (cache lạnh, có thể có vài 503 do API chậm), lần 2 sau 5-10 phút (cron sitemap/WebP đã chạy).
  */
 
+import { readFileSync } from 'node:fs';
+
 const args = process.argv.slice(2);
 const flags = new Set(args.filter((a) => a.startsWith('--')));
 const opt = (name, def) => { const a = args.find((x) => x.startsWith(`--${name}=`)); return a ? a.slice(name.length + 3) : def; };
@@ -212,6 +214,24 @@ async function checkSitemap() {
   if (!bad200) say('pass', `${rows.length} URL lấy mẫu từ sitemap đều 200, index được, canonical tự trỏ`);
 }
 
+// ----------------------------------------------------------------------------------------------- 3b. URL đang có traffic / backlink
+async function checkPriority() {
+  section('3b. URL đang có traffic hoặc backlink (tools/priority-urls.txt) — không được 404/503');
+  let list = [];
+  try { list = readFileSync(new URL('./priority-urls.txt', import.meta.url), 'utf8').split(/\r?\n/).map((x) => x.trim()).filter((x) => x && !x.startsWith('#')); } catch { say('warn', 'Không đọc được tools/priority-urls.txt'); return; }
+  const rows = await pool(list, 3, async (p) => {
+    let r = await http(p, { retry503: true });
+    let hops = 0;
+    while ([301, 302, 308].includes(r.status) && r.loc && hops < 3) { r = await http(pathOf(r.loc) + (new URL(r.loc, base).search || ''), { retry503: true }); hops++; }
+    return { p, r, hops };
+  });
+  const bad = rows.filter(({ r }) => r.status !== 200);
+  for (const { p, r } of bad) say('fail', `URL ưu tiên ${p.slice(0, 95)}`, `HTTP ${r.status}${r.err ? ' ' + r.err : ''} — đang có traffic/backlink mà không mở được`);
+  const slow = rows.filter(({ r }) => r.status === 200 && r.ms > 8000);
+  for (const { p, r } of slow) say('warn', `URL ưu tiên chậm ${p.slice(0, 90)}`, `${r.ms}ms — payload API nặng, cần làm nóng cache (--warm) ngay sau deploy`);
+  if (!bad.length) say('pass', `${rows.length} URL ưu tiên đều mở được (200, có thể qua 301)`);
+}
+
 // ----------------------------------------------------------------------------------------------- 4. kiểm tra trang theo mẫu × ngôn ngữ
 const LANGS = ['en', 'vi', 'ja'];
 const STATIC_PAGES = [
@@ -402,6 +422,7 @@ const t0 = Date.now();
 await checkRobotsAndIndexing();
 await checkRedirects();
 await checkSitemap();
+await checkPriority();
 await checkPages();
 await checkSearch();
 await checkPerformance();

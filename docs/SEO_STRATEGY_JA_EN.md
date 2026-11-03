@@ -98,3 +98,29 @@ VietLong xuất hiện trong 43 câu trả lời AI: thêm khối FAQ rõ ràng,
 2. Chốt danh sách 46 từ khoá cho Rank Tracker.
 3. Nối Google Search Console (cần bạn cấp quyền) để có volume/CTR thật.
 4. Sau go-live: bật Site Audit hằng tuần + Web Analytics.
+
+## 7. Số liệu thật từ Google Search Console (2/8 → 1/11/2026)
+
+Nguồn: thuộc tính `https://propertyplus.com.vn/` đọc qua phiên Google của chủ site (chỉ đọc, không xuất file). **Đây là số gốc để đo tiến độ** — Ahrefs ước lượng thấp hơn khoảng 6 lần (58 so với ~350 lượt/tháng).
+
+| Chỉ số | Giá trị |
+|---|---|
+| Lượt nhấp / hiển thị (3 tháng) | 1.056 / 140 nghìn (≈ 350 nhấp/tháng) |
+| CTR / vị trí trung bình | 0,8% / 13,2 |
+| Theo quốc gia (nhấp / hiển thị) | Việt Nam 843 / 124,8K · **Nhật Bản 98 / 4.576 (CTR 2,1%, vị trí TB 11)** · Mỹ 16 / 3,1K · Hàn Quốc 10 · Singapore 9 |
+| Đã lập chỉ mục / chưa | **708 / 4.169** |
+
+**Trang mang lượt nhấp:** trang chủ 143 · Lotte The Residence 45 · blog EN "Top 3 areas with Japanese community living in Hanoi" 44 · blog VI cộng đồng người Hàn 41 · `/ja/rental-apartment/ha-noi` 33 (**9.045 lượt hiển thị**) · blog VI cộng đồng người Nhật 30 · Grandeur Palace 28 · The Authentic 26 · blog EN cộng đồng người Hàn 23. Tổng 722 trang có lượt hiển thị.
+
+**Truy vấn tiếng Nhật đang có hiển thị:** ハノイ 韓国人街 (163), ハノイ 韓国 (232), ハノイ レジデンス (77), ハノイ韓国人街 (47), ハノイ タイホー区 (26). Truy vấn nhiều nhất toàn site: "property plus" (72 nhấp), "propertyplus" (22), "phố người nhật ở hà nội" (117 hiển thị), "japanese quarter hanoi", "japanese town hanoi", "the authentic haseko".
+
+**Lý do 4.169 trang chưa lập chỉ mục:** "đã phát hiện – chưa lập chỉ mục" 2.416 · "đã thu thập – chưa lập chỉ mục" 665 · trùng lặp, chưa chọn trang chính tắc 661 · trùng lặp, Google chọn trang chính tắc khác 218 · noindex 195 · 4xx 6 · chuyển hướng 5 · robots 3 · lỗi 5xx 0.
+
+### Điều này thay đổi kế hoạch thế nào
+1. **Người Nhật đang tìm "khu vực sống", chưa tìm "thuê nhà".** Lượt hiển thị tiếng Nhật tập trung vào khu người Hàn/người Nhật, Tây Hồ, "residence". Nội dung lối sống – khu vực (日本人街 / 韓国人街 / タイホー区) là cửa vào chính; trang thuê nhà là bước sau. → mở rộng hai bài đang có thành cẩm nang JA/EN và liên kết thẳng sang danh sách theo khu.
+2. **`/ja/rental-apartment/ha-noi` 9.045 hiển thị nhưng chỉ 33 nhấp không phải do tiêu đề kém**: phần lớn hiển thị từ Việt Nam (trang tiếng Nhật bị đưa cho người tìm tiếng Việt vì bản Angular không có hreflang). Resi đã có hreflang ja/en/vi + x-default → tự cải thiện; không đổi tiêu đề.
+3. **~3.000 trang bị Google bỏ qua** (phát hiện/thu thập nhưng không lập chỉ mục) + 879 trang trùng lặp: do SPA Angular không có canonical/hreflang trong HTML gốc và quá nhiều URL mỏng. Resi trả canonical, hreflang, sitemap sạch ngay trong HTML → sau go-live nộp sitemap và theo dõi tỷ lệ lập chỉ mục (mục tiêu: 708 → > 2.000 trang trong 3 tháng).
+4. **Số gốc theo dõi:** dùng Search Console (≈ 350 nhấp/tháng, Nhật ≈ 33 nhấp/tháng), không dùng ước lượng Ahrefs.
+
+### Lỗi tìm thấy nhờ dữ liệu thật và đã sửa
+Bài blog tiếng Việt "cộng đồng người Nhật" (30 nhấp) trả **5,9 MB dữ liệu API trong 6,4 giây** — vượt giới hạn chờ 6 giây của theme nên Resi trả 503 dù là trang có traffic; bản JA bài Tây Hồ (2 MB) cũng sát giới hạn. Đã nâng thời gian chờ riêng cho blog (20 giây), dự án (15 giây), tiện ích (15 giây). Nên nhờ Dev backend/biên tập nén ảnh nhúng trong các bài này (6 MB là quá nặng).

@@ -1,0 +1,53 @@
+# URL ưu tiên: đang có TRAFFIC (Google Search Console, 3 tháng đến 1/11/2026) hoặc BACKLINK (Ahrefs 'Best by links', 3/11/2026).
+# post-deploy-check.mjs kiểm từng dòng: phải ra 200 (hoặc 301 rồi 200). Thêm URL mới vào đây khi có trang quan trọng.
+
+# --- traffic (Search Console)
+/
+/vi/cho-thue-can-ho/ha-noi/quan-ba-dinh/lotte-the-residence-hanoi-80
+/en/blog/top-3-areas-with-japanese-community-living-in-Hanoi-109
+/vi/blog/Top-3-khu-vuc-co-dong-cong-dong-nguoi-Han-tai-Ha-Noi-106
+/ja/rental-apartment/ha-noi
+/vi/blog/Top-3-khu-vuc-co-cong-dong-nguoi-Nhat-sinh-song-tai-Ha-Noi-109
+/vi/cho-thue-can-ho/ha-noi/grandeur-palace-giang-vo
+/vi/blog/nhung-noi-tot-nhat-tim-nha-cho-nguoi-nuoc-ngoai-thue-o-ha-noi-99
+/vi/cho-thue-can-ho/ha-noi/quan-long-bien/the-authentic-280
+/en/blog/Top-3-areas-with-a-large-Korean-community-in-Hanoi-106
+/ja/blog/Top-3-areas-with-a-large-Korean-community-in-Hanoi-106
+/ja/blog/Top-03-areas-with-many-foreigners-living-in-Tay-Ho-139
+/ja/blog/top-3-areas-with-japanese-community-living-in-Hanoi-109
+/ja/rental-apartment/ha-noi/cheap-apartments
+/en/easy-living/206
+/ja/blog/Art-of-Making-Broken-Things-Beautiful-With-Kintsugi-224
+/ja/blog/Conditions-for-naturalization-in-Vietnam-71
+
+# --- backlink (Ahrefs); nhiều dòng là URL cũ phải 301 sang trang mới
+/Error
+/en
+/ve-chung-toi
+/en/rental-apartment/ha-noi/ba-dinh-district
+/en/rental-apartment/ha-noi/tay-ho-district
+/en/rental-apartment/ha-noi/serviced-apartment
+/en/rental-apartment/ha-noi/service-apartment-in-hanoi-38
+/en/rental-apartment/ha-noi/luxury-apartment-for-rent-in-ha-noi-37
+/en/rental-apartment/ha-noi/apartment-for-rent-in-ba-dinh-36
+/en/rental-apartment/ha-noi/Apartments-in-Tay-Ho-35
+/en/rental-apartment/ha-noi/luxury-apartment-for-rent-in-ha-noi
+/en/apartments/apartment-for-rent-in-ba-dinh-36
+/en/apartments/Apartments-in-Tay-Ho-35
+/en/apartments/service-apartment-in-hanoi-38
+/en/apartments/luxury-apartment-for-rent-in-ha-noi-37
+/apartments/service-apartment-in-hanoi-38
+/apartments/apartment-for-rent-in-ba-dinh-36
+/apartments/luxury-apartment-for-rent-in-ha-noi-37
+/projects/Apartment-for-rent-in-Vinhomes-Metropolis-Hanoi-26
+/en/projects/Apartment-for-rent-in-Vinhomes-Metropolis-Hanoi-26
+/en/can-ho
+/san-pham/221/Apartments.html
+/san-pham/187/Houses.html
+/san-pham/255/Apartment-for-rent-in-Royal-City-Complex.html
+/chi-tiet-san-pham/686/Nice-furnishings-2-bedrooms-apartment-in-R2-Royal-City.html
+# (đã gỡ khỏi backend, 404 là đúng) /en/blog/Top-10-most-crowded-Japanese-restaurants-in-Hanoi-20
+/vi/blog/Nhung-luu-y-ve-hop-dong-thue-can-ho-de-dam-bao-quyen-loi-112
+/vi/easy-living/145
+/en/easy-living/24
+/ja/easy-living/24
