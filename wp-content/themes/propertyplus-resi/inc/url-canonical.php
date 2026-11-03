@@ -163,18 +163,23 @@ function pplus_redirect_to_canonical_request(): void {
     }
     $uri  = $_SERVER['REQUEST_URI'] ?? '/';
     $path = parse_url($uri, PHP_URL_PATH) ?: '/';
-    // Tep tinh / WP noi bo / sitemap: co dau "." o doan cuoi (".xml", ".css"...) hoac bat dau wp-* / index.php -> bo qua.
-    $last = basename($path);
-    if (strpos($last, '.') !== false || preg_match('#^/(wp-|index\.php)#', $path)) {
+    // WP noi bo: bat dau wp-* / index.php -> bo qua.
+    if (preg_match('#^/(wp-|index\.php)#', $path)) {
         return;
     }
     $query = parse_url($uri, PHP_URL_QUERY);
     $tail  = $query ? '?' . $query : '';
     // URL CU da bi doi (bang LogUrlSite cua web chinh, xem inc/legacy-redirects.php) -> 301 thang sang URL moi (1 hop duy nhat).
+    // Tra bang TRUOC khi bo qua duong dan co duoi tep: web chinh cu co URL ".html" co backlink (vd /san-pham/221/Apartments.html,
+    // /chi-tiet-san-pham/686/....html) - tra bang chi la 1 phep tim khoa nen khong ton chi phi.
     $legacy = function_exists('pplus_legacy_redirect_target') ? pplus_legacy_redirect_target($path) : null;
     if ($legacy !== null) {
         wp_redirect(home_url($legacy) . $tail, 301, 'PropertyPlus-Legacy');
         exit;
+    }
+    // Tep tinh / sitemap: co dau "." o doan cuoi (".xml", ".css"...) -> khong phai route cua site, bo qua.
+    if (strpos(basename($path), '.') !== false) {
+        return;
     }
     // Mac dinh ngon ngu cua site la TIENG ANH: duong dan dung chung khong tien to (/blogs, /service/...) -> /en/... (goc rieng cua tieng Viet van ra /vi/...).
     $canonical = pplus_canonical_path($path, 'en');

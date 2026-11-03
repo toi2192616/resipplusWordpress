@@ -132,6 +132,10 @@ async function checkRedirects() {
     ['/vi/biet-thu-cho-thue/ha-noi/biet-thu-ciputra', 301, '/vi/cho-thue-can-ho/ha-noi/biet-thu-ciputra', 'biệt thự đã bỏ khỏi Resi → về căn hộ tương ứng'],
     ['/en/projects/apartment-for-rent-in-vinhomes-metropolis-hanoi-26', 301, '/en/rental-apartment/ha-noi/quan-ba-dinh/vinhomes-metropolis-1', 'URL dự án cũ (bảng 138 dòng)'],
     ['/vi/du-ans/tong-quan-ve-can-ho-cho-thue-o-lotte-the-residence-ha-noi-59', 301, '/vi/cho-thue-can-ho/ha-noi/quan-ba-dinh/lotte-the-residence-hanoi-80', 'URL dự án cũ (bảng 138 dòng)'],
+    ['/ha-noi/quan-tay-ho', 301, '/vi/cho-thue-can-ho/ha-noi/quan-tay-ho', 'URL cũ không tiền tố đã được Google index (bảng chuyển hướng admin)'],
+    ['/san-pham/221/Apartments.html', 301, '/vi/cho-thue-can-ho/ha-noi', 'URL .html của web đời đầu, có backlink DR cao'],
+    ['/en/apartments/apartment-for-rent-in-ba-dinh-36', 301, '/en/rental-apartment/ha-noi/ba-dinh-district', 'URL landing kiểu cũ có backlink'],
+    ['/Error', 301, '/', 'trang /Error có 19 tên miền trỏ về'],
     ['/en/blog', 404, null, 'web chính trả 200 "Trang chủ" rỗng (soft-404) → ở đây phải 404 thật'],
     ['/js/about-us', 404, null, 'URL rác trong sitemap cũ của web chính'],
     ['/vi/trang-khong-ton-tai-xyz', 404, null, 'URL bất kỳ không tồn tại phải 404 (không phải 200 trang rỗng)'],
@@ -219,6 +223,7 @@ const STATIC_PAGES = [
   ['blog (danh sách)', { en: '/en/blogs', vi: '/vi/blogs', ja: '/ja/blogs' }],
   ['dịch vụ', { en: '/en/service/the-management-of-property-plus-1', vi: '/vi/service/dich-vu-quan-ly-cua-property-plus-1', ja: '/ja/service/the-management-of-property-plus-1' }],
   ['chủ nhà', { en: '/en/owner/owner-benefit', vi: '/vi/owner/loi-ich-chu-nha', ja: '/ja/owner/owner-benefit' }],
+  ['tiện ích (easy-living)', { en: '/en/easy-living/24', vi: '/vi/easy-living/145', ja: '/ja/easy-living/24' }, 'optional'],
   ['yêu thích (noindex)', { en: '/en/danh-sach-yeu-thich', vi: '/vi/danh-sach-yeu-thich', ja: '/ja/danh-sach-yeu-thich' }, 'noindex'],
 ];
 const langOfPath = (p) => (/^\/(vi|en|ja)(\/|$)/.exec(p) || [, 'en'])[1];

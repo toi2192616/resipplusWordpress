@@ -55,12 +55,12 @@ require_once PPLUS_THEME_DIR . '/inc/seo-head.php';                // SEO/GEO ta
 require_once PPLUS_THEME_DIR . '/inc/noindex.php';                 // Chan index toan site cho server TEST (PPLUS_NOINDEX / o tich trong Giao dien > PropertyPlus)
 require_once PPLUS_THEME_DIR . '/inc/sitemap.php';                // Sitemap XML: can ho (VI+EN), blog, trang khu vuc/dich vu - tinh san qua WP-Cron theo dot nho
 require_once PPLUS_THEME_DIR . '/inc/search-group-route.php';      // REST goi y "Tìm theo tên dự án" khi go o tim kiem (Apartment/_GetFilterGroupList)
+require_once PPLUS_THEME_DIR . '/inc/easyliving-route.php';       // C3 - trang tien ich /{lang}/easy-living/{id} (35 URL co backlink, xem docblock file)
 require_once PPLUS_THEME_DIR . '/inc/asset-bundle.php';            // Gop CSS/JS lien ke cung nhom thanh 1 file (tu sinh lai khi file nguon doi)
 
 /*
  * TODO Phase 1+: A1/A2 da xong (29/9, xem 2 dong require o tren) - bat dan tiep khi convert:
  * require_once PPLUS_THEME_DIR . '/inc/street-route.php';           // A6
- * require_once PPLUS_THEME_DIR . '/inc/easyliving-route.php';       // C3
  */
 
 add_action('after_setup_theme', function () {
@@ -322,6 +322,12 @@ add_action('wp_enqueue_scripts', function () {
     if (get_query_var('pplus_blog_detail')) {
         wp_enqueue_style('pplus-blog-detail-component', PPLUS_THEME_URI . '/assets/css/blog-detail-component.css', [$prev], pplus_asset_version('assets/css/blog-detail-component.css'));
         $prev = 'pplus-blog-detail-component';
+    }
+
+    // CSS trang tien ich (C3, xem inc/easyliving-route.php).
+    if (get_query_var('pplus_easy_living')) {
+        wp_enqueue_style('pplus-easy-living-component', PPLUS_THEME_URI . '/assets/css/easy-living-component.css', [$prev], pplus_asset_version('assets/css/easy-living-component.css'));
+        $prev = 'pplus-easy-living-component';
     }
 
     // CSS trang "Chu nha" (C2, xem inc/owner-route.php). ".info-list" (tab nav) dung LAI nguyen
