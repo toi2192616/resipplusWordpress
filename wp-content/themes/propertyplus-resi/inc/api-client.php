@@ -275,6 +275,14 @@ function pplus_language_options(): array {
 }
 
 /**
+ * Trang chu THEO NGON NGU hien tai: "/vi", "/" (tieng Anh = mac dinh cua site) hoac "/ja". home_url('/') LUON la trang chu tieng Anh nen
+ * KHONG dung cho link "Trang chu" (breadcrumb...) tren trang tieng Viet/Nhat - se day nguoi dung sang ban tieng Anh.
+ */
+function pplus_home_url(): string {
+    return home_url(pplus_lang_prefix());
+}
+
+/**
  * Tien to duong dan theo ngon ngu hien tai: '/vi', '/en' hoac '/ja' (khop Angular Resi: urlLang cho ca vi).
  */
 function pplus_lang_prefix(?string $lang = null): string {

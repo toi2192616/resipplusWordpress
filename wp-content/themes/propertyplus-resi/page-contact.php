@@ -24,7 +24,7 @@ pplus_render_suggest_header();
 
 get_template_part('parts/url-box-content', null, [
     'breadcrumb' => [
-        ['name' => pplus_t('Trang chủ', 'Home'), 'url' => home_url('/')],
+        ['name' => pplus_t('Trang chủ', 'Home'), 'url' => pplus_home_url()],
         ['name' => pplus_t('Liên hệ', 'Contact')],
     ],
 ]);
@@ -33,7 +33,7 @@ get_template_part('parts/url-box-content', null, [
     <div class="container">
         <div class="contact-content row">
             <div class="col-md-6 content-left">
-                <a href="<?php echo esc_url(home_url('/')); ?>" class="btn-back">
+                <a href="<?php echo esc_url(pplus_home_url()); ?>" class="btn-back">
                     <i class="icon">
                         <svg width="15" height="12" viewBox="0 0 15 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M14 5.25C14.4142 5.25 14.75 5.58579 14.75 6C14.75 6.41421 14.4142 6.75 14 6.75V5.25ZM0.46967 6.53033C0.176777 6.23744 0.176777 5.76256 0.46967 5.46967L5.24264 0.696699C5.53553 0.403806 6.01041 0.403806 6.3033 0.696699C6.59619 0.989593 6.59619 1.46447 6.3033 1.75736L2.06066 6L6.3033 10.2426C6.59619 10.5355 6.59619 11.0104 6.3033 11.3033C6.01041 11.5962 5.53553 11.5962 5.24264 11.3033L0.46967 6.53033ZM14 6.75H1V5.25H14V6.75Z" />
@@ -64,7 +64,7 @@ get_template_part('parts/url-box-content', null, [
                     <div class="group-c">
                         <div class="text-4"><?php echo esc_html(pplus_t('Tìm chúng tôi ở', 'Find us on')); ?></div>
                         <div class="contact-link">
-                            <a href="<?php echo esc_url(home_url('/')); ?>" aria-label="Google">
+                            <a href="<?php echo esc_url(pplus_home_url()); ?>" aria-label="Google">
                                 <i>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#545353">
                                         <g clip-path="url(#pplusGoogleClip)">
@@ -88,7 +88,7 @@ get_template_part('parts/url-box-content', null, [
                                     </svg>
                                 </i>
                             </a>
-                            <a href="<?php echo esc_url(home_url('/')); ?>" aria-label="Instagram">
+                            <a href="<?php echo esc_url(pplus_home_url()); ?>" aria-label="Instagram">
                                 <i>
                                     <svg width="17" height="17" viewBox="0 0 17 17" fill="#545353" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M11.7612 0H5.47596C2.58371 0 0.238281 2.34543 0.238281 5.23768V11.5229C0.238281 14.4151 2.58371 16.7606 5.47596 16.7606H11.7612C14.6534 16.7606 16.9988 14.4151 16.9988 11.5229V5.23768C16.9988 2.34543 14.6534 0 11.7612 0ZM15.4275 11.5229C15.4275 13.5446 13.7829 15.1893 11.7612 15.1893H5.47596C3.45421 15.1893 1.80958 13.5446 1.80958 11.5229V5.23768C1.80958 3.21593 3.45421 1.5713 5.47596 1.5713H11.7612C13.7829 1.5713 15.4275 3.21593 15.4275 5.23768V11.5229Z" />

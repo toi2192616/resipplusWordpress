@@ -52,7 +52,7 @@ get_header();
         <div class="container">
             <div class="url-content">
                 <div class="url-content-list">
-                    <a href="<?php echo esc_url(home_url('/')); ?>"><?php echo esc_html(pplus_t('Trang chủ', 'Home')); ?></a>
+                    <a href="<?php echo esc_url(pplus_home_url()); ?>"><?php echo esc_html(pplus_t('Trang chủ', 'Home')); ?></a>
                     &nbsp;&nbsp;
                     <a href="<?php echo esc_url(home_url($lang_prefix . '/' . pplus_office_list_base_slug() . '/')); ?>"><?php echo esc_html(pplus_t('Cho thuê văn phòng', 'Office for rent')); ?></a>
                     &nbsp;&nbsp;

@@ -42,7 +42,7 @@ foreach ((array) ($result['listCatalog'] ?? []) as $catalog) {
 <?php
 get_template_part('parts/url-box-content', null, [
     'breadcrumb' => [
-        ['name' => pplus_t('Trang chủ', 'Home'), 'url' => home_url('/')],
+        ['name' => pplus_t('Trang chủ', 'Home'), 'url' => pplus_home_url()],
         ['name' => pplus_t('Tin tức', 'Blog')],
     ],
 ]);

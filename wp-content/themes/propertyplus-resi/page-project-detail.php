@@ -110,8 +110,8 @@ get_header();
                 <div class="col-md-12 box-list-header pull-left">
                     <div class="url-content">
                         <div class="url-content-list">
-                            <a href="<?php echo esc_url(home_url('/')); ?>"><?php echo esc_html(pplus_localize('Trang chủ')); ?></a>
-                            <a href="<?php echo esc_url(home_url($lang_prefix . '/cho-thue-can-ho/ha-noi/')); ?>"><?php echo pplus_breadcrumb_arrow(); ?><?php echo esc_html(pplus_localize('Hà Nội')); ?></a>
+                            <a href="<?php echo esc_url(pplus_home_url()); ?>"><?php echo esc_html(pplus_localize('Trang chủ')); ?></a>
+                            <a href="<?php echo esc_url(home_url($lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi')); ?>"><?php echo pplus_breadcrumb_arrow(); ?><?php echo esc_html(pplus_localize('Hà Nội')); ?></a>
                             <?php if (!empty($data['subTitle'])) : ?>
                                 <a href="#"><?php echo pplus_breadcrumb_arrow(); ?><?php echo esc_html($data['subTitle']); ?></a>
                             <?php endif; ?>

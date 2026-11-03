@@ -105,7 +105,7 @@ function pplus_render_home_apartment_groups(array $groups, string $list_slug, st
                     <div class="tab-content">
                         <div class="tab-pane box-search-pane fade show active">
                             <div class="searching-bar">
-                                <form action="<?php echo esc_url(home_url($lang_prefix . '/cho-thue-can-ho/')); ?>" method="get" autocomplete="off" id="office-form" class="office-form">
+                                <form action="<?php echo esc_url(home_url($lang_prefix . '/' . pplus_apartment_list_root())); ?>" method="get" autocomplete="off" id="office-form" class="office-form">
                                     <div class="box-search row">
                                         <div class="col-md-5 search-input-group">
                                             <div class="search-option">
@@ -153,7 +153,7 @@ function pplus_render_home_apartment_groups(array $groups, string $list_slug, st
                 <h2 class="_interesting-title"><?php echo esc_html(pplus_localize('Căn hộ cho thuê ở Hà Nội')); ?></h2>
             </div>
             <hr class="_interesting-hr-1" />
-            <?php pplus_render_home_apartment_groups($home['datalistApartment'], 'cho-thue-can-ho', $lang_prefix); ?>
+            <?php pplus_render_home_apartment_groups($home['datalistApartment'], pplus_apartment_list_root(), $lang_prefix); ?>
         </div>
     </div>
 </div>

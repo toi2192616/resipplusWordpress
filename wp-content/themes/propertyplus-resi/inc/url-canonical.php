@@ -73,6 +73,24 @@ function pplus_canonical_path(string $path, string $current_lang = 'vi'): ?strin
     return null;
 }
 
+/**
+ * Luoi an toan cho LINK SINH RA: "/en/cho-thue-can-ho/..." (goc tieng Viet duoi tien to tieng Anh) -> "/en/rental-apartment/..." va nguoc lai
+ * (cac to hop cheo ngon ngu la 404 - xem pplus_root_allowed_for_lang()). Chi doi GOC, phan alias phia sau giu nguyen. Khong ap dung cho
+ * request den (request den van bi 404 nhu web chinh).
+ */
+function pplus_fix_cross_language_root(string $canonical_path): string {
+    static $vi_to_en = ['cho-thue-can-ho' => 'rental-apartment', 've-chung-toi' => 'about-us', 'lien-he' => 'contact', 'biet-thu-cho-thue' => 'villa-for-rent', 'so-sanh-van-phong' => 'office-compare'];
+    if (!preg_match('#^/(vi|en|ja)/([^/]+)(/.*)?$#', $canonical_path, $m)) {
+        return $canonical_path;
+    }
+    [$lang, $root, $rest] = [$m[1], $m[2], $m[3] ?? ''];
+    if ($lang === 'vi') {
+        $en_to_vi = array_flip($vi_to_en);
+        return isset($en_to_vi[$root]) ? '/vi/' . $en_to_vi[$root] . $rest : $canonical_path;
+    }
+    return isset($vi_to_en[$root]) ? '/' . $lang . '/' . $vi_to_en[$root] . $rest : $canonical_path;
+}
+
 /** Duong dan cua request GOC (truoc khi language-route.php strip tien to). */
 function pplus_original_path(): string {
     $uri = $GLOBALS['pplus_original_request_uri'] ?? ($_SERVER['REQUEST_URI'] ?? '/');
@@ -193,6 +211,7 @@ add_filter('home_url', function ($url, $path) {
     if ($canonical === null) {
         return $url;
     }
+    $canonical = pplus_fix_cross_language_root($canonical);
     $suffix = '/' . ltrim($path, '/');
     $base   = substr($url, 0, strlen($url) - strlen($suffix));
     return $base . $canonical . $tail;

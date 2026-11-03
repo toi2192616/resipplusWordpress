@@ -94,7 +94,7 @@ get_header();
         <div class="container">
         <div class="url-content">
             <div class="url-content-list">
-                <a href="<?php echo esc_url(home_url('/')); ?>"><?php echo esc_html(pplus_t('Trang chủ', 'Home')); ?></a>
+                <a href="<?php echo esc_url(pplus_home_url()); ?>"><?php echo esc_html(pplus_t('Trang chủ', 'Home')); ?></a>
                 &nbsp;&nbsp;
                 <?php // alasProvince THO tu .NET la "thanh-pho-ho-chi-minh"(VI)/"ho-chi-minh-city"(EN) cho
                 // TPHCM -> phai chuan hoa ve "ho-chi-minh" (giong Angular .replace()) moi ra URL dung,

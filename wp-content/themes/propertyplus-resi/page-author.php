@@ -21,7 +21,7 @@ get_header();
         $lang_prefix = pplus_lang_prefix();
         get_template_part('parts/url-box-content', null, [
             'breadcrumb' => [
-                ['name' => pplus_t('Trang chủ', 'Home'), 'url' => home_url('/')],
+                ['name' => pplus_t('Trang chủ', 'Home'), 'url' => pplus_home_url()],
                 ['name' => pplus_t('Tin tức', 'Blog'), 'url' => home_url($lang_prefix . '/blogs/')],
                 ['name' => $data['title'] ?? ''],
             ],

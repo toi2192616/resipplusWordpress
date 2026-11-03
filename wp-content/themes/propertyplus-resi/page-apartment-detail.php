@@ -82,9 +82,9 @@ if ($pplus_lcp_image !== '') {
 }
 
 $project_id   = (int) ($detail['projectId'] ?? 0);
-$district_url = home_url($lang_prefix . '/' . pplus_office_url('cho-thue-can-ho/ha-noi/' . ($detail['alasDistrict'] ?? '')));
+$district_url = home_url($lang_prefix . '/' . pplus_office_url(pplus_apartment_list_root() . '/ha-noi/' . ($detail['alasDistrict'] ?? '')));
 // LinkProject - xem TODO dau file (trang "Dự án cụ thể" chua co route, se 404 khi bam).
-$link_project = home_url($lang_prefix . '/' . pplus_office_url('cho-thue-can-ho/ha-noi/' . ($detail['alasDistrict'] ?? '') . '/' . ($detail['alasProject'] ?? '') . '-' . $project_id));
+$link_project = home_url($lang_prefix . '/' . pplus_office_url(pplus_apartment_list_root() . '/ha-noi/' . ($detail['alasDistrict'] ?? '') . '/' . ($detail['alasProject'] ?? '') . '-' . $project_id));
 
 add_filter('pplus_language_switch_url', function (string $default, string $target_lang) use ($detail): string {
     if ($target_lang === 'en' || $target_lang === 'ja') {
@@ -115,7 +115,7 @@ get_header();
         <div class="container">
             <div class="url-content">
                 <div class="url-content-list">
-                    <a href="<?php echo esc_url(home_url('/')); ?>"><?php echo esc_html(pplus_localize('Trang chủ')); ?></a>
+                    <a href="<?php echo esc_url(pplus_home_url()); ?>"><?php echo esc_html(pplus_localize('Trang chủ')); ?></a>
                     <a href="<?php echo esc_url($district_url); ?>"><?php echo pplus_breadcrumb_arrow(); ?><?php echo esc_html($detail['provinceName'] ?? ''); ?></a>
                     <a href="<?php echo esc_url($link_project); ?>"><?php echo pplus_breadcrumb_arrow(); ?><?php echo esc_html($detail['projectName'] ?? ''); ?></a>
                     <span><?php echo pplus_breadcrumb_arrow(); ?><?php echo esc_html($detail['title'] ?? ''); ?></span>

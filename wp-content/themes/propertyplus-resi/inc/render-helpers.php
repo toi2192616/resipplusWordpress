@@ -473,7 +473,7 @@ function pplus_render_suggest_header(?string $active_alias = null): void {
                 <button class="btn" aria-label="<?php echo esc_attr(pplus_localize('Trước')); ?>"><i class="fa fa-chevron-left"></i></button>
             </div>
             <div class="suggest-list-data">
-                <a href="<?php echo esc_url(home_url($lang_prefix . '/cho-thue-can-ho/ha-noi/')); ?>" class="suggest-item<?php echo ($active_alias === '') ? ' active' : ''; ?>">
+                <a href="<?php echo esc_url(home_url($lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi')); ?>" class="suggest-item<?php echo ($active_alias === '') ? ' active' : ''; ?>">
                     <i class="item-img">
                         <?php // "fill" tren <path> them vao (ban goc fill="none" tren the <svg> cha, khong co
                         // CSS nao gan mau mac dinh cho trang thai KHONG active - chi co ".active .item-img
@@ -489,7 +489,7 @@ function pplus_render_suggest_header(?string $active_alias = null): void {
                 <?php foreach ($index_success as $item) :
                     $item_alias = (string) ($item['alias'] ?? '');
                     if ($item_alias === '') continue; ?>
-                    <a href="<?php echo esc_url(home_url($lang_prefix . '/cho-thue-can-ho/ha-noi/' . $item_alias . '/')); ?>" class="suggest-item<?php echo ($active_alias !== null && $item_alias === $active_alias) ? ' active' : ''; ?>">
+                    <a href="<?php echo esc_url(home_url($lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi/' . $item_alias)); ?>" class="suggest-item<?php echo ($active_alias !== null && $item_alias === $active_alias) ? ' active' : ''; ?>">
                         <i class="item-img">
                             <img src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="" loading="lazy" />
                         </i>

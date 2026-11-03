@@ -72,7 +72,7 @@ $toc = pplus_generate_toc($content);
         // ListUrlMenu THAT (blog-detail.component.ts dong 56-70): Trang chu > Blog > {ten catalog,
         // link ve danh sach loc theo catalogid} > {tieu de bai, trang hien tai khong link}.
         $breadcrumb = [
-            ['name' => pplus_t('Trang chủ', 'Home'), 'url' => home_url('/')],
+            ['name' => pplus_t('Trang chủ', 'Home'), 'url' => pplus_home_url()],
             ['name' => pplus_t('Tin tức', 'Blog'), 'url' => home_url($lang_prefix . '/blogs/')],
         ];
         if (!empty($catalog['nameCatalog'])) {

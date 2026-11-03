@@ -37,7 +37,7 @@ pplus_render_suggest_header();
 
 get_template_part('parts/url-box-content', null, [
     'breadcrumb' => [
-        ['name' => pplus_t('Trang chủ', 'Home'), 'url' => home_url('/')],
+        ['name' => pplus_t('Trang chủ', 'Home'), 'url' => pplus_home_url()],
         ['name' => pplus_t('Về chúng tôi', 'About Us')],
     ],
 ]);
