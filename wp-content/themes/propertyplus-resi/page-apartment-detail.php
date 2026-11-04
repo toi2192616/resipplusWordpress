@@ -489,13 +489,14 @@ get_header();
                 <?php echo esc_html(pplus_localize('Mail')); ?>: enquiry@propertyplus.com.vn
             </div>
 
-            <?php // Modal "Gửi yêu cầu lịch hẹn" (rentApartmentModal, detail.component.html dong 514-552)
+            <?php // (4/11/2026: nut ben duoi THIEU id="btnGuiYeuCauLichHen" - CSS cua ban goc nham dung id nay de cho nut rong 100% + cach tren 15px; thieu id nen nut nho, lech trai.)
+            // Modal "Gửi yêu cầu lịch hẹn" (rentApartmentModal, detail.component.html dong 514-552)
             // dung LAI y het co che ".pplus-advise-form" da co san SITE-WIDE (assets/js/main.js) - form
             // nay POST cung 1 endpoint that voi IssueNewApartment() ben Angular (ca 2 deu goi
             // Favourite/IssueLeaseApartment, xem docblock inc/advise-form.php), nen KHONG can viet REST
             // route/JS rieng nhu ban dau tuong (chi can dung dung class/name field). ?>
             <div class="_dichVu">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rentApartmentModal"><?php echo esc_html(pplus_localize('Gửi yêu cầu lịch hẹn')); ?></button>
+                <button type="button" class="btn btn-primary" id="btnGuiYeuCauLichHen" data-bs-toggle="modal" data-bs-target="#rentApartmentModal"><?php echo esc_html(pplus_localize('Gửi yêu cầu lịch hẹn')); ?></button>
             </div>
         </div>
     </div>
