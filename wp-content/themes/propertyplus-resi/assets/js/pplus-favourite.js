@@ -499,16 +499,40 @@
         }
 
         /* ----- PDF ----- */
+        // Lop "dang xu ly" (web goc: abp.ui.setBusy()/clearBusy() trong ExportPDF) - API tao PDF mat 15-45 giay; truoc day chi co 1 toast ngan nen nut trong nhu khong chay.
+        var pdfBusy = false;
+        function showBusy(msg) {
+            var el = document.getElementById('pplus-busy');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'pplus-busy'; el.className = 'pplus-busy';
+                el.innerHTML = '<div class="pplus-busy-box"><div class="pplus-busy-spin"></div><div class="pplus-busy-text"></div></div>';
+                document.body.appendChild(el);
+            }
+            el.querySelector('.pplus-busy-text').textContent = msg;
+            el.classList.add('show');
+        }
+        function hideBusy() {
+            var el = document.getElementById('pplus-busy');
+            if (el) el.classList.remove('show');
+        }
         function exportPdf(name, collId) {
+            if (pdfBusy) return;
             var ids = apartments().filter(function (o) { return o.IdFavourite === collId; }).map(function (o) { return o.apartmentId; });
             if (!ids.length) { toast('error', T.pdfNoOffice || 'Không thấy căn hộ nào'); return; }
             if (!window.confirm(T.pdfConfirm2 || 'Bạn xác nhận muốn tải file PDF bộ sưu tập này?')) return;
             // API tao PDF co the mat vai chuc giay - bao truoc de nguoi dung khong tuong nut khong an (Office abe1965).
-            toast('info', T.pdfWait || 'Đang tạo file PDF, vui lòng chờ...');
+            pdfBusy = true;
+            showBusy(T.pdfWait || 'Đang tạo file PDF, vui lòng chờ...');
+            var ctl = ('AbortController' in window) ? new AbortController() : null;
+            var abortTimer = ctl ? setTimeout(function () { ctl.abort(); }, 110000) : null; // 1 yeu cau qua lau (Cloudflare cat o ~100s) thi bao loi thay vi quay mai
+            // Giong web goc (favourite.component.ts ExportPDF): gui CA DOI TUONG bo suu tap {id, FavouriteName, DateCreate} lam "Obj", khong chi ten.
+            var pdfColl = collections().filter(function (c) { return c.id === collId; })[0] || {};
             fetch(CFG.restUrl + 'favourite-pdf', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name || 'Căn hộ yêu thích', ids: ids.join(','), lang: CFG.lang || 'vi' })
+                signal: ctl ? ctl.signal : undefined,
+                body: JSON.stringify({ name: name || 'Căn hộ yêu thích', ids: ids.join(','), lang: CFG.pageLang || CFG.lang || 'vi', collection: { id: pdfColl.id, FavouriteName: pdfColl.FavouriteName, DateCreate: pdfColl.DateCreate } })
             }).then(function (r) {
                 // Chi coi la PDF khi server tra dung "application/pdf"; nguoc lai doc thong bao loi JSON (inc/favourite-rest.php).
                 if ((r.headers.get('Content-Type') || '').indexOf('application/pdf') === -1) {
@@ -521,10 +545,12 @@
                 .then(function (blob) {
                     var url = URL.createObjectURL(blob);
                     var a = document.createElement('a');
-                    a.href = url; a.download = (name || 'YeuThich') + '-' + fmtDate() + '-PDFYeuThich.pdf';
+                    // Ten file giong web goc: {ten}-dd-MM-yyyy-PDFYeuThich.pdf (fmtDate() tra dd/MM/yyyy - dau "/" trong ten file bi trinh duyet doi thanh "_").
+                    a.href = url; a.download = (name || 'YeuThich') + '-' + fmtDate().split('/').join('-') + '-PDFYeuThich.pdf';
                     document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
                     toast('success', T.pdfOk || 'Tải file PDF thành công!');
-                }).catch(function (err) { toast('error', (err && err.message) || T.pdfErr || 'Không tải được file PDF!'); });
+                }).catch(function (err) { toast('error', (err && err.name !== 'AbortError' && err.message) || T.pdfErr || 'Không tải được file PDF!'); })
+                .finally(function () { if (abortTimer) clearTimeout(abortTimer); pdfBusy = false; hideBusy(); });
         }
 
         /* ----- Delegated clicks (toolbox menu tren tung the/dong) ----- */

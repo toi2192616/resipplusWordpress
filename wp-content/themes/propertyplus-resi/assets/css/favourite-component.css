@@ -1246,3 +1246,11 @@ body.pplus-modal-active {
 .center-box {
   max-width: 100%;
 }
+
+/* Lop "dang xu ly" khi tao PDF (web goc: abp.ui.setBusy) - API mat 15-45 giay. 4/11/2026 */
+.pplus-busy { position: fixed; inset: 0; z-index: 3000; display: none; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.78); }
+.pplus-busy.show { display: flex; }
+.pplus-busy-box { text-align: center; padding: 24px 32px; max-width: 86vw; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); }
+.pplus-busy-spin { width: 40px; height: 40px; margin: 0 auto 14px; border: 4px solid #dfe5f3; border-top-color: #2d5185; border-radius: 50%; animation: pplus-busy-rot 0.9s linear infinite; }
+.pplus-busy-text { font-size: 15px; color: #264879; font-weight: 600; }
+@keyframes pplus-busy-rot { to { transform: rotate(360deg); } }

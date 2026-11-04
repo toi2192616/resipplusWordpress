@@ -137,26 +137,48 @@ function pplus_rest_favourite_pdf(WP_REST_Request $request) {
     if ($ids === '') {
         return new WP_REST_Response(['error' => 'no-ids'], 400);
     }
-    $lang = (strtolower((string) ($params['lang'] ?? 'vi')) === 'en') ? 'en' : 'vi';
+    $lang_in = strtolower((string) ($params['lang'] ?? 'vi'));
+    $lang    = in_array($lang_in, ['en', 'ja'], true) ? $lang_in : 'vi'; // web goc dung CurrentLanguage (vi/en/ja)
+
+    // 4/11/2026 - giong web goc (favourite.component.ts ExportPDF): "Obj" la CA DOI TUONG bo suu tap {id, FavouriteName, DateCreate} lay tu localStorage, khong chi ten.
+    $coll = is_array($params['collection'] ?? null) ? $params['collection'] : [];
+    $obj  = [];
+    foreach (['id', 'FavouriteName', 'DateCreate'] as $k) {
+        if (isset($coll[$k]) && $coll[$k] !== '') {
+            $obj[$k] = sanitize_text_field((string) $coll[$k]);
+        }
+    }
+    if (empty($obj['FavouriteName'])) {
+        $obj['FavouriteName'] = $name;
+    }
 
     $json_input = wp_json_encode([
-        'Obj' => ['FavouriteName' => $name],
+        'Obj' => $obj,
         'Ids' => $ids,
     ]);
     $url = pplus_api_base_url() . '/' . $lang . '/Favourite/DowloadPdf';
 
     // Tao PDF phia .NET cham (do thuc te: hang chuc giay); PHP mac dinh dung o 30s (max_execution_time) va bao "critical
     // error" thay vi tra loi JSON -> noi han muc rieng cho request nay, cho API toi da 45s roi tra loi ro rang.
+    // 4/11/2026: do thuc te backend tao PDF mat 15-45 giay va DOI LUC tra 502/loi ngay (khong on dinh). Truoc day cho toi da 45s va khong thu lai nen
+    // chi can cham hon 45s hoac loi 1 lan la bao "khong tai duoc". Nay cho toi da 60s/lan, tu thu LAI 1 lan khi lan dau loi nhanh, tong < ~95s
+    // (Cloudflare cat ket noi o 100s).
     if (function_exists('set_time_limit')) {
-        @set_time_limit(60);
+        @set_time_limit(100);
     }
-    $response = wp_remote_post($url, [
-        'timeout'     => 45,
-        'redirection' => 0,
-        'headers'     => ['Content-Type' => 'application/json; charset=utf-8'],
-        'body'        => wp_json_encode(['JsonInput' => $json_input]),
-    ]);
-    $pdf = is_wp_error($response) ? '' : (string) wp_remote_retrieve_body($response);
+    $deadline = microtime(true) + 92;
+    $attempt  = 0;
+    do {
+        $attempt++;
+        $response = wp_remote_post($url, [
+            'timeout'     => max(15, min(60, (int) ($deadline - microtime(true)))),
+            'redirection' => 0,
+            'headers'     => ['Content-Type' => 'application/json; charset=utf-8'],
+            'body'        => wp_json_encode(['JsonInput' => $json_input]),
+        ]);
+        $pdf = is_wp_error($response) ? '' : (string) wp_remote_retrieve_body($response);
+        $ok  = !is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200 && strncmp($pdf, '%PDF', 4) === 0;
+    } while (!$ok && $attempt < 2 && ($deadline - microtime(true)) > 35);
 
     // 24/10/2026 (port ban Van phong c09df2f): CHI tra file khi than response THAT la PDF (bat dau "%PDF").
     // Do thuc te API Resi: id khong ton tai -> 301 (sang trang dang nhap admin, HTML); id that hien tai -> cho
@@ -165,7 +187,7 @@ function pplus_rest_favourite_pdf(WP_REST_Request $request) {
     if (wp_remote_retrieve_response_code($response) !== 200 || strncmp($pdf, '%PDF', 4) !== 0) {
         return new WP_REST_Response([
             'success' => false,
-            'message' => $lang === 'en' ? 'Could not export PDF, please try again later!' : 'Không tải được file PDF, vui lòng thử lại sau!',
+            'message' => $lang === 'en' ? 'Could not export PDF, please try again later!' : ($lang === 'ja' ? 'PDFを出力できませんでした。後でもう一度お試しください。' : 'Không tải được file PDF, vui lòng thử lại sau!'),
         ], 502);
     }
     // Tra binary PDF truc tiep (khong qua JSON) de JS tao blob tai file.

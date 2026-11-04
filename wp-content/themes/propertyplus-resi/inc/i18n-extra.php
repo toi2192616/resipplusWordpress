@@ -117,6 +117,8 @@ function pplus_extra_dictionary(string $lang): array {
                 'Đã thêm vào “%s”' => '「%s」に追加しました',
                 'Đã gỡ khỏi “%s”' => '「%s」から削除しました',
                 'Xong' => '完了',
+                // Lop cho khi tao PDF yeu thich (4/11/2026)
+                'Đang tạo file PDF, vui lòng chờ...' => 'PDFを作成中です。しばらくお待ちください...',
                 // Trang Lien he (4/11/2026) - web chinh hien tieng Viet tren /ja/contact vi tu dien chua co cac cau nay
                 'Chúng tôi hân hạnh được tư vấn cho bạn' => 'ご相談を心よりお待ちしております',
                 'Tư vẫn miến phí - Giá thuê tốt - Gửi báo giá nhanh chóng' => '無料相談・お得な賃料・迅速なお見積もり',

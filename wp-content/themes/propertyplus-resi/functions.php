@@ -443,6 +443,7 @@ add_action('wp_enqueue_scripts', function () {
     wp_add_inline_script('pplus-favourite', 'var PPLUS_FAV_CONFIG = ' . wp_json_encode([
         'restUrl'       => rest_url('pplus/v1/'),
         'lang'          => pplus_current_lang() === 'en' ? 'en' : 'vi',
+        'pageLang'      => pplus_current_lang(), // vi|en|ja - dung cho PDF (web goc goi {lang}/Favourite/DowloadPdf theo ngon ngu hien tai, ke ca ja)
         'detailUrl'     => pplus_lang_url('favourite/favourite-detail'),
         'placeholderImg' => PPLUS_THEME_URI . '/assets/officebase/Common/Images/Rectangle 2936.png',
         // Trai tim "da thich" doi sang anh do (4/11/2026, xem paintHeart() trong pplus-favourite.js)
