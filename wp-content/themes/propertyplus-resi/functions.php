@@ -548,7 +548,7 @@ add_action('wp_enqueue_scripts', function () {
         // enqueue nay, gan lien voi script se dung no.
         wp_add_inline_script('propertyplus-main', 'var PPLUS_SERVICE_REGISTER_CONFIG = ' . wp_json_encode([
             'restUrl'      => rest_url('pplus/v1/service-register'),
-            'lang'         => pplus_current_lang() === 'en' ? 'en' : 'vi',
+            'lang'         => pplus_current_lang(), // vi|en|ja - route REST tu chon thong bao theo ngon ngu trang
             'yesText'      => pplus_localize('Có'),
             'noText'       => pplus_localize('Không'),
             'errorContact' => pplus_localize('Bạn chưa nhập Email hoặc Số điện thoại'),
@@ -571,7 +571,7 @@ add_action('wp_enqueue_scripts', function () {
 
         wp_add_inline_script('propertyplus-main', 'var PPLUS_OWNER_REGISTER_CONFIG = ' . wp_json_encode([
             'restUrl'      => rest_url('pplus/v1/owner-register'),
-            'lang'         => pplus_current_lang() === 'en' ? 'en' : 'vi',
+            'lang'         => pplus_current_lang(), // vi|en|ja - route REST tu chon thong bao theo ngon ngu trang
             'yesText'      => pplus_localize('Có'),
             'noText'       => pplus_localize('Không'),
             'errorContact' => pplus_localize('Bạn chưa nhập Email hoặc Số điện thoại'),

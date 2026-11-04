@@ -106,6 +106,10 @@ function pplus_extra_dictionary(string $lang): array {
                 'Bạn chưa nhập Email hoặc Số điện thoại' => 'メールアドレスまたは電話番号を入力してください',
                 'Số điện thoại không đúng định dạng!' => '電話番号の形式が正しくありません！',
                 'Gửi yêu cầu tư vấn thành công, chúng tôi sẽ liên hệ lại sớm nhất!' => 'ご相談を受け付けました。担当者より折り返しご連絡いたします。',
+                // Thong bao cua form Dang ky dich vu / Dang ky cho thue nha (inc/service-register-route.php, owner-register-route.php) - 4/11/2026
+                'Đăng ký dịch vụ thành công, chúng tôi sẽ liên hệ lại sớm nhất!' => 'サービスのお申し込みを受け付けました。担当者より折り返しご連絡いたします。',
+                'Đăng ký cho thuê nhà thành công, chúng tôi sẽ liên hệ lại sớm nhất!' => '物件掲載のお申し込みを受け付けました。担当者より折り返しご連絡いたします。',
+                'Bạn chưa xác nhận đồng ý với điều khoản của chúng tôi!' => '利用規約への同意が確認されていません！',
                 // Trang Lien he (4/11/2026) - web chinh hien tieng Viet tren /ja/contact vi tu dien chua co cac cau nay
                 'Chúng tôi hân hạnh được tư vấn cho bạn' => 'ご相談を心よりお待ちしております',
                 'Tư vẫn miến phí - Giá thuê tốt - Gửi báo giá nhanh chóng' => '無料相談・お得な賃料・迅速なお見積もり',

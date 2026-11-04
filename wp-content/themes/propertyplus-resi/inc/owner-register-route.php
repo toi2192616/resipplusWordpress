@@ -28,11 +28,15 @@ add_action('rest_api_init', function () {
 });
 
 function pplus_handle_owner_register_submit(WP_REST_Request $request) {
-    $lang = ($request->get_param('lang') === 'en') ? 'en' : 'vi';
-    $t    = static fn (string $vi, string $en): string => $lang === 'en' ? $en : $vi;
+    $page_lang = (string) $request->get_param('lang');
+    $lang      = ($page_lang === 'en') ? 'en' : 'vi'; // culture goi API .NET: ban JA di qua 'vi' (nhu truoc)
+    // Thong bao tra ve theo ngon ngu TRANG (vi/en/ja) - ban JA truoc day nhan thong bao tieng Viet. JA: tu dien API + i18n-extra.php, thieu thi dung tieng Anh.
+    $ja_dict = $page_lang === 'ja' ? (pplus_lang_dictionary('ja') + pplus_extra_dictionary('ja')) : [];
+    $t       = static fn (string $vi, string $en): string => $page_lang === 'en' ? $en : ($page_lang === 'ja' ? ($ja_dict[$vi] ?? $en) : $vi);
 
     $name  = sanitize_text_field((string) $request->get_param('OwnerName'));
-    $email = sanitize_email((string) $request->get_param('OwnerEmail'));
+    // Khong sanitize_email() truoc khi kiem tra: no xoa sach email sai dinh dang (vd "abc") thanh rong -> bao nham "chua nhap Email" thay vi "sai dinh dang".
+    $email = trim((string) $request->get_param('OwnerEmail'));
     $phone = sanitize_text_field((string) $request->get_param('OwnerMobile'));
 
     // Cung thu tu kiem tra voi IssueNewApartment() ben Angular (dong 127-146): thieu email/dt ->
@@ -77,7 +81,7 @@ function pplus_handle_owner_register_submit(WP_REST_Request $request) {
 
     $payload = [
         'OwnerName'        => $name,
-        'OwnerEmail'       => $email,
+        'OwnerEmail'       => sanitize_email($email),
         'OwnerMobile'      => $phone,
         'NameProject'      => sanitize_text_field((string) $request->get_param('NameProject')),
         'NameBuilding'     => sanitize_text_field((string) $request->get_param('NameBuilding')),
