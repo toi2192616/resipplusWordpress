@@ -26,11 +26,11 @@ if (!defined('ABSPATH')) {
 /** Thong tin doanh nghiep - lay nguyen tu 3 khoi JSON-LD trong PPlusAngularResi/src/index.html. */
 function pplus_seo_business(): array {
     // Dia chi cong ty theo ngon ngu trang: tu dien GetLangApi cua web chinh da dich san chinh chuoi dia chi trong footer
-    // (en: "06 floor, Kinh Do building, 292 Tay Son street, Trung Liet ward, Dong Da district, Ha Noi"; ja: tieng Nhat).
+    // (en: "4th floor, Kinh Do building, ..."; ja: tieng Nhat). 4/11/2026: van phong chuyen tu tang 6 xuong tang 4 - ban dich lay tu inc/i18n-extra.php vi chuoi "Tang 06" cu trong tu dien API khong con dung.
     $street   = 'Tòa nhà 292, P. Tây Sơn, Trung Liệt, Đống Đa, Hà Nội';
     $locality = 'Hà Nội';
     if (pplus_current_lang() !== 'vi') {
-        $street   = pplus_localize('Tầng 06, tòa nhà Kinh Đô, 292 Tây Sơn, phường Trung Liệt, quận Đống Đa, Hà Nội');
+        $street   = pplus_localize('Tầng 4, tòa nhà Kinh Đô, 292 Tây Sơn, phường Trung Liệt, quận Đống Đa, Hà Nội');
         $locality = ['en' => 'Hanoi', 'ja' => 'ハノイ'][pplus_current_lang()] ?? 'Hà Nội';
     }
     return [
@@ -254,8 +254,8 @@ add_action('wp_head', function () {
             );
         } elseif ($type === 'contact') {
             $description = pplus_t(
-                'Liên hệ Property Plus để được tư vấn miễn phí và báo giá nhanh căn hộ cho thuê tại Hà Nội. Hotline 08 5666 2566, văn phòng tầng 6 tòa nhà Kinh Đô, 292 Tây Sơn, Đống Đa.',
-                'Contact Property Plus for free advice and fast quotes on apartments for rent in Hanoi. Hotline 08 5666 2566, 6th floor Kinh Do Building, 292 Tay Son, Dong Da.'
+                'Liên hệ Property Plus để được tư vấn miễn phí và báo giá nhanh căn hộ cho thuê tại Hà Nội. Hotline 08 5666 2566, văn phòng tầng 4 tòa nhà Kinh Đô, 292 Tây Sơn, Đống Đa.',
+                'Contact Property Plus for free advice and fast quotes on apartments for rent in Hanoi. Hotline 08 5666 2566, 4th floor Kinh Do Building, 292 Tay Son, Dong Da.'
             );
         } else {
             $description = pplus_seo_tagline();

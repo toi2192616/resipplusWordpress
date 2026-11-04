@@ -34,7 +34,7 @@ $rsEmail    = !empty($company['email']) ? explode('|', (string) $company['email'
           <?php // 4/11/2026: tieu de "Lien he" tro thanh link toi trang /lien-he (web chinh khong co link nao toi trang nay -> trang mo coi, Google kho tim). ?>
           <div class="menu-title"><?php if (get_page_by_path('lien-he')) : // chi co link khi Page "lien-he" da ton tai tren server (chua tao thi link se 404 tren moi trang) ?><a class="footer-contact-link" href="<?php echo esc_url(pplus_lang_url(pplus_localize('lien-he'))); ?>"><?php echo esc_html(pplus_localize('Liên hệ')); ?></a><?php else : echo esc_html(pplus_localize('Liên hệ')); endif; ?></div>
           <div class="lg-f-content"><?php echo esc_html(pplus_localize('CÔNG TY CỔ PHẦN THƯƠNG MẠI VÀ TƯ VẤN BẤT ĐỘNG SẢN ĐẠI LỢI')); ?></div>
-          <div class="pplus-info"><?php echo esc_html(pplus_localize('Tầng 06, tòa nhà Kinh Đô, 292 Tây Sơn, phường Trung Liệt, quận Đống Đa, Hà Nội')); ?></div>
+          <div class="pplus-info"><?php echo esc_html(pplus_localize('Tầng 4, tòa nhà Kinh Đô, 292 Tây Sơn, phường Trung Liệt, quận Đống Đa, Hà Nội')); ?></div>
           <div class="menu-0">
             <div class="list-unstyled">
               <div class="menu-title-2"><?php echo esc_html(pplus_localize('Phòng kinh doanh')); ?></div>

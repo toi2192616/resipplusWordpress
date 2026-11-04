@@ -71,7 +71,7 @@ $ct_ig     = !empty($company['instagram']) ? (string) $company['instagram'] : ''
                                 <div class="item-img">
                                     <img src="<?php echo $ct('Group 1000004442.png'); ?>" width="93" height="96" alt="" />
                                 </div>
-                                <div class="item-text"><?php echo esc_html(pplus_t('Tầng 6, tòa nhà Kinh Đô, 292 Tây Sơn, Trung Liệt, Đống Đa, Hà Nội', '6th Floor, Kinh Do Building, 292 Tay Son, Trung Liet, Dong Da, Hanoi')); ?></div>
+                                <div class="item-text"><?php echo esc_html(pplus_t('Tầng 4, tòa nhà Kinh Đô, 292 Tây Sơn, Trung Liệt, Đống Đa, Hà Nội', '4th Floor, Kinh Do Building, 292 Tay Son, Trung Liet, Dong Da, Hanoi')); ?></div>
                             </div>
                         </div>
                     </div>
