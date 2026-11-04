@@ -254,8 +254,8 @@ add_action('wp_head', function () {
             );
         } elseif ($type === 'contact') {
             $description = pplus_t(
-                'Liên hệ Property Plus để được tư vấn miễn phí và báo giá nhanh căn hộ cho thuê tại Hà Nội. Hotline 0865 364 866, văn phòng tầng 6 tòa nhà Kinh Đô, 292 Tây Sơn, Đống Đa.',
-                'Contact Property Plus for free advice and fast quotes on apartments for rent in Hanoi. Hotline 0865 364 866, 6th floor Kinh Do Building, 292 Tay Son, Dong Da.'
+                'Liên hệ Property Plus để được tư vấn miễn phí và báo giá nhanh căn hộ cho thuê tại Hà Nội. Hotline 08 5666 2566, văn phòng tầng 6 tòa nhà Kinh Đô, 292 Tây Sơn, Đống Đa.',
+                'Contact Property Plus for free advice and fast quotes on apartments for rent in Hanoi. Hotline 08 5666 2566, 6th floor Kinh Do Building, 292 Tay Son, Dong Da.'
             );
         } else {
             $description = pplus_seo_tagline();

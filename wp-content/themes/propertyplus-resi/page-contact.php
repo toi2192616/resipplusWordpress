@@ -59,13 +59,13 @@ $ct_ig     = !empty($company['instagram']) ? (string) $company['instagram'] : ''
                                 <div class="item-img">
                                     <img src="<?php echo $ct('Group 1000004441.png'); ?>" width="93" height="96" alt="" />
                                 </div>
-                                <div class="item-text"><a href="tel:+84865364866">0865 364 866</a></div>
+                                <div class="item-text"><a href="tel:+84856662566">08 5666 2566</a></div>
                             </div>
                             <div class="content-2-item">
                                 <div class="item-img">
                                     <img src="<?php echo $ct('Group 1000004440.png'); ?>" width="93" height="96" alt="" />
                                 </div>
-                                <div class="item-text"><a href="mailto:office@propertyplus.com.vn">office@propertyplus.com.vn</a></div>
+                                <div class="item-text"><a href="mailto:enquiry@propertyplus.com.vn">enquiry@propertyplus.com.vn</a></div>
                             </div>
                             <div class="content-2-item">
                                 <div class="item-img">
