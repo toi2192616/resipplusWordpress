@@ -90,9 +90,28 @@
             wrap.innerHTML = '<div class="pplus-addfa-empty">' + esc(T.noCollection || 'Chưa có bộ sưu tập nào') + '</div>';
             return;
         }
+        // 4/11/2026 (nguoi dung: "vao thi de, out ra chua thuan tien"): hop nay tu truoc CHI THEM duoc va khong biet can ho dang nam trong bo suu tap nao
+        // (o tick luon trong du tim da do). Nay tick san cac bo suu tap DA chua can ho, tick them = vao ngay, bo tick = ra ngay (xem listener "change" o initModalButtons).
+        var has = listsContaining(pendingOffice);
         wrap.innerHTML = colls.map(function (c) {
-            return '<label class="item-favourite"><input class="input-check" type="checkbox" value="' + esc(c.id) + '" /> ' + esc(c.FavouriteName) + '</label>';
+            return '<label class="item-favourite"><input class="input-check" type="checkbox" value="' + esc(c.id) + '"' + (has[c.id] ? ' checked' : '') + ' /> ' + esc(c.FavouriteName) + '</label>';
         }).join('');
+    }
+    // { idBoSuuTap: true } cho moi bo suu tap dang chua can ho/VP nay.
+    function listsContaining(office) {
+        var map = {}, id = favId(office);
+        if (id == null) return map;
+        readLS(LS_OFF).forEach(function (x) { if (String(favId(x)) === String(id)) map[x.IdFavourite] = true; });
+        return map;
+    }
+    function removePendingFromCollection(collId) {
+        if (!pendingOffice) return;
+        var id = favId(pendingOffice);
+        writeLS(LS_OFF, readLS(LS_OFF).filter(function (x) { return !(x.IdFavourite === collId && String(favId(x)) === String(id)); }));
+    }
+    function collName(collId) {
+        var c = readLS(LS_COLL).filter(function (x) { return x.id === collId; })[0];
+        return c ? c.FavouriteName : '';
     }
     function addPendingToCollections(ids) {
         if (!pendingOffice || !ids.length) return;
@@ -160,13 +179,26 @@
             openCreateModal(null);
         });
 
-        // Nut "Them vao" trong modal them-vao
+        // Tick / bo tick 1 bo suu tap trong modal them-vao = AP DUNG NGAY (vao / ra khoi bo suu tap do), tim tren the doi mau theo. Nut ben duoi chi la "Xong" (dong hop).
+        var addfaList = document.getElementById('pplus-addfa-list');
+        if (addfaList) addfaList.addEventListener('change', function (e) {
+            var cb = e.target && e.target.closest ? e.target.closest('.input-check') : null;
+            if (!cb || !pendingOffice) return;
+            var name = esc(collName(cb.value));
+            if (cb.checked) {
+                addPendingToCollections([cb.value]);
+                toast('success', (T.addedTo || 'Đã thêm vào “%s”').replace('%s', name));
+            } else {
+                removePendingFromCollection(cb.value);
+                toast('success', (T.removedFrom || 'Đã gỡ khỏi “%s”').replace('%s', name));
+            }
+            refreshLikedAll();
+            if (window.__pplusFaPage) window.__pplusFaPage.reloadList();
+        });
+
+        // Nut "Xong" trong modal them-vao
         var addfaAdd = document.getElementById('pplus-addfa-add');
         if (addfaAdd) addfaAdd.addEventListener('click', function () {
-            var checked = Array.prototype.slice.call(document.querySelectorAll('#pplus-addfa-list .input-check:checked')).map(function (c) { return c.value; });
-            if (!checked.length) { toast('error', T.pickCollection || 'Bạn chưa chọn danh mục yêu thích'); return; }
-            addPendingToCollections(checked);
-            toast('success', T.added || 'Thêm vào bộ sưu tập thành công');
             closeModal(document.getElementById('pplus-modal-addfa'));
             markLiked(pendingOffice);
         });

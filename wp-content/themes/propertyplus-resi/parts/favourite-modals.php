@@ -39,7 +39,7 @@ if (!defined('ABSPATH')) exit;
         <div class="modal-body">
             <button class="btn btn-create-favourite" id="pplus-addfa-new"><i class="fa fa-plus-circle"></i> <?php echo esc_html(pplus_t('Bộ sưu tập mới', 'New collection')); ?></button>
             <div class="list-favourite" id="pplus-addfa-list"><!-- JS render checkbox bo suu tap --></div>
-            <button class="btn btn-primary" id="pplus-addfa-add"><?php echo esc_html(pplus_t('Thêm vào', 'Add')); ?></button>
+            <button class="btn btn-primary" id="pplus-addfa-add"><?php echo esc_html(pplus_t('Xong', 'Done')); ?></button>
             <a href="<?php echo esc_url(pplus_lang_url('danh-sach-yeu-thich')); ?>" class="btn btn-outline-primary" style="height:35px;margin-top:5px"><?php echo esc_html(pplus_t('Trang yêu thích', 'Favourite page')); ?></a>
         </div>
     </div>

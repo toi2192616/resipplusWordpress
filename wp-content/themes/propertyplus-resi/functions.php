@@ -467,6 +467,9 @@ add_action('wp_enqueue_scripts', function () {
             'editTitle'         => pplus_localize('Đổi tên bộ sưu tập'),
             'createTitle'       => pplus_localize('Tạo bộ sưu tập mới'),
             'addBtn'            => pplus_localize('Thêm vào'),
+            // Tick/bo tick trong hop "Them vao uu thich" ap dung ngay (4/11/2026); %s = ten bo suu tap
+            'addedTo'           => pplus_t('Đã thêm vào “%s”', 'Added to “%s”'),
+            'removedFrom'       => pplus_t('Đã gỡ khỏi “%s”', 'Removed from “%s”'),
             'rename'            => pplus_localize('Đổi tên'),
             'delColl'           => pplus_localize('Xóa'),
             'exportPdf'         => pplus_localize('Tải PDF'),

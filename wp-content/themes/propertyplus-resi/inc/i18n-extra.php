@@ -113,6 +113,10 @@ function pplus_extra_dictionary(string $lang): array {
                 'Đăng ký dịch vụ thành công, chúng tôi sẽ liên hệ lại sớm nhất!' => 'サービスのお申し込みを受け付けました。担当者より折り返しご連絡いたします。',
                 'Đăng ký cho thuê nhà thành công, chúng tôi sẽ liên hệ lại sớm nhất!' => '物件掲載のお申し込みを受け付けました。担当者より折り返しご連絡いたします。',
                 'Bạn chưa xác nhận đồng ý với điều khoản của chúng tôi!' => '利用規約への同意が確認されていません！',
+                // Hop "Them vao uu thich": tick = vao ngay, bo tick = ra ngay (4/11/2026)
+                'Đã thêm vào “%s”' => '「%s」に追加しました',
+                'Đã gỡ khỏi “%s”' => '「%s」から削除しました',
+                'Xong' => '完了',
                 // Trang Lien he (4/11/2026) - web chinh hien tieng Viet tren /ja/contact vi tu dien chua co cac cau nay
                 'Chúng tôi hân hạnh được tư vấn cho bạn' => 'ご相談を心よりお待ちしております',
                 'Tư vẫn miến phí - Giá thuê tốt - Gửi báo giá nhanh chóng' => '無料相談・お得な賃料・迅速なお見積もり',
