@@ -51,6 +51,16 @@ function pplus_extra_dictionary(string $lang): array {
                 'Gửi'                                           => 'Send',
                 'Yêu thích'                                     => 'Favourite',
                 'Nhập số'                                       => 'Enter number',
+                // Trang chi tiet danh sach yeu thich (4/11/2026)
+                'Chi tiết yêu thích'                            => 'Favourite details',
+                'Link chia sẻ'                                  => 'Shared link',
+                'Copy link'                                     => 'Copy link',
+                'Danh sách này chưa có căn hộ nào'              => 'This list has no apartments yet.',
+                'Danh sách này không có trên thiết bị này'      => 'This list is not on this device. Favourite lists are stored only in the browser that created them - use "Copy link" on the original device to share one.',
+                'Không tải được danh sách yêu thích'            => 'Could not load the favourite list. Please try again.',
+                'Bạn muốn bỏ yêu thích căn hộ này?'             => 'Remove this apartment from your favourites?',
+                'Đã bỏ yêu thích'                               => 'Removed from favourites',
+                'Quay lại danh sách yêu thích'                  => 'Back to the favourite list',
             ],
             'ja' => [
                 'Chưa có bộ sưu tập nào'                        => 'コレクションはまだありません',
@@ -83,6 +93,15 @@ function pplus_extra_dictionary(string $lang): array {
                 'Gửi'                                           => '送信',
                 'Yêu thích'                                     => 'お気に入り',
                 'Nhập số'                                       => '数字を入力',
+                // Trang chi tiet danh sach yeu thich (4/11/2026)
+                'Chi tiết yêu thích'                            => 'お気に入りの詳細',
+                'Link chia sẻ'                                  => '共有リンク',
+                'Danh sách này chưa có căn hộ nào'              => 'このリストにはまだ物件がありません。',
+                'Danh sách này không có trên thiết bị này'      => 'このリストはこの端末にありません。お気に入りリストは作成したブラウザにのみ保存されます。共有するには、元の端末で「リンクをコピーする」を使ってください。',
+                'Không tải được danh sách yêu thích'            => 'お気に入りリストを読み込めませんでした。もう一度お試しください。',
+                'Bạn muốn bỏ yêu thích căn hộ này?'             => 'この物件をお気に入りから削除しますか？',
+                'Đã bỏ yêu thích'                               => 'お気に入りから削除しました',
+                'Quay lại danh sách yêu thích'                  => 'お気に入りリストに戻る',
             ],
         ];
     }

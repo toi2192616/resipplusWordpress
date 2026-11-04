@@ -51,6 +51,7 @@ require_once PPLUS_THEME_DIR . '/inc/owner-route.php';             // C2 - trang
 require_once PPLUS_THEME_DIR . '/inc/owner-register-route.php';    // C2 - REST submit "Dang ky cho thue nha" (TypeSite 2)
 require_once PPLUS_THEME_DIR . '/inc/favourite-route.php';         // B7 - trang /danh-sach-yeu-thich
 require_once PPLUS_THEME_DIR . '/inc/favourite-rest.php';          // B7 - REST "favourite-pdf" (2 endpoint con lai chua dung toi, xem docblock file)
+require_once PPLUS_THEME_DIR . '/inc/favourite-items-rest.php';    // B7 - REST "favourite-items" cho trang chi tiet danh sach (/favourite/favourite-detail)
 require_once PPLUS_THEME_DIR . '/inc/seo-head.php';                // SEO/GEO tap trung: canonical, OG/Twitter, JSON-LD, BreadcrumbList, mo ta du phong
 require_once PPLUS_THEME_DIR . '/inc/noindex.php';                 // Chan index toan site cho server TEST (PPLUS_NOINDEX / o tich trong Giao dien > PropertyPlus)
 require_once PPLUS_THEME_DIR . '/inc/sitemap.php';                // Sitemap XML: can ho (VI+EN), blog, trang khu vuc/dich vu - tinh san qua WP-Cron theo dot nho
@@ -354,6 +355,12 @@ add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('pplus-favourite-component', PPLUS_THEME_URI . '/assets/css/favourite-component.css', [$prev], pplus_asset_version('assets/css/favourite-component.css'));
     $prev = 'pplus-favourite-component';
 
+    // Trang chi tiet 1 danh sach yeu thich (xem inc/favourite-route.php)
+    if (get_query_var('pplus_favourite_detail')) {
+        wp_enqueue_style('pplus-favourite-detail-component', PPLUS_THEME_URI . '/assets/css/favourite-detail-component.css', [$prev], pplus_asset_version('assets/css/favourite-detail-component.css'));
+        $prev = 'pplus-favourite-detail-component';
+    }
+
     // --- JS officebase (dung thu tu) ---
     $prev_js = 'pplus-toastr';
     foreach (pplus_officebase_scripts() as $i => $path) {
@@ -414,6 +421,9 @@ add_action('wp_enqueue_scripts', function () {
         'lang'          => pplus_current_lang() === 'en' ? 'en' : 'vi',
         'detailUrl'     => pplus_lang_url('favourite/favourite-detail'),
         'placeholderImg' => PPLUS_THEME_URI . '/assets/officebase/Common/Images/Rectangle 2936.png',
+        // Trai tim "da thich" doi sang anh do (4/11/2026, xem paintHeart() trong pplus-favourite.js)
+        'heartWhite'    => PPLUS_THEME_URI . '/assets/Content/Img/fv-white.png',
+        'heartRed'      => PPLUS_THEME_URI . '/assets/Content/Img/fv-red.png',
         'i18n'          => [
             'noCollection'      => pplus_localize('Chưa có bộ sưu tập nào'),
             'pickCollection'    => pplus_localize('Bạn chưa chọn danh mục yêu thích'),
@@ -441,6 +451,31 @@ add_action('wp_enqueue_scripts', function () {
             'apartmentUnit'     => pplus_localize('căn hộ'),
         ],
     ]) . ';', 'before');
+
+    // Trang CHI TIET 1 danh sach yeu thich (/favourite/favourite-detail, 4/11/2026) - xem inc/favourite-route.php. Ban do dung lai
+    // pplus_enqueue_google_maps() + window.pplusLoadGoogleMaps (assets/js/pplus-maps.js), nen khong tu nap Google Maps o day.
+    if (get_query_var('pplus_favourite_detail')) {
+        pplus_enqueue_google_maps();
+        wp_enqueue_script('pplus-favourite-detail', PPLUS_THEME_URI . '/assets/js/pplus-favourite-detail.js', ['pplus-favourite'], pplus_asset_version('assets/js/pplus-favourite-detail.js'), true);
+        wp_add_inline_script('pplus-favourite-detail', 'var PPLUS_FD_CONFIG = ' . wp_json_encode([
+            'restUrl'   => rest_url('pplus/v1/'),
+            'lang'      => pplus_current_lang(),
+            'detailUrl' => pplus_lang_url('favourite/favourite-detail'),
+            'listUrl'   => pplus_lang_url('danh-sach-yeu-thich'),
+            'i18n'      => [
+                'chiTiet'       => pplus_localize('Chi tiết yêu thích'),
+                'shared'        => pplus_localize('Link chia sẻ'),
+                'loading'       => pplus_t('Đang tải...', 'Loading...'),
+                'empty'         => pplus_localize('Danh sách này chưa có căn hộ nào'),
+                'notOnDevice'   => pplus_localize('Danh sách này không có trên thiết bị này'),
+                'error'         => pplus_localize('Không tải được danh sách yêu thích'),
+                'confirmRemove' => pplus_localize('Bạn muốn bỏ yêu thích căn hộ này?'),
+                'confirmDelete' => pplus_localize('Bạn muốn bỏ bộ sưu tập yêu thích này?'),
+                'removed'       => pplus_localize('Đã bỏ yêu thích'),
+                'copied'        => pplus_localize('Copy link yêu thích thành công!'),
+            ],
+        ]) . ';', 'before');
+    }
 
     // Ban do gia don gian cho A1/A3/A4 - xem TODO dau page-reference.php (KHONG dung
     // pplus_enqueue_google_maps()/assets/js/pplus-maps.js co san, 2 cai do van la ban Van phong

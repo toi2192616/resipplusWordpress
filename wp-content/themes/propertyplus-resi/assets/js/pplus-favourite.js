@@ -207,16 +207,72 @@
         });
     }
 
-    function markLiked(office) {
-        if (!office) return;
-        document.querySelectorAll('[data-apartment],[data-office]').forEach(function (card) {
+    /* ================= TRAI TIM "DA THICH" =================
+       4/11/2026 (nguoi dung): "cho vao 1 danh sach thi do ca trai tim len". Truoc day markLiked() chi them class luc VUA bam xong va luat CSS
+       nham vao <svg> (the that dung <img> PNG) nen tim khong bao gio doi mau, va tai lai trang thi mat luon. Nay trang thai lay tu CHINH
+       localStorage (can ho nam trong BAT KY bo suu tap nao = tim do), ve lai cho moi the luc tai trang, sau khi them/xoa, khi the moi xuat
+       hien (tai them / ban do) va khi tab khac thay doi. Dung anh that cua ban goc: fv-white.png (chua thich) / fv-red.png (da thich). */
+    var HEART_WHITE = CFG.heartWhite || '';
+    var HEART_RED = CFG.heartRed || '';
+
+    function likedSet() {
+        var set = {};
+        readLS(LS_OFF).forEach(function (o) { var id = favId(o); if (id != null) set[String(id)] = true; });
+        return set;
+    }
+
+    function paintHeart(like, liked) {
+        var was = like.classList.contains('pplus-liked');
+        like.classList.toggle('pplus-liked', liked);
+        var card = like.closest('.item-office');
+        if (card) card.classList.toggle('pplus-liked', liked);
+        var img = like.querySelector('img');
+        if (img && HEART_RED && HEART_WHITE) {
+            var want = liked ? HEART_RED : HEART_WHITE;
+            if (img.getAttribute('src') !== want) img.setAttribute('src', want);
+            img.setAttribute('alt', liked ? 'Liked' : 'Like Product');
+        }
+        // chi chay hieu ung "nay" khi vua chuyen tu chua thich -> thich (khong chay lai moi lan ve lai)
+        if (liked && !was && like.getAttribute('data-pplus-painted') === '1') {
+            like.classList.remove('pplus-heart-pop'); void like.offsetWidth; like.classList.add('pplus-heart-pop');
+        }
+        like.setAttribute('data-pplus-painted', '1');
+    }
+
+    function refreshLikedAll() {
+        var set = likedSet();
+        document.querySelectorAll('.item-like[data-apartment],.item-like[data-office]').forEach(function (like) {
             try {
-                var raw = card.getAttribute('data-apartment') || card.getAttribute('data-office');
-                var o = JSON.parse(raw);
-                if (o && String(favId(o)) === String(favId(office))) card.classList.add('pplus-liked');
+                var o = JSON.parse(like.getAttribute('data-apartment') || like.getAttribute('data-office'));
+                paintHeart(like, !!(o && set[String(favId(o))]));
             } catch (e) { }
         });
     }
+    window.pplusRefreshHearts = refreshLikedAll;
+
+    // goi lai sau khi them (code cu goi markLiked(pendingOffice))
+    function markLiked() { refreshLikedAll(); }
+
+    (function watchHearts() {
+        var timer = null;
+        function later() { clearTimeout(timer); timer = setTimeout(refreshLikedAll, 120); }
+        document.addEventListener('DOMContentLoaded', refreshLikedAll);
+        window.addEventListener('pageshow', refreshLikedAll);          // quay lai bang nut Back (bfcache)
+        window.addEventListener('storage', later);                      // tab khac them/xoa
+        window.addEventListener('pplus:favourite-changed', refreshLikedAll);
+        if ('MutationObserver' in window) {                              // the xuat hien sau (tai them, ban do, bo loc)
+            document.addEventListener('DOMContentLoaded', function () {
+                new MutationObserver(function (muts) {
+                    for (var i = 0; i < muts.length; i++) {
+                        for (var j = 0; j < muts[i].addedNodes.length; j++) {
+                            var n = muts[i].addedNodes[j];
+                            if (n.nodeType === 1 && (n.matches && (n.matches('.item-like') || n.querySelector('.item-like')))) { later(); return; }
+                        }
+                    }
+                }).observe(document.body, { childList: true, subtree: true });
+            });
+        }
+    })();
 
     /* ================= NUT TREN CARD ================= */
     document.addEventListener('click', function (e) {
@@ -462,6 +518,7 @@
                     writeLS(LS_COLL, collections().filter(function (c) { return c.id !== delId; }));
                     writeLS(LS_OFF, apartments().filter(function (o) { return o.IdFavourite !== delId; }));
                     toast('success', T.deletedCollection || 'Xóa bộ sưu tập thành công');
+                    refreshLikedAll();
                     render();
                 }
                 return;

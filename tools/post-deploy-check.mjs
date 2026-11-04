@@ -244,6 +244,7 @@ const STATIC_PAGES = [
   ['dịch vụ', { en: '/en/service/the-management-of-property-plus-1', vi: '/vi/service/dich-vu-quan-ly-cua-property-plus-1', ja: '/ja/service/the-management-of-property-plus-1' }],
   ['chủ nhà', { en: '/en/owner/owner-benefit', vi: '/vi/owner/loi-ich-chu-nha', ja: '/ja/owner/owner-benefit' }],
   ['tiện ích (easy-living)', { en: '/en/easy-living/24', vi: '/vi/easy-living/145', ja: '/ja/easy-living/24' }, 'optional'],
+  ['chi tiết yêu thích (noindex)', { en: '/en/favourite/favourite-detail', vi: '/vi/favourite/favourite-detail', ja: '/ja/favourite/favourite-detail' }, 'noindex'],
   ['yêu thích (noindex)', { en: '/en/danh-sach-yeu-thich', vi: '/vi/danh-sach-yeu-thich', ja: '/ja/danh-sach-yeu-thich' }, 'noindex'],
 ];
 const langOfPath = (p) => (/^\/(vi|en|ja)(\/|$)/.exec(p) || [, 'en'])[1];
