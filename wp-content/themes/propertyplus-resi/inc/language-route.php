@@ -41,6 +41,20 @@ function pplus_detect_lang_prefix(?string $value): array {
 
 $pplus_request_lang = 'vi';
 
+// 4/11/2026 - IIS + PHP FastCGI (server test loikaka): REQUEST_URI duoc doi sang bang ma ANSI cua may chu nen moi ky tu khong phai ASCII
+// (alias tieng Nhat cua trang landing, vd "/ja/rental-apartment/ha-noi/ハノイ...") bi thay bang "?" -> phan sau dau "?" dau tien bi coi la query
+// string, trang 404 hoac 301 sang URL toan dau "?" (13/14 URL tieng Nhat trong sitemap loi, local/nginx/Apache khong loi). Neu IIS cung cap ban
+// URL goc khong bi doi ma thi dung ban do. Khong co tac dung (khong doi gi) khi cac bien nay khong ton tai (nginx/Apache/Laragon).
+if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '?') !== false) {
+    foreach (['UNENCODED_URL', 'HTTP_X_ORIGINAL_URL', 'HTTP_X_REWRITE_URL'] as $pplus_iis_key) {
+        $pplus_iis_alt = (string) ($_SERVER[$pplus_iis_key] ?? '');
+        if ($pplus_iis_alt !== '' && $pplus_iis_alt[0] === '/' && $pplus_iis_alt !== $_SERVER['REQUEST_URI'] && preg_match('/%[89A-Fa-f][0-9A-Fa-f]|[\x80-\xFF]/', $pplus_iis_alt)) {
+            $_SERVER['REQUEST_URI'] = $pplus_iis_alt;
+            break;
+        }
+    }
+}
+
 // Luu URL GOC (truoc khi strip tien to) - canonical/hreflang/redirect dung ban nay.
 $GLOBALS['pplus_original_request_uri'] = $_SERVER['REQUEST_URI'] ?? '/';
 

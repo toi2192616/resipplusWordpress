@@ -601,13 +601,17 @@
     // cung ten field (OwnerName/OwnerEmail/OwnerMobile/AdviseContent/Acreage) nen dung chung 1
     // handler, POST toi REST route WordPress rieng (inc/advise-form.php) - route do moi la noi
     // proxy sang .NET that, xem chi tiet trong file do.
+    // Thong bao theo ngon ngu trang (PPLUS_ADVISE_MSG do functions.php in ra); thieu thi dung ban tieng Viet cu.
+    function pplusAdviseMsg(key, fallback) {
+      return (typeof PPLUS_ADVISE_MSG !== 'undefined' && PPLUS_ADVISE_MSG[key]) || fallback;
+    }
     $(document).on('submit', '.pplus-advise-form', function (e) {
       e.preventDefault();
       var $form = $(this);
       var $submitBtn = $form.find('button[type="submit"], button.pplus-advise-submit');
 
       if (!$form.find('[name="OwnerEmail"]').val() || !$form.find('[name="OwnerMobile"]').val()) {
-        toastr.error('Bạn chưa nhập Email hoặc Số điện thoại', 'Cảnh báo');
+        toastr.error(pplusAdviseMsg('missing', 'Bạn chưa nhập Email hoặc Số điện thoại'), pplusAdviseMsg('warning', 'Cảnh báo'));
         return;
       }
 
@@ -640,12 +644,12 @@
         data: JSON.stringify(payload)
       }).done(function (rs) {
         if (rs && rs.success) {
-          pplusShowAdviseSuccess($form, rs.message || 'Gửi yêu cầu thành công!');
+          pplusShowAdviseSuccess($form, rs.message || pplusAdviseMsg('ok', 'Gửi yêu cầu thành công!'));
         } else {
-          toastr.error((rs && rs.message) || 'Gửi yêu cầu thất bại, vui lòng thử lại sau.', 'Cảnh báo');
+          toastr.error((rs && rs.message) || pplusAdviseMsg('fail', 'Gửi yêu cầu thất bại, vui lòng thử lại sau.'), pplusAdviseMsg('warning', 'Cảnh báo'));
         }
       }).fail(function () {
-        toastr.error('Gửi yêu cầu thất bại, vui lòng thử lại sau.', 'Cảnh báo');
+        toastr.error(pplusAdviseMsg('fail', 'Gửi yêu cầu thất bại, vui lòng thử lại sau.'), pplusAdviseMsg('warning', 'Cảnh báo'));
       }).always(function () {
         $submitBtn.prop('disabled', false);
       });

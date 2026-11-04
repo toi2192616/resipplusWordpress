@@ -102,6 +102,10 @@ function pplus_extra_dictionary(string $lang): array {
                 'Bạn muốn bỏ yêu thích căn hộ này?'             => 'この物件をお気に入りから削除しますか？',
                 'Đã bỏ yêu thích'                               => 'お気に入りから削除しました',
                 'Quay lại danh sách yêu thích'                  => 'お気に入りリストに戻る',
+                // Thong bao cua form tu van (inc/advise-form.php) - 4/11/2026
+                'Bạn chưa nhập Email hoặc Số điện thoại' => 'メールアドレスまたは電話番号を入力してください',
+                'Số điện thoại không đúng định dạng!' => '電話番号の形式が正しくありません！',
+                'Gửi yêu cầu tư vấn thành công, chúng tôi sẽ liên hệ lại sớm nhất!' => 'ご相談を受け付けました。担当者より折り返しご連絡いたします。',
                 // Trang Lien he (4/11/2026) - web chinh hien tieng Viet tren /ja/contact vi tu dien chua co cac cau nay
                 'Chúng tôi hân hạnh được tư vấn cho bạn' => 'ご相談を心よりお待ちしております',
                 'Tư vẫn miến phí - Giá thuê tốt - Gửi báo giá nhanh chóng' => '無料相談・お得な賃料・迅速なお見積もり',

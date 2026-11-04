@@ -99,3 +99,21 @@ wp option delete pplus_sitemap_built_at         # ép build lại sitemap ở l�
 wp rewrite flush                                # nạp lại rewrite rules
 node tools/post-deploy-check.mjs https://propertyplus.com.vn --warm
 ```
+
+## Phát hiện khi rà soát loikaka ngày 4/11/2026 (bản effc3c1) — cần Dev A xử lý
+
+Lệnh chạy lại: `node tools/post-deploy-check.mjs https://loikaka.propertyplus.com.vn --staging` (kết quả lần đó: 75 đạt, 9 cảnh báo, 11 lỗi).
+
+1. **Hai Page `ve-chung-toi` và `lien-he` chưa có** → 6 URL (`/vi/ve-chung-toi`, `/en/about-us`, `/ja/about-us`, `/vi/lien-he`, `/en/contact`, `/ja/contact`) trả 404. Tạo trong WP admin (Pages → Add New, đúng slug + Page Template "Ve chung toi" / "Lien he"). Link "Liên hệ" ở footer chỉ hiện khi Page `lien-he` đã tồn tại.
+2. **URL tiếng Nhật bị server làm hỏng (13/14 URL tiếng Nhật trong sitemap lỗi; local chạy tốt).** Triệu chứng: `/ja/rental-apartment/ha-noi/<alias tiếng Nhật>` trả 404, hoặc 301 sang một URL toàn dấu `?` (`.../ha-noi???????????`); canonical bị cắt ngay trước ký tự tiếng Nhật đầu tiên. Header phản hồi có `x-powered-by: ASP.NET` + PHP → server là **IIS + PHP FastCGI**, nơi `REQUEST_URI` bị đổi sang bảng mã ANSI nên mọi ký tự không phải ASCII thành `?`; phần sau dấu `?` đầu tiên bị coi là query string. Ảnh hưởng: toàn bộ trang landing tiếng Nhật (Search Console ghi nhận Nhật Bản ~98 click/3 tháng).
+   - Code đã thêm (inc/language-route.php, đầu file): nếu `REQUEST_URI` chứa `?` và IIS cung cấp `UNENCODED_URL` / `HTTP_X_ORIGINAL_URL` / `HTTP_X_REWRITE_URL` chứa ký tự không phải ASCII thì dùng bản đó. **Chưa kiểm chứng được trên IIS** (không có quyền vào server).
+   - Dev A kiểm chứng: tạo file `diag-url.php` ở thư mục gốc site với nội dung bên dưới, mở `https://loikaka.propertyplus.com.vn/diag-url.php/%E3%83%8F%E3%83%8E%E3%82%A4?x=%E3%83%8F`, gửi kết quả cho Dev B, rồi XOÁ file.
+     ```php
+     <?php header("Content-Type: text/plain; charset=utf-8");
+     foreach (["REQUEST_URI","UNENCODED_URL","HTTP_X_ORIGINAL_URL","HTTP_X_REWRITE_URL","PATH_INFO","ORIG_PATH_INFO","QUERY_STRING","SERVER_SOFTWARE"] as $k) echo $k," = ",$_SERVER[$k] ?? "(không có)","
+";
+     ```
+   - Nếu sau khi deploy bản mới mà `post-deploy-check` vẫn báo "URL tiếng Nhật mở được" thất bại thì cần chỉnh phía server (IIS URL Rewrite: đặt server variable chứa URL gốc dạng UTF-8, hoặc chạy PHP qua nginx/Apache). Không chuyển được lên production nếu chưa sửa — mất toàn bộ landing tiếng Nhật.
+3. **Form "Gửi yêu cầu tư vấn" không hoạt động (lỗi có từ trước, đã sửa trong commit này).** `inc/advise-form.php` (route `pplus/v1/advise`) chưa từng được `require` và 3 biến JS `PPLUS_ADVISE_URL/CONFIRM/CLOSE` không được in ra → bấm Gửi báo "PPLUS_ADVISE_CONFIRM is not defined", không gửi được gì. Ảnh hưởng chi tiết căn hộ/dự án/văn phòng, landing, trang Liên hệ, modal "Hòm thư góp ý". Sau khi deploy: `post-deploy-check` có mục kiểm tra route + biến JS; ngoài ra gửi **1 form thật** với nội dung "TEST - bỏ qua" (script không gửi thật vì sẽ tạo lead trong admin) và xem lead có xuất hiện trong admin không.
+4. **WP-Cron không chạy → sitemap thiếu** (index chỉ 2 file con; căn hộ/dự án/blog 0 URL). Gọi `wp-cron.php` qua HTTP (Cloudflare) bị 524 sau ~125 giây: job sitemap chạy quá lâu cho 1 request web. Cần chạy cron bằng bộ lập lịch hệ thống (Task Scheduler / cron gọi `php wp-cron.php` hoặc `wp cron event run --due-now` mỗi phút), không qua HTTP.
+5. **hreflang có `%20` ở cuối** với alias backend có dấu cách cuối (vd "Japanese-area "): đã sửa trong `pplus_language_switch_url()` (cắt khoảng trắng cuối). Nên báo backend bỏ dấu cách thừa trong alias.

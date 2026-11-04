@@ -441,7 +441,10 @@ function pplus_language_switch_url(string $target_lang): string {
     // Alias doan sau giu nguyen; cac trang co alias khac nhau theo ngon ngu (khu vuc, blog, can ho, dich vu...) tu ghi de qua filter.
     $path = pplus_switch_root($path, $target_lang);
     $default = home_url($prefix . ($path === '/' ? '' : $path)); // trang chu: /vi, /en, /ja (home_url bo "/" cuoi)
-    return apply_filters('pplus_language_switch_url', $default, $target_lang);
+    $url = (string) apply_filters('pplus_language_switch_url', $default, $target_lang);
+    // 4/11/2026: backend tra 1 so alias co DAU CACH CUOI (vd "Japanese-area ") -> hreflang/link doi ngon ngu ra ".../Japanese-area%20", khac
+    // canonical cua trang (Google coi hreflang khong tro ve chinh trang -> bo qua). Cat khoang trang/%20 thua o cuoi.
+    return preg_replace('#(?:%20|\s)+$#', '', $url);
 }
 
 /**

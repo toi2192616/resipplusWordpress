@@ -55,12 +55,12 @@ const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const median = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : 0; };
 
-async function http(url, { follow = false, headers = {}, retry503 = true } = {}) {
+async function http(url, { follow = false, headers = {}, retry503 = true, method = 'GET', body } = {}) {
   const u = /^https?:/.test(url) ? url : base + encodeURI(url).replace(/%25([0-9A-F]{2})/g, '%$1');
   for (let attempt = 0; attempt < 3; attempt++) {
     const t0 = performance.now();
     try {
-      const r = await fetch(u, { redirect: follow ? 'follow' : 'manual', headers: { 'user-agent': UA, 'accept-encoding': 'gzip, br', ...headers }, signal: AbortSignal.timeout(60000) });
+      const r = await fetch(u, { method, body, redirect: follow ? 'follow' : 'manual', headers: { 'user-agent': UA, 'accept-encoding': 'gzip, br', ...headers }, signal: AbortSignal.timeout(60000) });
       const type = r.headers.get('content-type') || '';
       const text = /text|json|xml|javascript/.test(type) ? await r.text() : (await r.arrayBuffer(), '');
       const out = { url: u, status: r.status, headers: r.headers, text, type, loc: r.headers.get('location') || '', ms: Math.round(performance.now() - t0) };
@@ -358,6 +358,21 @@ async function checkSearch() {
   }
   const q = await http(`/vi/cho-thue-can-ho/ha-noi?q=${encodeURIComponent('Somerset')}`);
   check(q.status === 200, 'Trang danh sách mở được với tham số tìm kiếm ?q=', `HTTP ${q.status}`);
+
+  // URL có ký tự không phải ASCII (alias tiếng Nhật của trang landing). Server IIS + PHP FastCGI từng đổi chúng thành "?" (404/301 sai) — xem docs/GO_LIVE_CHECKLIST.md mục "URL tiếng Nhật".
+  const nonAscii = (SITEMAP.sets.pplusareas || []).filter((u) => /%[89A-F][0-9A-F]/i.test(u)).slice(0, 4);
+  for (const u of nonAscii) {
+    const r = await http(pathOf(u));
+    check(r.status === 200, `URL tiếng Nhật mở được: ${pathOf(u).slice(0, 70)}`, `HTTP ${r.status}${r.loc ? " → " + r.loc.slice(0, 80) : ""} — server đổi ký tự không phải ASCII thành "?" (IIS/FastCGI): xem docs/GO_LIVE_CHECKLIST.md mục "URL tiếng Nhật"`);
+  }
+
+  // Form "Gửi yêu cầu tư vấn" (căn hộ, dự án, trang Liên hệ, modal footer): route REST phải tồn tại và biến JS phải được in ra.
+  // (4/11/2026: cả hai từng thiếu → bấm Gửi không làm gì mà không ai biết.) KHÔNG gửi form thật: chỉ gọi route với dữ liệu rỗng — validate xong là trả lỗi, không gọi API backend.
+  const adv = await http('/wp-json/pplus/v1/advise', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ OwnerEmail: '', OwnerMobile: '', lang: 'en' }) });
+  let advMsg = ''; try { advMsg = JSON.parse(adv.text).message || ''; } catch { /* để rỗng */ }
+  check(adv.status === 200 && /Email or Phone/i.test(advMsg), 'Route form tư vấn /wp-json/pplus/v1/advise hoạt động (validate dữ liệu rỗng)', `HTTP ${adv.status} ${advMsg || adv.text.slice(0, 80)} — route không đăng ký hoặc bị chặn: mọi form "Gửi yêu cầu tư vấn" sẽ không gửi được`);
+  const home = await http('/vi');
+  check(/var PPLUS_ADVISE_URL\s*=/.test(home.text) && /var PPLUS_ADVISE_CONFIRM\s*=/.test(home.text), 'Biến JS của form tư vấn (PPLUS_ADVISE_URL/CONFIRM) có trong trang', 'thiếu — bấm Gửi sẽ báo "PPLUS_ADVISE_CONFIRM is not defined" và không gửi được');
 }
 
 // ----------------------------------------------------------------------------------------------- 6. tốc độ + cache + ảnh

@@ -43,6 +43,7 @@ require_once PPLUS_THEME_DIR . '/inc/apartment-detail-route.php'; // A2 - /cho-t
 require_once PPLUS_THEME_DIR . '/inc/project-detail-route.php';   // A3/A4 nhanh "Dự án cụ thể" - /cho-thue-can-ho/{province}/{district}/{project-alias}-{id}/
 require_once PPLUS_THEME_DIR . '/inc/map-area-search.php';        // REST "Tim kiem khu vuc nay" (map mode mobile)
 require_once PPLUS_THEME_DIR . '/inc/service-route.php';          // C1 - trang Dich vu (4 TypeSite)
+require_once PPLUS_THEME_DIR . '/inc/advise-form.php';             // REST submit "Gui yeu cau tu van" (moi form .pplus-advise-form) - truoc day khong duoc nap
 require_once PPLUS_THEME_DIR . '/inc/service-register-route.php'; // C1 - REST submit "Dang ky dich vu"
 require_once PPLUS_THEME_DIR . '/inc/about-subpage-route.php';    // B5 - trang con /ve-chung-toi/{alias}-{id}
 require_once PPLUS_THEME_DIR . '/inc/about-route.php';             // B5 - alias EN/JA "about-us" -> Page "ve-chung-toi"
@@ -390,6 +391,21 @@ add_action('wp_enqueue_scripts', function () {
     // kham pha) - moi khoi deu tu kiem tra $('.selector').length nen an toan load moi trang, khong
     // can gioi han is_front_page(). Giong cach lam cua ban Van phong (main.js load site-wide o do).
     wp_enqueue_script('propertyplus-main', PPLUS_THEME_URI . '/assets/js/main.js', ['pplus-resi-ui'], pplus_asset_version('assets/js/main.js'), true);
+
+    // Cau hinh JS cho MOI form ".pplus-advise-form" (Gui yeu cau tu van: chi tiet can ho/du an/van phong, landing, trang Lien he, modal "Hom thu gop y"
+    // o footer) - 4/11/2026. TRUOC DAY 3 hang so PPLUS_ADVISE_URL/CONFIRM/CLOSE KHONG DUOC OUTPUT O DAU CA va inc/advise-form.php (route REST
+    // pplus/v1/advise) khong duoc require -> bam "Gui" thi JS bao "PPLUS_ADVISE_CONFIRM is not defined" va khong gui duoc gi: toan bo form tu van tren
+    // Resi khong hoat dong (phat hien khi ra soat loikaka). Cac chuoi thong bao cung di tu day de dung ngon ngu cua trang (truoc: cung tieng Viet trong main.js).
+    wp_add_inline_script('propertyplus-main', 'var PPLUS_ADVISE_URL = ' . wp_json_encode(rest_url('pplus/v1/advise')) . ';'
+        . ' var PPLUS_ADVISE_CONFIRM = ' . wp_json_encode(pplus_localize('Bạn có chắc chắn muốn gửi thông tin hỗ trợ?')) . ';'
+        . ' var PPLUS_ADVISE_CLOSE = ' . wp_json_encode(pplus_t('Đóng', 'Close')) . ';'
+        . ' var PPLUS_LOCATION_LANG = ' . wp_json_encode(pplus_current_lang()) . ';'
+        . ' var PPLUS_ADVISE_MSG = ' . wp_json_encode([
+            'missing' => pplus_localize('Bạn chưa nhập Email hoặc Số điện thoại'),
+            'fail'    => pplus_localize('Gửi yêu cầu thất bại, vui lòng thử lại sau.'),
+            'ok'      => pplus_t('Gửi yêu cầu tư vấn thành công, chúng tôi sẽ liên hệ lại sớm nhất!', 'Your request has been sent successfully, we will contact you soon!'),
+            'warning' => pplus_localize('Cảnh báo'),
+        ]) . ';', 'before');
 
     // #searchModal (parts/search-modal.php, footer.php) - site-wide vi nut mo (".btn-modal-search")
     // nam trong suggest-header, xuat hien tren moi trang. File rieng (khong gop vao main.js) vi

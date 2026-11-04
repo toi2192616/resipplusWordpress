@@ -39,13 +39,23 @@ add_action('rest_api_init', function () {
 function pplus_handle_advise_submit(WP_REST_Request $request) {
     // Xem ghi chu dau file: "lang" PHAI lay tu request param (JS gui kem), KHONG duoc goi
     // pplus_current_lang() trong file nay.
-    $lang = ($request->get_param('lang') === 'en') ? 'en' : 'vi';
-    $t    = static fn (string $vi, string $en): string => $lang === 'en' ? $en : $vi;
+    $page_lang = (string) $request->get_param('lang');
+    $lang      = ($page_lang === 'en') ? 'en' : 'vi'; // culture goi API .NET: ban JA van di qua 'vi' (giong service-register-route.php, chua co bang chung .NET nhan culture ja o endpoint nay)
+    // Thong bao tra ve theo ngon ngu TRANG: vi / en / ja (ja: tu dien API + bang bo sung i18n-extra.php, thieu thi dung tieng Anh).
+    $ja_dict = $page_lang === 'ja' ? (pplus_lang_dictionary('ja') + pplus_extra_dictionary('ja')) : [];
+    $t       = static fn (string $vi, string $en): string => $page_lang === 'en' ? $en : ($page_lang === 'ja' ? ($ja_dict[$vi] ?? $en) : $vi);
 
     $name  = sanitize_text_field((string) $request->get_param('OwnerName'));
     $email = sanitize_email((string) $request->get_param('OwnerEmail'));
     $phone = sanitize_text_field((string) $request->get_param('OwnerMobile'));
 
+    // Email go sai dinh dang (vd "abc") bi sanitize_email() xoa thanh rong -> truoc day bao nham "chua nhap Email"; nhan ra va bao dung loi.
+    if ($email === '' && trim((string) $request->get_param('OwnerEmail')) !== '' && $phone !== '') {
+        return new WP_REST_Response([
+            'success' => false,
+            'message' => $t('Email không đúng định dạng!', 'Invalid email format!'),
+        ], 200);
+    }
     if ($email === '' || $phone === '') {
         return new WP_REST_Response([
             'success' => false,
