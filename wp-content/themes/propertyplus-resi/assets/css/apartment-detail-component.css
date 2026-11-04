@@ -570,6 +570,8 @@
 }
 .office-detail .detail-right .card .list-user .item img {
   width: 100%;
+  object-fit: cover; /* 4/11/2026: anh chan dung 110x137 hien o 55x55 bi bop meo */
+  object-position: center top;
   border-radius: 50%;
   height: 55px;
   margin-top: 0px;

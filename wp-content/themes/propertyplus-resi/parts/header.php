@@ -171,6 +171,10 @@ $render_alias_items = static function (array $items, string $base_slug) {
 
             <li><a href="<?php echo esc_url(pplus_lang_url(pplus_localize('ve-chung-toi'))); ?>"><?php echo esc_html(pplus_localize('Về chúng tôi')); ?></a></li>
             <li><a href="<?php echo esc_url(pplus_lang_url('blogs')); ?>"><?php echo esc_html(pplus_localize('Blog')); ?></a></li>
+            <?php // 4/11/2026: muc "Lien he" trong menu (web chinh KHONG co muc nay - trang lien-he chi tro duoc bang URL); chi hien khi Page "lien-he" da ton tai tren server, tranh link 404. ?>
+            <?php if (get_page_by_path('lien-he')) : ?>
+            <li><a href="<?php echo esc_url(pplus_lang_url(pplus_localize('lien-he'))); ?>"><?php echo esc_html(pplus_localize('Liên hệ')); ?></a></li>
+            <?php endif; ?>
           </ul>
         </div>
 

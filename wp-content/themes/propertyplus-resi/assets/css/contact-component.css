@@ -406,6 +406,23 @@
   text-decoration: none;
 }
 /* ---- Phan them cho WordPress (khong co o ban goc) ---- */
+/* 4/11/2026: <img> co width/height (chong giat trang) nhung CSS goc chi dat width (90px/70px/100px...) -> anh bi keo meo; height:auto giu dung ti le. */
+.contact img {
+  height: auto;
+}
+/* Mobile (<=1024px, cung moc voi giao dien mobile cua theme): bo anh vom cong ben phai - tren man hinh hep anh de len so dien thoai/email/dia chi. Cot thong tin chiem du chieu ngang. */
+@media only screen and (max-width: 1024px) {
+  .contact .container-content-2 .row > .col-md-6:last-child {
+    display: none;
+  }
+  .contact .container-content-2 .row > .col-md-6:first-child {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  .contact .container-content-2 .content-2 {
+    padding-right: 0;
+  }
+}
 .contact .contact-conten-1 h1.c-c-1-t-1 {
   font-family: inherit;
 }

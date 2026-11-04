@@ -473,6 +473,7 @@
 }
 ._blog ._blog-silder ._blog-item ._blog-img {
   width: 100%;
+  object-fit: cover; /* 4/11/2026: chieu cao co dinh + anh nhieu ti le khac nhau -> truoc day bi keo meo (mobile lech toi 50%) */
   border-radius: 10px !important;
   height: 212px;
   margin: auto;
