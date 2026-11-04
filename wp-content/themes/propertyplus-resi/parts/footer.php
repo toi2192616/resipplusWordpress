@@ -31,7 +31,8 @@ $rsEmail    = !empty($company['email']) ? explode('|', (string) $company['email'
     <div class="container">
       <div class="row clear-margin">
         <div class="col-md-5">
-          <div class="menu-title"><?php echo esc_html(pplus_localize('Liên hệ')); ?></div>
+          <?php // 4/11/2026: tieu de "Lien he" tro thanh link toi trang /lien-he (web chinh khong co link nao toi trang nay -> trang mo coi, Google kho tim). ?>
+          <div class="menu-title"><a class="footer-contact-link" href="<?php echo esc_url(pplus_lang_url(pplus_localize('lien-he'))); ?>"><?php echo esc_html(pplus_localize('Liên hệ')); ?></a></div>
           <div class="lg-f-content"><?php echo esc_html(pplus_localize('CÔNG TY CỔ PHẦN THƯƠNG MẠI VÀ TƯ VẤN BẤT ĐỘNG SẢN ĐẠI LỢI')); ?></div>
           <div class="pplus-info"><?php echo esc_html(pplus_localize('Tầng 06, tòa nhà Kinh Đô, 292 Tây Sơn, phường Trung Liệt, quận Đống Đa, Hà Nội')); ?></div>
           <div class="menu-0">
@@ -98,7 +99,7 @@ $rsEmail    = !empty($company['email']) ? explode('|', (string) $company['email'
                 <?php endforeach; ?>
                 <br />
               </div>
-              <iframe title="<?php echo esc_attr(pplus_localize('Địa chỉ')); ?>" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d14898.552851937988!2d105.8228791!3d21.0071347!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ac83d7aaa7c9%3A0xee4412aece650f2e!2sPropertyPlus%20Viet%20Nam_Apartment%20for%20rent%20in%20Ha%20Noi!5e0!3m2!1svi!2s!4v1696585344584!5m2!1svi!2s" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <iframe title="<?php echo esc_attr(pplus_localize('Địa chỉ')); ?>" src="<?php echo esc_url(pplus_resi_map_embed_url()); ?>" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
           </div>
         </div>

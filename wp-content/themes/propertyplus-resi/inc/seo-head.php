@@ -100,6 +100,9 @@ function pplus_seo_page_type(): string {
     if (is_page_template('page-about.php')) {
         return 'about';
     }
+    if (is_page_template('page-contact.php')) {
+        return 'contact';
+    }
     return 'page';
 }
 
@@ -176,6 +179,11 @@ add_filter('pre_get_document_title', function (string $title): string {
     if ($type === 'about') {
         return pplus_localize('Công ty bất động sản ở Hà Nội | Property Plus');
     }
+    if ($type === 'contact') {
+        // Web chinh chi dat title "Lien he" (khong co ten thuong hieu) - them "| Property Plus" cho title ro nghia hon tren ket qua tim kiem.
+        // Tieng Nhat: tu dien dich 'Liên hệ' thanh '連絡' (dung cho breadcrumb); tu khoa nguoi Nhat tim that la 'お問い合わせ' -> dung cho title.
+        return (pplus_current_lang() === 'ja' ? 'お問い合わせ' : pplus_t('Liên hệ', 'Contact')) . ' | Property Plus';
+    }
     return $title;
 }, 20);
 
@@ -243,6 +251,11 @@ add_action('wp_head', function () {
             $description = pplus_t(
                 'Tìm căn hộ, căn hộ dịch vụ và villa cho thuê cao cấp tại Hà Nội. Cập nhật giá mới nhất, miễn phí môi giới, hỗ trợ khách nước ngoài.',
                 'Find premium apartments, serviced apartments and villas for rent in Hanoi. Latest prices, no brokerage fee, foreigner-friendly support.'
+            );
+        } elseif ($type === 'contact') {
+            $description = pplus_t(
+                'Liên hệ Property Plus để được tư vấn miễn phí và báo giá nhanh căn hộ cho thuê tại Hà Nội. Hotline 0865 364 866, văn phòng tầng 6 tòa nhà Kinh Đô, 292 Tây Sơn, Đống Đa.',
+                'Contact Property Plus for free advice and fast quotes on apartments for rent in Hanoi. Hotline 0865 364 866, 6th floor Kinh Do Building, 292 Tay Son, Dong Da.'
             );
         } else {
             $description = pplus_seo_tagline();

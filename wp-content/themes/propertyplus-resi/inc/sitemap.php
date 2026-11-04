@@ -314,7 +314,8 @@ add_filter('wp_sitemaps_add_provider', function ($provider, string $name) {
 
 // Trang "Danh sach yeu thich" la du lieu rieng tu nguoi dung, da noindex; "sample-page" la trang mac dinh cua WP - khong dua vao sitemap.
 add_filter('wp_sitemaps_posts_query_args', function (array $args): array {
-    foreach (['danh-sach-yeu-thich', 'sample-page', 'trang-mau', 'lien-he'] as $slug) { // trang-mau = "Sample Page" cua WP cai ban tieng Viet
+    // 4/11/2026: 'lien-he' khong con bi loai - trang Lien he da duoc lam lai day du (page-contact.php), can duoc index.
+    foreach (['danh-sach-yeu-thich', 'sample-page', 'trang-mau'] as $slug) { // trang-mau = "Sample Page" cua WP cai ban tieng Viet
         $page = get_page_by_path($slug);
         if ($page) {
             $args['post__not_in'] = array_merge($args['post__not_in'] ?? [], [(int) $page->ID]);

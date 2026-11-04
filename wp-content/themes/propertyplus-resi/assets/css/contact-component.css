@@ -1,27 +1,128 @@
+/**
+ * Nguon LESS cho page-contact.php - THAY THE HOAN TOAN ban cu (la CSS trang Lien he cua theme VAN PHONG, chua tung duoc nap).
+ * BAN SAO NOI DUNG tu D:SoureceCodePPlusAngularResisrcappmodulescontactcontact-indexcontact-index.component.less
+ * (khong @import, khong ::ng-deep). Khac ban goc: (1) 1 cho sua url() anh banner thanh duong dan tuong doi tu assets/css;
+ * (2) cuoi file them vai dong cho phan WordPress them (link SDT/email, h1 thay div, thong bao gui form).
+ * Compile: lessc contact.less ../contact-component.css
+ */
 .contact {
-  min-height: calc(100vh - 150px);
-  background-image: url('../officebase/Common/Images/About/contact-bk.png');
-  background-position: center;
-  background-size: cover;
+  min-height: calc(100vh - 170px);
 }
 @media only screen and (max-width: 760px) and (min-width: 0px) {
   .contact {
-    margin-top: -30px;
-    background-image: none;
+    margin-top: 0px;
+  }
+}
+.contact .contact-conten-1 {
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%), url(../Content/Img-LienHe/two-opposing-players-give-handshake-end-game.png);
+  background-position: center;
+  background-size: cover;
+  color: white;
+  padding: 80px 60px;
+}
+@media only screen and (max-width: 760px) and (min-width: 0px) {
+  .contact .contact-conten-1 {
+    padding: 50px 15px;
+  }
+}
+.contact .contact-conten-1 .c-c-1-t-1 {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 43px;
+  text-transform: uppercase;
+  margin-top: 30px;
+  max-width: 570px;
+  margin-bottom: 36px;
+}
+@media only screen and (max-width: 760px) and (min-width: 0px) {
+  .contact .contact-conten-1 .c-c-1-t-1 {
+    font-size: 20px;
+    line-height: 30px;
+    margin-bottom: 10px;
+  }
+}
+.contact .contact-conten-1 .c-c-1-t-2 {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 43px;
+}
+@media only screen and (max-width: 760px) and (min-width: 0px) {
+  .contact .contact-conten-1 .c-c-1-t-2 {
+    font-size: 16px;
+    line-height: 26px;
+    padding-right: 165px;
+  }
+}
+.contact .container-content-2 {
+  padding: 40px;
+  position: relative;
+}
+@media only screen and (max-width: 760px) and (min-width: 0px) {
+  .contact .container-content-2 {
+    padding: 10px;
+  }
+}
+.contact .container-content-2 .content-2 {
+  padding-right: 60px;
+  margin-left: -20px;
+}
+@media only screen and (max-width: 760px) and (min-width: 0px) {
+  .contact .container-content-2 .content-2 {
+    padding-right: 0px;
+  }
+}
+.contact .container-content-2 .content-2 .content-2-item {
+  display: flex;
+  width: 100%;
+}
+.contact .container-content-2 .content-2 .content-2-item .item-img {
+  width: 90px;
+}
+@media only screen and (max-width: 760px) and (min-width: 0px) {
+  .contact .container-content-2 .content-2 .content-2-item .item-img {
+    width: 70px;
+  }
+}
+.contact .container-content-2 .content-2 .content-2-item .item-img img {
+  width: 90px;
+}
+@media only screen and (max-width: 760px) and (min-width: 0px) {
+  .contact .container-content-2 .content-2 .content-2-item .item-img img {
+    width: 70px;
+  }
+}
+.contact .container-content-2 .content-2 .content-2-item .item-text {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 30px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: auto 0px;
+}
+@media only screen and (max-width: 760px) and (min-width: 0px) {
+  .contact .container-content-2 .content-2 .content-2-item .item-text {
+    font-size: 17px;
+  }
+}
+.contact .container-content-2 .content-2-img {
+  max-width: 100%;
+  margin-top: -300px;
+  margin-left: 50px;
+}
+@media only screen and (max-width: 760px) and (min-width: 0px) {
+  .contact .container-content-2 .content-2-img {
+    width: 185px;
+    position: absolute;
+    top: 140px;
+    right: -15px;
   }
 }
 .contact .contact-content {
   padding: 50px 0px;
 }
-.contact .contact-content .content-left {
-  padding-right: 120px;
-}
 @media only screen and (max-width: 760px) and (min-width: 0px) {
   .contact .contact-content .content-left {
-    padding: 15px 10px;
-    background-image: url('../officebase/Common/Images/About/contact-bk.png');
-    background-position: center;
-    background-size: cover;
+    margin: 30px 0px;
   }
 }
 .contact .contact-content .content-left .btn-back {
@@ -58,14 +159,14 @@
   font-family: 'SF Pro Display';
   font-style: normal;
   font-weight: 700;
-  font-size: 36px;
+  font-size: 40px;
   color: #252323;
   margin-bottom: 25px;
 }
 @media only screen and (max-width: 760px) and (min-width: 0px) {
   .contact .contact-content .content-left .text-1 {
     color: #000000c4;
-    font-size: 22px;
+    font-size: 24px;
     margin-bottom: 20px;
   }
 }
@@ -73,7 +174,7 @@
   font-family: 'SF Pro Display';
   font-style: normal;
   font-weight: 300;
-  font-size: 16px;
+  font-size: 17px;
   color: #252323;
   text-transform: uppercase;
   margin-bottom: 10px;
@@ -81,7 +182,7 @@
 @media only screen and (max-width: 760px) and (min-width: 0px) {
   .contact .contact-content .content-left .text-2 {
     color: #000000c4;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 400;
   }
 }
@@ -89,7 +190,7 @@
   font-family: 'SF Pro Display';
   font-style: normal;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 17px;
   color: #252323;
   padding-right: 200px;
   margin-bottom: 45px;
@@ -101,7 +202,7 @@
 @media only screen and (max-width: 760px) and (min-width: 0px) {
   .contact .contact-content .content-left .text-3 {
     color: #000000c4;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 400;
     margin-bottom: 20px;
     padding-right: 10px;
@@ -114,7 +215,7 @@
   font-family: 'SF Pro Display';
   font-style: normal;
   font-weight: 300;
-  font-size: 16px;
+  font-size: 17px;
   color: #252323;
   text-transform: uppercase;
   margin-bottom: 10px;
@@ -122,7 +223,7 @@
 @media only screen and (max-width: 760px) and (min-width: 0px) {
   .contact .contact-content .content-left .text-4 {
     color: #000000c4;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 400;
   }
 }
@@ -132,7 +233,7 @@
   font-family: 'SF Pro Display';
   font-style: normal;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 17px;
   color: #252323;
   background: rgba(255, 255, 255, 0.4);
   border-radius: 9px;
@@ -141,7 +242,7 @@
 @media only screen and (max-width: 760px) and (min-width: 0px) {
   .contact .contact-content .content-left .link-1 {
     color: #000000c4;
-    font-size: 15px;
+    font-size: 16px;
     background: none;
     border: 1px solid #000000c4;
     margin-bottom: 20px;
@@ -151,24 +252,30 @@
   margin-right: 10px;
 }
 .contact .contact-content .content-left .group-1 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 10px;
   display: grid;
+  max-width: 250px;
+  margin-left: -20px;
 }
 @media (min-width: 0px) and (max-width: 880px) {
   .contact .contact-content .content-left .group-1 {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
-.contact .contact-content .content-left .group-1 .group-c .text-3 {
-  padding-right: 0px;
+.contact .contact-content .content-left .group-1 .group-c img {
+  width: 100px;
 }
 .contact .contact-content .content-left .iframe-map {
   width: 100%;
   aspect-ratio: 5/2.5;
 }
 .contact .contact-content .content-right {
-  padding-top: 85px;
+  max-width: 540px;
+  background: linear-gradient(146.25deg, #BE7EE1 0%, #61A2D8 102.37%);
+  padding: 40px 50px;
+  color: white;
+  border-radius: 8px;
 }
 @media only screen and (max-width: 760px) and (min-width: 0px) {
   .contact .contact-content .content-right {
@@ -179,46 +286,43 @@
   font-family: 'SF Pro Display';
   font-style: normal;
   font-weight: 700;
-  font-size: 34px;
+  font-size: 28px;
   line-height: 39px;
-  color: #252323;
   margin-bottom: 25px;
 }
 @media only screen and (max-width: 760px) and (min-width: 0px) {
   .contact .contact-content .content-right .text-1 {
     font-size: 24px;
-    color: #000000c4;
   }
 }
 .contact .contact-content .content-right .from-send-contact input {
-  border-color: #25232300;
-  background-color: #25232300;
-  border-bottom: 1px solid #AFAFAF;
+  background-color: #ffffff00;
+  border: 1px solid #F5F4F5;
   font-family: 'SF Pro Display';
   font-style: normal;
   font-weight: 300;
-  font-size: 17px;
-  color: #545353;
+  font-size: 16px;
+  color: #FEFCFF;
   margin-bottom: 25px;
-  padding: 10px 10px 10px 0px;
+  padding: 15px;
+  border-radius: 8px;
 }
 @media only screen and (max-width: 760px) and (min-width: 0px) {
   .contact .contact-content .content-right .from-send-contact input {
-    color: #000000c4;
     font-size: 16px;
     font-weight: 400;
   }
 }
 .contact .contact-content .content-right .from-send-contact textarea {
-  background-color: #25232300;
-  border: 1px solid #AFAFAF;
+  background-color: #ffffff00;
+  border: 1px solid #F5F4F5;
   font-family: 'SF Pro Display';
   font-style: normal;
   font-weight: 300;
-  font-size: 17px;
-  color: #252323;
+  font-size: 16px;
+  color: #FEFCFF;
   margin-bottom: 25px;
-  border-radius: 10px;
+  border-radius: 8px;
   min-height: 200px;
 }
 @media only screen and (max-width: 760px) and (min-width: 0px) {
@@ -230,24 +334,98 @@
 }
 .contact .contact-content .content-right .from-send-contact input::placeholder,
 .contact .contact-content .content-right .from-send-contact textarea::placeholder {
-  color: #252323;
+  color: #FEFCFF;
   opacity: 0.25;
 }
 @media only screen and (max-width: 760px) and (min-width: 0px) {
   .contact .contact-content .content-right .from-send-contact input::placeholder,
   .contact .contact-content .content-right .from-send-contact textarea::placeholder {
-    color: #000000c4;
+    color: #FEFCFF;
   }
 }
 .contact .contact-content .content-right .from-send-contact .btn-sendcontact {
-  background: #252323;
-  border-radius: 10px;
-  width: 100%;
-  font-size: 17px;
+  background: #ffffff;
+  border-radius: 8px;
+  min-width: 200px;
+  font-size: 20px;
   padding: 7px 5px;
-  color: #ffffff;
+  color: #7F7E80;
   font-family: 'SF Pro Display';
   font-style: normal;
   font-weight: 400;
   font-size: 18px;
+}
+.group-title-style-1 {
+  margin-bottom: 15px;
+  border-left: 5px solid #dfb54c;
+  padding-left: 40px;
+}
+@media (min-width: 0px) and (max-width: 880px) {
+  .group-title-style-1 {
+    padding-left: 15px;
+  }
+}
+.group-title-style-1 .title {
+  font-size: 25px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 50px;
+  margin-bottom: 20px;
+  color: #23182b;
+}
+@media (min-width: 0px) and (max-width: 880px) {
+  .group-title-style-1 .title {
+    font-size: 18px;
+    line-height: 30px;
+  }
+}
+.group-title-style-1 .sub-title {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 26px;
+  color: #545455;
+}
+.action-link-google-map {
+  border: 1px solid #B581DB;
+  padding: 8px 16px;
+  border-radius: 2px;
+  font-size: 18px;
+  text-align: left;
+  color: #B581DB;
+  transition: 0.3s all;
+  margin: 25px 0px 66px 0px;
+  display: inline-block;
+}
+.action-link-google-map i {
+  margin-left: 5px;
+  position: relative;
+  top: -2px;
+}
+.action-link-google-map:hover {
+  color: #ae71da;
+  text-decoration: none;
+}
+/* ---- Phan them cho WordPress (khong co o ban goc) ---- */
+.contact .contact-conten-1 h1.c-c-1-t-1 {
+  font-family: inherit;
+}
+.contact .container-content-2 .content-2 .content-2-item .item-text a {
+  color: inherit;
+  text-decoration: none;
+}
+.contact .contact-content .content-right .from-send-contact .pplus-advise-success {
+  text-align: center;
+  padding: 30px 10px;
+}
+.contact .contact-content .content-right .from-send-contact .pplus-advise-success .pplus-advise-success-icon {
+  font-size: 40px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.contact .contact-content .content-right .from-send-contact .pplus-advise-success .pplus-advise-success-text {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+.contact .contact-content .content-right .from-send-contact .btn-sendcontact:disabled {
+  opacity: 0.6;
 }

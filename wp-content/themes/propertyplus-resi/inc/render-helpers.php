@@ -659,3 +659,106 @@ function pplus_render_pagination(int $current, int $total, string $url_format): 
     </div>
     <?php
 }
+
+/**
+ * Thuoc tinh width/height cho anh LAY TU API (anh nhan vien, "Kham pha", "Hoat dong"...) - 4/11/2026.
+ *
+ * Vi sao: cac anh nay deu loading="lazy" ma khong co kich thuoc, nen khoi chua chung (vd "Co cau
+ * to chuc", "Doi ngu nhan vien" tren /ve-chung-toi) CO LAI con ~84px/401px cho toi khi anh tai xong,
+ * roi bung ra ~740px/960px -> trang giat manh khi cuon + co luc hien khoang trong (CLS). Co width+
+ * height thi trinh duyet giu san cho theo ti le. Anh API co nhieu kich thuoc khac nhau (312x330,
+ * 312x373, 400x300, 2048x1536...) nen khong the doan - phai do that.
+ *
+ * Cach lam: kich thuoc luu trong option "pplus_img_dims" (khong autoload). Lan dau gap 1 URL chua co
+ * thi tra '' (nhu cu) va do SAU KHI da tra trang xong (shutdown + fastcgi_finish_request), nen khong
+ * lam cham request. Tu lan sau trang co du width/height. Do that bai thi thu lai sau 1 ngay.
+ */
+function pplus_img_dim_attrs(string $url): string {
+    if ($url === '') {
+        return '';
+    }
+    static $map = null;
+    if ($map === null) {
+        $map = get_option('pplus_img_dims', []);
+        if (!is_array($map)) {
+            $map = [];
+        }
+    }
+    $row = $map[$url] ?? null;
+    if (is_array($row) && (int) ($row[0] ?? 0) > 0 && (int) ($row[1] ?? 0) > 0) {
+        return ' width="' . (int) $row[0] . '" height="' . (int) $row[1] . '"';
+    }
+    if ($row === null || (is_array($row) && (int) ($row[2] ?? 0) < time() - DAY_IN_SECONDS)) {
+        pplus_img_dim_queue($url);
+    }
+    return '';
+}
+
+/** Xep hang URL can do kich thuoc va dang ky 1 lan viec chay sau khi da tra trang. */
+function pplus_img_dim_queue(string $url): void {
+    static $queue = [];
+    static $hooked = false;
+    if (!preg_match('#^https?://#i', $url) || count($queue) >= 40) {
+        return;
+    }
+    $queue[$url] = true;
+    if ($hooked) {
+        return;
+    }
+    $hooked = true;
+    add_action('shutdown', function () use (&$queue) {
+        if (!$queue) {
+            return;
+        }
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request(); // nguoi dung da nhan du trang, phan do ben duoi khong anh huong toc do
+        }
+        @set_time_limit(30);
+        $map = get_option('pplus_img_dims', []);
+        if (!is_array($map)) {
+            $map = [];
+        }
+        $deadline = microtime(true) + 12;
+        foreach (array_keys($queue) as $u) {
+            if (microtime(true) > $deadline) {
+                break;
+            }
+            $w = $h = 0;
+            $res = wp_remote_get($u, [
+                'timeout' => 3,
+                'redirection' => 2,
+                'headers' => ['Range' => 'bytes=0-262143'],
+                'limit_response_size' => 262144, // chi can phan dau file de doc kich thuoc
+            ]);
+            if (!is_wp_error($res) && in_array((int) wp_remote_retrieve_response_code($res), [200, 206], true)) {
+                $size = @getimagesizefromstring((string) wp_remote_retrieve_body($res));
+                if ($size && $size[0] > 0 && $size[1] > 0) {
+                    $w = (int) $size[0];
+                    $h = (int) $size[1];
+                }
+            }
+            $map[$u] = [$w, $h, time()];
+        }
+        if (count($map) > 400) {
+            $map = array_slice($map, -400, null, true);
+        }
+        update_option('pplus_img_dims', $map, false);
+    });
+}
+
+/**
+ * Ban do Google CUA RESI (dia diem "PropertyPlus Viet Nam_Apartment for rent in Ha Noi") - dung chung cho footer + trang Lien he.
+ * 4/11/2026: trang Lien he truoc day nhung ban do cua theme VAN PHONG ("Cho thue van phong tai Ha Noi - propertyplus.vn", tang 4 toa nha
+ * 292 Tay Son) - sai dia diem. Ban do dung la ban nhung o chan trang (footer), nay dua vao 1 cho de 2 noi khong lech nhau.
+ * $lang doi ngon ngu giao dien ban do (nhan ten duong, nut "Mo trong Maps"...): vi/en/ja theo trang.
+ */
+function pplus_resi_map_embed_url(?string $lang = null): string {
+    $lang = in_array($lang ?: pplus_current_lang(), ['vi', 'en', 'ja'], true) ? ($lang ?: pplus_current_lang()) : 'vi';
+    return 'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d14898.552851937988!2d105.8228791!3d21.0071347!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ac83d7aaa7c9%3A0xee4412aece650f2e!2sPropertyPlus%20Viet%20Nam_Apartment%20for%20rent%20in%20Ha%20Noi!5e0!3m2!1s' . $lang . '!2s!4v1696585344584!5m2!1s' . $lang . '!2s';
+}
+
+/** Link mo dung dia diem tren ung dung/trang Google Maps (nut "Tim tren ban do"). */
+function pplus_resi_map_link(?string $lang = null): string {
+    $lang = in_array($lang ?: pplus_current_lang(), ['vi', 'en', 'ja'], true) ? ($lang ?: pplus_current_lang()) : 'vi';
+    return 'https://www.google.com/maps?ftid=0x3135ac83d7aaa7c9:0xee4412aece650f2e&hl=' . $lang;
+}

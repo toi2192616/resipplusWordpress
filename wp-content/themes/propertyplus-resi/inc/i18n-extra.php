@@ -102,6 +102,17 @@ function pplus_extra_dictionary(string $lang): array {
                 'Bạn muốn bỏ yêu thích căn hộ này?'             => 'この物件をお気に入りから削除しますか？',
                 'Đã bỏ yêu thích'                               => 'お気に入りから削除しました',
                 'Quay lại danh sách yêu thích'                  => 'お気に入りリストに戻る',
+                // Trang Lien he (4/11/2026) - web chinh hien tieng Viet tren /ja/contact vi tu dien chua co cac cau nay
+                'Chúng tôi hân hạnh được tư vấn cho bạn' => 'ご相談を心よりお待ちしております',
+                'Tư vẫn miến phí - Giá thuê tốt - Gửi báo giá nhanh chóng' => '無料相談・お得な賃料・迅速なお見積もり',
+                'Thông tin liên hệ' => 'お問い合わせ情報',
+                'Tầng 6, tòa nhà Kinh Đô, 292 Tây Sơn, Trung Liệt, Đống Đa, Hà Nội' => 'ハノイ市ドンダー区チュンリェット坊 タイソン通り292番地 キンドービル6階',
+                'Địa chỉ của chúng tôi' => '所在地',
+                'Tìm chúng tôi ở' => '公式SNS',
+                'Để chúng tôi giúp bạn…' => 'お気軽にご相談ください…',
+                'Property Plus - Hà Nội' => 'Property Plus - ハノイ',
+                'Bản đồ Property Plus' => 'Property Plus の地図',
+                'Liên hệ Property Plus để được tư vấn miễn phí và báo giá nhanh căn hộ cho thuê tại Hà Nội. Hotline 0865 364 866, văn phòng tầng 6 tòa nhà Kinh Đô, 292 Tây Sơn, Đống Đa.' => 'Property Plusへのお問い合わせ。ハノイのアパート賃貸について無料でご相談いただけ、迅速にお見積もりをお送りします。ホットライン 0865 364 866。ハノイ市ドンダー区タイソン通り292番地 キンドービル6階。',
             ],
         ];
     }

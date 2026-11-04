@@ -313,6 +313,13 @@ add_action('wp_enqueue_scripts', function () {
         $prev = 'pplus-about-new-component';
     }
 
+    // CSS trang "Lien he" (4/11/2026): contact-component.css = contact-index.component.less cua Resi (component-source/contact.less).
+    // Truoc day file nay la CSS cua theme Van phong VA khong duoc nap o dau ca -> trang /lien-he hien nhu HTML tho.
+    if (is_page_template('page-contact.php')) {
+        wp_enqueue_style('pplus-contact-component', PPLUS_THEME_URI . '/assets/css/contact-component.css', [$prev], pplus_asset_version('assets/css/contact-component.css'));
+        $prev = 'pplus-contact-component';
+    }
+
     // CSS trang Blog (blog-list.component.less + blog-detail.component.less, compile lai tu chinh
     // nguon Resi 17/9). Giong "about-component.css", 2 file nay da ton tai va da compile dung tu
     // truoc nhung chua tung duoc enqueue o dau ca (inc/blog-routes.php chua tung duoc require trong

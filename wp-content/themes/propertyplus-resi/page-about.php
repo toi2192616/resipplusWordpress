@@ -91,7 +91,7 @@ get_template_part('parts/url-box-content', null, [
                 foreach ($diff_items as $item) :
                 ?>
                     <div class="col-md-3 a-u-c-1-item">
-                        <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/' . $item['img']); ?>" alt="about" loading="lazy" />
+                        <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/' . $item['img']); ?>" alt="about" width="78" height="78" loading="lazy" />
                         <div class="a-u-cus-t3 text-center"><?php echo (int) $item['seq']; ?>. <?php echo esc_html($item['title']); ?></div>
                         <div class="a-u-cus-t4 text-center"><?php echo esc_html($item['desc']); ?></div>
                     </div>
@@ -126,7 +126,7 @@ get_template_part('parts/url-box-content', null, [
     <div class="a-u-c-3">
         <div class="row">
             <div class="col-md-6 a-u-c-3-img p-0 hidden-pc">
-                <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/Group1217.jpg'); ?>" alt="Phạm Văn Lợi" loading="lazy" />
+                <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/Group1217.jpg'); ?>" alt="Phạm Văn Lợi" width="961" height="768" loading="lazy" />
             </div>
             <div class="col-md-6 a-u-c-3-content">
                 <div class="a-u-c-2-c1"><?php echo esc_html(pplus_t('Nhà sáng lập & Chủ tịch HĐQT', 'Founder & Chairman')); ?></div>
@@ -139,12 +139,12 @@ get_template_part('parts/url-box-content', null, [
                 </div>
             </div>
             <div class="col-md-6 a-u-c-3-img hidden-moblie p-0">
-                <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/Group1217.jpg'); ?>" alt="Phạm Văn Lợi" loading="lazy" />
+                <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/Group1217.jpg'); ?>" alt="Phạm Văn Lợi" width="961" height="768" loading="lazy" />
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 p-0 a-u-c-3-img">
-                <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/Group1218.jpg'); ?>" alt="Trần Thị Hoa" loading="lazy" />
+                <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/Group1218.jpg'); ?>" alt="Trần Thị Hoa" width="960" height="768" loading="lazy" />
             </div>
             <div class="col-md-6 a-u-c-3-content">
                 <div class="a-u-c-2-c1"><?php echo esc_html(pplus_t('Giám đốc kinh doanh', 'Sales Director')); ?></div>
@@ -188,7 +188,7 @@ get_template_part('parts/url-box-content', null, [
     <div class="a-u-c-5">
         <div class="container">
             <div class="a-u-cus-t1"><?php echo esc_html(pplus_t('CƠ CẤU TỔ CHỨC', 'ORGANIZATIONAL STRUCTURE')); ?></div>
-            <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/cocautochuc.png'); ?>" alt="<?php echo esc_attr(pplus_t('Cơ cấu tổ chức', 'Organization chart')); ?>" loading="lazy" />
+            <img class="img-responsive" src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/ImgAboutUs/cocautochuc.png'); ?>" alt="<?php echo esc_attr(pplus_t('Cơ cấu tổ chức', 'Organization chart')); ?>" width="1144" height="665" loading="lazy" />
         </div>
     </div>
 
@@ -202,7 +202,8 @@ get_template_part('parts/url-box-content', null, [
                         <div class="col-md-3 col-sm-6">
                             <?php foreach ($column as $person) : ?>
                                 <div class="item">
-                                    <img src="<?php echo esc_url(pplus_admin_asset_url($person['imgSize'] ?? $person['img'] ?? '')); ?>" alt="<?php echo esc_attr($person['title'] ?? ''); ?>" loading="lazy" />
+                                    <?php $person_img = pplus_admin_asset_url($person['imgSize'] ?? $person['img'] ?? ''); ?>
+                                    <img src="<?php echo esc_url($person_img); ?>" alt="<?php echo esc_attr($person['title'] ?? ''); ?>"<?php echo pplus_img_dim_attrs($person_img); ?> loading="lazy" />
                                     <div class="item-content">
                                         <label class="text-1"><?php echo esc_html($person['title'] ?? ''); ?></label><br />
                                         <label class="text-2"><?php echo esc_html($person['content'] ?? ''); ?></label>
@@ -231,7 +232,8 @@ get_template_part('parts/url-box-content', null, [
                             <div class="blog-silder-loop">
                                 <?php foreach ($discover_items as $item) : ?>
                                     <div class="_blog-item">
-                                        <img class="_blog-img" src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" />
+                                        <?php $discover_img = pplus_admin_asset_url($item['img'] ?? ''); ?>
+                                        <img class="_blog-img" src="<?php echo esc_url($discover_img); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>"<?php echo pplus_img_dim_attrs($discover_img); ?> loading="lazy" />
                                         <div class="_blog-item-title"><?php echo esc_html($item['title'] ?? ''); ?></div>
                                         <div class="_blog-item-sub-title"><?php echo esc_html($item['subTitle'] ?? ''); ?></div>
                                     </div>
@@ -253,7 +255,8 @@ get_template_part('parts/url-box-content', null, [
                     <div class="silder-about-loop">
                         <?php foreach ($about['listDataAboutUs'] as $item) : ?>
                             <div class="item">
-                                <img src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" />
+                                <?php $activity_img = pplus_admin_asset_url($item['img'] ?? ''); ?>
+                                <img src="<?php echo esc_url($activity_img); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>"<?php echo pplus_img_dim_attrs($activity_img); ?> loading="lazy" />
                                 <div class="item-content">
                                     <label class="text-1"><?php echo esc_html($item['title'] ?? ''); ?></label><br />
                                     <label class="text-2"><?php echo esc_html($item['content'] ?? ''); ?></label>
