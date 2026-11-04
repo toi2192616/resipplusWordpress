@@ -42,6 +42,12 @@ Mục tiêu: thay bản Angular bằng theme WordPress Resi **trên cùng domain
    - Cloudflare: bật Always HTTPS; www → 301 về tên miền chính; **tắt** Web Analytics tự chèn (beacon) và JS Detections (mỗi cái thêm 1 request chặn); Email Obfuscation có thể tắt (theme đã bọc `<!--email_off-->`).
    - Purge toàn bộ cache Cloudflare ngay sau khi deploy.
 
+### 2b. Những thứ web Angular cũ đang có mà Resi phải giữ (phát hiện 4/11/2026)
+- **Xác minh Search Console:** trang chính có `<meta name="google-site-verification" content="_EwTj…">` (tài khoản quản trị hiện chỉ là "chủ sở hữu được ủy quyền", không biết chủ gốc xác minh bằng thẻ, GTM hay DNS). Theme đã xuất lại thẻ này (`inc/tracking.php`); **hỏi chủ sở hữu gốc** xem có dùng DNS không và **không xoá** bản ghi DNS/Tag nào.
+- **Google Tag Manager `GTM-WRVHCF8Q`:** toàn bộ theo dõi truy cập/chuyển đổi. Theme đã xuất lại; chỉ nạp khi site cho phép index (server test không gửi dữ liệu thử). Tắt/đổi ID: `define('PPLUS_GTM_ID', '')` trong wp-config.
+- **Kiểm sau deploy:** `post-deploy-check.mjs` báo ✗ nếu thiếu 1 trong 2; vào Tag Assistant/GTM Preview xem thẻ GA4 có bắn.
+- **Biểu mẫu:** thử gửi 1 biểu mẫu "Tư vấn" và 1 biểu mẫu "Đăng ký cho thuê" thật (qua `Favourite/IssueLeaseApartment`) và kiểm người nhận có nhận được — bộ kiểm tự động không gửi biểu mẫu.
+
 ## 3. Sitemap đã đối chiếu với trang chính
 
 Trang chính có 6 file sitemap con (`products, posts, pages, quan, type, villa`), bản chụp từ **25/12/2024**; `/sitemap.xml` của họ là `<urlset>` liệt kê 6 file đó (sai chuẩn sitemapindex).

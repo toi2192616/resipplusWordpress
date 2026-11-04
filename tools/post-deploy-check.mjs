@@ -117,6 +117,9 @@ async function checkRobotsAndIndexing() {
   } else {
     check(!/noindex/i.test(xr), 'Header X-Robots-Tag không có noindex', `X-Robots-Tag: ${xr}`);
     check(!/noindex/i.test(h.robots), 'Trang chủ không có <meta robots noindex>', `meta robots = "${h.robots}" — còn bật noindex hoặc cache HTML cũ chưa xoá?`);
+    // Giữ các thứ web Angular cũ đang có: xác minh Search Console + theo dõi truy cập (inc/tracking.php).
+    check(/<meta[^>]+name=["']google-site-verification["'][^>]+content=["']_EwTjlz4bpbpsE8dEwY3bbIye3ejKDjCV1JlDZRfy1U["']/i.test(home.text), 'Có thẻ google-site-verification của web chính (giữ xác minh Search Console)', 'thiếu thẻ — có thể MẤT xác minh quyền sở hữu Search Console. Kiểm inc/tracking.php / hằng PPLUS_GOOGLE_SITE_VERIFICATION');
+    check(/googletagmanager\.com\/gtm\.js/.test(home.text) && /GTM-WRVHCF8Q/.test(home.text), 'Có Google Tag Manager GTM-WRVHCF8Q (giữ theo dõi truy cập)', 'thiếu GTM — số liệu truy cập/chuyển đổi dừng. Kiểm hằng PPLUS_GTM_ID và site không ở chế độ noindex');
   }
 }
 

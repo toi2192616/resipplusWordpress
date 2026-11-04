@@ -54,6 +54,7 @@ require_once PPLUS_THEME_DIR . '/inc/favourite-rest.php';          // B7 - REST 
 require_once PPLUS_THEME_DIR . '/inc/favourite-items-rest.php';    // B7 - REST "favourite-items" cho trang chi tiet danh sach (/favourite/favourite-detail)
 require_once PPLUS_THEME_DIR . '/inc/seo-head.php';                // SEO/GEO tap trung: canonical, OG/Twitter, JSON-LD, BreadcrumbList, mo ta du phong
 require_once PPLUS_THEME_DIR . '/inc/noindex.php';                 // Chan index toan site cho server TEST (PPLUS_NOINDEX / o tich trong Giao dien > PropertyPlus)
+require_once PPLUS_THEME_DIR . '/inc/tracking.php';                // The xac minh Google + GTM cua web chinh (chi nap GTM khi site cho phep index)
 require_once PPLUS_THEME_DIR . '/inc/sitemap.php';                // Sitemap XML: can ho (VI+EN), blog, trang khu vuc/dich vu - tinh san qua WP-Cron theo dot nho
 require_once PPLUS_THEME_DIR . '/inc/search-group-route.php';      // REST goi y "Tìm theo tên dự án" khi go o tim kiem (Apartment/_GetFilterGroupList)
 require_once PPLUS_THEME_DIR . '/inc/easyliving-route.php';       // C3 - trang tien ich /{lang}/easy-living/{id} (35 URL co backlink, xem docblock file)
