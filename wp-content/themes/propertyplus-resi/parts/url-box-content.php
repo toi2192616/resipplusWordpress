@@ -36,6 +36,8 @@ $breadcrumb  = $args['breadcrumb'] ?? [];
                             ?>
                                 <?php if (!empty($item['url'])) : ?>
                                     <a href="<?php echo esc_url($item['url']); ?>"><?php echo $icon; ?><?php echo esc_html($item['name']); ?></a>
+                                <?php elseif (!empty($args['h1'])) : // 5/11/2026 - trang khong co tieu de nao khac: muc cuoi breadcrumb la <h1> (giao dien khong doi, xem .url-content-list h1) ?>
+                                    <h1><span><?php echo $icon; ?><?php echo esc_html($item['name']); ?></span></h1>
                                 <?php else : ?>
                                     <span><?php echo $icon; ?><?php echo esc_html($item['name']); ?></span>
                                 <?php endif; ?>

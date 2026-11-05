@@ -9,7 +9,7 @@ $img = get_template_directory_uri() . '/assets/Content/ImgService/';
 ?>
 <div class="service-1-body-2 mt-0 row">
     <div class="title-1">
-        <label><?php echo esc_html(pplus_localize('DỊCH VỤ DỌN PHÒNG')); ?></label>
+        <h1 class="pplus-h1"><label><?php echo esc_html(pplus_localize('DỊCH VỤ DỌN PHÒNG')); ?></label></h1><?php // 5/11/2026 - the h1 (truoc chi la <label>), kieu bo het o .title-1 h1.pplus-h1 ?>
     </div>
     <div class="title-2"><?php echo esc_html(pplus_localize('Quy trình theo tiêu chuẩn 05 sao')); ?></div>
 

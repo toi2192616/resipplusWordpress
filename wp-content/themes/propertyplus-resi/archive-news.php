@@ -45,6 +45,7 @@ get_template_part('parts/url-box-content', null, [
         ['name' => pplus_t('Trang chủ', 'Home'), 'url' => pplus_home_url()],
         ['name' => pplus_t('Tin tức', 'Blog')],
     ],
+    'h1' => true, // 5/11/2026 - danh sach blog khong co tieu de nao khac (ban goc cung khong co h1)
 ]);
 ?>
 <div class="container box-container">

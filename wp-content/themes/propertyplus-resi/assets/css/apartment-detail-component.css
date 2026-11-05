@@ -251,6 +251,8 @@
   font-size: 22px;
   color: #000000;
   opacity: 0.75;
+  margin: 0;
+  line-height: normal;
 }
 @media only screen and (max-width: 1024px) {
   .office-detail .detail-content .group-content ._header ._titlePage {

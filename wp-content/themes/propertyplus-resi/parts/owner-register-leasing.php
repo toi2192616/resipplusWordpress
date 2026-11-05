@@ -25,7 +25,7 @@ if (!defined('ABSPATH')) exit;
             <input name="UtilityString" hidden />
 
             <div class="header-title">
-                <h3><?php echo esc_html(pplus_localize('Đăng cho thuê nhanh với với những thông tin ngắn gọn tại đây.')); ?></h3>
+                <h1><?php echo esc_html(pplus_localize('Đăng cho thuê nhanh với với những thông tin ngắn gọn tại đây.')); ?></h1><?php // 5/11/2026 - tieu de dau trang la h1 (truoc la h3); kieu giu nguyen o owner-component.css ?>
             </div>
             <hr />
 

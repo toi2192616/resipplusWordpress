@@ -49,13 +49,15 @@
   padding: 15px 0px 10px 0px;
   z-index: 1;
 }
-.service-regis .service-regis-title h3 {
+.service-regis .service-regis-title h3,
+.service-regis .service-regis-title h1 {
   font-style: normal;
   font-weight: bold;
   font-size: 18px;
   line-height: 21px;
   color: #2D5185;
   text-align: center;
+  margin: 0 0 10px;
 }
 .service-regis .service-hr-cus2 {
   width: 85px;

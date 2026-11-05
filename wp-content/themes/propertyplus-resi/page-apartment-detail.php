@@ -213,7 +213,8 @@ get_header();
         <div class="group-content">
             <div class="content-detail">
                 <div class="_header">
-                    <div class="_titlePage"><?php echo esc_html($detail['apartmentNameDisp'] ?? ($detail['title'] ?? '')); ?></div>
+                    <?php // 5/11/2026 - the ten can ho la <h1> (truoc la <div>: trang chi tiet khong co the h1 nao, ban goc cung vay). CSS ._titlePage giu nguyen hinh dang cu. ?>
+                    <h1 class="_titlePage"><?php echo esc_html($detail['apartmentNameDisp'] ?? ($detail['title'] ?? '')); ?></h1>
                     <div class="_contentid">
                         <div class="title-id"><?php echo esc_html(pplus_localize('ID căn hộ')); ?></div>
                         <div class="content-id"><?php echo esc_html($detail['apartmentId'] ?? ''); ?></div>

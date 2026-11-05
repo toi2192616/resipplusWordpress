@@ -1243,6 +1243,14 @@ ul.office-list li.office-type:nth-child(2) input[type="checkbox"]:checked + labe
   width: 20px;
   aspect-ratio: 32 / 12;
 }
+.url-content .url-content-list h1 {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  line-height: inherit;
+}
 .url-content .url-content-list-children {
   display: inherit;
   margin-top: 35px;

@@ -23,11 +23,12 @@ $service_price = $service_model['servicePrice'] ?? [];
 <div class="row service-regis">
 
     <div class="col-md-12 service-regis-title">
-        <h3 class="discover-title">
+        <?php // 5/11/2026 - tieu de dau trang la h1 (truoc la h3); kieu giu nguyen o register-service-component.css ?>
+        <h1 class="discover-title">
             <?php echo esc_html(pplus_localize('Bạn muốn sử dụng dịch vụ của Property Plus cho căn hộ hiện tại của mình?')); ?>
             <br />
             <?php echo esc_html(pplus_localize('Chúng tôi rất vui khi được phục vụ bạn đến từng chi tiết!')); ?>
-        </h3>
+        </h1>
     </div>
 
     <hr class="service-hr-cus2" />

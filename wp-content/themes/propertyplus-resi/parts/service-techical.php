@@ -12,7 +12,7 @@ $img = get_template_directory_uri() . '/assets/Content/ImgService/';
 <div class="service-3-box-1 mb-60px">
     <div class="service-3-box-1-icon"><img src="<?php echo esc_url($img . 'Group 4.png'); ?>" alt="" loading="lazy" /></div>
     <div class="service-3-title-c text-center">
-        <h3><?php echo esc_html(pplus_localize('Chuẩn kỹ thuật đầu vào')); ?></h3>
+        <h1><?php echo esc_html(pplus_localize('Chuẩn kỹ thuật đầu vào')); ?></h1><?php // 5/11/2026 - tieu de dau trang la h1 (truoc la h3); kieu giu nguyen o list-service-component.css ?>
         <p><?php echo esc_html(pplus_localize('Bộ phận kỹ thuật sẽ tiến hành kiểm tra và bảo dưỡng tổng thể căn hộ trước khi khách check-in, đảm bảo các trang thiết bị trong căn hộ hoạt động trong tình trang tốt nhất')); ?></p>
     </div>
 </div>

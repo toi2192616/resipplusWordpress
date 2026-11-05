@@ -246,11 +246,13 @@
   margin-top: 15px;
   margin-left: 14px;
 }
-.service-3 .service-3-box-1 .service-3-title-c h3 {
+.service-3 .service-3-box-1 .service-3-title-c h3,
+.service-3 .service-3-box-1 .service-3-title-c h1 {
   font-weight: bold;
   font-size: 15px;
   line-height: 21px;
   color: #2D5185;
+  margin: 0 0 10px;
 }
 .service-3 .service-3-box-1 .service-3-title-c p {
   font-size: 14px;
@@ -390,6 +392,16 @@
 .title-1 label {
   font-weight: bold;
   color: #2D5185;
+}
+/* 5/11/2026: <h1> boc ngoai <label> tieu de trang (dich vu don phong) - bo het kieu mac dinh cua h1 de giao dien khong doi. */
+.title-1 h1.pplus-h1 {
+  display: block;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  line-height: inherit;
+  color: inherit;
+  text-align: inherit;
 }
 .title-2 {
   font-style: normal;

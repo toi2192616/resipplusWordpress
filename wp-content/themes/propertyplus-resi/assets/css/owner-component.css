@@ -103,12 +103,14 @@
 .owner-box .header-title {
   padding: 15px 0 10px;
 }
-.owner-box .header-title h3 {
+.owner-box .header-title h3,
+.owner-box .header-title h1 {
   font-style: normal;
   font-weight: bold;
   font-size: 18px;
   line-height: 21px;
   color: #2D5185;
+  margin: 0 0 10px;
 }
 .owner-box .flex-row label {
   margin-top: 5px;
