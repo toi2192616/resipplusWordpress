@@ -140,7 +140,8 @@ $toc = pplus_generate_toc($content);
                                 <div class="title"><?php echo esc_html(pplus_t('Bạn đang quan tâm', 'Are you interested')); ?></div>
                                 <div class="name"><?php echo esc_html(pplus_t('Hãy gửi thông tin tư vấn cho chúng tôi.', 'Send us your information for advice.')); ?></div>
                             </div>
-                            <form id="SupportCustomerForm" onsubmit="return false;">
+                            <?php // 5/11/2026 - form nay TRUOC DAY bi vo hieu (onsubmit="return false"): bam Gui khong lam gi, mat lead tu moi bai blog. Nay dung chung handler .pplus-advise-form (REST pplus/v1/advise) nhu cac trang khac. ?>
+                            <form id="SupportCustomerForm" class="pplus-advise-form">
                                 <input type="hidden" name="FavoriteLink" value="<?php echo esc_url(home_url(add_query_arg([], $_SERVER['REQUEST_URI'] ?? ''))); ?>" />
                                 <div class="mb-3">
                                     <input class="form-control" name="OwnerName" type="text" maxlength="100" placeholder="<?php echo esc_attr(pplus_t('Họ và tên của bạn ...', 'Your full name ...')); ?>" />
@@ -160,7 +161,7 @@ $toc = pplus_generate_toc($content);
                                 <p><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/Img/Group-5.png'); ?>" class="icon-from-search" alt="Icon" width="29" height="24" /><?php echo esc_html(pplus_t('Gửi báo giá nhanh chóng', 'Fast quote delivery')); ?></p>
                                 <?php // Khong dung `disabled` - browser tu giam opacity lam nut mo di, sai mau xanh
                                 // #3e5fb4 goc. Chan submit that qua onsubmit="return false" tren <form> o tren. ?>
-                                <button type="submit" class="btn btn-primary mb-3" title="<?php echo esc_attr(pplus_t('Chưa nối API gửi liên hệ thật (TODO) - sẽ nối vào admin để gửi mail sales', 'Not yet wired to the real API (TODO) - will be connected to send sales emails')); ?>">
+                                <button type="submit" class="btn btn-primary mb-3">
                                     <?php echo esc_html(pplus_t('Gửi yêu cầu tư vấn', 'Send request')); ?>
                                 </button>
                                 <a href="tel:0865 364 866" class="btn btn-default"><?php echo esc_html(pplus_t('Hoặc gọi', 'Or call')); ?> 0865 364 866</a>

@@ -568,7 +568,29 @@
     // Neu form nam trong modal (footer #CompleteModalForm), nut "Dong" nay CUNG dong luon modal -
     // dung LAI chinh co che class "two"/"out" cua handler "[data-pplus-close-modal]" o duoi, tranh
     // 2 noi giu 2 logic dong modal khac nhau roi lech nhau dan.
+    // 5/11/2026 - DO CHUYEN DOI: web chinh chuyen sang /Apartment/IssueLeaseApartmentSuccses sau moi form thanh cong va GTM (GA4 "Dang ky form
+    // thanh cong" + Google Ads) bat dung URL do. Resi khong chuyen trang nen nap URL do trong 1 iframe AN: day la 1 luot xem trang that, cung
+    // origin, nen GTM trong iframe tu bat dung trigger cu. PPLUS_CONVERSION_URL rong khi GTM tat (server test/local) -> khong lam gi.
+    // Xem inc/form-success-route.php. Goi o MOI cho form thanh cong: .pplus-advise-form, dang ky dich vu, dang ky cho thue.
+    function pplusTrackFormSuccess() {
+      try {
+        if (typeof PPLUS_CONVERSION_URL === 'undefined' || !PPLUS_CONVERSION_URL) {
+          return;
+        }
+        var f = document.createElement('iframe');
+        f.src = PPLUS_CONVERSION_URL;
+        f.setAttribute('aria-hidden', 'true');
+        f.setAttribute('tabindex', '-1');
+        f.title = '';
+        f.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden';
+        document.body.appendChild(f);
+        setTimeout(function () { if (f.parentNode) { f.parentNode.removeChild(f); } }, 20000);
+      } catch (e) { /* do dem khong duoc lam hong luong gui form */ }
+    }
+    window.pplusTrackFormSuccess = pplusTrackFormSuccess;
+
     function pplusShowAdviseSuccess($form, message) {
+      pplusTrackFormSuccess();
       $form[0].reset();
       var $success = $form.next('.pplus-advise-success');
       if (!$success.length) {
@@ -1010,6 +1032,7 @@
         }).done(function (rs) {
           if (rs && rs.success) {
             toastr.success(rs.message || '');
+            pplusTrackFormSuccess(); // do chuyen doi GTM (5/11/2026)
             // SUA 30/9: modal nay gio dung Bootstrap that (data-bs-toggle, xem parts/service-register.php)
             // thay vi he thong rieng cua theme - dong qua API Bootstrap, khong con class "two"/"out" nua.
             var modalEl = document.getElementById('modal-service-register');
@@ -1160,6 +1183,7 @@
         }).done(function (rs) {
           if (rs && rs.success) {
             toastr.success(rs.message || '');
+            pplusTrackFormSuccess(); // do chuyen doi GTM (5/11/2026)
             // SUA 30/9: modal nay gio dung Bootstrap that (data-bs-toggle, xem parts/owner-register-leasing.php)
             // thay vi he thong rieng cua theme - dong qua API Bootstrap, khong con class "two"/"out" nua.
             var modalEl = document.getElementById('modal-owner-register');

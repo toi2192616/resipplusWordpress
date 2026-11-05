@@ -44,6 +44,7 @@ require_once PPLUS_THEME_DIR . '/inc/project-detail-route.php';   // A3/A4 nhanh
 require_once PPLUS_THEME_DIR . '/inc/map-area-search.php';        // REST "Tim kiem khu vuc nay" (map mode mobile)
 require_once PPLUS_THEME_DIR . '/inc/service-route.php';          // C1 - trang Dich vu (4 TypeSite)
 require_once PPLUS_THEME_DIR . '/inc/advise-form.php';             // REST submit "Gui yeu cau tu van" (moi form .pplus-advise-form) - truoc day khong duoc nap
+require_once PPLUS_THEME_DIR . '/inc/form-success-route.php';      // /Apartment/IssueLeaseApartmentSuccses: trang cam on = URL do chuyen doi cua GTM (5/11/2026); goi pplus_gtm_enabled() cua tracking.php luc chay (khong phai luc nap)
 require_once PPLUS_THEME_DIR . '/inc/service-register-route.php'; // C1 - REST submit "Dang ky dich vu"
 require_once PPLUS_THEME_DIR . '/inc/about-subpage-route.php';    // B5 - trang con /ve-chung-toi/{alias}-{id}
 require_once PPLUS_THEME_DIR . '/inc/about-route.php';             // B5 - alias EN/JA "about-us" -> Page "ve-chung-toi"
@@ -400,6 +401,7 @@ add_action('wp_enqueue_scripts', function () {
         . ' var PPLUS_ADVISE_CONFIRM = ' . wp_json_encode(pplus_localize('Bạn có chắc chắn muốn gửi thông tin hỗ trợ?')) . ';'
         . ' var PPLUS_ADVISE_CLOSE = ' . wp_json_encode(pplus_t('Đóng', 'Close')) . ';'
         . ' var PPLUS_LOCATION_LANG = ' . wp_json_encode(pplus_current_lang()) . ';'
+        . ' var PPLUS_CONVERSION_URL = ' . wp_json_encode(pplus_conversion_pixel_url()) . ';' // 5/11/2026: rong khi GTM tat; xem inc/form-success-route.php
         . ' var PPLUS_ADVISE_MSG = ' . wp_json_encode([
             'missing' => pplus_localize('Bạn chưa nhập Email hoặc Số điện thoại'),
             'fail'    => pplus_localize('Gửi yêu cầu thất bại, vui lòng thử lại sau.'),

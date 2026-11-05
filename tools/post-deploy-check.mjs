@@ -387,6 +387,15 @@ async function checkSearch() {
   check(adv.status === 200 && /Email or Phone/i.test(advMsg), 'Route form tư vấn /wp-json/pplus/v1/advise hoạt động (validate dữ liệu rỗng)', `HTTP ${adv.status} ${advMsg || adv.text.slice(0, 80)} — route không đăng ký hoặc bị chặn: mọi form "Gửi yêu cầu tư vấn" sẽ không gửi được`);
   const home = await http('/vi');
   check(/var PPLUS_ADVISE_URL\s*=/.test(home.text) && /var PPLUS_ADVISE_CONFIRM\s*=/.test(home.text), 'Biến JS của form tư vấn (PPLUS_ADVISE_URL/CONFIRM) có trong trang', 'thiếu — bấm Gửi sẽ báo "PPLUS_ADVISE_CONFIRM is not defined" và không gửi được');
+
+  // Trang cảm ơn = URL đo chuyển đổi của GTM (5/11/2026): web chính chuyển sang /Apartment/IssueLeaseApartmentSuccses sau mỗi form thành công và GTM bắn
+  // GA4 "Đăng ký form thành công" + Google Ads theo URL đó. Resi giữ UX không chuyển trang nhưng nạp URL này trong iframe ẩn (inc/form-success-route.php).
+  const ty = await http('/Apartment/IssueLeaseApartmentSuccses');
+  check(ty.status === 200 && /noindex/i.test((ty.headers.get('x-robots-tag') || '') + ty.text.slice(0, 8000)), 'Trang cảm ơn /Apartment/IssueLeaseApartmentSuccses mở được và noindex (URL đo chuyển đổi GTM/Google Ads)', `HTTP ${ty.status} — thiếu trang cảm ơn nên mất dữ liệu chuyển đổi form, hoặc trang không noindex`);
+  const conv = /var PPLUS_CONVERSION_URL\s*=\s*"([^"]*)"/.exec(home.text);
+  if (!STAGING) {
+    check(!!conv && /IssueLeaseApartmentSuccses/.test(conv[1]), 'Điểm đo chuyển đổi form (PPLUS_CONVERSION_URL) được in ra khi GTM bật', 'rỗng/thiếu — form thành công sẽ không bắn sự kiện chuyển đổi (GTM đang tắt hoặc site còn noindex?)');
+  }
 }
 
 // ----------------------------------------------------------------------------------------------- 6. tốc độ + cache + ảnh

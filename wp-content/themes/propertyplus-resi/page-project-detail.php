@@ -216,7 +216,8 @@ get_header();
                     <div class="title"><?php echo esc_html(pplus_localize('Bạn đang quan tâm')); ?></div>
                     <div class="name"><?php echo esc_html($data['title'] ?? ''); ?></div>
                 </div>
-                <form id="SupportCustomerForm" method="post" onsubmit="return false;">
+                <?php // 5/11/2026 - form nay TRUOC DAY bi vo hieu (onsubmit="return false"): bam Gui khong lam gi, mat lead tu trang du an. Nay dung chung handler .pplus-advise-form (REST pplus/v1/advise). ?>
+                <form id="SupportCustomerForm" class="pplus-advise-form">
                     <div class="mb-3">
                         <input class="form-control" name="OwnerName" type="text" maxlength="100" placeholder="<?php echo esc_attr(pplus_localize('Họ và tên')); ?> ..." />
                     </div>

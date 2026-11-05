@@ -1,0 +1,16 @@
+/* Trang cam on sau khi gui form (page-form-success.php) - copy dung send-mail-succes.component.less cua web chinh. */
+.blog-box-detail {
+  margin: 0px auto 70px auto;
+}
+.blog-box-detail .table-mg {
+  margin-top: 100px;
+  margin-bottom: 50px;
+}
+.blog-box-detail h1 {
+  font-family: 'SF Pro Display';
+  font-style: normal;
+  font-weight: bold;
+  font-size: 32px;
+  line-height: 21px;
+  color: #2D5185;
+}
