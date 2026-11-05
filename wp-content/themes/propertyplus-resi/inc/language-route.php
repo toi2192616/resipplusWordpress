@@ -42,7 +42,7 @@ function pplus_detect_lang_prefix(?string $value): array {
 $pplus_request_lang = 'vi';
 
 // 4/11/2026 - IIS + PHP FastCGI (server test loikaka): REQUEST_URI duoc doi sang bang ma ANSI cua may chu nen moi ky tu khong phai ASCII
-// (alias tieng Nhat cua trang landing, vd "/ja/rental-apartment/ha-noi/ハノイ...") bi thay bang "?" -> phan sau dau "?" dau tien bi coi la query
+// (alias tieng Nhat cua trang landing, vd "/ja/rental-apartment/ha-noi/<alias JA>") bi thay bang "?" -> phan sau dau "?" dau tien bi coi la query
 // string, trang 404 hoac 301 sang URL toan dau "?" (13/14 URL tieng Nhat trong sitemap loi, local/nginx/Apache khong loi). Neu IIS cung cap ban
 // URL goc khong bi doi ma thi dung ban do. Khong co tac dung (khong doi gi) khi cac bien nay khong ton tai (nginx/Apache/Laragon).
 if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '?') !== false) {
@@ -85,6 +85,20 @@ foreach (['PATH_INFO', 'ORIG_PATH_INFO'] as $pplus_srv_key) {
             $_SERVER[$pplus_srv_key] = pplus_root_allowed_for_lang($pplus_pi_lang, $pplus_pi_new) ? $pplus_pi_new : PPLUS_NOT_FOUND_PATH;
         }
     }
+}
+
+// 5/11/2026 - URL co ky tu khong phai ASCII (alias tieng Nhat cua landing, vd "/ja/rental-apartment/ha-noi/<alias JA>"): PHAI dua cho WP mot PATH_INFO
+// da GIAI MA UTF-8. Khi PATH_INFO rong/hong, WP khop rewrite bang REQUEST_URI (con dang "%E3%83...") -> query var alias van la chuoi "%E3%83..." ->
+// sanitize_text_field() (reference-index-route.php) XOA moi "%XX" -> alias thuan Nhat thanh rong (200 nhung hien SAI trang = danh sach Ha Noi),
+// alias co chu Latin o dau ("VinhomesSkylake...") bi cat cut -> 404. Dung 2 trieu chung do tren loikaka (14/14 URL tieng Nhat trong sitemap sai).
+// May chu local cung cap san PATH_INFO giai ma nen khong loi; IIS thi khong (rong hoac bi doi sang ANSI) - tai lap duoc bang may chu gia lap
+// khong cap PATH_INFO. Chi giai ma cac byte >= 0x80 (giu nguyen %20, %3F... nhu cu) va chi khi duong dan that su co ky tu khong phai ASCII.
+if (preg_match('/%[89A-Fa-f][0-9A-Fa-f]/', (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH))) {
+    $_SERVER['PATH_INFO'] = preg_replace_callback(
+        '/(?:%[89A-Fa-f][0-9A-Fa-f])+/',
+        static fn(array $m): string => rawurldecode($m[0]),
+        (string) parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
+    );
 }
 
 define('PPLUS_LANG', $pplus_request_lang);

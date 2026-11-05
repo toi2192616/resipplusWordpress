@@ -360,10 +360,24 @@ async function checkSearch() {
   check(q.status === 200, 'Trang danh sách mở được với tham số tìm kiếm ?q=', `HTTP ${q.status}`);
 
   // URL có ký tự không phải ASCII (alias tiếng Nhật của trang landing). Server IIS + PHP FastCGI từng đổi chúng thành "?" (404/301 sai) — xem docs/GO_LIVE_CHECKLIST.md mục "URL tiếng Nhật".
-  const nonAscii = (SITEMAP.sets.pplusareas || []).filter((u) => /%[89A-F][0-9A-F]/i.test(u)).slice(0, 4);
+  // (SITEMAP.sets giữ URL đã giải mã = chữ Nhật thật; bản 4/11 chỉ lọc "%XX" nên khối này chưa từng chạy → lọc cả hai dạng.)
+  const nonAscii = (SITEMAP.sets.pplusareas || []).filter((u) => /[^\x00-\x7F]|%[89A-F][0-9A-F]/i.test(u)).slice(0, 6);
+  // 5/11/2026: chỉ kiểm mã 200 là KHÔNG ĐỦ — loikaka từng trả 200 cho 12/14 URL tiếng Nhật nhưng hiện SAI trang (danh sách cha hoặc toà nhà khác;
+  // canonical vẫn đúng vì lấy từ URL yêu cầu nên cũng không bắt được). Nên so thêm: title khác trang cha, và không trùng title giữa các URL khác nhau.
+  const titleOf = (html) => ((/<title>([^<]*)<\/title>/i.exec(html || '') || [, ''])[1] || '').trim();
+  const seenTitles = new Map();
+  const parentTitles = new Map();
   for (const u of nonAscii) {
-    const r = await http(pathOf(u));
-    check(r.status === 200, `URL tiếng Nhật mở được: ${pathOf(u).slice(0, 70)}`, `HTTP ${r.status}${r.loc ? " → " + r.loc.slice(0, 80) : ""} — server đổi ký tự không phải ASCII thành "?" (IIS/FastCGI): xem docs/GO_LIVE_CHECKLIST.md mục "URL tiếng Nhật"`);
+    const p = pathOf(u);
+    const r = await http(p);
+    check(r.status === 200, `URL tiếng Nhật mở được: ${p.slice(0, 70)}`, `HTTP ${r.status}${r.loc ? " → " + r.loc.slice(0, 80) : ""} — alias không phải ASCII bị xử lý sai ở server: xem docs/GO_LIVE_CHECKLIST.md mục "URL tiếng Nhật"`);
+    if (r.status !== 200) continue;
+    const title = titleOf(r.text);
+    const parent = p.replace(/\/[^/]*$/, '');
+    if (!parentTitles.has(parent)) parentTitles.set(parent, titleOf((await http(parent)).text));
+    check(title !== '' && title !== parentTitles.get(parent), `URL tiếng Nhật hiện đúng trang riêng (không phải trang cha): ${p.slice(0, 60)}`, `title "${title.slice(0, 40)}" trùng trang cha ${parent} — alias bị cắt/xoá nên hiện danh sách thay vì trang này (xem inc/language-route.php: PATH_INFO giải mã UTF-8)`);
+    if (seenTitles.has(title)) check(false, `Mỗi URL tiếng Nhật một nội dung riêng`, `${p.slice(0, 60)} và ${seenTitles.get(title).slice(0, 60)} cùng title "${title.slice(0, 40)}" — một trong hai đang hiện sai trang`);
+    else seenTitles.set(title, p);
   }
 
   // Form "Gửi yêu cầu tư vấn" (căn hộ, dự án, trang Liên hệ, modal footer): route REST phải tồn tại và biến JS phải được in ra.
