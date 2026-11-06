@@ -26,12 +26,12 @@ Mục tiêu: thay bản Angular bằng theme WordPress Resi **trên cùng domain
 ## 2. Việc phải làm trên server (Dev A) — TRƯỚC khi chuyển domain
 
 1. **Tắt noindex:** trong `wp-config.php` đặt `define('PPLUS_NOINDEX', false);` (server test `loikaka` đặt `true`). Xoá cache trang/Cloudflare sau khi đổi. *Đây là lỗi nghiêm trọng nhất nếu quên: Google sẽ bỏ toàn bộ site.*
-2. **WP-Cron chạy thật:** sitemap, ảnh WebP, làm mới cache API, bảng 301 đều dựa vào WP-Cron. Khuyến nghị:
+2. **WP-Cron chạy thật:** ảnh WebP, làm mới cache API, bảng 301 dựa vào WP-Cron (sitemap thì KHÔNG còn: từ 5/11/2026 lấy thẳng từ Admin, xem mục 3). Khuyến nghị:
    ```php
    define('DISABLE_WP_CRON', true);   // trong wp-config.php
    ```
    và cron hệ thống mỗi phút: `* * * * * curl -s https://propertyplus.com.vn/wp-cron.php?doing_wp_cron >/dev/null 2>&1`
-   (hoặc `wp cron event run --due-now`). Sau khi bật, sitemap tự build lần đầu trong ~20 phút.
+   (hoặc `wp cron event run --due-now`). Sau khi bật, ảnh WebP và bảng 301 tự chạy.
 3. **PHP:** extension `gd` có WebP (`php -r "var_dump(gd_info()['WebP Support']);"` → `true`), `curl`, `mbstring`; thư mục `wp-content/uploads` **ghi được** (theme tạo `uploads/pplus-img/`).
 4. **Không có file vật lý `robots.txt` / `sitemap.xml`** ở gốc web (sẽ đè bản của theme). Xoá nếu có.
 5. **Hai Page WordPress phải tồn tại** (Pages → Add New, đúng slug + Page Template): `ve-chung-toi` (template "Ve chung toi") cho `/vi/ve-chung-toi`, `/en/about-us`, `/ja/about-us`; và `lien-he` (template "Lien he") cho `/vi/lien-he`, `/en/contact`, `/ja/contact`. Thiếu thì 6 URL này trả 404 (server test `loikaka` hiện đang thiếu cả hai). **Trang Liên hệ đã được làm lại ngày 4/11/2026** (trước đó là bản copy của web Văn phòng, hiện thô vì không có CSS): có banner, icon, form gửi thật (`pplus/v1/advise`) và bản đồ Resi dùng chung với footer (`pplus_resi_map_embed_url()`, đổi ngôn ngữ theo trang). Trang này **không có trong menu/sitemap của web chính** (mồ côi) — nay có link ở tiêu đề "Liên hệ" của footer và nằm trong sitemap. Sau khi deploy: mở `/vi/lien-he`, `/en/contact`, `/ja/contact`, kiểm tra bản đồ ghim đúng "PropertyPlus Viet Nam_Apartment for rent in Ha Noi" và thử gửi 1 form thật (script không gửi form). Xoá hoặc để nháp Page mẫu của WP (`trang-mau`/`sample-page`) — theme đã loại khỏi sitemap.
@@ -49,7 +49,13 @@ Mục tiêu: thay bản Angular bằng theme WordPress Resi **trên cùng domain
 - **Biểu mẫu:** thử gửi 1 biểu mẫu "Tư vấn" và 1 biểu mẫu "Đăng ký cho thuê" thật (qua `Favourite/IssueLeaseApartment`) và kiểm người nhận có nhận được — bộ kiểm tự động không gửi biểu mẫu.
 - **Đo chuyển đổi form (phát hiện 5/11/2026):** web Angular sau MỖI form thành công (tư vấn, dịch vụ, cho thuê…) chuyển hẳn sang `/Apartment/IssueLeaseApartmentSuccses`; container GTM bắn sự kiện GA4 "Đăng ký form thành công" + các tag chuyển đổi Google Ads khi URL đó được xem (điều kiện: Page Path chứa `IssueLeaseApartmentSuccses`), ngoài ra còn bắt click `tel:`, `zalo.me`, `m.me`, `line.me`, `mailto:`. Resi giữ quyết định không chuyển trang nên nạp trang cảm ơn trong **iframe ẩn** ngay sau khi gửi thành công (`inc/form-success-route.php` + `pplusTrackFormSuccess()` trong main.js) — GTM trong iframe tự bắn đúng trigger cũ, không phải sửa GTM. Chỉ nạp khi GTM bật (server test không gửi dữ liệu giả). **Sau khi lên production:** gửi 1 form thật (nội dung "TEST"), mở GA4 → Realtime/DebugView hoặc Tag Assistant và xác nhận thấy sự kiện "Đăng ký form thành công" + chuyển đổi Ads; `post-deploy-check` kiểm trang cảm ơn 200/noindex và biến `PPLUS_CONVERSION_URL`. Đã nối lại 2 form bị vô hiệu (`onsubmit="return false"`): chi tiết blog và chi tiết dự án.
 
-## 3. Sitemap đã đối chiếu với trang chính
+## 3. Sitemap
+
+**Nguồn sitemap = Admin (5/11/2026, theo Dev A: Admin đã có route sitemap, không tự sinh).** `inc/sitemap-admin.php` PROXY `GET {api-base}/sitemap.xml` và `/sitemaps/sitemap_{products,posts,pages,quan,type,villa}.xml` của Admin ra đúng các URL cũ trên DOMAIN CHÍNH (`/sitemap.xml`, `/sitemaps/sitemap_*.xml`). Không trỏ `robots.txt` sang domain Admin và không redirect: Search Console đã nộp từng file `/sitemaps/sitemap_*.xml` của propertyplus.com.vn (Google đọc thành công, vd products 2.550 URL; `/sitemap.xml` được đọc là 6 "trang" vì web cũ dùng `<urlset>` thay vì `<sitemapindex>` - giữ nguyên như Admin), đổi URL/host sẽ làm đứt liên tục. Không phụ thuộc WP-Cron. Cache transient: dưới 30 phút dùng ngay, quá hạn thì lấy lại từ Admin, Admin lỗi thì phục vụ bản cũ (tối đa 7 ngày), chưa có bản nào thì 503 + `Retry-After`. Header chẩn đoán: `X-Pplus-Sitemap-Source: admin`, `X-Pplus-Sitemap-Cache: hit|miss|stale|none`. Bật lại bộ sinh cũ của theme: `define("PPLUS_SITEMAP_SOURCE", "theme");` trong `wp-config.php`.
+
+Khác biệt cần biết so với bộ sinh cũ: sitemap Admin KHÔNG có trang chi tiết căn hộ (bộ sinh cũ thêm ~4.200 URL, web gốc không có) và giữ nguyên vài URL "không sạch" ở nguồn: `villa` (292 URL, Resi 301 sang căn hộ hoặc 410), 24 URL dạng `ha-noi//slug` (dự án thiếu quận, Resi 301 về trang cha), 8 URL rác trong `pages` (`/js/about-us`, `/vi|en|ja/blog`... Resi cố ý 404). Sửa ở Admin thì sitemap tự sạch; script kiểm tra chỉ cảnh báo các mục này. Số liệu Admin 5/11/2026: products 2.562, posts 189, pages 28, quan 319, type 301, villa 292 (file tĩnh trên domain chính cũ: 2.550 / 189 / 28 / 310 / 292 / 283).
+
+### Đối chiếu với trang chính (bản chụp 25/12/2024 và bộ sinh cũ của theme, nay không dùng)
 
 Trang chính có 6 file sitemap con (`products, posts, pages, quan, type, villa`), bản chụp từ **25/12/2024**; `/sitemap.xml` của họ là `<urlset>` liệt kê 6 file đó (sai chuẩn sitemapindex).
 
@@ -71,7 +77,7 @@ Các file sitemap con cũ (`/sitemaps/sitemap_products.xml`, …) vẫn trả **
 1. **Server test** (`loikaka`): deploy → `node tools/post-deploy-check.mjs https://loikaka.propertyplus.com.vn --staging` → sửa mọi dòng ✗.
 2. **Giờ ít người truy cập:** deploy production (cùng commit đã test) → purge Cloudflare.
 3. Ngay lập tức: `node tools/post-deploy-check.mjs https://propertyplus.com.vn --warm` (làm nóng cache bằng ~300 URL trong sitemap; vài 503 lần đầu là bình thường, chạy lại).
-4. Sau **20–25 phút** (cron sitemap xong) chạy lại script: số URL trong sitemap phải đạt ngưỡng (khu vực ≥ 250, căn hộ ≥ 1.500, dự án ≥ 2.000, blog ≈ 189) và không còn ✗.
+4. Sau **vài phút** (làm nóng cache xong) chạy lại script: sitemap lấy từ Admin phải đạt ngưỡng (products ≥ 2.400, posts ≥ 150, pages ≥ 20, quan ≥ 250, type ≥ 250) và không còn ✗.
 5. **Search Console** (giữ nguyên property cũ, *không* dùng "Change of address"):
    - Sitemaps: nộp lại `https://propertyplus.com.vn/sitemap.xml`; trạng thái phải là "Success".
    - URL Inspection → "Test live URL" cho 5 URL: trang chủ, danh sách, quận, dự án, chi tiết căn hộ → "URL is available to Google", canonical do người dùng khai báo = canonical Google chọn.
@@ -83,7 +89,7 @@ Các file sitemap con cũ (`/sitemaps/sitemap_products.xml`, …) vẫn trả **
 | Rủi ro | Tác động | Cách xử lý |
 |---|---|---|
 | Cache lạnh sau deploy | Vài trang 503 (API backend ~1–5s) | Chạy `--warm`; theme tự thử lại ở lần tải sau |
-| Cron không chạy | Sitemap thiếu URL, không có ảnh WebP | Mục 2.2; script cảnh báo "cron chưa xong" |
+| Cron không chạy | Không có ảnh WebP, bảng 301 không làm mới (sitemap không bị ảnh hưởng) | Mục 2.2 |
 | Còn noindex / robots.txt vật lý | Mất index toàn site | Script báo ✗ ngay ở mục 1 |
 | Tiêu đề trang danh sách/landing | Resi dùng `metaTitle` (SEO) có fallback `title`; trang chính chỉ dùng `title`. Ví dụ đo thật: `/en/rental-apartment/ha-noi` — trang chính "Apartment For Rent In Hanoi", Resi "hanoi apartment for rent" (meta description cũng khác). Trang chủ, quận, dự án, về chúng tôi: trùng 100% | **Quyết định còn mở**: khuyến nghị khớp trang chính (`title`) lúc ra mắt để giữ tiêu đề đã index, đổi sau |
 | Thiếu `<h1>` | Chi tiết căn hộ và danh sách blog không có `<h1>` — trang chính cũ cũng không có (đã đối chiếu bằng Chrome), nên không phải hồi quy | Có thể thêm sau (cải thiện SEO), không chặn ra mắt |
@@ -119,5 +125,5 @@ Lệnh chạy lại: `node tools/post-deploy-check.mjs https://loikaka.propertyp
      ```
    - Nếu sau khi deploy bản mới mà `post-deploy-check` vẫn báo "URL tiếng Nhật mở được" thất bại thì cần chỉnh phía server (IIS URL Rewrite: đặt server variable chứa URL gốc dạng UTF-8, hoặc chạy PHP qua nginx/Apache). Không chuyển được lên production nếu chưa sửa — mất toàn bộ landing tiếng Nhật.
 3. **Form "Gửi yêu cầu tư vấn" không hoạt động (lỗi có từ trước, đã sửa trong commit này).** `inc/advise-form.php` (route `pplus/v1/advise`) chưa từng được `require` và 3 biến JS `PPLUS_ADVISE_URL/CONFIRM/CLOSE` không được in ra → bấm Gửi báo "PPLUS_ADVISE_CONFIRM is not defined", không gửi được gì. Ảnh hưởng chi tiết căn hộ/dự án/văn phòng, landing, trang Liên hệ, modal "Hòm thư góp ý". Sau khi deploy: `post-deploy-check` có mục kiểm tra route + biến JS; ngoài ra gửi **1 form thật** với nội dung "TEST - bỏ qua" (script không gửi thật vì sẽ tạo lead trong admin) và xem lead có xuất hiện trong admin không.
-4. **WP-Cron không chạy → sitemap thiếu** (index chỉ 2 file con; căn hộ/dự án/blog 0 URL). Gọi `wp-cron.php` qua HTTP (Cloudflare) bị 524 sau ~125 giây: job sitemap chạy quá lâu cho 1 request web. Cần chạy cron bằng bộ lập lịch hệ thống (Task Scheduler / cron gọi `php wp-cron.php` hoặc `wp cron event run --due-now` mỗi phút), không qua HTTP.
+4. **WP-Cron không chạy → sitemap thiếu** *(Từ 5/11/2026 sitemap lấy từ Admin nên phần sitemap không còn phụ thuộc cron; cron vẫn cần cho ảnh WebP và bảng 301.)* (index chỉ 2 file con; căn hộ/dự án/blog 0 URL). Gọi `wp-cron.php` qua HTTP (Cloudflare) bị 524 sau ~125 giây: job sitemap chạy quá lâu cho 1 request web. Cần chạy cron bằng bộ lập lịch hệ thống (Task Scheduler / cron gọi `php wp-cron.php` hoặc `wp cron event run --due-now` mỗi phút), không qua HTTP.
 5. **hreflang có `%20` ở cuối** với alias backend có dấu cách cuối (vd "Japanese-area "): đã sửa trong `pplus_language_switch_url()` (cắt khoảng trắng cuối). Nên báo backend bỏ dấu cách thừa trong alias.

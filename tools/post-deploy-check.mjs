@@ -164,10 +164,63 @@ async function checkRedirects() {
 
 // ----------------------------------------------------------------------------------------------- 3. sitemap
 const SITEMAP = { sets: {}, all: [] };
+
+// Nguồn sitemap = Admin (inc/sitemap-admin.php, 5/11/2026, theo Dev A): /sitemap.xml và /sitemaps/sitemap_*.xml là PROXY của route sitemap bên Admin,
+// không còn tính qua WP-Cron. Giữ đúng dạng web chính cũ: /sitemap.xml là <urlset> liệt kê 6 file con (không phải <sitemapindex>) và mọi <loc> là
+// domain chính propertyplus.com.vn (kể cả khi kiểm server test). Nội dung "như Admin": villa (301/410) và vài URL rác trong "pages" là có sẵn ở nguồn.
+async function checkSitemapAdmin(idx) {
+  say('pass', 'Sitemap lấy từ Admin (X-Pplus-Sitemap-Source: admin) — không phụ thuộc WP-Cron');
+  const names = ['products', 'posts', 'pages', 'quan', 'type', 'villa'];
+  const listed = [...idx.text.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].replace(/&amp;/g, '&'));
+  const missing = names.filter((f) => !listed.some((c) => c.endsWith(`/sitemaps/sitemap_${f}.xml`)));
+  check(!missing.length, 'Index của Admin liệt kê đủ 6 file con (products, posts, pages, quan, type, villa)', `thiếu: ${missing.join(', ')}`);
+  const min = { products: 2400, posts: 150, pages: 20, quan: 250, type: 250, villa: 0 };
+  const sets = {};
+  for (const f of names) {
+    const r = await http(`/sitemaps/sitemap_${f}.xml`);
+    check(r.status === 200 && /<urlset/.test(r.text), `Sitemap con /sitemaps/sitemap_${f}.xml trả 200 (từ Admin)`, `HTTP ${r.status} cache=${r.headers.get('x-pplus-sitemap-cache') || '?'} — theme không lấy được từ Admin (Admin lỗi hoặc chặn IP server?)`);
+    sets[f] = [...r.text.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => dec(m[1].replace(/&amp;/g, '&').replace(/&#0?39;/g, "'")));
+    check(sets[f].length >= min[f], `sitemap_${f}.xml: ${sets[f].length} URL`, `dự kiến ≥ ${min[f]} — Admin trả ít hơn bình thường`, 'warn');
+    const lm = /<lastmod>([^<]+)<\/lastmod>/.exec(r.text);
+    if (lm && f !== 'villa') check(Date.now() - Date.parse(lm[1]) < 14 * 864e5, `sitemap_${f}.xml được Admin làm mới trong 14 ngày (lastmod ${lm[1].slice(0, 10)})`, 'lastmod quá cũ — Admin không còn tự làm mới sitemap', 'warn');
+  }
+  console.log(`  ${C.d}số URL: ${names.map((f) => `${f}=${sets[f].length}`).join('  ')}${C.x}`);
+  const all = Object.values(sets).flat();
+  const hostBad = all.filter((u) => { try { return new URL(u).host !== 'propertyplus.com.vn'; } catch { return true; } });
+  check(!hostBad.length, 'Mọi URL trong sitemap Admin thuộc domain chính propertyplus.com.vn', `${hostBad.length} URL sai domain, vd ${hostBad[0]}`);
+
+  // Cùng cấu trúc với nhánh theme để các mục sau (lấy mẫu trang) dùng lại: dự án = products, blog = posts, landing = quan + type.
+  SITEMAP.sets = { pplusprojects: sets.products, pplusblogs: sets.posts, pplusareas: [...new Set([...sets.quan, ...sets.type])] };
+  SITEMAP.all = Object.values(SITEMAP.sets).flat();
+  const bad = SITEMAP.all.filter((u) => { const p = pathOf(u); return (p !== '/' && /\/$/.test(p)) || !/^\/(vi|en|ja)(\/|$)/.test(p) && p !== '/' || /\/\//.test(p) || /\/(biet-thu-cho-thue|villa-for-rent)(\/|$)/.test(p); });
+  check(!bad.length, 'URL trong products/posts/quan/type đều ở dạng chuẩn (có /vi|/en|/ja, không "/" cuối, không biệt thự)', `${bad.length} URL sai dạng, vd ${bad.slice(0, 2).join(' , ')}`, 'warn');
+
+  // "pages" (28 URL) có sẵn vài URL rác của web chính cũ (/js/about-us, /vi|en|ja/blog...) mà Resi cố ý trả 404 (web cũ trả 200 rỗng = soft-404): chỉ cảnh báo, sửa ở Admin.
+  const pagesBad = [];
+  await pool(sets.pages, 3, async (u) => { const r = await http(pathOf(u)); if (r.status !== 200) pagesBad.push(`${r.status} ${pathOf(u)}`); });
+  check(!pagesBad.length, 'Mọi URL trong sitemap_pages.xml trả 200', `${pagesBad.length} URL không 200 (URL rác có sẵn ở nguồn Admin, nên xoá khỏi Admin): ${pagesBad.slice(0, 4).join(' ; ')}`, 'warn');
+  // villa: Resi 301 sang căn hộ tương ứng (hoặc 410 với biệt thự đã gỡ) — chỉ cần KHÔNG 5xx.
+  const villaRows = await pool(pick(sets.villa, 5), 3, async (u) => ({ u, r: await http(pathOf(u), { retry503: false }) }));
+  const villaBad = villaRows.filter(({ r }) => r.status >= 500 || r.status === 0);
+  check(!villaBad.length, `${villaRows.length} URL biệt thự lấy mẫu trả 301/410 như thiết kế (không 5xx)`, villaBad.map(({ u, r }) => `${r.status} ${pathOf(u)}`).join(' ; '));
+
+  const picks = Object.entries(SITEMAP.sets).flatMap(([k, v]) => pick(v, SAMPLE).map((u) => [k, u]));
+  const rows = await pool(picks, 3, async ([k, u]) => { const r = await http(pathOf(u)); return { k, u, r }; });
+  let bad200 = 0;
+  for (const { k, u, r } of rows) {
+    const h = head(r.text);
+    const selfCanon = !h.canonical || norm(pathOf(h.canonical)) === norm(pathOf(u));
+    const noindex = /noindex/i.test(h.robots + (r.headers.get('x-robots-tag') || ''));
+    if (r.status !== 200 || !selfCanon || (noindex && !STAGING)) { bad200++; say('fail', `Mẫu sitemap [${k}] ${pathOf(u).slice(0, 90)}`, `HTTP ${r.status}${r.loc ? ' → ' + r.loc : ''}${!selfCanon ? ' | canonical khác URL: ' + pathOf(h.canonical) : ''}${noindex && !STAGING ? ' | noindex' : ''}`); }
+  }
+  if (!bad200) say('pass', `${rows.length} URL lấy mẫu từ sitemap Admin đều 200, index được, canonical tự trỏ`);
+}
+
 async function checkSitemap() {
   section('3. Sitemap');
   const idx = await http('/sitemap.xml');
   check(idx.status === 200, '/sitemap.xml trả 200 (trực tiếp, không redirect)', `HTTP ${idx.status} ${idx.loc || idx.err || ''}`);
+  if ((idx.headers.get('x-pplus-sitemap-source') || '') === 'admin') { await checkSitemapAdmin(idx); return; }
   check(/<sitemapindex/.test(idx.text), '/sitemap.xml là <sitemapindex> hợp lệ', 'không phải sitemapindex (web chính cũ dùng <urlset> sai chuẩn)');
   const children = [...idx.text.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].replace(/&amp;/g, '&'));
   check(children.length >= 4, `Index liệt kê ${children.length} file con`, 'quá ít file — cron sitemap chưa chạy? (xem mục "WP-Cron" trong docs/GO_LIVE_CHECKLIST.md)', 'warn');

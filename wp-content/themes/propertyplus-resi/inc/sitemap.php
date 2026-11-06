@@ -403,26 +403,4 @@ add_action('template_redirect', function () {
     exit;
 }, 0);
 
-/**
- * robots.txt: giu cac Disallow cua web chinh (https://propertyplus.com.vn/robots.txt) + chan wp-admin, tro Sitemap ve /sitemap.xml.
- * (Chi co tac dung khi KHONG co file robots.txt that o goc site; inc/noindex.php (uu tien 10) van de len khi bat noindex cho server test.)
- */
-add_filter('robots_txt', function ($output, $public) {
-    $lines = [
-        'User-agent: *',
-        'Disallow: /wp-admin/',
-        'Allow: /wp-admin/admin-ajax.php',
-        'Disallow: */admin/*',
-        'Disallow: *?culture=*',
-        'Disallow: *?statusCode=*',
-        'Disallow: */Project/_GetProjects',
-        'Disallow: */EasyLiving/_GetFacilities',
-        'Disallow: */Apartment/CompleteRentApartmentModal',
-        'Disallow: */Project/_ProjectSearchBar',
-        'Disallow: */Apartment/IssueLeaseApartmentSuccses',
-        'Disallow: */trackclick.asp*',
-        '',
-        'Sitemap: ' . home_url('/sitemap.xml'),
-    ];
-    return implode("\n", $lines) . "\n";
-}, 5, 2);
+// robots.txt (Disallow cua web chinh + dong Sitemap) da chuyen sang inc/robots.php (5/11/2026) de dung chung voi nguon sitemap Admin.
