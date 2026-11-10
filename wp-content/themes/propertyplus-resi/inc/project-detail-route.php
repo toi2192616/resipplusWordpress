@@ -98,6 +98,12 @@ function pplus_get_project_detail_from_query_vars(): ?array {
         return null;
     }
 
+    // 11/11/2026: du an trong danh sach "da go" (inc/hidden-projects.php) -> coi nhu khong con, KHONG goi API; page-project-detail.php tra 410.
+    if (function_exists('pplus_project_is_hidden') && pplus_project_is_hidden($id)) {
+        $GLOBALS['pplus_project_gone'] = true;
+        return null;
+    }
+
     $cached = pplus_get_project_detail($id);
     return $cached;
 }

@@ -112,6 +112,15 @@ function pplus_render_settings_page(): void {
                         </p>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row"><label for="pplus_hidden_project_ids"><?php esc_html_e('Dự án đã gỡ (danh sách ID)', 'propertyplus'); ?></label></th>
+                    <td>
+                        <textarea style="width:420px;height:70px" id="pplus_hidden_project_ids" name="pplus_hidden_project_ids"><?php echo esc_textarea((string) get_option('pplus_hidden_project_ids', '')); ?></textarea>
+                        <p class="description">
+                            <?php esc_html_e('ID dự án (số cuối trong link dự án), cách nhau bằng dấu phẩy hoặc xuống dòng. Dự án trong danh sách: trang trả 410, biến mất khỏi gợi ý tìm kiếm và sitemap, không còn link từ trang căn hộ. Để trống = không ẩn dự án nào. Chốt chặn tạm cho tới khi backend có cờ "ngừng dự án".', 'propertyplus'); ?>
+                        </p>
+                    </td>
+                </tr>
             </table>
             <?php submit_button(); ?>
         </form>

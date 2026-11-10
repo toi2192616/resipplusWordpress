@@ -23,10 +23,19 @@ $model = pplus_get_project_detail_from_query_vars();
 // khong ton tai/da xoa) - KHAC voi page-reference.php (trang "province/alias", o do "dataSelected"
 // rong MOI dung la 404 vi day la nhanh khac, khong co "projectDetail" fallback).
 if (empty($model['projectDetail'])) {
-    status_header(404);
+    $gone = !empty($GLOBALS['pplus_project_gone']); // du an da go (inc/hidden-projects.php): 410 Gone, Google go khoi index nhanh hon 404
+    status_header($gone ? 410 : 404);
+    if ($gone) {
+        nocache_headers();
+        header('X-Robots-Tag: noindex, nofollow', true);
+    }
     get_header();
     echo '<div class="container" style="padding:40px 0;">';
-    pplus_render_api_error();
+    if ($gone) {
+        echo '<div class="pplus-notice">' . esc_html(pplus_t('Dự án này không còn tồn tại.', 'This project is no longer available.')) . '</div>';
+    } else {
+        pplus_render_api_error();
+    }
     echo '</div>';
     get_footer();
     return;

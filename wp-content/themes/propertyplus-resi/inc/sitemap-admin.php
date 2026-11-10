@@ -102,6 +102,9 @@ add_action('template_redirect', function () {
         echo $notfound ? 'Not found' : 'Sitemap temporarily unavailable';
         exit;
     }
+    if ($which === 'products' && function_exists('pplus_sitemap_drop_hidden_projects')) {
+        $body = pplus_sitemap_drop_hidden_projects($body); // 11/11/2026: du an da go (inc/hidden-projects.php) khong nam trong sitemap du Admin con liet ke
+    }
     status_header(200);
     header('Content-Type: application/xml; charset=UTF-8');
     header('Cache-Control: public, max-age=600');

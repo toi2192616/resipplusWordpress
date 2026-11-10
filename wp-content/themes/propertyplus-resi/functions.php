@@ -57,6 +57,7 @@ require_once PPLUS_THEME_DIR . '/inc/favourite-items-rest.php';    // B7 - REST 
 require_once PPLUS_THEME_DIR . '/inc/seo-head.php';                // SEO/GEO tap trung: canonical, OG/Twitter, JSON-LD, BreadcrumbList, mo ta du phong
 require_once PPLUS_THEME_DIR . '/inc/noindex.php';                 // Chan index toan site cho server TEST (PPLUS_NOINDEX / o tich trong Giao dien > PropertyPlus)
 require_once PPLUS_THEME_DIR . '/inc/tracking.php';                // The xac minh Google + GTM cua web chinh (chi nap GTM khi site cho phep index)
+require_once PPLUS_THEME_DIR . '/inc/hidden-projects.php';         // "Du an da go": danh sach ID -> trang du an 410 + bo khoi goi y tim kiem/sitemap/link (11/11/2026)
 require_once PPLUS_THEME_DIR . '/inc/robots.php';                 // robots.txt: Disallow cua web chinh + dong Sitemap (tach khoi sitemap.php 5/11/2026)
 // Nguon sitemap (5/11/2026, theo Dev A: Admin da co route sitemap): 'admin' (mac dinh) = proxy sitemap cua Admin ra /sitemap.xml + /sitemaps/sitemap_*.xml, khong can WP-Cron;
 // 'theme' = bo sinh cu cua theme (inc/sitemap.php, tinh qua WP-Cron) - bat lai bang define('PPLUS_SITEMAP_SOURCE', 'theme') trong wp-config.php.

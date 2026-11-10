@@ -44,6 +44,8 @@ function pplus_handle_search_group(WP_REST_Request $request): WP_REST_Response {
         }
     }
 
+    $projects = apply_filters('pplus_search_group_projects', $projects); // 11/11/2026: bo du an da go (inc/hidden-projects.php)
+
     $response = new WP_REST_Response(['projects' => $projects], 200);
     $response->header('Cache-Control', 'public, max-age=600');
     return $response;

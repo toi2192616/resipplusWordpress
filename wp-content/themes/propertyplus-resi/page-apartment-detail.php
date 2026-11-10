@@ -82,6 +82,7 @@ if ($pplus_lcp_image !== '') {
 }
 
 $project_id   = (int) ($detail['projectId'] ?? 0);
+$project_hidden = function_exists('pplus_project_is_hidden') && pplus_project_is_hidden($project_id); // du an da go: khong link toi trang du an
 $district_url = home_url($lang_prefix . '/' . pplus_office_url(pplus_apartment_list_root() . '/ha-noi/' . ($detail['alasDistrict'] ?? '')));
 // LinkProject - xem TODO dau file (trang "Dự án cụ thể" chua co route, se 404 khi bam).
 $link_project = home_url($lang_prefix . '/' . pplus_office_url(pplus_apartment_list_root() . '/ha-noi/' . ($detail['alasDistrict'] ?? '') . '/' . ($detail['alasProject'] ?? '') . '-' . $project_id));
@@ -117,7 +118,12 @@ get_header();
                 <div class="url-content-list">
                     <a href="<?php echo esc_url(pplus_home_url()); ?>"><?php echo esc_html(pplus_localize('Trang chủ')); ?></a>
                     <a href="<?php echo esc_url($district_url); ?>"><?php echo pplus_breadcrumb_arrow(); ?><?php echo esc_html($detail['provinceName'] ?? ''); ?></a>
-                    <a href="<?php echo esc_url($link_project); ?>"><?php echo pplus_breadcrumb_arrow(); ?><?php echo esc_html($detail['projectName'] ?? ''); ?></a>
+                    <?php // 11/11/2026: du an da go (inc/hidden-projects.php) -> ten du an la chu thuong, khong link toi trang da 410. ?>
+                    <?php if (!empty($project_hidden)) : ?>
+                        <span><?php echo pplus_breadcrumb_arrow(); ?><?php echo esc_html($detail['projectName'] ?? ''); ?></span>
+                    <?php else : ?>
+                        <a href="<?php echo esc_url($link_project); ?>"><?php echo pplus_breadcrumb_arrow(); ?><?php echo esc_html($detail['projectName'] ?? ''); ?></a>
+                    <?php endif; ?>
                     <span><?php echo pplus_breadcrumb_arrow(); ?><?php echo esc_html($detail['title'] ?? ''); ?></span>
                 </div>
             </div>
@@ -227,10 +233,12 @@ get_header();
                         <?php echo esc_html(pplus_localize('Dự án')); ?>
                         <span class="font-bold"><?php echo esc_html($detail['projectName'] ?? ''); ?></span>
                     </div>
+                    <?php if (empty($project_hidden)) : ?>
                     <a class="project_link" href="<?php echo esc_url($link_project); ?>">
                         <?php echo esc_html(pplus_localize('Xem thêm')); ?>
                         <i class="fa fa-angle-double-right"></i>
                     </a>
+                    <?php endif; ?>
                 </div>
 
                 <div class="_titleInfo"><?php echo esc_html(pplus_localize('Thông tin căn hộ')); ?></div>
