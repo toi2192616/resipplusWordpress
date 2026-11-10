@@ -81,6 +81,15 @@ $paged    = max(1, (int) ($_GET['paged'] ?? 1));
 $listing  = pplus_get_apartment_list($filter, ($paged - 1) * $per_page, $current_sort, $per_page);
 $listApartments = $listing['listApartments'];
 $total_count    = $listing['total_count'];
+
+// 11/11/2026 - "VO" DU AN: khong co can ho nao dang dang VA khong co bai viet SEO hien thi -> trang chi con ten/dia chi/ban do, khong co gi de
+// Google index. Tu dong "noindex, follow" (van mo duoc, khong 410). Chi dung du lieu Admin san co: "dung dang" het can ho cua du an (hoac bo "Hien thi"
+// bai viet du an) la du an tu roi khoi index; dang lai 1 can ho la tu quay lai - khong phai doi gi o Admin. Bo qua khi nguoi dung dang loc
+// (loc ra 0 ket qua khong co nghia la du an trong). Sitemap do Admin sinh nen dieu kien tuong ung o do (xem docs/GO_LIVE_CHECKLIST.md, muc Sitemap).
+$pplus_project_filtered = (bool) array_intersect_key($_GET, array_flip(['price_from', 'price_to', 'bedroom_qty', 'bathroom_qty', 'area_from', 'area_to', 'floor_from', 'floor_to', 'apartment_type', 'has_bathtub']));
+if ((int) $total_count === 0 && empty($model['dataSelected']) && !$pplus_project_filtered) {
+    $GLOBALS['pplus_project_shell'] = true;
+}
 $total_pages    = $total_count > 0 ? (int) ceil($total_count / $per_page) : 0;
 
 $toc = pplus_generate_toc((string) ($data['content'] ?? ''));

@@ -49,9 +49,20 @@ add_action('admin_init', function () {
     ]);
 });
 
-/** Trang dự án đã gỡ: noindex ở meta robots (header X-Robots-Tag được gửi ở page-project-detail.php). */
+/**
+ * Meta robots cho trang dự án: đã gỡ -> "noindex, nofollow" (header X-Robots-Tag gửi ở page-project-detail.php);
+ * "vỏ" dự án (không căn hộ đang đăng + không bài viết SEO hiển thị, xem page-project-detail.php) -> "noindex, follow".
+ */
 add_filter('wp_robots', static function (array $robots): array {
-    return !empty($GLOBALS['pplus_project_gone']) ? ['noindex' => true, 'nofollow' => true] : $robots;
+    if (!empty($GLOBALS['pplus_project_gone'])) {
+        return ['noindex' => true, 'nofollow' => true];
+    }
+    if (!empty($GLOBALS['pplus_project_shell'])) {
+        unset($robots['index'], $robots['nofollow']);
+        $robots['noindex'] = true;
+        $robots['follow']  = true;
+    }
+    return $robots;
 }, 99);
 
 /** Gợi ý tìm kiếm: bỏ dự án đã gỡ (hậu xử lý kết quả của inc/search-group-route.php). */
