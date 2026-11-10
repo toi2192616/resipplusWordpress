@@ -117,7 +117,7 @@ function pplus_render_settings_page(): void {
                     <td>
                         <textarea style="width:420px;height:70px" id="pplus_hidden_project_ids" name="pplus_hidden_project_ids"><?php echo esc_textarea((string) get_option('pplus_hidden_project_ids', '')); ?></textarea>
                         <p class="description">
-                            <?php esc_html_e('ID dự án (số cuối trong link dự án), cách nhau bằng dấu phẩy hoặc xuống dòng. Dự án trong danh sách: trang trả 410, biến mất khỏi gợi ý tìm kiếm và sitemap, không còn link từ trang căn hộ. Để trống = không ẩn dự án nào. Chốt chặn tạm cho tới khi backend có cờ "ngừng dự án".', 'propertyplus'); ?>
+                            <?php esc_html_e('ID dự án (số cuối trong link dự án), cách nhau bằng dấu phẩy hoặc xuống dòng. Dự án trong danh sách: trang trả 410, biến mất khỏi gợi ý tìm kiếm và sitemap, không còn link từ trang căn hộ. Để trống = không ẩn dự án nào. CÔNG TẮC KHẨN CẤP, bình thường để trống: dự án không còn căn hộ đang đăng và không có bài viết hiển thị đã tự động noindex (không cần nhập ở đây); chỉ nhập khi phải gỡ gấp một dự án dù nó còn căn hộ/bài viết.', 'propertyplus'); ?>
                         </p>
                     </td>
                 </tr>

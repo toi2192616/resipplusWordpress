@@ -1,21 +1,23 @@
 <?php
 /**
- * "Dự án đã gỡ" - cờ ẩn DỰ ÁN ở phía Resi (11/11/2026).
+ * "Dự án đã gỡ" - công tắc KHẨN CẤP ở phía Resi (11/11/2026). Bình thường để TRỐNG.
  *
- * VÌ SAO CÓ: Admin .NET chỉ có "dừng đăng" ở mức CĂN HỘ, không có cách ẩn một DỰ ÁN. Ô "Hiển thị" / "Hiển thị gợi ý" ở Admin > Bài viết Dự án chỉ
- * điều khiển bài viết SEO của dự án, không ẩn dự án (dự án Hòa Xá, ID 745: cả hai ô bỏ trống mà trang vẫn mở 200, vẫn nằm trong gợi ý tìm kiếm).
- * Bỏ khỏi sitemap cũng không đủ để gỡ trang. Quy tắc "dự án không còn căn hộ nào thì ẩn" KHÔNG dùng được: lấy mẫu 29 dự án trong sitemap thì
- * 13 dự án (~45%) không có căn hộ nào đang đăng, nhưng vẫn là trang dự án có nội dung (ảnh, mô tả, bài SEO) - ẩn hết sẽ mất gần nửa số trang.
+ * QUY TẮC CHÍNH (tự động, KHÔNG đổi Admin): dự án "vỏ" - không có căn hộ nào đang đăng VÀ không có bài viết dự án đang "Hiển thị" - tự mang
+ * "noindex, follow" (xem page-project-detail.php + bộ lọc wp_robots bên dưới). Nhân viên gỡ dự án bằng cách "dừng đăng" hết căn hộ của dự án
+ * (và bỏ "Hiển thị" bài viết dự án nếu có); đăng lại 1 căn hộ thì dự án tự quay lại. Trang "vỏ" vẫn mở được (không 410) vì ~36% dự án thuộc
+ * loại này (lấy mẫu 13/29 và 14/39) và Admin không có cách ẩn một DỰ ÁN (Admin chỉ có "dừng đăng" ở mức căn hộ; ô "Hiển thị" ở Bài viết Dự án
+ * chỉ điều khiển bài viết SEO - dự án Hòa Xá, ID 745).
  *
- * Nên cần một DANH SÁCH rõ ràng các dự án phải gỡ. Nhập ID (cách nhau bằng dấu phẩy, khoảng trắng hoặc xuống dòng) ở:
+ * DANH SÁCH ID dưới đây chỉ dùng khi phải gỡ GẤP một dự án kể cả khi nó còn căn hộ/bài viết (vd: yêu cầu pháp lý, sai thông tin nghiêm trọng).
+ * Nhập ID (cách nhau bằng dấu phẩy, khoảng trắng hoặc xuống dòng) ở:
  *   WordPress admin > PropertyPlus (cấu hình) > "Dự án đã gỡ (danh sách ID)"; hoặc define('PPLUS_HIDDEN_PROJECT_IDS', '745,790,793') trong wp-config.php
  * (hai nguồn được gộp). Mặc định RỖNG = không đổi gì. Với mỗi ID trong danh sách, Resi:
  *   - trang dự án trả 410 Gone (noindex, không cache), không gọi API chi tiết;
  *   - bỏ khỏi gợi ý tìm kiếm (REST pplus/v1/search-group);
  *   - bỏ khỏi sitemap (kể cả khi Admin vẫn liệt kê) - xem inc/sitemap-admin.php;
  *   - trên trang chi tiết căn hộ, tên dự án hiện là chữ thường, không còn link tới trang đã gỡ.
- * Đây là chốt chặn tạm: khi backend có cờ "ngừng dự án" và các API công khai (Project/Detail, Apartment/_GetFilterGroupList, ...) ngừng trả dự án
- * đó thì Resi tự trả 404 (API trả 302 về trang đăng nhập = không tìm thấy), danh sách này không còn cần nữa.
+ * Nếu sau này backend có cờ "ngừng dự án" và các API công khai (Project/Detail, Apartment/_GetFilterGroupList, ...) ngừng trả dự án đó thì
+ * Resi tự trả 404 (API trả 302 về trang đăng nhập = không tìm thấy) và danh sách này không còn cần nữa.
  */
 
 if (!defined('ABSPATH')) {
