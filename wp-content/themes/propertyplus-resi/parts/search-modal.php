@@ -64,11 +64,14 @@
 if (!defined('ABSPATH')) exit;
 
 $lang_prefix    = pplus_lang_prefix();
-$all_districts  = pplus_get_all_districts();
+// 11/11/2026: luoi goi y = 16 muc Admin + cac muc cua menu con thieu (Chung cu/Dich vu/Cao cap, quan con lai...); "data-context" = vung + bo loc cua trang
+// dang xem de popup mo ra DIEN SAN (pplus-search-modal.js) - xem pplus_search_context()/pplus_search_suggestion_items() (inc/render-helpers.php).
+$all_districts  = pplus_search_suggestion_items();
 $bedbath_values = range(1, 8); // listValue = [1..8] (search-base.component.ts dong 63)
 ?>
 <div class="modal fade" tabindex="-1" id="searchModal" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true"
-    data-base-url="<?php echo esc_url(home_url($lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi')); ?>">
+    data-base-url="<?php echo esc_url(home_url($lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi')); ?>"
+    data-context="<?php echo esc_attr(wp_json_encode(pplus_search_context(), JSON_UNESCAPED_UNICODE)); ?>">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body">
@@ -101,6 +104,8 @@ $bedbath_values = range(1, 8); // listValue = [1..8] (search-base.component.ts d
                                                             <div class="control">
                                                                 <label for="search-modal-input1" class="search-label"><?php echo esc_html(pplus_localize('Nhập địa điểm')); ?> ...</label>
                                                                 <input class="search-input form-control" id="search-modal-input1" name="search_key" placeholder="<?php echo esc_attr(pplus_localize('Bạn muốn đi đâu')); ?>" autocomplete="off" />
+                                                                <?php // Xoa vung dang chon ("Tất cả Hà Nội"): chi hien khi o co chu (CSS ".has-value"), JS: pplus-search-modal.js. ?>
+                                                                <button type="button" class="pplus-scope-clear" aria-label="<?php echo esc_attr(pplus_t('Xóa vùng đã chọn', 'Clear the selected area')); ?>" title="<?php echo esc_attr(pplus_t('Xóa vùng đã chọn', 'Clear the selected area')); ?>">&times;</button>
                                                             </div>
                                                         </div>
                                                         <?php // Luoi "Hoặc chọn theo gợi ý" - NAM TRONG ".search-option" cua o Location. QUAN
@@ -221,6 +226,9 @@ $bedbath_values = range(1, 8); // listValue = [1..8] (search-base.component.ts d
                                                                     </div>
                                                                     <div class="checkbox-term">
                                                                         <label><input type="checkbox" name="has_bathtub" id="pplus-has-bathtub" value="true" /> <?php echo esc_html(pplus_localize('Bồn tắm')); ?></label>
+                                                                    </div>
+                                                                    <div class="pplus-filter-reset-row">
+                                                                        <button type="button" class="pplus-reset-filters"><?php echo esc_html(pplus_t('Xóa bộ lọc', 'Clear filters')); ?></button>
                                                                     </div>
                                                                 </div>
                                                             </div>

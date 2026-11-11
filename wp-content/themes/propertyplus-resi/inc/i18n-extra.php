@@ -129,6 +129,13 @@ function pplus_extra_dictionary(string $lang): array {
                 'Để chúng tôi giúp bạn…' => 'お気軽にご相談ください…',
                 'Property Plus - Hà Nội' => 'Property Plus - ハノイ',
                 'Bản đồ Property Plus' => 'Property Plus の地図',
+                // Popup tim kiem: vung/bo loc dien san (11/11/2026) - EN dung thang tham so pplus_t(), JA tra cuu o day
+                'Xóa bộ lọc' => '条件をクリア',
+                'Xóa vùng đã chọn' => '選択したエリアを削除',
+                'Vùng' => 'エリア',
+                'Đổi' => '変更',
+                'PN' => '寝室',
+                'WC' => 'バス',
                 'Liên hệ Property Plus để được tư vấn miễn phí và báo giá nhanh căn hộ cho thuê tại Hà Nội. Hotline 08 5666 2566, văn phòng tầng 4 tòa nhà Kinh Đô, 292 Tây Sơn, Đống Đa.' => 'Property Plusへのお問い合わせ。ハノイのアパート賃貸について無料でご相談いただけ、迅速にお見積もりをお送りします。ホットライン 08 5666 2566。ハノイ市ドンダー区タイソン通り292番地 キンドービル4階。',
             ],
         ];

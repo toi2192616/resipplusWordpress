@@ -156,9 +156,18 @@ if (!defined('PPLUS_BLANK_GIF')) {
  */
 function pplus_suggestion_option_filter(array $item): array {
     $raw = json_decode((string) ($item['jsonSearch'] ?? ''), true);
-    if (!is_array($raw)) {
-        return [];
-    }
+    return is_array($raw) ? pplus_clean_option_filter($raw) : [];
+}
+
+/**
+ * Phan loc "sach" cua pplus_suggestion_option_filter(): nhan MANG THO (jsonSearch da giai ma, "filter" cua Reference/GetIndex, hoac cac tham so
+ * loc tren URL) va chi giu cac truong that su gioi han ket qua o panel "Chi tiết". Dung chung de popup tim kiem dien lai dung bo loc cua trang
+ * dang xem (xem pplus_search_context()).
+ *
+ * @param array<string,mixed> $raw
+ * @return array<string,int>
+ */
+function pplus_clean_option_filter(array $raw): array {
     $num = static function (string $key) use ($raw): int {
         return isset($raw[$key]) && is_numeric($raw[$key]) ? (int) $raw[$key] : 0;
     };
@@ -187,6 +196,161 @@ function pplus_suggestion_option_filter(array $item): array {
         $out['price_to'] = $num('price_to');
     }
     return $out;
+}
+
+/**
+ * Luoi "Hoặc chọn theo gợi ý" cua popup tim kiem (desktop + mobile): 16 muc Admin chon (Apartment/_GetAllDistrict, giu NGUYEN thu tu) + cac muc
+ * cua MENU ma danh sach do thieu (quan con lai, Chung cu / Dich vu / Cao cap, Truc Bach, Mua sam, Gym, Gia re...). Truoc day popup chi co 16 muc
+ * nen trang dang o "Condominium" (co o menu) khong tim lai duoc no trong goi y. Trung alias thi giu muc cua Admin (co icon + bo loc san).
+ *
+ * @return array<int,array<string,mixed>> moi muc: {alias, subTitle, img, jsonSearch, ...}
+ */
+function pplus_search_suggestion_items(): array {
+    static $items = null;
+    if ($items !== null) {
+        return $items;
+    }
+    $items = [];
+    $seen  = [];
+    $add   = static function (array $list) use (&$items, &$seen): void {
+        foreach ($list as $item) {
+            $alias = strtolower(trim((string) ($item['alias'] ?? '')));
+            if ($alias === '' || isset($seen[$alias]) || trim((string) ($item['subTitle'] ?? '')) === '') {
+                continue;
+            }
+            $seen[$alias] = true;
+            $items[]      = $item;
+        }
+    };
+    $add(pplus_get_all_districts());
+    $header = pplus_get_header_data();
+    if (is_array($header)) {
+        $add((array) ($header['apartmentLuxury'] ?? []));
+        $add((array) ($header['dataLists'] ?? []));
+    }
+    return $items;
+}
+
+/**
+ * Popup tim kiem biet "nguoi dung dang o dau va dang loc gi" de mo ra DIEN SAN thay vi tinh nang lam lai tu dau:
+ * - alias/label: "vung" cua trang danh sach dang xem (quan, loai can ho, khu vuc, toa nha... - /cho-thue-can-ho/ha-noi/{alias}); rong o trang chu
+ *   hoac "Tất cả" (/cho-thue-can-ho/ha-noi).
+ * - filters: bo loc NGUOI DUNG da ap (query string: gia, phong ngu/tam, dien tich, tang, loai nha, bon tam).
+ * - scopeFilters: bo loc ma CHINH "vung" do tu mang theo (vd Studio = 1 phong ngu + <=49m2) va khong bi query string ghi de - doi vung thi tu bo,
+ *   giong cach lam cua luoi goi y.
+ * - selection: trang A1 (/cho-thue-can-ho/?project_id=...&q=...) - du an / dia diem Google da chon, de bam tim kiem tiep khong mat no.
+ * Chi co du lieu tren trang danh sach (reference-index + A1); trang khac tra ve rong (hanh vi cu).
+ *
+ * @return array{alias:string,label:string,filters:array<string,int>,scopeFilters:array<string,int>,selection:?array}
+ */
+function pplus_search_context(): array {
+    static $ctx = null;
+    if ($ctx !== null) {
+        return $ctx;
+    }
+    $ctx = ['alias' => '', 'label' => '', 'filters' => [], 'scopeFilters' => [], 'selection' => null];
+
+    $is_ref  = (bool) get_query_var('pplus_reference_index');
+    $is_list = (bool) get_query_var('pplus_apartment_list');
+    if (!$is_ref && !$is_list) {
+        return $ctx;
+    }
+
+    $raw = [];
+    foreach (['price_from', 'price_to', 'bedroom_qty', 'bathroom_qty', 'area_from', 'area_to', 'floor_from', 'floor_to'] as $key) {
+        if (isset($_GET[$key]) && is_scalar($_GET[$key]) && preg_match('/^\d{1,7}$/', (string) $_GET[$key])) {
+            $raw[$key] = (int) $_GET[$key];
+        }
+    }
+    $filters = pplus_clean_option_filter($raw);
+    if (isset($_GET['apartment_type']) && in_array((string) $_GET['apartment_type'], ['1', '2'], true)) {
+        $filters['apartment_type'] = (int) $_GET['apartment_type'];
+    }
+    if (isset($_GET['has_bathtub']) && (string) $_GET['has_bathtub'] === '1') {
+        $filters['has_bathtub'] = 1;
+    }
+    $ctx['filters'] = $filters;
+
+    if ($is_ref && sanitize_text_field((string) get_query_var('pplus_ref_alias')) !== '') {
+        $model = pplus_get_reference_index_from_query_vars();
+        $data  = is_array($model['dataSelected'] ?? null) ? $model['dataSelected'] : [];
+        $alias = trim((string) ($data['alias'] ?? ''));
+        $label = trim((string) ($data['subTitle'] ?? ''));
+        if ($label === '') {
+            $label = trim((string) ($data['title'] ?? ''));
+        }
+        if ($alias !== '' && $label !== '') {
+            $ctx['alias']        = $alias;
+            $ctx['label']        = $label;
+            $ctx['scopeFilters'] = array_diff_key(pplus_clean_option_filter((array) ($model['filter'] ?? [])), $filters);
+        }
+    }
+
+    if ($is_list) {
+        $q = isset($_GET['q']) && is_scalar($_GET['q']) ? trim(sanitize_text_field(wp_unslash((string) $_GET['q']))) : '';
+        if ($q !== '') {
+            if (!empty($_GET['project_id']) && is_scalar($_GET['project_id'])) {
+                $ctx['selection'] = ['type' => 'project', 'id' => (int) $_GET['project_id'], 'label' => $q];
+            } else {
+                $area = [];
+                foreach (['ne_lat', 'ne_lng', 'sw_lat', 'sw_lng'] as $key) {
+                    if (isset($_GET[$key]) && is_scalar($_GET[$key]) && is_numeric($_GET[$key])) {
+                        $area[$key] = (float) $_GET[$key];
+                    }
+                }
+                if (count($area) === 4) {
+                    $ctx['selection'] = ['type' => 'area', 'label' => $q] + $area;
+                }
+            }
+        }
+    }
+    return $ctx;
+}
+
+/**
+ * Tom tat NGAN bo loc nguoi dung dang ap, cho chip tren thanh goi y ("2 PN · $500–900"). Toi da 3 phan, con lai "+N".
+ * Ky hieu ($, ≥, ≤, m²) dung chung moi ngon ngu.
+ *
+ * @param array<string,int> $filters pplus_search_context()['filters']
+ */
+function pplus_search_filter_summary(array $filters): string {
+    $range = static function (string $from, string $to, string $prefix, string $suffix) use ($filters): string {
+        $a = (int) ($filters[$from] ?? 0);
+        $b = (int) ($filters[$to] ?? 0);
+        if ($a > 0 && $b > 0) {
+            return $prefix . $a . '–' . $b . $suffix;
+        }
+        if ($a > 0) {
+            return '≥ ' . $prefix . $a . $suffix;
+        }
+        return $b > 0 ? '≤ ' . $prefix . $b . $suffix : '';
+    };
+    $parts = [];
+    if (!empty($filters['apartment_type'])) {
+        $parts[] = (int) $filters['apartment_type'] === 1 ? pplus_localize('Căn hộ dịch vụ') : pplus_localize('Chung cư');
+    }
+    if (!empty($filters['bedroom_qty'])) {
+        $parts[] = (int) $filters['bedroom_qty'] . ' ' . pplus_t('PN', 'BR');
+    }
+    if (!empty($filters['bathroom_qty'])) {
+        $parts[] = (int) $filters['bathroom_qty'] . ' ' . pplus_t('WC', 'Bath');
+    }
+    foreach ([
+        $range('price_from', 'price_to', '$', ''),
+        $range('area_from', 'area_to', '', ' m²'),
+        $range('floor_from', 'floor_to', pplus_t('Tầng', 'Floor') . ' ', ''),
+    ] as $part) {
+        if ($part !== '') {
+            $parts[] = $part;
+        }
+    }
+    if (!empty($filters['has_bathtub'])) {
+        $parts[] = pplus_localize('Bồn tắm');
+    }
+    if (count($parts) > 3) {
+        return implode(' · ', array_slice($parts, 0, 3)) . ' +' . (count($parts) - 3);
+    }
+    return implode(' · ', $parts);
 }
 
 /**
@@ -512,6 +676,39 @@ function pplus_render_suggest_header(?string $active_alias = null): void {
                     </i>
                     <div class="item-title"><?php echo esc_html(pplus_localize('Tất cả')); ?></div>
                 </a>
+                <?php // 11/11/2026: thanh nay chi co ~12 muc "hot" nen dang o 1 vung khong nam trong do (vd Condominium) thi KHONG muc nao sang - nguoi dung
+                // khong thay minh dang o dau. Them 1 pill "dang xem" (sang) cho vung do + 1 chip tom tat bo loc dang ap (bam mo popup, "x" xoa bo loc). ?>
+                <?php
+                $pplus_ctx    = pplus_search_context();
+                $pplus_active = $active_alias !== null ? trim($active_alias) : '';
+                $pplus_known  = false;
+                foreach ($index_success as $item) {
+                    if (trim((string) ($item['alias'] ?? '')) === $pplus_active) {
+                        $pplus_known = true;
+                        break;
+                    }
+                }
+                if ($pplus_active !== '' && !$pplus_known && $pplus_ctx['alias'] === $pplus_active && $pplus_ctx['label'] !== '') : ?>
+                    <a href="<?php echo esc_url(home_url($lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi/' . $pplus_active)); ?>" class="suggest-item active pplus-scope-pill">
+                        <i class="item-img">
+                            <svg width="14" height="18" viewBox="0 0 14 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="#545454" d="M7 0.5C3.13 0.5 0 3.63 0 7.5C0 11.67 4.42 17.42 6.24 19.61C6.64 20.09 7.37 20.09 7.77 19.61C9.58 17.42 14 11.67 14 7.5C14 3.63 10.87 0.5 7 0.5ZM7 10C5.62 10 4.5 8.88 4.5 7.5C4.5 6.12 5.62 5 7 5C8.38 5 9.5 6.12 9.5 7.5C9.5 8.88 8.38 10 7 10Z" />
+                            </svg>
+                        </i>
+                        <div class="item-title"><?php echo esc_html($pplus_ctx['label']); ?></div>
+                    </a>
+                <?php endif; ?>
+                <?php $pplus_chip = $pplus_ctx['filters'] ? pplus_search_filter_summary($pplus_ctx['filters']) : '';
+                if ($pplus_chip !== '') :
+                    $pplus_clear_url = remove_query_arg(['price_from', 'price_to', 'bedroom_qty', 'bathroom_qty', 'area_from', 'area_to', 'floor_from', 'floor_to', 'apartment_type', 'has_bathtub', 'paged'], pplus_current_url()); ?>
+                    <div class="suggest-item pplus-filter-chip">
+                        <button type="button" class="pplus-chip-open" data-bs-toggle="modal" data-bs-target="#searchModal" title="<?php echo esc_attr(pplus_localize('Chi tiết')); ?>">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M1 3h14M4 8h8M6.5 13h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
+                            <span class="item-title"><?php echo esc_html($pplus_chip); ?></span>
+                        </button>
+                        <a class="pplus-chip-clear" href="<?php echo esc_url($pplus_clear_url); ?>" aria-label="<?php echo esc_attr(pplus_t('Xóa bộ lọc', 'Clear filters')); ?>" title="<?php echo esc_attr(pplus_t('Xóa bộ lọc', 'Clear filters')); ?>">&times;</a>
+                    </div>
+                <?php endif; ?>
                 <?php foreach ($index_success as $item) :
                     $item_alias = (string) ($item['alias'] ?? '');
                     if ($item_alias === '') continue; ?>

@@ -22,7 +22,8 @@
 if (!defined('ABSPATH')) exit;
 
 $pplus_sm_lang_prefix = pplus_lang_prefix();
-$pplus_sm_districts   = pplus_get_all_districts();
+// 11/11/2026: cung nguon goi y + ngu canh trang voi popup desktop (parts/search-modal.php): luoi day du theo menu, vung/bo loc cua trang dang xem dien san.
+$pplus_sm_districts   = pplus_search_suggestion_items();
 $pplus_sm_values      = range(1, 8); // listValue = [1..8] (search-base.component.ts dong 63)
 ?>
 <?php // KHONG de khoang trang/xuong dong giua <a>/<input>/<button> (Angular AOT bo khoang trang giua the;
@@ -32,7 +33,7 @@ $pplus_sm_values      = range(1, 8); // listValue = [1..8] (search-base.componen
 // che do ban do (fullContent=false) - xem main.js. ?>
 <div class="searching-tool resultOnTop"><a href="<?php echo esc_url(home_url($pplus_sm_lang_prefix . '/')); ?>"><img src="<?php echo esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/logo-96.webp'); ?>" alt="logoPP" width="100" height="94" /></a><input class="txt-search" type="text" aria-label="<?php echo esc_attr(pplus_localize('Tìm kiếm')); ?>" value="" readonly="readonly" data-pplus-search-mobile="1" /><button id="btnSearchMore" type="button" data-pplus-search-mobile="2"><?php echo esc_html(pplus_localize('Bộ lọc')); ?></button></div>
 
-<div class="tab-container search-tab-mobile" step="1" id="search-tab-mobile" data-base-url="<?php echo esc_url(home_url($pplus_sm_lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi')); ?>">
+<div class="tab-container search-tab-mobile" step="1" id="search-tab-mobile" data-base-url="<?php echo esc_url(home_url($pplus_sm_lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi')); ?>" data-context="<?php echo esc_attr(wp_json_encode(pplus_search_context(), JSON_UNESCAPED_UNICODE)); ?>">
     <div class="tab-header">
         <button type="button" class="btnBackStep">
             <i class="fa fa-angle-left" aria-hidden="true" title="prev"></i>
@@ -81,6 +82,16 @@ $pplus_sm_values      = range(1, 8); // listValue = [1..8] (search-base.componen
         </div>
 
         <div class="m-step-content" style="display:none;">
+            <?php // Vung dang chon (buoc 1) hien o dau buoc loc + nut "Đổi" quay lai buoc 1 (pplus-search-mobile.js) - nguoi dung luon biet dang loc trong vung nao. ?>
+            <div class="pplus-m-scope" style="display:none;">
+                <span class="pplus-m-scope-label"><?php echo esc_html(pplus_t('Vùng', 'Area')); ?></span>
+                <b class="pplus-m-scope-name"></b>
+                <button type="button" class="pplus-m-scope-change"><?php echo esc_html(pplus_t('Đổi', 'Change')); ?></button>
+            </div>
+            <?php // "Xóa bộ lọc" o DAU buoc loc (khong phai cuoi): thanh "Xác nhận" co dinh o day man hinh se che mat link neu de duoi cung. ?>
+            <div class="pplus-filter-reset-row">
+                <button type="button" class="pplus-m-reset"><?php echo esc_html(pplus_t('Xóa bộ lọc', 'Clear filters')); ?></button>
+            </div>
             <div class="search-option">
                 <div class="long-term-s3">
                     <div class="long-term-s3-item">

@@ -2,6 +2,13 @@
 // DataCoreroupToBack() (dong 574-727), ChangeApartmentType() (dong 937-948), clickSubmitSearch()
 // (dong 265-271, nhanh "isMapshow===false" - trang WP nay luon full-page-reload, khong co nhanh
 // AJAX "isMapshow===true" cua ban Angular).
+//
+// 11/11/2026 (theo yeu cau nguoi dung): popup KHONG con mo ra "trang" tren trang danh sach. Vung (quan/loai/khu vuc...) va bo loc cua trang dang
+// xem (data-context, xem pplus_search_context() trong inc/render-helpers.php) duoc dien san:
+//   - o "Vùng" hien san vung dang xem (kem nut x de bo -> "Tất cả"), popup mo thang o "Chi tiết" (loc gia/phong ngu...) thay vi luoi goi y;
+//   - bo loc dang ap (gia, phong ngu...) dien lai, loc them se CONG DON, co nut "Xóa bộ lọc";
+//   - bam "Tìm kiếm" giu nguyen vung + bo loc moi (truoc day mat vung, ve /ha-noi).
+// Trang chu / trang khong co vung: hanh vi cu (o trong, bam vao o Vùng moi hien luoi goi y).
 (function ($) {
   'use strict';
 
@@ -14,7 +21,20 @@
     var $suggestList = $('#pplus-search-suggest-list');
     var $locationInput = $('#search-modal-input1');
     var $detailInput = $('#search-modal-input2');
+    var $locationField = $locationInput.closest('.search-input-group');
     var selectedAlias = '';
+    // Lua chon tu goi y khi go (du an / dia diem Google - pplus-search-suggest.js); null = khong chon gi.
+    var selection = null;
+    // "Loại nhà/phòng" - 2 checkbox CUNG ten nhung KHONG loai tru nhau (khong phai radio, dung y het ban goc) - ChangeApartmentType() that:
+    // checked -> ghi de gia tri, unchecked -> xoa ve rong BAT KE checkbox con lai the nao (gia tri CUOI CUNG thang doi, khong phai "gop" ca 2).
+    var apartmentType = '';
+
+    var ctx = {};
+    try {
+      ctx = JSON.parse($modal.attr('data-context') || '{}') || {};
+    } catch (e) {
+      ctx = {};
+    }
 
     // Goi y -> o "Chi tiết": cac truong loc ma goi y mang theo (data-filter, xem pplus_suggestion_option_filter()) duoc dien san (so phong
     // ngu/tam to mau nut tuong ung, dien tich, gia, tang). mapped = cac truong DO GOI Y dat - chon goi y khac thi tra ve mac dinh dung cac
@@ -61,6 +81,67 @@
       });
     }
 
+    function setApartmentType(value) {
+      apartmentType = value ? String(value) : '';
+      $('.pplus-apartment-type-check').each(function () {
+        this.checked = apartmentType !== '' && this.value === apartmentType;
+      });
+    }
+
+    // "Xóa bộ lọc": ve het ve mac dinh ("Bất kỳ"/rong/bo tich) - KE CA bo loc ma vung dang chon tu mang theo (nguoi dung muon thay tat ca).
+    function resetFilters() {
+      mapped = [];
+      $.each(CHIP_FIELDS, function (_, id) { setChip(id, ''); });
+      $.each(INPUT_FIELDS, function (_, sel) { $(sel).val(''); });
+      setApartmentType('');
+      $('#pplus-has-bathtub').prop('checked', false);
+    }
+    function hasFilters() {
+      var any = false;
+      $.each(CHIP_FIELDS, function (_, id) { if ($('#' + id).val() !== '') { any = true; } });
+      $.each(INPUT_FIELDS, function (_, sel) { if ($(sel).val() !== '') { any = true; } });
+      return any || apartmentType !== '' || $('#pplus-has-bathtub').is(':checked');
+    }
+
+    // Vung dang chon (alias tu goi y / du an / dia diem Google): to dam o "Vùng" + hien nut x; ".has-value" = o co chu (nut x).
+    function syncScopeUi() {
+      $locationField.toggleClass('has-scope', !!(selectedAlias || selection));
+      $locationField.toggleClass('has-value', $.trim($locationInput.val()) !== '');
+    }
+
+    // ---- Dien san theo trang dang xem ----
+    selectedAlias = ctx.alias || '';
+    if (selectedAlias && ctx.label) {
+      $locationInput.val(ctx.label);
+    }
+    if (ctx.selection && ctx.selection.label) {
+      selection = ctx.selection;
+      $locationInput.val(ctx.selection.label);
+    }
+    // Bo loc CHINH vung do mang theo (vd Studio = 1 phong ngu, <=49m2) di theo vung (mapped): doi vung thi tu bo. Bo loc nguoi dung da ap
+    // (query string) dien sau, khong bi doi vung dong vao.
+    applySuggestionFilter(ctx.scopeFilters && !$.isEmptyObject(ctx.scopeFilters) ? ctx.scopeFilters : null);
+    $.each(ctx.filters || {}, function (key, value) {
+      if (CHIP_FIELDS[key]) {
+        setChip(CHIP_FIELDS[key], value);
+      } else if (INPUT_FIELDS[key]) {
+        $(INPUT_FIELDS[key]).val(value);
+      } else if (key === 'apartment_type') {
+        setApartmentType(value);
+      } else if (key === 'has_bathtub') {
+        $('#pplus-has-bathtub').prop('checked', true);
+      }
+    });
+    syncScopeUi();
+
+    // Da co vung/bo loc thi mo popup la sang thang o "Chi tiết" (focus o do tu mo panel qua ":focus-within" CSS, dong luoi goi y cua o Vùng);
+    // chua co gi (trang chu...) thi giu hanh vi cu: khong focus o nao, bam vao o Vùng moi hien luoi goi y.
+    $modal[0].addEventListener('shown.bs.modal', function () {
+      if (selectedAlias || selection || hasFilters()) {
+        $detailInput.trigger('focus');
+      }
+    });
+
     // Bam 1 goi y: dien ten vao o Location, chuyen focus sang o "Chi tiết" - viec doi focus nay TU
     // KICH HOAT ":focus-within" CSS co san (header.less): dong luoi goi y cua Location (khong con
     // ":focus-within" tren ".search-option" cua no), mo panel "Chi tiết" (".long-term-s3") cua o
@@ -85,17 +166,40 @@
       selectedAlias = $item.data('alias') || '';
       $locationInput.val($item.data('label') || '');
       applySuggestionFilter($item.data('filter') || null);
+      syncScopeUi();
       $suggestList.addClass('pplus-force-hide');
       $detailInput.trigger('focus');
     });
 
     $locationInput.on('focus', function () {
       $suggestList.removeClass('pplus-force-hide');
+      // Dang co vung: boi den san de go la thay the (va hien lai luoi goi y), khong phai xoa tung chu.
+      if ($locationField.hasClass('has-scope')) {
+        var el = this;
+        window.setTimeout(function () {
+          try { el.select(); } catch (err) { /* bo qua */ }
+        }, 0);
+      }
+    });
+    $locationInput.on('input', syncScopeUi);
+
+    // Nut x trong o "Vùng": bo vung dang chon (ve "Tất cả Hà Nội"), de trong o va mo luoi goi y de chon vung khac.
+    $modal.on('click', '.pplus-scope-clear', function (e) {
+      e.preventDefault();
+      selection = null;
+      selectedAlias = '';
+      applySuggestionFilter(null);
+      $locationInput.val('').trigger('input').trigger('focus');
+      syncScopeUi();
+    });
+
+    $modal.on('click', '.pplus-reset-filters', function (e) {
+      e.preventDefault();
+      resetFilters();
     });
 
     // Goi y khi go (du an / dia diem Google) - xem pplus-search-suggest.js. Chon xong: dong popup, sang o
     // "Chi tiết" (giong chon 1 muc trong luoi goi y o tren).
-    var selection = null;
     if (window.PplusSearchSuggest) {
       window.PplusSearchSuggest.attach({
         input: $locationInput,
@@ -106,25 +210,24 @@
           selection = null;
           selectedAlias = '';
           applySuggestionFilter(null);
+          syncScopeUi();
         },
         onPick: function (sel) {
           selection = sel;
           selectedAlias = '';
           applySuggestionFilter(null);
+          syncScopeUi();
           $suggestList.addClass('pplus-force-hide');
           $detailInput.trigger('focus');
         }
       });
       var q = window.PplusSearchSuggest.currentQuery();
-      if (q) {
+      if (q && !$.trim($locationInput.val())) {
         $locationInput.val(q);
+        syncScopeUi();
       }
     }
 
-    // "Loại nhà/phòng" - 2 checkbox CUNG ten nhung KHONG loai tru nhau (khong phai radio, dung y
-    // het ban goc) - ChangeApartmentType() that: checked -> ghi de gia tri, unchecked -> xoa ve
-    // rong BAT KE checkbox con lai the nao (gia tri CUOI CUNG thang doi, khong phai "gop" ca 2).
-    var apartmentType = '';
     $modal.on('change', '.pplus-apartment-type-check', function () {
       apartmentType = this.checked ? this.value : '';
     });
@@ -147,10 +250,10 @@
     // Nut tim kiem tron xanh (".btn-search") - port "clickSubmitSearch()" nhanh don gian (trang
     // nay luon full-page-reload, khong co nhanh AJAX "isMapshow" cua ban Angular): gop TOAN BO
     // truong loc da dien thanh query string that, dieu huong toi URL /cho-thue-can-ho/ha-noi/
-    // {alias da chon}/ (hoac trang goc "/ha-noi/" neu chua bam goi y nao) - page-reference.php doc
+    // {alias da chon}/ (hoac trang goc "/ha-noi/" neu chua chon vung nao) - page-reference.php doc
     // lai cac tham so nay va gop vao $filter truoc khi goi Apartment/_GetApartments (xac nhan qua
     // goi API That: ca 10 truong duoi day DA CO SAN trong "filter" tra ve tu Reference/GetIndex,
-    // khong phai bia them).
+    // khong phai bia them). Vung mac dinh = vung cua trang dang xem (selectedAlias khoi tao tu data-context).
     $modal.on('click', '.btn-search', function () {
       var filters = {
         price_from: $('#pplus-price-from').val(),

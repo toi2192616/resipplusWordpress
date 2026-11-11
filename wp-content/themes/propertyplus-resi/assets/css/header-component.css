@@ -1847,3 +1847,46 @@ ul.office-list li.office-type:nth-child(2) input[type="checkbox"]:checked + labe
     padding: 10px 15px;
   }
 }
+
+/* 11/11/2026 - thanh goi y: chip tom tat bo loc dang ap ("2 PN · $500-900", bam mo popup, x xoa bo loc) va pill "dang xem" cho vung khong nam trong
+   12 muc "hot" (vd Condominium) - xem pplus_render_suggest_header() trong inc/render-helpers.php. */
+.suggest-header .suggest-item.pplus-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 32px;
+  margin-top: 0;
+  padding: 0 4px 0 0;
+  border: 1px solid #BF913D;
+  border-radius: 16px;
+  background: #FBF6EC;
+}
+.suggest-header .suggest-item.pplus-filter-chip .pplus-chip-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0 4px 0 12px;
+  border: 0;
+  background: none;
+  color: #8F7036;
+  cursor: pointer;
+}
+.suggest-header .suggest-item.pplus-filter-chip .pplus-chip-open .item-title {
+  margin-top: 0;
+  color: #8F7036;
+  white-space: nowrap;
+}
+.suggest-header .suggest-item.pplus-filter-chip .pplus-chip-clear {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: #8F7036;
+  font-size: 16px;
+  line-height: 19px;
+  text-align: center;
+  text-decoration: none;
+}
+.suggest-header .suggest-item.pplus-filter-chip .pplus-chip-clear:hover {
+  background: rgba(191, 145, 61, 0.2);
+}

@@ -19,6 +19,17 @@
     var $btnDelete = $panel.find('.btn-delete-text');
     var selectedAlias = '';
     var apartmentType = '';
+    // Lua chon tu goi y khi go (du an / dia diem Google - pplus-search-suggest.js); null = khong chon gi.
+    var selection = null;
+
+    // 11/11/2026: vung + bo loc cua trang dang xem (xem pplus_search_context() trong inc/render-helpers.php) - giong popup desktop
+    // (pplus-search-modal.js): mo panel la co san vung dang xem; bam o tim kiem tren thanh di thang sang buoc loc (buoc 2), khong bat chon lai goi y.
+    var ctx = {};
+    try {
+      ctx = JSON.parse($panel.attr('data-context') || '{}') || {};
+    } catch (e) {
+      ctx = {};
+    }
 
     // Ban Angular giu "searchBase.filter" trong bo nho SPA xuyen suot cac lan chuyen trang; WP la
     // full-page-reload nen luu vao sessionStorage - chi hien lai neu URL hien tai VAN LA trang cua
@@ -84,18 +95,75 @@
       });
     }
 
+    function setApartmentType(value) {
+      apartmentType = value ? String(value) : '';
+      $('.pplus-m-apartment-type').each(function () {
+        this.checked = apartmentType !== '' && this.value === apartmentType;
+      });
+    }
+
+    // "Xóa bộ lọc": ve het ve mac dinh ("Bất kỳ"/rong/bo tich) - KE CA bo loc ma vung dang chon tu mang theo.
+    function resetFilters() {
+      mapped = [];
+      $.each(CHIP_FIELDS, function (_, id) { setChip(id, ''); });
+      $.each(INPUT_FIELDS, function (_, sel) { $(sel).val(''); });
+      setApartmentType('');
+      $('#pplus-m-has-bathtub').prop('checked', false);
+    }
+
+    // Vung/bo loc cua trang dang xem -> dien san (uu tien hon sessionStorage ben duoi, vi ctx dung ca khi vao trang bang menu/link).
+    if (ctx.alias && ctx.label) {
+      $toolInput.val(ctx.label);
+      $filter.val(ctx.label);
+      selectedAlias = ctx.alias;
+    }
+    if (ctx.selection && ctx.selection.label) {
+      selection = ctx.selection;
+      $toolInput.val(ctx.selection.label);
+      $filter.val(ctx.selection.label);
+    }
+    // Bo loc CHINH vung do mang theo (vd Studio = 1 phong ngu, <=49m2) di theo vung (mapped): doi vung thi tu bo; bo loc nguoi dung da ap
+    // (query string) dien sau, khong bi doi vung dong vao.
+    if (ctx.alias || ctx.selection || !$.isEmptyObject(ctx.filters || {})) {
+      applySuggestionFilter(ctx.scopeFilters && !$.isEmptyObject(ctx.scopeFilters) ? ctx.scopeFilters : null);
+      $.each(ctx.filters || {}, function (key, value) {
+        if (CHIP_FIELDS[key]) {
+          setChip(CHIP_FIELDS[key], value);
+        } else if (INPUT_FIELDS[key]) {
+          $(INPUT_FIELDS[key]).val(value);
+        } else if (key === 'apartment_type') {
+          setApartmentType(value);
+        } else if (key === 'has_bathtub') {
+          $('#pplus-m-has-bathtub').prop('checked', true);
+        }
+      });
+    }
+
     var saved = readStore();
-    if (saved && saved.alias && window.location.pathname.indexOf('/' + saved.alias) > -1) {
+    if (!selectedAlias && !selection && saved && saved.alias && window.location.pathname.indexOf('/' + saved.alias) > -1) {
       $toolInput.val(saved.label);
       $filter.val(saved.label);
       selectedAlias = saved.alias;
       applySuggestionFilter(saved.filter);
     }
 
+    function hasScope() {
+      return !!(selectedAlias || selection);
+    }
+
+    // Dong "Vùng: ... [Đổi]" o dau buoc loc: chi hien khi co vung da chon.
+    function syncScopeRow() {
+      var $row = $panel.find('.pplus-m-scope');
+      var label = $.trim($filter.val());
+      $row.toggle(hasScope() && label !== '');
+      $row.find('.pplus-m-scope-name').text(label);
+    }
+
     function syncFilterButtons() {
       var hasText = $.trim($filter.val()) !== '';
       $btnSearch.toggleClass('hidden', !hasText);
       $btnDelete.toggleClass('hidden', !hasText);
+      syncScopeRow();
     }
     syncFilterButtons();
 
@@ -104,6 +172,7 @@
       $panel.find('.m-step').toggle(n === 1);
       $panel.find('.m-step-content').toggle(n === 2);
       $panel.find('.btnNextStep').toggle(n !== 2);
+      syncScopeRow();
     }
     function currentStep() {
       return parseInt($panel.attr('step'), 10) || 1;
@@ -119,10 +188,19 @@
     $(document).on('click', '[data-pplus-search-mobile]', function (e) {
       e.preventDefault();
       var v = $(this).attr('data-pplus-search-mobile');
+      // Da co vung (dang o 1 quan/loai/khu vuc...): bam o tim kiem tren thanh = di thang sang buoc loc; doi vung bang nut "Đổi" o dau buoc do.
+      // Chi ap dung khi MO panel (dang dong); dang mo thi giu hanh vi cu.
+      if (v === '1' && hasScope() && !$panel.hasClass('showSearch')) {
+        v = '2';
+      }
       if (v === '1' || v === '2') {
         showSearchBase(parseInt(v, 10));
       } else {
-        // Nut "Tim kiem" o menu chan trang: header.showSearchBase() CHI toggle class, giu nguyen buoc.
+        // Nut "Tim kiem" o menu chan trang (loi vao chinh tren trang danh sach - thanh ".searching-tool" tren cung chi hien o che do ban do):
+        // header.showSearchBase() CHI toggle class, giu nguyen buoc. 11/11/2026: dang o 1 vung thi mo thang buoc loc (giong o tim kiem tren thanh).
+        if (hasScope() && !$panel.hasClass('showSearch')) {
+          applyStep(2);
+        }
         $panel.toggleClass('showSearch');
       }
     });
@@ -139,8 +217,6 @@
       applyStep(currentStep() + 1);
     });
 
-    // Lua chon tu goi y khi go (du an / dia diem Google - pplus-search-suggest.js); null = khong chon gi.
-    var selection = null;
     if (window.PplusSearchSuggest) {
       window.PplusSearchSuggest.attach({
         input: $filter,
@@ -162,7 +238,7 @@
         }
       });
       var q = window.PplusSearchSuggest.currentQuery();
-      if (q) {
+      if (q && !$.trim($filter.val())) {
         $toolInput.val(q);
         $filter.val(q);
       }
@@ -172,8 +248,17 @@
     $btnDelete.on('click', function () {
       $filter.val('').trigger('input').trigger('focus');
       selectedAlias = '';
+      selection = null;
       applySuggestionFilter(null);
       syncFilterButtons();
+    });
+
+    // Buoc loc: "Đổi" -> quay lai buoc 1 de chon vung khac; "Xóa bộ lọc" -> ve mac dinh.
+    $panel.on('click', '.pplus-m-scope-change', function () {
+      applyStep(1);
+    });
+    $panel.on('click', '.pplus-m-reset', function () {
+      resetFilters();
     });
 
     // DataCoreroupToBack(item, 2): dien ten vao o, roi sang buoc tiep theo (buoc 2).
