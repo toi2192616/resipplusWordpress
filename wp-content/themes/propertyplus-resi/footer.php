@@ -13,7 +13,11 @@ get_template_part('parts/favourite-modals');
 // (".btn-modal-search") nhung modal CHUA TUNG duoc render o dau (bug "written but never wired" -
 // xem chi tiet trong parts/search-modal.php). Dat toan site giong 2 modal tren, vi nut mo cung nam
 // site-wide trong suggest-header.
-get_template_part('parts/search-modal');
+// 11/11/2026: KHONG in o trang chu - o do thanh tim kiem nam ngay trong hero (front-page.php), dung cung luoi goi y + panel loc + JS, va khong co nut mo
+// popup nay; in them se TRUNG id (search-modal-input1, pplus-price-from...).
+if (!is_front_page()) {
+    get_template_part('parts/search-modal');
+}
 
 // Thanh tim kiem mobile (.searching-tool) + panel tim kiem mobile 2 buoc (#search-tab-mobile) - ban
 // mobile cua #searchModal, ban that <app-search-base> co mat o gan nhu moi trang; xem

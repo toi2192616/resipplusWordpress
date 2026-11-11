@@ -13,7 +13,14 @@
   'use strict';
 
   $(function () {
+    // Goc cua thanh tim kiem: popup "#searchModal" (moi trang co hang goi y) hoac - o TRANG CHU, noi footer.php khong in popup - chinh thanh
+    // tim kiem trong hero "#pplus-home-search" (front-page.php). Cung markup luoi goi y/panel loc (parts/search-suggest-grid.php,
+    // parts/search-filter-panel.php), cung id, nen toan bo logic ben duoi dung chung.
     var $modal = $('#searchModal');
+    var isModal = $modal.length > 0;
+    if (!isModal) {
+      $modal = $('#pplus-home-search');
+    }
     if (!$modal.length) {
       return;
     }
@@ -103,6 +110,49 @@
       return any || apartmentType !== '' || $('#pplus-has-bathtub').is(':checked');
     }
 
+    // TRANG CHU: thanh tim kiem nam giua hero, popup (luoi goi y ~560px / panel loc ~490px) mo XUONG DUOI thanh nen tren man hinh thap bi cat o day. Bam vao
+    // 1 o -> cuon mem de CA thanh tim kiem + popup nam giua khung hinh (popup cao hon khung hinh thi dua thanh tim kiem len gan dinh de thay tu tren xuong).
+    // Do chieu cao NOI DUNG popup (khong do khung ".focus-popup": o trang thai an no nam o bottom:5360px va truot xuong trong 0.3s nen vi tri dang
+    // do dang trong qua trinh chuyen dong), vi tri cuoi cung luon la ngay duoi thanh (top:100% + margin 5px).
+    var centerTimer = null;
+    function centerSearchBar() {
+      if (isModal || window.innerWidth < 1025) {
+        return;
+      }
+      var bar = $modal.find('.box-search')[0];
+      if (!bar) {
+        return;
+      }
+      var popupH = 0;
+      try {
+        $modal.find('.search-option:focus-within .focus-popup').each(function () {
+          var h = 0;
+          $(this).children().each(function () { h += this.offsetHeight || 0; });
+          popupH = Math.max(popupH, h);
+        });
+      } catch (err) {
+        popupH = 520; // trinh duyet khong co ":focus-within" (rat cu): lay chieu cao thuong gap
+      }
+      var barRect = bar.getBoundingClientRect();
+      var viewH = window.innerHeight;
+      var regionTop = barRect.top + window.pageYOffset;
+      var regionH = barRect.height + (popupH ? popupH + 10 : 0);
+      var target = regionH > viewH - 48 ? regionTop - 100 : regionTop + regionH / 2 - viewH / 2;
+      target = Math.max(0, Math.min(target, document.documentElement.scrollHeight - viewH));
+      if (Math.abs(target - window.pageYOffset) < 12) {
+        return;
+      }
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: target, behavior: reduce ? 'auto' : 'smooth' });
+    }
+    function scheduleCenter(delay) {
+      if (isModal) {
+        return;
+      }
+      window.clearTimeout(centerTimer);
+      centerTimer = window.setTimeout(centerSearchBar, delay || 40);
+    }
+
     // Vung dang chon (alias tu goi y / du an / dia diem Google): to dam o "Vùng" + hien nut x; ".has-value" = o co chu (nut x).
     function syncScopeUi() {
       $locationField.toggleClass('has-scope', !!(selectedAlias || selection));
@@ -136,11 +186,13 @@
 
     // Da co vung/bo loc thi mo popup la sang thang o "Chi tiết" (focus o do tu mo panel qua ":focus-within" CSS, dong luoi goi y cua o Vùng);
     // chua co gi (trang chu...) thi giu hanh vi cu: khong focus o nao, bam vao o Vùng moi hien luoi goi y.
-    $modal[0].addEventListener('shown.bs.modal', function () {
-      if (selectedAlias || selection || hasFilters()) {
-        $detailInput.trigger('focus');
-      }
-    });
+    if (isModal) {
+      $modal[0].addEventListener('shown.bs.modal', function () {
+        if (selectedAlias || selection || hasFilters()) {
+          $detailInput.trigger('focus');
+        }
+      });
+    }
 
     // Bam 1 goi y: dien ten vao o Location, chuyen focus sang o "Chi tiết" - viec doi focus nay TU
     // KICH HOAT ":focus-within" CSS co san (header.less): dong luoi goi y cua Location (khong con
@@ -182,6 +234,10 @@
       }
     });
     $locationInput.on('input', syncScopeUi);
+    // Trang chu: bam/focus vao 1 o (kể ca bam lai o dang focus) -> dua thanh tim kiem + popup ra giua khung hinh.
+    $modal.on('focusin click', '.search-input', function () {
+      scheduleCenter(40);
+    });
 
     // Nut x trong o "Vùng": bo vung dang chon (ve "Tất cả Hà Nội"), de trong o va mo luoi goi y de chon vung khac.
     $modal.on('click', '.pplus-scope-clear', function (e) {
@@ -206,6 +262,12 @@
         box: $suggestList,
         grid: $suggestList.find('.pplus-show-district'),
         variant: 'desktop',
+        // Ket qua goi y khi go (du an/Google) lam popup cao/thap di -> can lai giua khung hinh (trang chu).
+        onToggle: function (visible) {
+          if (visible) {
+            scheduleCenter(120);
+          }
+        },
         onType: function () {
           selection = null;
           selectedAlias = '';
@@ -254,7 +316,14 @@
     // lai cac tham so nay va gop vao $filter truoc khi goi Apartment/_GetApartments (xac nhan qua
     // goi API That: ca 10 truong duoi day DA CO SAN trong "filter" tra ve tu Reference/GetIndex,
     // khong phai bia them). Vung mac dinh = vung cua trang dang xem (selectedAlias khoi tao tu data-context).
-    $modal.on('click', '.btn-search', function () {
+    // Trang chu: Enter trong 1 o / nut kinh lup (type=submit) cung di qua day thay vi gui form GET cu (search_key/detail khong loc duoc gi).
+    $modal.on('submit', 'form', function (e) {
+      e.preventDefault();
+      $modal.find('.btn-search').first().trigger('click');
+    });
+
+    $modal.on('click', '.btn-search', function (e) {
+      e.preventDefault();
       var filters = {
         price_from: $('#pplus-price-from').val(),
         price_to: $('#pplus-price-to').val(),

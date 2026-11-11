@@ -104,29 +104,36 @@ function pplus_render_home_apartment_groups(array $groups, string $list_slug, st
                 <div class="form-search-destop">
                     <div class="tab-content">
                         <div class="tab-pane box-search-pane fade show active">
-                            <div class="searching-bar">
+                            <?php // 11/11/2026: nhu popup tim kiem o cac trang khac (parts/search-modal.php) va nhu trang that: bam o "Địa điểm" -> luoi "Hoặc chọn theo gợi ý",
+                            // bam o "Chi tiết" -> panel loc (gia, phong ngu...). Luoi + panel DUNG CHUNG voi popup (parts/search-suggest-grid.php, parts/search-filter-panel.php)
+                            // va do cung assets/js/pplus-search-modal.js dieu khien (goc "#pplus-home-search" thay cho "#searchModal"); footer.php KHONG in #searchModal o
+                            // trang chu (khong co nut mo no) nen cac id khong bi trung. Truoc day 2 o nay chi co goi y khi GO chu. ?>
+                            <div class="searching-bar" id="pplus-home-search"
+                                data-base-url="<?php echo esc_url(home_url($lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi')); ?>"
+                                data-context="<?php echo esc_attr(wp_json_encode(pplus_search_context(), JSON_UNESCAPED_UNICODE)); ?>">
                                 <form action="<?php echo esc_url(home_url($lang_prefix . '/' . pplus_apartment_list_root())); ?>" method="get" autocomplete="off" id="office-form" class="office-form">
                                     <div class="box-search row">
-                                        <div class="col-md-5 search-input-group">
+                                        <div class="col-md-5 search-input-group pplus-search-loc">
                                             <div class="search-option">
                                                 <div class="search-controls">
                                                     <div class="control">
-                                                        <label class="search-label" for="pplus-home-search-key"><?php echo esc_html(pplus_localize('Nhập địa điểm')); ?>...</label>
-                                                        <input class="search-input form-control" id="pplus-home-search-key" type="text" name="search_key" placeholder="<?php echo esc_attr(pplus_localize('Bạn muốn đi đâu')); ?>" />
+                                                        <label class="search-label" for="search-modal-input1"><?php echo esc_html(pplus_localize('Nhập địa điểm')); ?>...</label>
+                                                        <input class="search-input form-control" id="search-modal-input1" type="text" name="search_key" placeholder="<?php echo esc_attr(pplus_localize('Bạn muốn đi đâu')); ?>" />
+                                                        <button type="button" class="pplus-scope-clear" aria-label="<?php echo esc_attr(pplus_t('Xóa vùng đã chọn', 'Clear the selected area')); ?>" title="<?php echo esc_attr(pplus_t('Xóa vùng đã chọn', 'Clear the selected area')); ?>">&times;</button>
                                                     </div>
                                                 </div>
-                                                <?php // Goi y khi go (pplus-search-suggest.js dien noi dung + hien/an). ?>
-                                                <div class="focus-popup first-popup" id="pplus-home-suggest" style="display:none"></div>
+                                                <?php get_template_part('parts/search-suggest-grid'); ?>
                                             </div>
                                         </div>
                                         <div class="col-md-5 search-input-group">
                                             <div class="search-option">
                                                 <div class="search-controls">
                                                     <div class="control">
-                                                        <label class="search-label" for="pplus-home-search-detail"><?php echo esc_html(pplus_localize('Chi tiết')); ?></label>
-                                                        <input class="search-input form-control" id="pplus-home-search-detail" type="text" name="detail" placeholder="<?php echo esc_attr(pplus_localize('Chi tiết căn hộ của bạn')); ?>" />
+                                                        <label class="search-label" for="search-modal-input2"><?php echo esc_html(pplus_localize('Chi tiết')); ?></label>
+                                                        <input class="search-input form-control" id="search-modal-input2" type="text" name="detail" placeholder="<?php echo esc_attr(pplus_localize('Chi tiết căn hộ của bạn')); ?>" />
                                                     </div>
                                                 </div>
+                                                <?php get_template_part('parts/search-filter-panel'); ?>
                                             </div>
                                         </div>
                                         <div class="col-md-2">

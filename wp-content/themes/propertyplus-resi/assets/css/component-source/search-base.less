@@ -2529,10 +2529,10 @@
 /* 11/11/2026 - popup tim kiem (desktop #searchModal + mobile #search-tab-mobile) nhan biet vung/bo loc cua trang dang xem: o "Vung" co nut x,
    vung dang chon to dam (mau vang dam nhu muc "dang xem" tren thanh goi y), nut "Xoa bo loc", dong "Vung: ... [Doi]" o buoc loc mobile.
    Xem assets/js/pplus-search-modal.js, assets/js/pplus-search-mobile.js, parts/search-modal.php, parts/search-mobile.php. */
-#searchModal .search-input-group.s1 .search-controls .control {
+.search-input-group.pplus-search-loc .search-controls .control {
   position: relative;
 }
-#searchModal .pplus-scope-clear {
+.pplus-search-loc .pplus-scope-clear {
   display: none;
   position: absolute;
   right: 4px;
@@ -2549,26 +2549,26 @@
   text-align: center;
   cursor: pointer;
 }
-#searchModal .pplus-scope-clear:hover {
+.pplus-search-loc .pplus-scope-clear:hover {
   background: #E0E0E0;
 }
-#searchModal .search-input-group.s1.has-value .pplus-scope-clear {
+.search-input-group.pplus-search-loc.has-value .pplus-scope-clear {
   display: block;
 }
-#searchModal .search-input-group.s1.has-value .search-input {
+.search-input-group.pplus-search-loc.has-value .search-input {
   padding-right: 34px;
   text-overflow: ellipsis;
 }
-#searchModal .search-input-group.s1.has-scope .search-input {
+.search-input-group.pplus-search-loc.has-scope .search-input {
   font-weight: 600;
   color: #8F7036;
 }
-#searchModal .pplus-filter-reset-row,
+.focus-popup .pplus-filter-reset-row,
 #search-tab-mobile .pplus-filter-reset-row {
   text-align: right;
   padding: 10px 0 0;
 }
-#searchModal .pplus-reset-filters,
+.focus-popup .pplus-reset-filters,
 #search-tab-mobile .pplus-m-reset {
   background: none;
   border: 0;
@@ -2621,7 +2621,7 @@
 }
 
 /* 11/11/2026 - luoi goi y desktop: tu 16 len 28 muc (them cac muc cua menu) = 7 hang x ~66px, nang tran cuon 450 -> 520px de hang cuoi khong bi cat. */
-#searchModal .pplus-show-district .suggestDistrict .list-suggest {
+.focus-popup .pplus-show-district .suggestDistrict .list-suggest {
   max-height: 520px;
 }
 
