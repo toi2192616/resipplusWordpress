@@ -75,6 +75,7 @@
       });
       mapped = [];
       if (!filter || typeof filter !== 'object') {
+        syncSummary();
         return;
       }
       $.each(filter, function (key, value) {
@@ -86,6 +87,7 @@
           mapped.push(key);
         }
       });
+      syncSummary();
     }
 
     function setApartmentType(value) {
@@ -102,12 +104,47 @@
       $.each(INPUT_FIELDS, function (_, sel) { $(sel).val(''); });
       setApartmentType('');
       $('#pplus-has-bathtub').prop('checked', false);
+      syncSummary();
     }
     function hasFilters() {
       var any = false;
       $.each(CHIP_FIELDS, function (_, id) { if ($('#' + id).val() !== '') { any = true; } });
       $.each(INPUT_FIELDS, function (_, sel) { if ($(sel).val() !== '') { any = true; } });
       return any || apartmentType !== '' || $('#pplus-has-bathtub').is(':checked');
+    }
+
+    // Tom tat bo loc dang chon hien NGAY TRONG o "Chi tiết" (o thu 2, doc-chi): khong can mo panel moi biet dang loc gi. Cung cach ghep voi chip tren
+    // thanh goi y (pplus_search_filter_summary() trong inc/render-helpers.php): loai nha, phong ngu, phong tam, gia, dien tich, tang, bon tam; toi da
+    // 3 phan roi "+N". Nhan lay tu chinh panel/PPLUS_SUGGEST_CONFIG.i18n nen dung ngon ngu hien tai.
+    function filterSummary() {
+      var i18n = (window.PPLUS_SUGGEST_CONFIG && window.PPLUS_SUGGEST_CONFIG.i18n) || {};
+      var parts = [];
+      function range(from, to, prefix, suffix) {
+        var a = parseInt($(from).val(), 10) || 0;
+        var b = parseInt($(to).val(), 10) || 0;
+        if (a > 0 && b > 0) { return prefix + a + '–' + b + suffix; }
+        if (a > 0) { return '≥ ' + prefix + a + suffix; }
+        return b > 0 ? '≤ ' + prefix + b + suffix : '';
+      }
+      if (apartmentType) {
+        parts.push($.trim($('.pplus-apartment-type-check[value="' + apartmentType + '"]').closest('label').text()));
+      }
+      if ($('#pplus-bedroom-qty').val()) { parts.push($('#pplus-bedroom-qty').val() + ' ' + (i18n.bedShort || 'BR')); }
+      if ($('#pplus-bathroom-qty').val()) { parts.push($('#pplus-bathroom-qty').val() + ' ' + (i18n.bathShort || 'Bath')); }
+      $.each([
+        range('#pplus-price-from', '#pplus-price-to', '$', ''),
+        range('#pplus-area-from', '#pplus-area-to', '', ' m²'),
+        range('#pplus-floor-from', '#pplus-floor-to', (i18n.floorShort || 'Floor') + ' ', '')
+      ], function (_, p) { if (p) { parts.push(p); } });
+      if ($('#pplus-has-bathtub').is(':checked')) {
+        parts.push($.trim($('#pplus-has-bathtub').closest('label').text()));
+      }
+      return parts.length > 3 ? parts.slice(0, 3).join(' · ') + ' +' + (parts.length - 3) : parts.join(' · ');
+    }
+    function syncSummary() {
+      var text = filterSummary();
+      $detailInput.val(text).attr('title', text);
+      $detailInput.closest('.search-input-group').toggleClass('has-summary', text !== '');
     }
 
     // TRANG CHU: thanh tim kiem nam giua hero, popup (luoi goi y ~560px / panel loc ~490px) mo XUONG DUOI thanh nen tren man hinh thap bi cat o day. Bam vao
@@ -183,6 +220,7 @@
       }
     });
     syncScopeUi();
+    syncSummary();
 
     // Da co vung/bo loc thi mo popup la sang thang o "Chi tiết" (focus o do tu mo panel qua ":focus-within" CSS, dong luoi goi y cua o Vùng);
     // chua co gi (trang chu...) thi giu hanh vi cu: khong focus o nao, bam vao o Vùng moi hien luoi goi y.
@@ -292,6 +330,11 @@
 
     $modal.on('change', '.pplus-apartment-type-check', function () {
       apartmentType = this.checked ? this.value : '';
+    });
+    // Moi thay doi trong panel loc (bam o so phong, go gia/dien tich/tang, tich o) -> cap nhat tom tat o "Chi tiết". setTimeout 0 de chay SAU cac handler
+    // tren (ghi gia tri vao input an, loc ky tu khong phai so, cap nhat apartmentType).
+    $modal.on('input change click', '.focus-popup', function () {
+      window.setTimeout(syncSummary, 0);
     });
 
     // Pill chon so phong ngu/tam ("Phòng ngủ"/"Phòng tắm", listValue=[1..8] - search-base.component.ts

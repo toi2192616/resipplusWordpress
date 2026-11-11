@@ -125,12 +125,12 @@ function pplus_render_home_apartment_groups(array $groups, string $list_slug, st
                                                 <?php get_template_part('parts/search-suggest-grid'); ?>
                                             </div>
                                         </div>
-                                        <div class="col-md-5 search-input-group">
+                                        <div class="col-md-5 search-input-group pplus-search-detail">
                                             <div class="search-option">
                                                 <div class="search-controls">
                                                     <div class="control">
                                                         <label class="search-label" for="search-modal-input2"><?php echo esc_html(pplus_localize('Chi tiết')); ?></label>
-                                                        <input class="search-input form-control" id="search-modal-input2" type="text" name="detail" placeholder="<?php echo esc_attr(pplus_localize('Chi tiết căn hộ của bạn')); ?>" />
+                                                        <input class="search-input form-control" id="search-modal-input2" type="text" readonly="readonly" placeholder="<?php echo esc_attr(pplus_localize('Chi tiết căn hộ của bạn')); ?>" />
                                                     </div>
                                                 </div>
                                                 <?php get_template_part('parts/search-filter-panel'); ?>

@@ -2028,3 +2028,14 @@
   min-width: 0;
   width: 100%;
 }
+
+/* 11/11/2026 - o "Chi tiet" (o thu 2) hien TOM TAT bo loc da chon ("2 BR · $500-900") de nguoi dung biet minh da chon dung chua ma khong phai mo panel:
+   o doc-chi (bam van mo panel), chu dam + mau vang khi co noi dung, cat "..." khi dai. Xem filterSummary() trong assets/js/pplus-search-modal.js. */
+.search-input-group.pplus-search-detail .search-input {
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+.search-input-group.pplus-search-detail.has-summary .search-input {
+  font-weight: 600;
+  color: #8F7036;
+}

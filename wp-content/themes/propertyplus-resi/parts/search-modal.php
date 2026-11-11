@@ -110,12 +110,12 @@ $lang_prefix    = pplus_lang_prefix();
                                                         <?php get_template_part('parts/search-suggest-grid'); ?>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-5 search-input-group s3">
+                                                <div class="col-md-5 search-input-group s3 pplus-search-detail">
                                                     <div class="search-option">
                                                         <div class="search-controls">
                                                             <div class="control">
                                                                 <label class="search-label" for="search-modal-input2"><?php echo esc_html(pplus_localize('Chi tiết')); ?></label>
-                                                                <input class="search-input form-control" id="search-modal-input2" placeholder="<?php echo esc_attr(pplus_localize('Chi tiết căn hộ của bạn')); ?>" />
+                                                                <input class="search-input form-control" id="search-modal-input2" readonly="readonly" placeholder="<?php echo esc_attr(pplus_localize('Chi tiết căn hộ của bạn')); ?>" />
                                                             </div>
                                                         </div>
                                                         <?php // Panel "Chi tiết" - port DAY DU tu search-base.component.html dong 341-469, xem docblock dau file; markup dung chung voi o tim kiem trang chu. ?>

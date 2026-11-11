@@ -435,6 +435,10 @@ add_action('wp_enqueue_scripts', function () {
             'location'  => $pplus_lang === 'ja' ? '場所' : pplus_t('Địa điểm', 'Location'),
             'byProject' => pplus_localize('Tìm theo tên dự án'),
             'byGoogle'  => pplus_localize('Tìm theo định vị google'),
+            // Tom tat bo loc trong o "Chi tiết" cua thanh tim kiem (pplus-search-modal.js filterSummary(), cung cach ghep voi pplus_search_filter_summary()).
+            'bedShort'  => pplus_t('PN', 'BR'),
+            'bathShort' => pplus_t('WC', 'Bath'),
+            'floorShort' => pplus_t('Tầng', 'Floor'),
         ],
     ]) . ';', 'before');
 
