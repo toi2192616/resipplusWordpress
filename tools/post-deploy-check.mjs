@@ -166,14 +166,16 @@ async function checkRedirects() {
 const SITEMAP = { sets: {}, all: [] };
 
 // Nguồn sitemap = Admin (inc/sitemap-admin.php, 5/11/2026, theo Dev A): /sitemap.xml và /sitemaps/sitemap_*.xml là PROXY của route sitemap bên Admin,
-// không còn tính qua WP-Cron. Giữ đúng dạng web chính cũ: /sitemap.xml là <urlset> liệt kê 6 file con (không phải <sitemapindex>) và mọi <loc> là
+// không còn tính qua WP-Cron. Giữ đúng dạng web chính cũ: /sitemap.xml là <urlset> liệt kê 5 file con (không phải <sitemapindex>; villa đã bỏ 13/11/2026) và mọi <loc> là
 // domain chính propertyplus.com.vn (kể cả khi kiểm server test). Nội dung "như Admin": villa (301/410) và vài URL rác trong "pages" là có sẵn ở nguồn.
 async function checkSitemapAdmin(idx) {
   say('pass', 'Sitemap lấy từ Admin (X-Pplus-Sitemap-Source: admin) — không phụ thuộc WP-Cron');
-  const names = ['products', 'posts', 'pages', 'quan', 'type', 'villa'];
+  // 13/11/2026: Dev đã bỏ 'villa' khỏi index (biệt thự đã gỡ khỏi web) → 5 file con là trạng thái ĐÚNG; 'villa' chỉ kiểm nếu index vẫn còn liệt kê.
   const listed = [...idx.text.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].replace(/&amp;/g, '&'));
-  const missing = names.filter((f) => !listed.some((c) => c.endsWith(`/sitemaps/sitemap_${f}.xml`)));
-  check(!missing.length, 'Index của Admin liệt kê đủ 6 file con (products, posts, pages, quan, type, villa)', `thiếu: ${missing.join(', ')}`);
+  const hasVilla = listed.some((c) => c.endsWith('/sitemaps/sitemap_villa.xml'));
+  const names = ['products', 'posts', 'pages', 'quan', 'type', ...(hasVilla ? ['villa'] : [])];
+  const missing = ['products', 'posts', 'pages', 'quan', 'type'].filter((f) => !listed.some((c) => c.endsWith(`/sitemaps/sitemap_${f}.xml`)));
+  check(!missing.length, `Index của Admin liệt kê đủ 5 file con (products, posts, pages, quan, type)${hasVilla ? ' + villa (còn sót — nên bỏ)' : ''}`, `thiếu: ${missing.join(', ')}`);
   const min = { products: 2400, posts: 150, pages: 20, quan: 250, type: 250, villa: 0 };
   const sets = {};
   for (const f of names) {
@@ -200,9 +202,11 @@ async function checkSitemapAdmin(idx) {
   await pool(sets.pages, 3, async (u) => { const r = await http(pathOf(u)); if (r.status !== 200) pagesBad.push(`${r.status} ${pathOf(u)}`); });
   check(!pagesBad.length, 'Mọi URL trong sitemap_pages.xml trả 200', `${pagesBad.length} URL không 200 (URL rác có sẵn ở nguồn Admin, nên xoá khỏi Admin): ${pagesBad.slice(0, 4).join(' ; ')}`, 'warn');
   // villa: Resi 301 sang căn hộ tương ứng (hoặc 410 với biệt thự đã gỡ) — chỉ cần KHÔNG 5xx.
-  const villaRows = await pool(pick(sets.villa, 5), 3, async (u) => ({ u, r: await http(pathOf(u), { retry503: false }) }));
-  const villaBad = villaRows.filter(({ r }) => r.status >= 500 || r.status === 0);
-  check(!villaBad.length, `${villaRows.length} URL biệt thự lấy mẫu trả 301/410 như thiết kế (không 5xx)`, villaBad.map(({ u, r }) => `${r.status} ${pathOf(u)}`).join(' ; '));
+  if (sets.villa) {
+    const villaRows = await pool(pick(sets.villa, 5), 3, async (u) => ({ u, r: await http(pathOf(u), { retry503: false }) }));
+    const villaBad = villaRows.filter(({ r }) => r.status >= 500 || r.status === 0);
+    check(!villaBad.length, `${villaRows.length} URL biệt thự lấy mẫu trả 301/410 như thiết kế (không 5xx)`, villaBad.map(({ u, r }) => `${r.status} ${pathOf(u)}`).join(' ; '));
+  }
 
   const picks = Object.entries(SITEMAP.sets).flatMap(([k, v]) => pick(v, SAMPLE).map((u) => [k, u]));
   const rows = await pool(picks, 3, async ([k, u]) => { const r = await http(pathOf(u)); return { k, u, r }; });
