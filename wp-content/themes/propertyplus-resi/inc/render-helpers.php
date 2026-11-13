@@ -81,6 +81,45 @@ function pplus_rewrite_content_links(string $html): string {
 }
 
 /**
+ * 13/11/2026: ghi anh JPEG/PNG lon (bai SEO hien 638x478) thanh WebP <= $max_w px ngay tu du lieu nhi phan (khong goi HTTP, khong doi hang doi WebP).
+ * Lighthouse: 2 anh JPEG 174KB + 138KB tren trang quan Ba Dinh. false = khong tao duoc / khong nho hon it nhat 15% -> noi goi giu file goc.
+ */
+function pplus_inline_to_webp(string $bin, string $file, int $max_w = 800, int $quality = 75): bool {
+    if (!function_exists('imagewebp') || !function_exists('imagecreatefromstring') || !function_exists('imagescale')) {
+        return false;
+    }
+    if (strlen($bin) > (defined('PPLUS_WEBP_MAX_BYTES') ? PPLUS_WEBP_MAX_BYTES : 4194304)) {
+        return false;
+    }
+    $im = @imagecreatefromstring($bin);
+    if (!$im) {
+        return false;
+    }
+    if (imagesx($im) > $max_w) {
+        $scaled = imagescale($im, $max_w, -1, IMG_BICUBIC);
+        if ($scaled) {
+            imagedestroy($im);
+            $im = $scaled;
+        }
+    }
+    imagepalettetotruecolor($im);
+    imagealphablending($im, true);
+    imagesavealpha($im, true);
+    $tmp = $file . '.' . uniqid('', true) . '.tmp';
+    $ok  = @imagewebp($im, $tmp, $quality);
+    imagedestroy($im);
+    if (!$ok || !is_file($tmp) || filesize($tmp) >= strlen($bin) * 0.85) {
+        @unlink($tmp);
+        return false;
+    }
+    if (!@rename($tmp, $file) && !is_file($file)) {
+        @unlink($tmp);
+        return false;
+    }
+    return true;
+}
+
+/**
  * 23/10/2026: anh base64 nhung thang trong du lieu API (src="data:image/...;base64,...") -> file tinh trong
  * uploads/pplus-inline-img/<md5>.<ext>, tra ve URL cua file do. Do thuc te: mo ta quan Ba Dinh (A3) co 3 anh JPEG
  * base64 = 445KB nam NGAY TRONG HTML (trang 716KB, base64 gan nhu khong nen gzip duoc, tai het truoc khi trinh
@@ -117,6 +156,22 @@ function pplus_data_uri_to_url(string $value): string {
     }
     $dir  = $uploads['basedir'] . '/pplus-inline-img';
     $name = $key . '.' . $ext;
+    // JPEG/PNG lon -> WebP <= 800px (xem pplus_inline_to_webp()). Da co file .webp -> dung luon; thu 1 lan, that bai thi danh dau .skip va dung file goc nhu cu.
+    if (($ext === 'jpg' || $ext === 'png') && function_exists('pplus_webp_enabled') && pplus_webp_enabled()) {
+        $wfile = $dir . '/' . $key . '.webp';
+        if (is_file($wfile)) {
+            return $memo[$key] = $uploads['baseurl'] . '/pplus-inline-img/' . $key . '.webp';
+        }
+        if (!is_file($wfile . '.skip')) {
+            $raw = base64_decode((string) preg_replace('/\s+/', '', substr($value, strlen($m[0]))), true);
+            if ($raw !== false && strlen($raw) > 20000 && wp_mkdir_p($dir) && pplus_inline_to_webp($raw, $wfile)) {
+                return $memo[$key] = $uploads['baseurl'] . '/pplus-inline-img/' . $key . '.webp';
+            }
+            if ($raw !== false && is_dir($dir)) {
+                @touch($wfile . '.skip'); // anh nho/da nen tot/loi - khong thu lai moi request
+            }
+        }
+    }
     if (!is_file($dir . '/' . $name)) {
         $bin = base64_decode((string) preg_replace('/\s+/', '', substr($value, strlen($m[0]))), true);
         if ($bin === false || $bin === '') {
