@@ -533,6 +533,8 @@ add_action('wp_enqueue_scripts', function () {
         if ($map_key !== '') {
             printf('<link rel="preconnect" href="https://maps.googleapis.com" />' . "\n");
             printf('<link rel="preconnect" href="https://maps.gstatic.com" crossorigin />' . "\n");
+            // Anh giu cho ban do (chi PC) - preload de cung la LCP som; xem reference-index-component.css (13/11/2026).
+            printf('<link rel="preload" as="image" href="%s" type="image/webp" media="(min-width: 1025px)" fetchpriority="high" />' . "\n", esc_url(PPLUS_THEME_URI . '/assets/Content/Img/map-placeholder.webp'));
             wp_enqueue_script('pplus-reference-map', PPLUS_THEME_URI . '/assets/js/reference-map-simple.js', [], pplus_asset_version('assets/js/reference-map-simple.js'), true);
             wp_add_inline_script('pplus-reference-map', 'var PPLUS_MAP_CONFIG = ' . wp_json_encode(['key' => $map_key, 'lang' => pplus_current_lang(), 'areaUrl' => rest_url('pplus/v1/map-area')]) . ';', 'before');
         }

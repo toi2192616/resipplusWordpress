@@ -609,3 +609,34 @@
 .pplus-map-price-pin.is-active::after {
   border-top-color: #B18E4E;
 }
+
+/* 13/11/2026 - Anh giu cho ban do (chi PC >= 1025px). Tren desktop, manh ban do Google (256x256) lon hon moi anh the nen thanh LCP cua trang danh sach va chi hien sau ~4 giay.
+   Hien san 1 ban do trung tinh (cung origin, preload trong <head>) o dung cho ban do; reference-map-simple.js them .pplus-map-ready (Google ve xong) hoac .pplus-map-failed (loi/qua han) vao .box-map de go no.
+   Mobile: an han (display:none -> khong tai anh). PC: dai ban do vao che do hien san ngay tu CSS (JS pplusRestoreDesktopMapView van go class "invision-map" nhu cu, ket qua giong het, khong lech bo cuc). */
+.box-map .pplus-map-facade {
+  display: none;
+}
+@media (min-width: 1025px) {
+  .box-content .box-map.invision-map {
+    opacity: 1;
+    position: sticky;
+    z-index: auto;
+  }
+  .box-map .pplus-map-facade {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: #e9edf0 url(../Content/Img/map-placeholder.webp) center / cover no-repeat;
+    transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+  }
+  .box-map.pplus-map-ready .pplus-map-facade,
+  .box-map.pplus-map-failed .pplus-map-facade {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

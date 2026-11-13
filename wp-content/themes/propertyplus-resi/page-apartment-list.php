@@ -167,7 +167,7 @@ get_header();
                     <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/Content/Img/reply-arrow-white.svg'); ?>" alt="" width="16" height="16" />
                     <span><?php echo esc_html(pplus_localize('Quay lại')); ?></span>
                 </div>
-                <div id="pplus-reference-map" data-markers="<?php echo esc_attr(wp_json_encode($map_markers)); ?>" style="width:100%;height:100%;min-height:500px;"></div>
+                <?php if (pplus_google_map_key() !== '') : ?><div class="pplus-map-facade" aria-hidden="true"></div><?php endif; ?><div id="pplus-reference-map" data-markers="<?php echo esc_attr(wp_json_encode($map_markers)); ?>" style="width:100%;height:100%;min-height:500px;"></div>
             </div>
             <?php if (!empty($listApartments)) : ?>
                 <div class="box-list-body-mobile">

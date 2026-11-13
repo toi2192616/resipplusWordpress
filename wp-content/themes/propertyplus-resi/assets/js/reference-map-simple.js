@@ -149,6 +149,8 @@
             gestureHandling: 'greedy',
         });
 
+        google.maps.event.addListenerOnce(map, 'tilesloaded', function () { pplusMapFacade('pplus-map-ready'); });
+
         // Registry id -> PriceMarker, dung de tim dung marker can phong to khi hover the trong
         // danh sach (xem bindListHoverToMarkers ben duoi). Them vao, khong co trong ban goc.
         var markerRegistry = {};
@@ -316,6 +318,15 @@
         });
     }
 
+    // 13/11/2026 - anh giu cho ban do (PC, xem reference-index-component.css): go khi Google ve xong (.pplus-map-ready) hoac loi/qua han (.pplus-map-failed).
+    function pplusMapFacade(state) {
+        var c = document.getElementById('pplus-reference-map');
+        var box = c && c.closest ? c.closest('.box-map') : null;
+        if (box) {
+            box.classList.add(state);
+        }
+    }
+
     function loadGoogleMapsScript(apiKey, callback) {
         if (window.google && window.google.maps) {
             callback();
@@ -328,7 +339,9 @@
             (function tick() {
                 if (window.google && window.google.maps) {
                     callback();
-                } else if ((waited += 100) <= 15000) {
+                } else if ((waited += 100) > 15000) {
+                    pplusMapFacade('pplus-map-failed');
+                } else {
                     setTimeout(tick, 100);
                 }
             })();
@@ -340,6 +353,7 @@
         script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(apiKey) + '&language=' + encodeURIComponent(mapLang);
         script.async = true;
         script.onload = callback;
+        script.onerror = function () { pplusMapFacade('pplus-map-failed'); };
         document.head.appendChild(script);
     }
 
@@ -372,9 +386,27 @@
         });
     }
 
+    function pplusAfterLoadIdle(fn) {
+        var run = function () {
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(fn, { timeout: 1500 });
+            } else {
+                setTimeout(fn, 200);
+            }
+        };
+        if (document.readyState === 'complete') {
+            run();
+        } else {
+            window.addEventListener('load', run, { once: true });
+        }
+    }
+
     function pplusInitReferenceMapTrigger() {
         if (document.documentElement.clientWidth > 1024) { // 24/10/2026: >=1025 = PC
-            pplusLoadReferenceMap();
+            // 13/11/2026: PC khong tai Google Maps (~170 KB JS + tile) trong luc trang dang tai - doi window.load roi requestIdleCallback (giong ban Van phong,
+            // pplus-maps.js pplusDeferIdle). Trong luc cho, anh giu cho ban do (CSS) hien ngay -> LCP la anh do thay vi manh ban do Google ve sau ~4 giay.
+            pplusAfterLoadIdle(pplusLoadReferenceMap);
+            setTimeout(function () { pplusMapFacade('pplus-map-failed'); }, 25000); // du an toan: khong de ban do gia o lai mai neu Google khong ve duoc
         } else {
             document.addEventListener('pplus:map-view-opened', pplusLoadReferenceMap, { once: true });
         }
