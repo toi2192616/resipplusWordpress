@@ -82,12 +82,18 @@ $listing  = pplus_get_apartment_list($filter, ($paged - 1) * $per_page, $current
 $listApartments = $listing['listApartments'];
 $total_count    = $listing['total_count'];
 
-// 11/11/2026 - "VO" DU AN: khong co can ho nao dang dang VA khong co bai viet SEO hien thi -> trang chi con ten/dia chi/ban do, khong co gi de
+// 11/11/2026 - "VO" DU AN: khong co can ho nao dang dang VA khong co bai viet SEO CO NOI DUNG (>= 200 ky tu chu, xem ben duoi) -> trang chi con ten/dia chi/ban do, khong co gi de
 // Google index. Tu dong "noindex, follow" (van mo duoc, khong 410). Chi dung du lieu Admin san co: "dung dang" het can ho cua du an (hoac bo "Hien thi"
 // bai viet du an) la du an tu roi khoi index; dang lai 1 can ho la tu quay lai - khong phai doi gi o Admin. Bo qua khi nguoi dung dang loc
 // (loc ra 0 ket qua khong co nghia la du an trong). Sitemap do Admin sinh nen dieu kien tuong ung o do (xem docs/GO_LIVE_CHECKLIST.md, muc Sitemap).
 $pplus_project_filtered = (bool) array_intersect_key($_GET, array_flip(['price_from', 'price_to', 'bedroom_qty', 'bathroom_qty', 'area_from', 'area_to', 'floor_from', 'floor_to', 'apartment_type', 'has_bathtub']));
-if ((int) $total_count === 0 && empty($model['dataSelected']) && !$pplus_project_filtered) {
+// 13/11/2026 - "bai viet" phai CO CHU: 6 du an (vd Hoa Xa 745, Villa Ciputra 1964) co ban ghi dataSelected "ten suong" (chi co tieu de, content/description
+// rong) -> truoc day bi coi la "co bai viet" nen trang rong van de index. Chi 2 du an 0 can ho co bai viet that (Vinhomes Sky Lake 148, Riverside 77: >17.000 ky tu).
+$pplus_article_len = 0;
+if (!empty($model['dataSelected']) && is_array($model['dataSelected'])) {
+    $pplus_article_len = mb_strlen(trim((string) preg_replace('/\s+/u', ' ', wp_strip_all_tags((string) ($model['dataSelected']['content'] ?? '') . ' ' . (string) ($model['dataSelected']['description'] ?? '')))));
+}
+if ((int) $total_count === 0 && $pplus_article_len < (int) apply_filters('pplus_project_min_article_chars', 200) && !$pplus_project_filtered) {
     $GLOBALS['pplus_project_shell'] = true;
 }
 $total_pages    = $total_count > 0 ? (int) ceil($total_count / $per_page) : 0;

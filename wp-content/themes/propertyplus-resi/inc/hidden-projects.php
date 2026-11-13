@@ -2,7 +2,7 @@
 /**
  * "Dự án đã gỡ" - công tắc KHẨN CẤP ở phía Resi (11/11/2026). Bình thường để TRỐNG.
  *
- * QUY TẮC CHÍNH (tự động, KHÔNG đổi Admin): dự án "vỏ" - không có căn hộ nào đang đăng VÀ không có bài viết dự án đang "Hiển thị" - tự mang
+ * QUY TẮC CHÍNH (tự động, KHÔNG đổi Admin): dự án "vỏ" - không có căn hộ nào đang đăng VÀ không có bài viết dự án CÓ NỘI DUNG (>= 200 ký tự chữ; bản ghi bài viết chỉ có tiêu đề không tính, 13/11/2026) - tự mang
  * "noindex, follow" (xem page-project-detail.php + bộ lọc wp_robots bên dưới). Nhân viên gỡ dự án bằng cách "dừng đăng" hết căn hộ của dự án
  * (và bỏ "Hiển thị" bài viết dự án nếu có); đăng lại 1 căn hộ thì dự án tự quay lại. Trang "vỏ" vẫn mở được (không 410) vì ~36% dự án thuộc
  * loại này (lấy mẫu 13/29 và 14/39) và Admin không có cách ẩn một DỰ ÁN (Admin chỉ có "dừng đăng" ở mức căn hộ; ô "Hiển thị" ở Bài viết Dự án
