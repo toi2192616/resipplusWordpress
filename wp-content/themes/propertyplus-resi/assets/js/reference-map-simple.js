@@ -149,6 +149,9 @@
             gestureHandling: 'greedy',
         });
 
+        // Thu tu giong ban Van phong: trang -> icon dia diem (marker gia) -> ban do that. Go anh giu cho ngay khi Google khoi tao xong ('idle', marker da duoc ve),
+        // khong doi het tile ('tilesloaded' chi la du phong) - tile se do dan len nen ban do xam, nhu Office.
+        google.maps.event.addListenerOnce(map, 'idle', function () { pplusMapFacade('pplus-map-ready'); });
         google.maps.event.addListenerOnce(map, 'tilesloaded', function () { pplusMapFacade('pplus-map-ready'); });
 
         // Registry id -> PriceMarker, dung de tim dung marker can phong to khi hover the trong
