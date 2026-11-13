@@ -555,6 +555,8 @@ body.modal-active {
 @media (min-width: 1025px) and (max-width: 4000px) {
   #modal-container6 .modal {
     bottom: 25px;
+    /* 13/11/2026: 3 the chat (Messenger, Zalo, LINE) - chieu cao 145px chi du 2 the (overflow:hidden cat the thu 3); 210px = them 1 the (55+10), day panel tang len tren, 2 the duoi giu nguyen cho. */
+    height: 210px;
   }
 }
 #modal-container6 .content-modal-mobile {

@@ -153,6 +153,17 @@ $rsEmail    = !empty($company['email']) ? explode('|', (string) $company['email'
     </div></div>
   </div>
 
+  <div class="modal fade MesvsZaloModal" id="LineModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document"><div class="modal-content">
+      <div class="modal-header"><p class="modal-title"><?php echo esc_html(pplus_localize('Kết nối')); ?></p></div>
+      <div class="modal-body"><?php echo esc_html(pplus_localize('Có phải bạn muốn kết nối với chúng tôi')); ?></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="LineHuy" data-bs-dismiss="modal"><?php echo esc_html(pplus_localize('Hủy')); ?></button>
+        <a href="https://line.me/ti/p/TAkfiXNubz" target="_blank" rel="noopener" class="btn btn-primary chat-line-contact"><?php echo esc_html(pplus_localize('LINE Chat')); ?></a>
+      </div>
+    </div></div>
+  </div>
+
   <!-- modal-container2: Goi dien -->
   <div class="modal-container-ppus" id="modal-container2" data-pplus-modal>
     <div class="modal-background"><div class="modal">
@@ -239,6 +250,12 @@ $rsEmail    = !empty($company['email']) ? explode('|', (string) $company['email'
       <div class="content-modal-mobile">
         <div class="action-2" data-bs-toggle="modal" data-bs-target="#ZaloModal">
           <div><img src="<?php echo esc_url(PPLUS_THEME_URI . '/assets/officebase/Common/Images/Home/zalo-icon-70.webp'); ?>" width="35" height="35" loading="lazy" alt="zalo" /><label><?php echo esc_html(pplus_localize('Zalo Chat')); ?></label></div>
+        </div>
+      </div>
+      <?php // 13/11/2026: nut LINE (theo yeu cau) - tai khoan LINE chinh thuc cua cong ty (cung URL voi schema sameAs, inc/seo-head.php). Link bat dau bang https://line.me de the "Click line chat" cua GTM (tam tat, xem inc/tracking.php) chay lai khi bat GTM. ?>
+      <div class="content-modal-mobile">
+        <div class="action-2" data-bs-toggle="modal" data-bs-target="#LineModal">
+          <div><img src="<?php echo esc_url(PPLUS_THEME_URI . '/assets/officebase/Common/Images/Home/line-icon-70.webp'); ?>" width="35" height="35" loading="lazy" alt="LINE" /><label><?php echo esc_html(pplus_localize('LINE Chat')); ?></label></div>
         </div>
       </div>
     </div></div>
