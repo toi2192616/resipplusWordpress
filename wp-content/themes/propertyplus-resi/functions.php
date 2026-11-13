@@ -622,6 +622,20 @@ add_action('wp_head', function () {
 }, 1);
 
 /**
+ * Icon tab trinh duyet (favicon) - 13/11/2026: ban chinh hien LOGO ANGULAR (chu "A" do) tren tab. Nguyen nhan: <head> khong khai bao icon nao (theme chua tung in
+ * <link rel="icon">, WordPress chi in khi co "Site Icon"), nen trinh duyet lay "/favicon.ico" o thu muc goc may chu - file do la icon mac dinh cua Angular (15.086 byte,
+ * 15/1/2024), con duoc Cloudflare cache 1 nam. Angular Resi goc khai bao icon la assets/officebase/Common/Images/logo.png (src/index.html) -> khai bao lai dung file do.
+ * Them "ver" de trinh duyet tai lai thay vi dung icon da cache. Ban .ico/apple-touch-icon sinh san cung thu muc (Dev chep favicon.ico ra thu muc goc web + xoa cache Cloudflare).
+ */
+add_action('wp_head', function () {
+    $dir  = PPLUS_THEME_URI . '/assets/officebase/Common/Images/';
+    $logo = add_query_arg('ver', pplus_asset_version('assets/officebase/Common/Images/logo.png'), $dir . 'logo.png');
+    $apple = add_query_arg('ver', pplus_asset_version('assets/officebase/Common/Images/apple-touch-icon.png'), $dir . 'apple-touch-icon.png');
+    printf('<link rel="icon" type="image/png" href="%s" />' . "\n", esc_url($logo));
+    printf('<link rel="apple-touch-icon" href="%s" />' . "\n", esc_url($apple));
+}, 2);
+
+/**
  * Cloudflare "Email Address Obfuscation" (Scrape Shield) bien moi email trong HTML thanh `<a class="__cf_email__" data-cfemail=..>` va chen script
  * /cdn-cgi/scripts/.../email-decode.min.js (PageSpeed: "chan hien thi" 870ms, ke cung chuoi phu thuoc ~2s) - email cong ty o footer/lien he dang
  * can doc thang tren trang (nguoi that + Google) nen khong can giau. Boc toan bo <body> trong cap comment ma Cloudflare bo qua
