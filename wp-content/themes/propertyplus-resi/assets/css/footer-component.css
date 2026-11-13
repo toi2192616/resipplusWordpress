@@ -530,7 +530,7 @@ body.modal-active {
 #modal-container4 .from-send-mail-footer #CompleteModalForm .form-group:focus-within i {
   color: #3E5FB4;
 }
-#modal-container4 .from-send-mail-footer #CompleteModalForm #HoanTatDangKyDichVu {
+#modal-container4 .from-send-mail-footer #CompleteModalForm #pplus-footer-advise-submit {
   height: 50px;
   background: #3E5FB4;
   border-radius: 10px;

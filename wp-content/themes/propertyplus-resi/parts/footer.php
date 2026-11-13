@@ -191,10 +191,13 @@ $rsEmail    = !empty($company['email']) ? explode('|', (string) $company['email'
           <form name="CompleteModalForm" id="CompleteModalForm" class="form-validation form-group-lg pplus-advise-form" spellcheck="false">
             <input hidden name="FavoriteLink" />
             <div class="form-group form-group-pc"><i class="fa fa-user"></i><input class="form-control" type="text" name="OwnerName" placeholder="<?php echo esc_attr(pplus_localize('Họ và tên')); ?> ..." /></div>
-            <div class="form-group form-group-pc"><i class="fa fa-phone"></i><input class="form-control" type="text" name="OwnerEmail" placeholder="<?php echo esc_attr(pplus_localize('Địa chỉ email')); ?>" /></div>
-            <div class="form-group form-group-pc mr-0"><i class="fa fa-envelope"></i><input class="form-control" type="text" name="OwnerMobile" placeholder="<?php echo esc_attr(pplus_localize('Số điện thoại')); ?>" /></div>
+            <?php // 13/11/2026: icon email/dien thoai bi dao cho nhau (o email dung icon dien thoai, o so dien thoai dung icon phong bi). ?>
+            <div class="form-group form-group-pc"><i class="fa fa-envelope"></i><input class="form-control" type="text" name="OwnerEmail" placeholder="<?php echo esc_attr(pplus_localize('Địa chỉ email')); ?>" /></div>
+            <div class="form-group form-group-pc mr-0"><i class="fa fa-phone"></i><input class="form-control" type="text" name="OwnerMobile" placeholder="<?php echo esc_attr(pplus_localize('Số điện thoại')); ?>" /></div>
             <div class="form-group"><textarea class="form-control" style="height:110px" name="AdviseContent" placeholder="<?php echo esc_attr(pplus_localize('Viết lời nhắn của bạn..')); ?>"></textarea></div>
-            <div class="form-group text-center mt-15"><button class="btn btn-primary" id="HoanTatDangKyDichVu" type="button"><?php echo esc_html(pplus_localize('Gửi email')); ?></button></div>
+            <?php // 13/11/2026: nut nay TRUOC DAY la type="button" id="HoanTatDangKyDichVu" - id cua nut dang ky dich vu (main.js chi bat click cho trang dich vu, can PPLUS_SERVICE_REGISTER_CONFIG) nen o MOI trang
+            // khac bam "Gửi email" khong lam gi (khong hop xac nhan, khong gui) - form "Hòm thư góp ý" chet. Nay la nut submit that, di qua bo xu ly chung ".pplus-advise-form" (main.js) giong cac form khac. ?>
+            <div class="form-group text-center mt-15"><button class="btn btn-primary" id="pplus-footer-advise-submit" type="submit"><?php echo esc_html(pplus_localize('Gửi email')); ?></button></div>
           </form>
         </div>
       </div>

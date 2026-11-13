@@ -88,8 +88,11 @@ function pplus_handle_advise_submit(WP_REST_Request $request) {
 
     $url = pplus_api_base_url() . '/' . $lang . '/Favourite/IssueLeaseApartment';
 
+    // 13/11/2026: timeout 8 -> 20s. Trinh duyet khach cho duoc (nut dang bi khoa), nhung backend .NET co the gui mail/thong bao ngay trong luc xu ly
+    // (Angular goi thang tu trinh duyet nen khong bi cat); cat o 8s thi khach thay "that bai" trong khi yeu cau van co the da vao Admin. Khong tu gui lai
+    // (se tao trung yeu cau).
     $response = wp_remote_post($url, [
-        'timeout' => 8,
+        'timeout' => 20,
         'headers' => ['Content-Type' => 'application/json; charset=utf-8', 'Accept' => 'application/json'],
         'body'    => wp_json_encode([
             'OwnerName'    => $name,
@@ -100,9 +103,34 @@ function pplus_handle_advise_submit(WP_REST_Request $request) {
         ]),
     ]);
 
-    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) >= 400) {
+    // 13/11/2026 (QA bao form trang Lien he "khong gui duoc"): truoc day MOI loi deu ra cung 1 cau, khong ai biet vi sao. Nay ghi NGUYEN NHAN vao error_log
+    // (khong kem du lieu ca nhan: chi loi mang / ma HTTP / 300 ky tu dau cua phan hoi) va tra them "reason" ngan trong JSON (main.js hien trong thong bao):
+    //   timeout | ssl | net | http_<ma> | rejected (backend tra 200 nhung "success": false - Angular goc cung coi la khong thanh cong).
+    $reason = '';
+    $detail = '';
+    if (is_wp_error($response)) {
+        $msg    = $response->get_error_message();
+        $reason = stripos($msg, 'timed out') !== false ? 'timeout' : (stripos($msg, 'ssl') !== false ? 'ssl' : 'net');
+        $detail = $response->get_error_code() . ': ' . $msg;
+    } else {
+        $http_code = (int) wp_remote_retrieve_response_code($response);
+        $raw_body  = (string) wp_remote_retrieve_body($response);
+        if ($http_code >= 400) {
+            $reason = 'http_' . $http_code;
+            $detail = substr(trim(wp_strip_all_tags($raw_body)), 0, 300);
+        } else {
+            $json = json_decode($raw_body, true);
+            if (is_array($json) && array_key_exists('success', $json) && $json['success'] === false) {
+                $reason = 'rejected';
+                $detail = substr($raw_body, 0, 300);
+            }
+        }
+    }
+    if ($reason !== '') {
+        error_log(sprintf('[pplus advise] failed (%s) %s :: %s', $reason, $url, $detail));
         return new WP_REST_Response([
             'success' => false,
+            'reason'  => $reason,
             'message' => $t('Gửi yêu cầu thất bại, vui lòng thử lại sau.', 'Failed to send your request, please try again later.'),
         ], 200);
     }

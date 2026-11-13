@@ -668,10 +668,13 @@
         if (rs && rs.success) {
           pplusShowAdviseSuccess($form, rs.message || pplusAdviseMsg('ok', 'Gửi yêu cầu thành công!'));
         } else {
-          toastr.error((rs && rs.message) || pplusAdviseMsg('fail', 'Gửi yêu cầu thất bại, vui lòng thử lại sau.'), pplusAdviseMsg('warning', 'Cảnh báo'));
+          // 13/11/2026: kem ma ly do ngan (server tra "reason": timeout / ssl / net / http_xxx / rejected) de QA bao lai duoc nguyen nhan thay vi 1 cau chung chung.
+          toastr.error(((rs && rs.message) || pplusAdviseMsg('fail', 'Gửi yêu cầu thất bại, vui lòng thử lại sau.')) + (rs && rs.reason ? ' [' + rs.reason + ']' : ''), pplusAdviseMsg('warning', 'Cảnh báo'));
+          if (window.console && rs && rs.reason) { window.console.warn('[advise] failed:', rs.reason); }
         }
-      }).fail(function () {
-        toastr.error(pplusAdviseMsg('fail', 'Gửi yêu cầu thất bại, vui lòng thử lại sau.'), pplusAdviseMsg('warning', 'Cảnh báo'));
+      }).fail(function (xhr) {
+        // Chinh WordPress/Cloudflare tra loi (403/500/mat mang...) - route khong chay toi cho tra "reason".
+        toastr.error(pplusAdviseMsg('fail', 'Gửi yêu cầu thất bại, vui lòng thử lại sau.') + ' [' + (xhr && xhr.status ? 'HTTP ' + xhr.status : 'network') + ']', pplusAdviseMsg('warning', 'Cảnh báo'));
       }).always(function () {
         $submitBtn.prop('disabled', false);
       });
