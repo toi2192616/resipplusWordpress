@@ -119,7 +119,14 @@ async function checkRobotsAndIndexing() {
     check(!/noindex/i.test(h.robots), 'Trang chủ không có <meta robots noindex>', `meta robots = "${h.robots}" — còn bật noindex hoặc cache HTML cũ chưa xoá?`);
     // Giữ các thứ web Angular cũ đang có: xác minh Search Console + theo dõi truy cập (inc/tracking.php).
     check(/<meta[^>]+name=["']google-site-verification["'][^>]+content=["']_EwTjlz4bpbpsE8dEwY3bbIye3ejKDjCV1JlDZRfy1U["']/i.test(home.text), 'Có thẻ google-site-verification của web chính (giữ xác minh Search Console)', 'thiếu thẻ — có thể MẤT xác minh quyền sở hữu Search Console. Kiểm inc/tracking.php / hằng PPLUS_GOOGLE_SITE_VERIFICATION');
-    check(/googletagmanager\.com\/gtm\.js/.test(home.text) && /GTM-WRVHCF8Q/.test(home.text), 'Có Google Tag Manager GTM-WRVHCF8Q (giữ theo dõi truy cập)', 'thiếu GTM — số liệu truy cập/chuyển đổi dừng. Kiểm hằng PPLUS_GTM_ID và site không ở chế độ noindex');
+    // 13/11/2026: GTM đang TẮT TẠM theo yêu cầu (inc/tracking.php, PPLUS_GTM_ID mặc định rỗng) -> chỉ cảnh báo; nếu đã bật lại thì phải đúng container.
+    const gtmOn = /googletagmanager\.com\/gtm\.js/.test(home.text);
+    check(!gtmOn, 'Google Tag Manager đang tắt tạm (13/11/2026)', 'ĐÃ BẬT lại GTM — nhớ kiểm container', 'warn');
+    if (gtmOn) {
+      check(/GTM-WRVHCF8Q/.test(home.text), 'GTM đúng container GTM-WRVHCF8Q', 'GTM nạp nhưng không phải GTM-WRVHCF8Q — kiểm hằng PPLUS_GTM_ID');
+    } else {
+      check(false, 'GA4 / Google Ads không ghi lượt truy cập và chuyển đổi khi GTM tắt', 'bật lại: define(\'PPLUS_GTM_ID\', \'GTM-WRVHCF8Q\') trong wp-config.php hoặc đổi mặc định ở inc/tracking.php', 'warn');
+    }
   }
 }
 
@@ -450,7 +457,7 @@ async function checkSearch() {
   const ty = await http('/Apartment/IssueLeaseApartmentSuccses');
   check(ty.status === 200 && /noindex/i.test((ty.headers.get('x-robots-tag') || '') + ty.text.slice(0, 8000)), 'Trang cảm ơn /Apartment/IssueLeaseApartmentSuccses mở được và noindex (URL đo chuyển đổi GTM/Google Ads)', `HTTP ${ty.status} — thiếu trang cảm ơn nên mất dữ liệu chuyển đổi form, hoặc trang không noindex`);
   const conv = /var PPLUS_CONVERSION_URL\s*=\s*"([^"]*)"/.exec(home.text);
-  if (!STAGING) {
+  if (!STAGING && /googletagmanager\.com\/gtm\.js/.test(home.text)) { // GTM tắt tạm (13/11/2026) thì PPLUS_CONVERSION_URL cũng không in ra
     check(!!conv && /IssueLeaseApartmentSuccses/.test(conv[1]), 'Điểm đo chuyển đổi form (PPLUS_CONVERSION_URL) được in ra khi GTM bật', 'rỗng/thiếu — form thành công sẽ không bắn sự kiện chuyển đổi (GTM đang tắt hoặc site còn noindex?)');
   }
 }

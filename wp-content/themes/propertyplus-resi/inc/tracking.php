@@ -21,8 +21,12 @@ if (!defined('ABSPATH')) {
 if (!defined('PPLUS_GOOGLE_SITE_VERIFICATION')) {
     define('PPLUS_GOOGLE_SITE_VERIFICATION', '_EwTjlz4bpbpsE8dEwY3bbIye3ejKDjCV1JlDZRfy1U');
 }
+// 13/11/2026 - TAM TAT GTM theo yeu cau (giam ~650 KB JS cua 4 thu vien Google tren moi trang; bat lai sau khi doi marketing ra soat cac the).
+// HE QUA khi tat: GA4 (G-DX9EDKC16Y) khong ghi luot truy cap/su kien, Google Ads (AW-16624719167, AW-741015465) khong ghi chuyen doi va remarketing.
+// Van GIU the google-site-verification o duoi (Search Console). BAT LAI: define('PPLUS_GTM_ID', 'GTM-WRVHCF8Q'); trong wp-config.php,
+// hoac doi gia tri mac dinh duoi day ve 'GTM-WRVHCF8Q'. Khong xoa code nap GTM ben duoi.
 if (!defined('PPLUS_GTM_ID')) {
-    define('PPLUS_GTM_ID', 'GTM-WRVHCF8Q');
+    define('PPLUS_GTM_ID', '');
 }
 
 /** GTM co nap tren request nay khong (co ma hop le va khong o che do noindex/server thu nghiem). */
