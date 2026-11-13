@@ -268,7 +268,17 @@
     return m ? decodeURIComponent(m[1].replace(/\+/g, ' ')) : '';
   }
 
-  window.PplusSearchSuggest = { attach: attach, listUrl: listUrl, currentQuery: currentQuery };
+  // Icon cua luoi goi y (pplus_suggestion_icon_img() trong inc/render-helpers.php): src ban dau la GIF 1x1, URL that nam o data-pplus-icon va CHI duoc nap khi nguoi dung
+  // mo popup/panel/o tim kiem lan dau - truoc day ~25 icon (206KB) tai tren moi trang du khong ai mo popup.
+  function loadIcons(root) {
+    var imgs = (root && root.querySelectorAll ? root : document).querySelectorAll('img[data-pplus-icon]');
+    for (var i = 0; i < imgs.length; i++) {
+      imgs[i].src = imgs[i].getAttribute('data-pplus-icon');
+      imgs[i].removeAttribute('data-pplus-icon');
+    }
+  }
+
+  window.PplusSearchSuggest = { attach: attach, listUrl: listUrl, currentQuery: currentQuery, loadIcons: loadIcons };
 
   // O tim kiem trang chu (front-page.php, search-home.component): popup chi hien khi co ket qua; chon 1 muc roi
   // bam kinh lup -> trang danh sach tong voi lua chon do (submitSearchHome()).

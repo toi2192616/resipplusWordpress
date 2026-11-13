@@ -203,7 +203,7 @@ get_template_part('parts/url-box-content', null, [
                             <?php foreach ($column as $person) : ?>
                                 <div class="item">
                                     <?php $person_img = pplus_admin_asset_url($person['imgSize'] ?? $person['img'] ?? ''); ?>
-                                    <img src="<?php echo esc_url($person_img); ?>" alt="<?php echo esc_attr($person['title'] ?? ''); ?>"<?php echo pplus_img_dim_attrs($person_img); ?> loading="lazy" />
+                                    <img src="<?php echo esc_url(pplus_webp_url($person_img, 600)); ?>" alt="<?php echo esc_attr($person['title'] ?? ''); ?>"<?php echo pplus_img_dim_attrs($person_img); ?> loading="lazy" />
                                     <div class="item-content">
                                         <label class="text-1"><?php echo esc_html($person['title'] ?? ''); ?></label><br />
                                         <label class="text-2"><?php echo esc_html($person['content'] ?? ''); ?></label>
@@ -233,7 +233,7 @@ get_template_part('parts/url-box-content', null, [
                                 <?php foreach ($discover_items as $item) : ?>
                                     <div class="_blog-item">
                                         <?php $discover_img = pplus_admin_asset_url($item['img'] ?? ''); ?>
-                                        <img class="_blog-img" src="<?php echo esc_url($discover_img); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>"<?php echo pplus_img_dim_attrs($discover_img); ?> loading="lazy" />
+                                        <img class="_blog-img" src="<?php echo esc_url(pplus_webp_url($discover_img, 800)); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>"<?php echo pplus_img_dim_attrs($discover_img); ?> loading="lazy" />
                                         <div class="_blog-item-title"><?php echo esc_html($item['title'] ?? ''); ?></div>
                                         <div class="_blog-item-sub-title"><?php echo esc_html($item['subTitle'] ?? ''); ?></div>
                                     </div>
@@ -256,7 +256,7 @@ get_template_part('parts/url-box-content', null, [
                         <?php foreach ($about['listDataAboutUs'] as $item) : ?>
                             <div class="item">
                                 <?php $activity_img = pplus_admin_asset_url($item['img'] ?? ''); ?>
-                                <img src="<?php echo esc_url($activity_img); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>"<?php echo pplus_img_dim_attrs($activity_img); ?> loading="lazy" />
+                                <img src="<?php echo esc_url(pplus_webp_url($activity_img, 800)); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>"<?php echo pplus_img_dim_attrs($activity_img); ?> loading="lazy" />
                                 <div class="item-content">
                                     <label class="text-1"><?php echo esc_html($item['title'] ?? ''); ?></label><br />
                                     <label class="text-2"><?php echo esc_html($item['content'] ?? ''); ?></label>

@@ -117,7 +117,7 @@ $toc = pplus_generate_toc($content);
                                             <div class="blog-item">
                                                 <div class="blog-body">
                                                     <a href="<?php echo esc_url(pplus_blog_detail_url($item['alias'] ?? '', (int) ($item['id'] ?? 0))); ?>">
-                                                        <img src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" />
+                                                        <img src="<?php echo esc_url(pplus_webp_url(pplus_admin_asset_url($item['img'] ?? ''), 640)); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" />
                                                     </a>
                                                     <div class="content">
                                                         <a class="content-title" href="<?php echo esc_url(pplus_blog_detail_url($item['alias'] ?? '', (int) ($item['id'] ?? 0))); ?>">
@@ -175,7 +175,7 @@ $toc = pplus_generate_toc($content);
                             <div class="main-tacgia">
                                 <div class="contac-tacgia">
                                     <a href="<?php echo esc_url($author_url); ?>" class="img-avata">
-                                        <img src="<?php echo esc_url(pplus_admin_asset_url($author['img'] ?? '')); ?>" alt="<?php echo esc_attr($author['title'] ?? ''); ?>" loading="lazy" />
+                                        <img src="<?php echo esc_url(pplus_webp_url(pplus_admin_asset_url($author['img'] ?? ''), 240)); ?>" alt="<?php echo esc_attr($author['title'] ?? ''); ?>" loading="lazy" />
                                     </a>
                                     <div class="des-tac-gia">
                                         <div class="title-1"><?php echo esc_html(pplus_t('Tác giả', 'Author')); ?></div>

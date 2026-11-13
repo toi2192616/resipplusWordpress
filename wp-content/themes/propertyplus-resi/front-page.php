@@ -252,7 +252,7 @@ function pplus_render_home_apartment_groups(array $groups, string $list_slug, st
                     <div class="silder-nhanvien-track">
                         <?php foreach ($home['danhSachNhanVien'] as $person) : ?>
                             <div class="item-nhanvien">
-                                <img class="lazy" src="<?php echo esc_url(pplus_admin_asset_url($person['img'] ?? '')); ?>" alt="<?php echo esc_attr($person['title'] ?? ''); ?>" loading="lazy" />
+                                <img class="lazy" src="<?php echo esc_url(pplus_webp_url(pplus_admin_asset_url($person['img'] ?? ''), 600)); ?>" alt="<?php echo esc_attr($person['title'] ?? ''); ?>" loading="lazy" />
                                 <div class="data-content">
                                     <div class="title-1"><?php echo esc_html($person['title'] ?? ''); ?></div>
                                     <div class="title-2"><?php echo esc_html($person['content'] ?? ''); ?></div>
@@ -279,7 +279,7 @@ function pplus_render_home_apartment_groups(array $groups, string $list_slug, st
                 <div class="silder-newspapers stick-custom-css">
                     <?php foreach ($home['listBaoChis'] as $item) : ?>
                         <div class="item-newspapers">
-                            <img src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" />
+                            <img src="<?php echo esc_url(pplus_webp_url(pplus_admin_asset_url($item['img'] ?? ''), 400)); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" />
                             <div class="data-action"><?php echo esc_html($item['title'] ?? ''); ?></div>
                         </div>
                     <?php endforeach; ?>
@@ -357,7 +357,7 @@ $customer_logos = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg'
                         <?php // Div boc ngoai: Slick gan padding khoang cach len CHINH the slide - neu slide la <a position:relative> thi lop chu absolute (.khampha-2-content) bi tran ra ngoai the 7.5px moi ben. ?>
                         <div class="cuisine-slide">
                         <a href="<?php echo esc_url(pplus_blog_detail_url($item['alias'] ?? '', (int) ($item['id'] ?? 0))); ?>" class="cuisine-item cuisine-img">
-                            <img class="lazy" src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" />
+                            <img class="lazy" src="<?php echo esc_url(pplus_webp_url(pplus_admin_asset_url($item['img'] ?? ''), 800)); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" />
                             <div class="khampha-2-content">
                                 <div class="khampha-2-t-1"><?php echo esc_html($item['title'] ?? ''); ?></div>
                                 <div class="khampha-2-t-2"><?php echo esc_html($item['subTitle'] ?? ''); ?></div>

@@ -155,6 +155,40 @@ function pplus_bundle_minify_css(string $css): string {
     return trim($css);
 }
 
+/**
+ * Thu gon JS CUA THEME (13/11/2026, PageSpeed "Minify JavaScript": bundle theme 61KB, tiet kiem ~31KB): bo khoi comment mo dau dong (tru /*! *\/), dong CHI co comment "//",
+ * khoang trang dau/cuoi dong va dong trong. CHU Y co y KHONG: noi cac dong lai (tranh loi tu dong chen dau ";"), KHONG dong vao comment "//" cuoi dong sau ma (khong phan tich
+ * chuoi/regex nen khong dam bao an toan), KHONG doi ten bien. Chi ap cho nhom "theme" (code do minh viet, khong co template literal - da kiem tra); thu vien vendor giu nguyen.
+ */
+function pplus_bundle_minify_js(string $code): string {
+    $code  = str_replace("\r\n", "\n", $code);
+    $out   = [];
+    $block = false;
+    foreach (explode("\n", $code) as $line) {
+        $t = trim($line);
+        if ($block) {
+            $end = strpos($t, '*/');
+            if ($end === false) {
+                continue;
+            }
+            $block = false;
+            $t     = trim(substr($t, $end + 2));
+        } elseif (strncmp($t, '/*', 2) === 0 && strncmp($t, '/*!', 3) !== 0) {
+            $end = strpos($t, '*/', 2);
+            if ($end === false) {
+                $block = true;
+                continue;
+            }
+            $t = trim(substr($t, $end + 2));
+        }
+        if ($t === '' || strncmp($t, '//', 2) === 0) {
+            continue;
+        }
+        $out[] = $t;
+    }
+    return implode("\n", $out);
+}
+
 /** Noi dung 1 file CSS da xu ly de dua vao bundle. */
 function pplus_bundle_css_piece(string $path, string $src): string {
     $css = (string) file_get_contents($path);
@@ -302,7 +336,7 @@ function pplus_bundle_build_js(string $group, array $handles, int $print_group):
     if ($loc === null) {
         return null;
     }
-    $sig = 'js-v1';
+    $sig = 'js-v2'; // v2 (13/11/2026): nhom "theme" duoc thu gon (pplus_bundle_minify_js)
     foreach ($handles as $handle) {
         $path = (string) pplus_bundle_local_path($scripts->registered[$handle]->src);
         $sig .= '|' . $path . '|' . filemtime($path) . '|' . filesize($path);
@@ -315,6 +349,9 @@ function pplus_bundle_build_js(string $group, array $handles, int $print_group):
             $code = (string) file_get_contents((string) pplus_bundle_local_path($scripts->registered[$handle]->src));
             $code = preg_replace('/^\xEF\xBB\xBF/', '', $code);
             $code = (string) preg_replace('~^\s*//[#@]\s*sourceMappingURL=.*$~m', '', $code);
+            if ($group === 'theme') {
+                $code = pplus_bundle_minify_js($code);
+            }
             $js  .= '/* ' . $handle . " */\n" . rtrim($code) . "\n;\n";
         }
         if (!pplus_bundle_write($file, $js)) {

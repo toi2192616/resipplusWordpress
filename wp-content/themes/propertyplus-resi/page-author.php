@@ -32,7 +32,7 @@ get_header();
             <div class="contac-tacgia">
                 <?php if (!empty($data['img'])) : ?>
                     <div class="img-avata">
-                        <img src="<?php echo esc_url(pplus_admin_asset_url($data['img'])); ?>" alt="<?php echo esc_attr($data['title'] ?? ''); ?>" />
+                        <img src="<?php echo esc_url(pplus_webp_url(pplus_admin_asset_url($data['img']), 400)); ?>" alt="<?php echo esc_attr($data['title'] ?? ''); ?>" />
                     </div>
                 <?php endif; ?>
                 <div class="des-tac-gia">
@@ -76,7 +76,7 @@ get_header();
                             <div class="customer-item">
                                 <div class="customer-body">
                                     <a href="<?php echo esc_url(pplus_blog_detail_url($item['alias'] ?? '', (int) ($item['id'] ?? 0))); ?>">
-                                        <img src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" />
+                                        <img src="<?php echo esc_url(pplus_webp_url(pplus_admin_asset_url($item['img'] ?? ''), 640)); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" loading="lazy" />
                                     </a>
                                     <div class="content">
                                         <a class="content-title" href="<?php echo esc_url(pplus_blog_detail_url($item['alias'] ?? '', (int) ($item['id'] ?? 0))); ?>">

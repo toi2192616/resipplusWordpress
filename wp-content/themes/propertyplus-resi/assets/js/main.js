@@ -689,6 +689,35 @@
       });
       return true;
     }
+    // 13/11/2026: iframe ban do Google (chan trang + trang Lien he) chi nap khi den gan khung nhin. Truoc day nap sau 1 giay tren MOI trang (~500KB, 16-32 request, ca
+    // khi nguoi dung khong bao gio cuon toi chan trang). URL that nam o data-pplus-map-src; co <noscript> du phong; trinh duyet khong co IntersectionObserver thi nap sau khi trang xong.
+    (function () {
+      var frames = document.querySelectorAll('iframe[data-pplus-map-src]');
+      if (!frames.length) {
+        return;
+      }
+      function loadFrame(f) {
+        var s = f.getAttribute('data-pplus-map-src');
+        if (s) {
+          f.src = s;
+          f.removeAttribute('data-pplus-map-src');
+        }
+      }
+      if (!('IntersectionObserver' in window)) {
+        window.addEventListener('load', function () { Array.prototype.forEach.call(frames, loadFrame); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) {
+            loadFrame(en.target);
+            io.unobserve(en.target);
+          }
+        });
+      }, { rootMargin: '300px 0px' });
+      Array.prototype.forEach.call(frames, function (f) { io.observe(f); });
+    })();
+
     $(document).on('submit', '.pplus-advise-form', function (e) {
       e.preventDefault();
       var $form = $(this);

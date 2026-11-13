@@ -232,6 +232,23 @@ function pplus_search_suggestion_items(): array {
 }
 
 /**
+ * The <img> cua 1 icon trong luoi goi y (desktop popup, trang chu, panel mobile) - 13/11/2026 (PageSpeed: moi trang tai 25 icon / 206KB JPG-PNG goc tu Admin, vd
+ * "thumbnail.jpg" 95KB cho o 22px, sai ti le khung + ~56 the img lap lai o 2 luoi). Nay: WebP 66px qua cache cua theme (pplus_webp_url, giu goc khi chua tao xong) VA chi
+ * tai khi nguoi dung MO popup/panel lan dau (src = GIF 1x1, URL that o data-pplus-icon, JS: PplusSearchSuggest.loadIcons() trong pplus-search-suggest.js). Dung kich thuoc 22x22
+ * va object-fit:contain (CSS) nen khong con lech ti le. Loi tai anh -> logo (nhu truoc).
+ */
+function pplus_suggestion_icon_img(string $img): string {
+    $url = pplus_admin_asset_url($img);
+    $url = $url !== '' ? pplus_webp_url($url, 66) : '';
+    return sprintf(
+        '<img title="ListProject" src="%1$s" data-pplus-icon="%2$s" alt="" width="22" height="22" decoding="async" onerror="this.onerror=null;this.src=\'%3$s\'" />',
+        PPLUS_BLANK_GIF,
+        esc_url($url),
+        esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/logo-96.webp')
+    );
+}
+
+/**
  * Popup tim kiem biet "nguoi dung dang o dau va dang loc gi" de mo ra DIEN SAN thay vi tinh nang lam lai tu dau:
  * - alias/label: "vung" cua trang danh sach dang xem (quan, loai can ho, khu vuc, toa nha... - /cho-thue-can-ho/ha-noi/{alias}); rong o trang chu
  *   hoac "Tất cả" (/cho-thue-can-ho/ha-noi).
@@ -714,7 +731,7 @@ function pplus_render_suggest_header(?string $active_alias = null): void {
                     if ($item_alias === '') continue; ?>
                     <a href="<?php echo esc_url(home_url($lang_prefix . '/' . pplus_apartment_list_root() . '/ha-noi/' . $item_alias)); ?>" class="suggest-item<?php echo ($active_alias !== null && $item_alias === $active_alias) ? ' active' : ''; ?>">
                         <i class="item-img">
-                            <img src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="" loading="lazy" />
+                            <img src="<?php echo esc_url(pplus_webp_url(pplus_admin_asset_url($item['img'] ?? ''), 66)); ?>" alt="" width="22" height="22" loading="lazy" />
                         </i>
                         <div class="item-title"><?php echo esc_html($item['subTitle'] ?? ''); ?></div>
                     </a>

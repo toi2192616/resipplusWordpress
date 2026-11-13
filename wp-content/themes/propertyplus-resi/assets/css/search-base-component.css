@@ -2039,3 +2039,8 @@
   font-weight: 600;
   color: #8F7036;
 }
+
+/* 13/11/2026 - icon luoi goi y hien 22x22: anh Admin khong vuong nen dung object-fit de khong meo ti le (PageSpeed "image-aspect-ratio"); xem pplus_suggestion_icon_img(). */
+.icon-suggest img {
+  object-fit: contain;
+}

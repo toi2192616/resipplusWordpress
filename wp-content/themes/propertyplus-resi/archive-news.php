@@ -99,7 +99,7 @@ get_template_part('parts/url-box-content', null, [
                         <div class="customer-body">
                             <a href="<?php echo esc_url(pplus_blog_detail_url($item['alias'] ?? '', (int) ($item['id'] ?? 0))); ?>">
                                 <?php // Anh bai dau tien = phan tu LCP mobile -> khong lazy + fetchpriority=high (port ban Van phong d26473d). ?>
-                                <img src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" <?php echo $blog_i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'; ?> />
+                                <img src="<?php echo esc_url(pplus_webp_url(pplus_admin_asset_url($item['img'] ?? ''), 800)); ?>" alt="<?php echo esc_attr($item['title'] ?? ''); ?>" <?php echo $blog_i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'; ?> />
                             </a>
                             <div class="content">
                                 <a href="<?php echo esc_url(pplus_blog_detail_url($item['alias'] ?? '', (int) ($item['id'] ?? 0))); ?>" class="content-title">

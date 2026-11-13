@@ -88,7 +88,7 @@ get_header();
                 $sub      = (string) ($item['subTitle'] ?? '');
                 $content  = pplus_kses_content((string) ($item['content'] ?? '')); ?>
                 <div class="_blog-item view-videos js-open-video" data-video-content="<?php echo esc_attr($content); ?>">
-                    <img class="_blog-img _img-height-auto" src="<?php echo esc_url(pplus_admin_asset_url($item['img'] ?? '')); ?>" alt="<?php echo esc_attr($title); ?>" loading="lazy" />
+                    <img class="_blog-img _img-height-auto" src="<?php echo esc_url(pplus_webp_url(pplus_admin_asset_url($item['img'] ?? ''), 800)); ?>" alt="<?php echo esc_attr($title); ?>" loading="lazy" />
                     <div class="view-videos-hover">
                         <i>
                             <svg width="100" height="100" viewBox="0 0 74 74" fill="none" xmlns="http://www.w3.org/2000/svg">

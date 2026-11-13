@@ -225,10 +225,21 @@
     // Da co vung/bo loc thi mo popup la sang thang o "Chi tiết" (focus o do tu mo panel qua ":focus-within" CSS, dong luoi goi y cua o Vùng);
     // chua co gi (trang chu...) thi giu hanh vi cu: khong focus o nao, bam vao o Vùng moi hien luoi goi y.
     if (isModal) {
+      // Icon luoi goi y chi nap khi mo popup (xem PplusSearchSuggest.loadIcons).
+      $modal[0].addEventListener('show.bs.modal', function () {
+        if (window.PplusSearchSuggest) {
+          window.PplusSearchSuggest.loadIcons($modal[0]);
+        }
+      });
       $modal[0].addEventListener('shown.bs.modal', function () {
         if (selectedAlias || selection || hasFilters()) {
           $detailInput.trigger('focus');
         }
+      });
+    } else if (window.PplusSearchSuggest) {
+      // Trang chu: nap icon ngay khi tro chuot/cham/focus vao thanh tim kiem lan dau (truoc khi popup mo ra).
+      $modal.one('mouseenter focusin touchstart', function () {
+        window.PplusSearchSuggest.loadIcons($modal[0]);
       });
     }
 

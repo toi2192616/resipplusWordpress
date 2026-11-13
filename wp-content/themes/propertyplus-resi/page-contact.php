@@ -113,8 +113,10 @@ $ct_ig     = !empty($company['instagram']) ? (string) $company['instagram'] : ''
                     <h2 class="title"><?php echo esc_html(pplus_t('Địa chỉ của chúng tôi', 'Our address')); ?></h2>
                 </div>
 
-                <iframe class="iframe-map" title="<?php echo esc_attr(pplus_t('Bản đồ Property Plus', 'Property Plus map')); ?>" src="<?php echo esc_url(pplus_resi_map_embed_url()); ?>"
-                    style="border:0;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe class="iframe-map" title="<?php echo esc_attr(pplus_t('Bản đồ Property Plus', 'Property Plus map')); ?>" data-pplus-map-src="<?php echo esc_url(pplus_resi_map_embed_url()); ?>"
+                    style="border:0;" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <?php // 13/11/2026: nap khi o ban do den gan khung nhin (main.js), xem ghi chu o parts/footer.php. ?>
+                <noscript><iframe class="iframe-map" title="<?php echo esc_attr(pplus_t('Bản đồ Property Plus', 'Property Plus map')); ?>" src="<?php echo esc_url(pplus_resi_map_embed_url()); ?>" style="border:0;" referrerpolicy="no-referrer-when-downgrade"></iframe></noscript>
 
                 <a href="<?php echo esc_url($maps_link); ?>" target="_blank" rel="noopener" class="action-link-google-map">
                     <?php // Khong dung pplus_t(): tu dien API tieng Nhat dich sai khoa nay (ra "一軒家タイプ" = loai nha rieng) va tu dien duoc uu tien. ?>

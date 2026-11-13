@@ -187,6 +187,10 @@
 
     $(document).on('click', '[data-pplus-search-mobile]', function (e) {
       e.preventDefault();
+      // Icon luoi goi y chi nap khi mo panel lan dau (xem PplusSearchSuggest.loadIcons).
+      if (window.PplusSearchSuggest) {
+        window.PplusSearchSuggest.loadIcons($panel[0]);
+      }
       var v = $(this).attr('data-pplus-search-mobile');
       // Da co vung (dang o 1 quan/loai/khu vuc...): bam o tim kiem tren thanh = di thang sang buoc loc; doi vung bang nut "Đổi" o dau buoc do.
       // Chi ap dung khi MO panel (dang dong); dang mo thi giu hanh vi cu.

@@ -69,7 +69,7 @@ $pplus_sm_values      = range(1, 8); // listValue = [1..8] (search-base.componen
                         ?>
                             <div class="item-content-district-data item-suggest" role="button" tabindex="0" data-alias="<?php echo esc_attr($pplus_sm_alias); ?>" data-label="<?php echo esc_attr($pplus_sm_label); ?>"<?php $pplus_sm_filter = pplus_suggestion_option_filter($pplus_sm_item); echo $pplus_sm_filter ? ' data-filter="' . esc_attr(wp_json_encode($pplus_sm_filter)) . '"' : ''; ?>>
                                 <figure class="icon-suggest">
-                                    <img title="ListProject" src="<?php echo esc_url(pplus_admin_asset_url($pplus_sm_item['img'] ?? '')); ?>" alt="" onerror="this.src='<?php echo esc_url(get_template_directory_uri() . '/assets/officebase/Common/Images/logo-96.webp'); ?>'" loading="lazy" />
+                                    <?php echo pplus_suggestion_icon_img((string) ($pplus_sm_item['img'] ?? '')); // WebP nho, chi tai khi mo panel (pplus_suggestion_icon_img) ?>
                                 </figure>
                                 <div class="content-suggest">
                                     <p class="content-suggest-text1"><?php echo esc_html($pplus_sm_label); ?></p>

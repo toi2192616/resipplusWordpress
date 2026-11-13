@@ -99,7 +99,9 @@ $rsEmail    = !empty($company['email']) ? explode('|', (string) $company['email'
                 <?php endforeach; ?>
                 <br />
               </div>
-              <iframe title="<?php echo esc_attr(pplus_localize('Địa chỉ')); ?>" src="<?php echo esc_url(pplus_resi_map_embed_url()); ?>" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <?php // 13/11/2026: ban do Google nang ~500KB / 16-32 request va TRUOC DAY nap sau 1 giay tren MOI trang (loading=lazy + hoan anh/iframe) - nay chi nap khi o ban do den gan khung nhin (main.js, data-pplus-map-src). ?>
+              <iframe title="<?php echo esc_attr(pplus_localize('Địa chỉ')); ?>" data-pplus-map-src="<?php echo esc_url(pplus_resi_map_embed_url()); ?>" width="400" height="300" style="border:0;" allowfullscreen="" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <noscript><iframe title="<?php echo esc_attr(pplus_localize('Địa chỉ')); ?>" src="<?php echo esc_url(pplus_resi_map_embed_url()); ?>" width="400" height="300" style="border:0;" referrerpolicy="no-referrer-when-downgrade"></iframe></noscript>
             </div>
           </div>
         </div>
