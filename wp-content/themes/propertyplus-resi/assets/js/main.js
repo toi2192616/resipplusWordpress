@@ -627,6 +627,68 @@
     function pplusAdviseMsg(key, fallback) {
       return (typeof PPLUS_ADVISE_MSG !== 'undefined' && PPLUS_ADVISE_MSG[key]) || fallback;
     }
+
+    // 13/11/2026: HOP XAC NHAN NGAY TRONG TRANG thay cho window.confirm() o cac form GUI THONG TIN (tu van, dang ky dich vu, dang ky cho thue nha).
+    // Trinh duyet co the CHAN hop thoai goc (Chrome "Ngan trang nay tao them hop thoai", trinh duyet trong Zalo/Facebook, 1 so che do dac biet) - khi do
+    // confirm() tra ve false NGAM: bam "Gui" khong gui gi va khong bao gi (QA bao "khong gui duoc"; tai hien duoc tren ban chinh bang cach tu choi hop thoai).
+    function pplusConfirm(message, onYes) {
+      if (!document.getElementById('pplus-confirm-css')) {
+        $('<style id="pplus-confirm-css">' +
+          '.pplus-confirm-overlay{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}' +
+          '.pplus-confirm-box{background:#fff;border-radius:14px;max-width:420px;width:100%;padding:26px 24px 20px;box-shadow:0 12px 50px rgba(0,0,0,.25);text-align:center}' +
+          '.pplus-confirm-text{font-size:17px;line-height:24px;font-weight:600;color:#1f1f1f;margin-bottom:22px}' +
+          '.pplus-confirm-actions{display:flex;gap:12px;justify-content:center}' +
+          '.pplus-confirm-actions button{flex:1 1 0;max-width:170px;height:46px;border-radius:10px;font-size:16px;font-weight:700;border:1px solid #3E5FB4;cursor:pointer}' +
+          '.pplus-confirm-yes{background:#3E5FB4;color:#fff}.pplus-confirm-no{background:#fff;color:#3E5FB4}' +
+          '</style>').appendTo('head');
+      }
+      var $ov = $('<div class="pplus-confirm-overlay" role="dialog" aria-modal="true"><div class="pplus-confirm-box"><div class="pplus-confirm-text"></div>' +
+        '<div class="pplus-confirm-actions"><button type="button" class="pplus-confirm-no"></button><button type="button" class="pplus-confirm-yes"></button></div></div></div>');
+      $ov.find('.pplus-confirm-text').text(message);
+      $ov.find('.pplus-confirm-no').text(pplusAdviseMsg('no', 'Hủy'));
+      $ov.find('.pplus-confirm-yes').text(pplusAdviseMsg('yes', 'Đồng ý'));
+      // Esc chi dong hop xac nhan (bat o pha capture + stopPropagation) - neu khong Bootstrap dong luon cua so dang ky phia sau.
+      function onKey(e) {
+        if (e.key === 'Escape') {
+          e.stopPropagation();
+          e.preventDefault();
+          close();
+        }
+      }
+      function close() {
+        document.removeEventListener('keydown', onKey, true);
+        $ov.remove();
+      }
+      $ov.on('click', '.pplus-confirm-no', close);
+      $ov.on('click', '.pplus-confirm-yes', function () {
+        close();
+        onYes();
+      });
+      $ov.on('click', function (e) {
+        if (e.target === this) {
+          close();
+        }
+      });
+      document.addEventListener('keydown', onKey, true);
+      // Dang mo cua so Bootstrap (dang ky dich vu / cho thue nha) thi gan hop VAO TRONG no: ngoai cua so, "focus trap" cua Bootstrap se giat focus ve cua so.
+      // (".modal" la position:fixed, khong co transform nen overlay fixed ben trong van phu kin man hinh.)
+      (document.querySelector('.modal.show') || document.body).appendChild($ov[0]);
+      $ov.find('.pplus-confirm-yes').trigger('focus');
+    }
+    // Cho cac handler dai: lan dau -> hien hop xac nhan, tra true (handler "return"); dong y -> kich lai CHINH su kien do (da danh dau "da xac nhan") nen handler
+    // chay tiep qua duong cu, khong phai chia lai than ham. $el la phan tu bat su kien (nut hoac form), eventName 'click' | 'submit'.
+    function pplusNeedConfirm(el, message, eventName) {
+      var $el = $(el);
+      if ($el.data('pplusConfirmed')) {
+        $el.removeData('pplusConfirmed');
+        return false;
+      }
+      pplusConfirm(message, function () {
+        $el.data('pplusConfirmed', true);
+        $el.trigger(eventName);
+      });
+      return true;
+    }
     $(document).on('submit', '.pplus-advise-form', function (e) {
       e.preventDefault();
       var $form = $(this);
@@ -638,9 +700,8 @@
       }
 
       // Hoi xac nhan TRUOC khi gui - dung nguyen ban chinh that (SweetAlert "Ban co chac chan
-      // muon gui thong tin ho tro?"), nhung dung window.confirm() thay vi SweetAlert (thu vien
-      // nay da bi go khoi theme tu truoc vi khong con noi nao khac dung toi).
-      if (!window.confirm(PPLUS_ADVISE_CONFIRM)) {
+      // muon gui thong tin ho tro?"). 13/11/2026: hop xac nhan ngay trong trang (pplusConfirm), khong con window.confirm() (trinh duyet co the chan, xem ben tren).
+      if (pplusNeedConfirm($form[0], PPLUS_ADVISE_CONFIRM, 'submit')) {
         return;
       }
 
@@ -996,7 +1057,7 @@
           toastr.error(cfg.errorPhone, cfg.warningTitle);
           return;
         }
-        if (!window.confirm(cfg.confirmMsg)) {
+        if (pplusNeedConfirm(this, cfg.confirmMsg, 'click')) {
           return;
         }
 
@@ -1152,7 +1213,7 @@
           toastr.error(cfg.errorPhone, cfg.warningTitle);
           return;
         }
-        if (!window.confirm(cfg.confirmMsg)) {
+        if (pplusNeedConfirm(this, cfg.confirmMsg, 'click')) {
           return;
         }
 

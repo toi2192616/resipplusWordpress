@@ -414,6 +414,8 @@ add_action('wp_enqueue_scripts', function () {
             'fail'    => pplus_localize('Gửi yêu cầu thất bại, vui lòng thử lại sau.'),
             'ok'      => pplus_t('Gửi yêu cầu tư vấn thành công, chúng tôi sẽ liên hệ lại sớm nhất!', 'Your request has been sent successfully, we will contact you soon!'),
             'warning' => pplus_localize('Cảnh báo'),
+            'yes'     => pplus_t('Đồng ý', 'OK'),      // hop xac nhan trong trang (main.js pplusConfirm)
+            'no'      => pplus_localize('Hủy'),
         ]) . ';', 'before');
 
     // #searchModal (parts/search-modal.php, footer.php) - site-wide vi nut mo (".btn-modal-search")
