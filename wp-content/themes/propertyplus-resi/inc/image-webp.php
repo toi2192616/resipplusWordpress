@@ -167,7 +167,9 @@ function pplus_webp_enqueue(string $url, int $max_w): void {
             fastcgi_finish_request();
             pplus_webp_process($jobs);
         } else {
-            foreach (array_chunk($jobs, PPLUS_WEBP_BATCH) as $i => $chunk) {
+            // 17/11/2026: toi da 30 su kien doi WebP cho cung luc (WP-Cron khong theo kip thi khong chong tiep vao option "cron" autoload); anh se duoc xep lai o lan xem sau.
+            $room = 30 - (function_exists('pplus_cron_pending_count') ? pplus_cron_pending_count(PPLUS_WEBP_CRON_HOOK) : 0);
+            foreach (array_slice(array_chunk($jobs, PPLUS_WEBP_BATCH), 0, max(0, $room), true) as $i => $chunk) {
                 if (!wp_next_scheduled(PPLUS_WEBP_CRON_HOOK, [$chunk])) {
                     wp_schedule_single_event(time() + $i, PPLUS_WEBP_CRON_HOOK, [$chunk]);
                 }
