@@ -112,3 +112,16 @@ Cập nhật: 3/11/2026. Chiến lược và số liệu gốc: `SEO_STRATEGY_JA
 2. **Đã làm trực tiếp trong Admin (20/11 tối, chủ site cho phép + đăng nhập):** title JA `cau-giay-district` (ドンダー区 → カウザイ区の賃貸アパート, đã lên trang thật); trang danh sách Hà Nội (Menu tỉnh thành #1) — EN title "Hanoi Apartment for Rent | Serviced & Luxury Apartments | Property Plus" + mô tả mới, JA title "ハノイの賃貸アパート・サービスアパート｜家賃相場と最新の物件一覧" + mô tả kính ngữ (API đã trả, trang thật cập nhật sau cache ~10 phút); JA Vinhomes Skylake (DataList #1228) sửa nhầm quận カウザイ区 → ナムトゥリエム区. Quy tắc: văn bản tiếng Nhật luôn dùng kính ngữ (です・ます). Còn lại: ~20 title JA dự án thiếu Meta Title/bị cụt ("…の概"), trang trùng tiêu đề, trang mỏng; 3 alias EN 404 tìm trong Khám phá/Hoạt động. Chủ site chỉ cần gửi `DEV_YEU_CAU_TRUONG_SEO_ADMIN.md` cho người sửa code Admin.
 3. Dev: thêm 4 trường SEO (vi/en/ja) cho Dự án + Căn hộ, lọc sitemap ở gốc (loai ∈ {1,2,3,4,9}, isIndex = true, bỏ 404/410, không lặp, lastmod thật).
 4. Tiêu đề/mô tả trụ B (JA/EN), gộp các cặp trang trùng tiêu đề, bổ sung nội dung trang đích mỏng; đo lại Search Console sau 2–4 tuần.
+
+## 8. Cập nhật 21/11/2026 — trang "Tất cả tòa nhà" (liên kết nội bộ cho ~840 dự án)
+
+**Vấn đề:** menu chỉ có 12 tòa tuyển chọn (Admin: bài viết dự án có "Hiển thị Menu = Theo tòa nhà"); phần lớn trang dự án không có liên kết nội bộ nào → Google "đã phát hiện, chưa lập chỉ mục" (~2.400 URL).
+
+**Đã làm (local, chưa deploy — gói `capnhat-resi-2026-11-21e`):**
+- Trang mới `/{vi|en|ja}/buildings` (`inc/building-directory.php`, `page-building-directory.php`, `assets/css/building-dir-component.css`): 564 tòa còn căn đang cho thuê, nhóm theo 11 quận (Tây Hồ 191, Ba Đình 178, Hai Bà Trưng 55, Cầu Giấy 54…), chip nhảy quận, mỗi tên là link thật tới trang dự án; có title/description 3 ngôn ngữ (tiếng Nhật kính ngữ), canonical + hreflang tự có (gốc `buildings` thêm vào `PPLUS_ROOTS_SHARED`), tự thêm 3 URL vào sitemap con `pages`.
+- Link "Xem tất cả tòa nhà ›" ở cuối cột "Tìm theo tòa nhà" của menu (`parts/header.php` + CSS `.menu-all-buildings`) → có trên mọi trang.
+- **Dữ liệu là file tĩnh** `data/building-directory.json` (191 KB), tạo bằng `php tools/gen-building-directory.php` (~6 phút, chỉ đọc API; `--normalize-only` chuẩn hóa lại tên quận không gọi API). Lý do: server thật chậm (~4 s/request PHP) và WP-Cron nhạy cảm (xem mục 6) nên không gọi ~250 lần API lúc có request. Chỉ gồm dự án có ≥ 1 căn đang đăng (dự án "vỏ" 36% tự noindex). **Cần chạy lại khi có dự án mới** (gợi ý: mỗi tháng hoặc trước mỗi bản phát hành).
+- Tên quận chuẩn hóa theo cách web đang gọi (API trả không nhất quán: "Nam Từ Liêm" không "Quận", "Tây Hồ district" có dấu Việt, tiếng Nhật "タイホ区" so với "タイホー区").
+- Kiểm thử: 19 test đơn vị (nhóm/sắp xếp/dự án ẩn/văn bản 3 ngôn ngữ/sitemap/canonical), smoke 8 trang, 3 ngôn ngữ HTTP 200; link đích mẫu trên web thật đều 200.
+
+**Việc tiếp theo:** Dev A chép gói 20e; yêu cầu lập chỉ mục lại 3 URL `/…/buildings` trong Search Console; theo dõi nhóm "đã phát hiện, chưa lập chỉ mục" sau 2–4 tuần; sau này cân nhắc đánh dấu tòa đã có bài viết trong danh sách.

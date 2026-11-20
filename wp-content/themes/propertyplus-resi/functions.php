@@ -71,6 +71,7 @@ if (!defined('PPLUS_SITEMAP_SOURCE')) {
 require_once PPLUS_THEME_DIR . (PPLUS_SITEMAP_SOURCE === 'theme' ? '/inc/sitemap.php' : '/inc/sitemap-admin.php');
 require_once PPLUS_THEME_DIR . '/inc/search-group-route.php';      // REST goi y "Tìm theo tên dự án" khi go o tim kiem (Apartment/_GetFilterGroupList)
 require_once PPLUS_THEME_DIR . '/inc/easyliving-route.php';       // C3 - trang tien ich /{lang}/easy-living/{id} (35 URL co backlink, xem docblock file)
+require_once PPLUS_THEME_DIR . '/inc/building-directory.php';     // trang "Tat ca toa nha" /{lang}/buildings: moi du an co can cho thue, theo quan (21/11/2026, link o menu)
 require_once PPLUS_THEME_DIR . '/inc/asset-bundle.php';            // Gop CSS/JS lien ke cung nhom thanh 1 file (tu sinh lai khi file nguon doi)
 
 /*
@@ -344,6 +345,12 @@ add_action('wp_enqueue_scripts', function () {
     if (get_query_var('pplus_blog_detail')) {
         wp_enqueue_style('pplus-blog-detail-component', PPLUS_THEME_URI . '/assets/css/blog-detail-component.css', [$prev], pplus_asset_version('assets/css/blog-detail-component.css'));
         $prev = 'pplus-blog-detail-component';
+    }
+
+    // CSS trang "Tat ca toa nha" (xem inc/building-directory.php).
+    if (get_query_var('pplus_building_dir')) {
+        wp_enqueue_style('pplus-building-dir-component', PPLUS_THEME_URI . '/assets/css/building-dir-component.css', [$prev], pplus_asset_version('assets/css/building-dir-component.css'));
+        $prev = 'pplus-building-dir-component';
     }
 
     // CSS trang tien ich (C3, xem inc/easyliving-route.php).

@@ -25,7 +25,7 @@ const PPLUS_ROOTS_VI = ['cho-thue-can-ho', 've-chung-toi', 'lien-he', 'so-sanh-v
 /** Goc duong dan cua ban EN/JA -> khi thieu tien to thi gan "/en" (hoac ngon ngu hien tai neu la ja). */
 const PPLUS_ROOTS_EN = ['rental-apartment', 'about-us', 'contact', 'villa-for-rent', 'office-compare'];
 /** Goc duong dan dung CHUNG ca 3 ngon ngu (chi doi phan sau) -> thieu tien to thi dung ngon ngu hien tai. */
-const PPLUS_ROOTS_SHARED = ['blogs', 'blog', 'service', 'owner', 'danh-sach-yeu-thich', 'favourite', 'street', 'easy-living', 'author'];
+const PPLUS_ROOTS_SHARED = ['blogs', 'blog', 'service', 'owner', 'danh-sach-yeu-thich', 'favourite', 'street', 'easy-living', 'author', 'buildings'];
 
 /**
  * Duong dan chuan cua 1 duong dan noi bo cua site (chi PATH, khong co host/query).

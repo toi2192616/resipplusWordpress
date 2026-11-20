@@ -101,6 +101,8 @@ $render_alias_items = static function (array $items, string $base_slug) {
                         <li class="menu-quan"><a class="district-name" href="<?php echo esc_url(pplus_lang_url($apartment . '/ha-noi/' . $alias)); ?>"><?php echo esc_html($name); ?><i class="icon-menu-link"></i></a></li>
                       <?php endforeach; ?>
                     </ul>
+                    <?php // 21/11/2026: link toi trang "Tat ca toa nha" (cot nay chi liet ke vai toa tuyen chon; trang do co moi du an co can cho thue, theo quan). ?>
+                    <a class="menu-all-buildings" href="<?php echo esc_url(pplus_lang_url('buildings')); ?>"><?php echo esc_html(pplus_bd_t(['Xem tất cả tòa nhà', 'View all buildings', 'すべての建物を見る'])); ?> &rsaquo;</a>
                   </div>
                   <div class="menu-hang-from aparment-2">
                     <div class="menu-quan-title"><?php echo esc_html(pplus_localize('Căn hộ Cao cấp')); ?></div>

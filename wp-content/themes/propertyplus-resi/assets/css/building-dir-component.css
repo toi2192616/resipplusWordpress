@@ -1,0 +1,115 @@
+/* Trang "Tat ca toa nha" (inc/building-directory.php). Theo khuon trang "Danh sach duong" cua ban Van phong (list-street-component.css):
+   khoi mau xanh #3E5FB4 o ben trai (o day la QUAN), luoi ten o ben phai, hang chip nhay nhom. */
+.bd-box {
+  margin: 10px 0 40px;
+}
+.bd-title {
+  margin: 15px 0 10px;
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 700;
+  color: #000;
+}
+.bd-intro {
+  max-width: 880px;
+  margin: 0 0 20px;
+  font-size: 16px;
+  line-height: 26px;
+  color: #333;
+}
+.bd-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin: 20px 0 10px;
+  padding: 14px 0;
+  border-top: 0.5px solid #0000002e;
+  border-bottom: 0.5px solid #0000002e;
+}
+.bd-jump a {
+  display: inline-block;
+  padding: 4px 12px;
+  border: 1px solid #c9d3ea;
+  border-radius: 16px;
+  background: #f5f8ff;
+  font-size: 14px;
+  line-height: 22px;
+  color: #2D5185;
+}
+.bd-jump a span {
+  margin-left: 6px;
+  color: #6b7280;
+}
+.bd-jump a:hover {
+  background: #e6edfb;
+}
+.bd-group {
+  display: flex;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid #0000002e;
+  scroll-margin-top: 90px;
+}
+.bd-district {
+  flex: 0 0 190px;
+  align-self: flex-start;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #3E5FB4;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+.bd-district span {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  opacity: 0.85;
+}
+.bd-list {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bd-list a {
+  display: block;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 15px;
+  line-height: 22px;
+  color: #000;
+}
+.bd-list a:hover {
+  background: #f5f5f5;
+}
+.bd-note {
+  margin: 20px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+@media only screen and (max-width: 1024px) {
+  .bd-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media only screen and (max-width: 800px) {
+  .bd-title {
+    font-size: 22px;
+    line-height: 30px;
+  }
+  .bd-group {
+    display: block;
+  }
+  .bd-district {
+    margin-bottom: 10px;
+  }
+  .bd-list {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}

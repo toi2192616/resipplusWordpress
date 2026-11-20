@@ -1890,3 +1890,19 @@ ul.office-list li.office-type:nth-child(2) input[type="checkbox"]:checked + labe
 .suggest-header .suggest-item.pplus-filter-chip .pplus-chip-clear:hover {
   background: rgba(191, 145, 61, 0.2);
 }
+.menu-quan-group .menu-all-buildings {
+  display: block;
+  padding: 6px 15px 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2D5185;
+}
+.menu-quan-group .menu-all-buildings:hover {
+  text-decoration: underline;
+}
+@media only screen and (max-width: 1024px) {
+  .menu-quan-group .menu-all-buildings {
+    padding: 8px 0 12px;
+    font-size: 15px;
+  }
+}
