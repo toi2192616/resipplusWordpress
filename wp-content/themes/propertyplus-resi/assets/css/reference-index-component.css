@@ -640,3 +640,69 @@
     visibility: hidden;
   }
 }
+
+/* 20/11/2026 - Khoi "Thong tin toa nha" cua trang du an (inc/project-facts.php, nam trong cot trai #web-content). */
+.pplus-project-facts {
+  margin-top: 24px;
+  font-size: 15px;
+  line-height: 1.65;
+}
+.pplus-project-facts h2 {
+  font-size: 22px;
+  margin: 0 0 12px;
+}
+.pplus-project-facts h3 {
+  font-size: 17px;
+  margin: 22px 0 8px;
+}
+.pplus-project-facts h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 14px 0 4px;
+}
+.pplus-project-facts p {
+  margin: 0 0 8px;
+}
+.pplus-pf-dl {
+  display: grid;
+  grid-template-columns: minmax(120px, max-content) 1fr;
+  gap: 6px 18px;
+  margin: 12px 0 8px;
+}
+.pplus-pf-dl dt {
+  font-weight: 600;
+  color: #555;
+}
+.pplus-pf-dl dd {
+  margin: 0;
+}
+.pplus-pf-list {
+  margin: 0;
+  padding-left: 20px;
+  columns: 2;
+  column-gap: 28px;
+}
+.pplus-pf-list li {
+  break-inside: avoid;
+  margin-bottom: 4px;
+}
+.pplus-pf-near {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pplus-pf-near li {
+  margin-bottom: 6px;
+}
+@media (max-width: 1024px) {
+  .pplus-pf-list {
+    columns: 1;
+  }
+  .pplus-pf-dl {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .pplus-pf-dl dd {
+    margin-bottom: 8px;
+  }
+}

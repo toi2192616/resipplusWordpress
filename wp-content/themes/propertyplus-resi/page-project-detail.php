@@ -244,6 +244,8 @@ get_header();
                     <?php // Bai viet SEO nam duoi danh sach the - hoan anh toi load+1s (xem pplus_defer_lazy_imgs()). ?>
                     <?php echo pplus_defer_lazy_imgs(pplus_kses_content($toc['html'])); ?>
                 </div>
+                <?php // 20/11/2026: khoi "Thong tin toa nha" tu du lieu that cua API (cot nay truoc day trong khi du an khong co bai SEO) - inc/project-facts.php. ?>
+                <?php pplus_render_project_facts($model['projectDetail'], (array) ($GLOBALS['pplus_project_seo_facts'] ?? [])); ?>
             </div>
         </div>
         <div class="col-md-4">
