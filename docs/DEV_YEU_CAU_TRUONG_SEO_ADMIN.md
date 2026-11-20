@@ -15,7 +15,7 @@ Ngày 20/11/2026. Người đề xuất: SEO Propertyplus (theo ý chủ site: "
 | Tiêu đề rút gọn, Hiển thị Menu | KHÔNG phải SEO: tên ngắn ở thẻ/menu; nhóm menu ("Theo tòa nhà" = 12 tòa tuyển chọn trong menu) |
 
 → **Dev KHÔNG cần thêm `seoTitle` / `seoDescription` / `seoIntro` cho dự án**: nhân viên điền các ô trên là Resi dùng ngay (không phải chép thêm code). Phần còn thật sự thiếu và cần Dev:
-1. **Căn hộ (Apartment):** không có bản ghi bài viết nào (`dataSelected` luôn rỗng) → cần `seoTitle`, `seoDescription` (hoặc dùng ô `Description` sẵn có) như mục 2 bên dưới.
+1. **Căn hộ (Apartment) — ƯU TIÊN THẤP / TÙY CHỌN (chốt 21/11):** chiến lược SEO là theo TÊN DỰ ÁN/TÒA NHÀ (người tìm gõ tên tòa; căn hộ biến động ~2.164 căn, trang biến mất khi cho thuê xong) nên căn hộ để tiêu đề/mô tả TỰ SINH, không viết tay từng căn. Căn hộ không có bản ghi bài viết (`dataSelected` luôn rỗng); nếu sau này cần cho vài căn đặc biệt thì thêm `seoTitle`, `seoDescription` (hoặc dùng ô `Description` sẵn có) như mục 2 bên dưới. **Dev chưa cần làm gì lúc này.**
 2. *(tùy chọn)* Dự án: ô **Index** ở tab Hỗ trợ SEO hiện Resi chưa đọc ở trang dự án (chỉ đọc ở trang đích quận/loại). Muốn "không index dự án này" thì Resi cần đọc ô đó — **chưa bật** vì phải kiểm dữ liệu trước (ô chưa tích có thể đang là `false` ở nhiều bản ghi → bật sẽ noindex nhầm hàng loạt). Nếu cần, dùng `seoNoIndex` mới như mục 2.
 3. *(tùy chọn)* Dự án: Meta Title / Meta Description riêng cho EN và JA (hiện chỉ có Tiêu đề + Giới thiệu ngắn ở dòng ngôn ngữ — vẫn dùng được).
 
