@@ -120,11 +120,11 @@ add_filter('pre_get_document_title', function (string $title): string {
         return $title;
     }
     // 20/11/2026: metaTitle/title do Admin nhap (khong rong) -> dung nguyen; khong co -> title tu dong tu du lieu du an (inc/seo-listing-meta.php), thay cho "chi ten du an".
-    $ds = is_array($model['dataSelected'] ?? null) ? $model['dataSelected'] : [];
-    foreach (['metaTitle', 'title'] as $k) {
-        if (trim((string) ($ds[$k] ?? '')) !== '') {
-            return trim((string) $ds[$k]);
-        }
+    // Thứ tự: ô SEO nhập riêng cho dự án (seoTitle, nếu Backend có) -> metaTitle bài viết dự án -> tiêu đề bài viết -> tự động từ dữ liệu.
+    $ds  = is_array($model['dataSelected'] ?? null) ? $model['dataSelected'] : [];
+    $adm = function_exists('pplus_seo_admin_text') ? pplus_seo_admin_text([$model['projectDetail'], $ds], ['seoTitle', 'metaTitle', 'title']) : '';
+    if ($adm !== '') {
+        return $adm;
     }
     $auto = function_exists('pplus_seo_project_title') ? pplus_seo_project_title($model['projectDetail']) : '';
     return $auto !== '' ? $auto : ($model['projectDetail']['projectName'] ?? $title);
@@ -140,7 +140,15 @@ add_action('wp_head', function () {
     }
     // 20/11/2026: metaDescription do Admin nhap (khong rong) -> dung nguyen; khong co -> mo ta tu dong (dia chi, loai phong, dien tich, so can + khoang gia
     // do page-project-detail.php tinh), thay cho viec in lai tieu de/ten du an (mo ta 11-27 ky tu).
-    $description = trim((string) ($model['dataSelected']['metaDescription'] ?? ''));
+    // Thứ tự: seoDescription (ô nhập riêng, nếu Backend có) -> metaDescription bài viết -> mô tả viết tay của bài viết dự án (>= 60 ký tự; Lotte/Authentic... có sẵn
+    // 136-156 ký tự nhưng metaDescription để trống) -> mô tả tự động từ dữ liệu.
+    $description = function_exists('pplus_seo_admin_text')
+        ? pplus_seo_admin_text([$model['projectDetail'], (array) ($model['dataSelected'] ?? [])], ['seoDescription', 'metaDescription'])
+        : trim((string) ($model['dataSelected']['metaDescription'] ?? ''));
+    if ($description === '' && function_exists('pplus_seo_admin_text')) {
+        $description = pplus_seo_admin_text([(array) ($model['dataSelected'] ?? [])], ['description'], 60);
+        $description = ($description !== '' && function_exists('pplus_seo_trim')) ? pplus_seo_trim($description, 170) : $description;
+    }
     if ($description === '' && function_exists('pplus_seo_project_description')) {
         $description = pplus_seo_project_description($model['projectDetail'], (array) ($GLOBALS['pplus_project_seo_facts'] ?? []));
     }

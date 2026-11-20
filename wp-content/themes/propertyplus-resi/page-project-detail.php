@@ -97,6 +97,9 @@ if ((int) $total_count === 0 && $pplus_article_len < (int) apply_filters('pplus_
     $GLOBALS['pplus_project_shell'] = true;
 }
 $total_pages    = $total_count > 0 ? (int) ceil($total_count / $per_page) : 0;
+if (function_exists('pplus_seo_admin_noindex') && pplus_seo_admin_noindex([$model['projectDetail'], (array) ($model['dataSelected'] ?? [])])) {
+    $GLOBALS['pplus_admin_noindex'] = true; // 20/11/2026: Admin tích "không index" cho dự án này
+}
 
 // 20/11/2026 - so can + khoang gia THAT cho mo ta tu dong (inc/seo-listing-meta.php; route in meta o wp_head, sau doan nay). Chi khi khong loc/phan trang
 // (ket qua loc khong phai "so can cua du an"). min/max chi la gia that khi lay du danh sach trong 1 trang (du an > $per_page can chi noi so luong).

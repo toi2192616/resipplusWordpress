@@ -136,7 +136,9 @@ add_action('wp_head', function () {
         printf('<meta name="description" content="%s" />' . "\n", esc_attr($description));
     }
 
-    $robots = ($data['isIndex'] === false) ? 'noindex, nofollow' : 'index, follow';
+    // 20/11/2026: bài tin nội bộ rỗng (loai >= 90, xem inc/landing-hygiene.php) -> noindex, follow dù Admin để isIndex = true/null.
+    $robots = (($data['isIndex'] ?? null) === false) ? 'noindex, nofollow'
+        : ((function_exists('pplus_landing_is_news_shell') && pplus_landing_is_news_shell($data)) ? 'noindex, follow' : 'index, follow');
     printf('<meta name="robots" content="%s" />' . "\n", esc_attr($robots));
 }, 1);
 

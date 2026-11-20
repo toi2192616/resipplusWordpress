@@ -261,7 +261,8 @@ function pplus_render_project_facts(array $pd, array $facts = []): void {
     }
     $name  = (string) $pd['projectName'];
     $faq   = pplus_project_faq($pd, $facts, $rows, $groups);
-    $intro = pplus_project_facts_intro($pd, $rows);
+    // 20/11/2026: đoạn giới thiệu do Admin nhập (seoIntro, nếu Backend có) thay đoạn tự sinh.
+    $intro = pplus_seo_admin_text([$pd], ['seoIntro'], 40) ?: pplus_project_facts_intro($pd, $rows);
     $ja    = pplus_current_lang() === 'ja';
     $sep   = $ja ? '、' : ', ';
     ?>

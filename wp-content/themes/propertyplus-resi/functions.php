@@ -57,6 +57,7 @@ require_once PPLUS_THEME_DIR . '/inc/favourite-items-rest.php';    // B7 - REST 
 require_once PPLUS_THEME_DIR . '/inc/seo-head.php';                // SEO/GEO tap trung: canonical, OG/Twitter, JSON-LD, BreadcrumbList, mo ta du phong
 require_once PPLUS_THEME_DIR . '/inc/seo-listing-meta.php';        // title + mo ta tu dong cho trang du an/can ho khi Admin chua nhap (20/11/2026)
 require_once PPLUS_THEME_DIR . '/inc/project-facts.php';           // khoi "Thong tin toa nha" (dia chi, nam, dich vu, dia diem lan can, FAQ) cho trang du an (20/11/2026)
+require_once PPLUS_THEME_DIR . '/inc/landing-hygiene.php';         // trang dich = bai tin noi bo rong -> noindex; sitemap bo URL lap/404/410/tin noi bo (20/11/2026)
 require_once PPLUS_THEME_DIR . '/inc/noindex.php';                 // Chan index toan site cho server TEST (PPLUS_NOINDEX / o tich trong Giao dien > PropertyPlus)
 require_once PPLUS_THEME_DIR . '/inc/tracking.php';                // The xac minh Google + GTM cua web chinh (chi nap GTM khi site cho phep index)
 require_once PPLUS_THEME_DIR . '/inc/hidden-projects.php';         // "Du an da go": danh sach ID -> trang du an 410 + bo khoi goi y tim kiem/sitemap/link (11/11/2026)

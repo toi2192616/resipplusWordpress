@@ -100,6 +100,40 @@ function pplus_seo_money(float $v): string {
     return pplus_current_lang() === 'vi' ? number_format($v, 0, ',', '.') : number_format($v, 0, '.', ',');
 }
 
+/**
+ * LỚP "ADMIN ĐIỀN THÌ DÙNG" (20/11/2026): giá trị SEO do biên tập viên nhập trong Admin cho TỪNG dự án/căn hộ (tên trường đề xuất: seoTitle, seoDescription,
+ * seoIntro, seoNoIndex - xem docs/DEV_YEU_CAU_TRUONG_SEO_ADMIN.md). Backend CHƯA có các trường này nên hàm trả '' và theme dùng nội dung tự động như trước;
+ * khi Dev thêm trường (đúng tên) thì tự có hiệu lực, không cần sửa theme. Lấy chuỗi KHÔNG RỖNG đầu tiên trong các nguồn, theo thứ tự khóa.
+ *
+ * @param array[]  $sources  vd [$projectDetail, $dataSelected]
+ * @param string[] $keys     vd ['seoTitle', 'metaTitle']
+ * @param int      $min      độ dài tối thiểu (ký tự chữ) để coi là "đã điền thật"
+ */
+function pplus_seo_admin_text(array $sources, array $keys, int $min = 1): string {
+    foreach ($keys as $k) {
+        foreach ($sources as $src) {
+            if (!is_array($src) || !isset($src[$k]) || !is_scalar($src[$k])) {
+                continue;
+            }
+            $v = trim((string) preg_replace('/\s+/u', ' ', wp_strip_all_tags((string) $src[$k])));
+            if ($v !== '' && mb_strlen($v) >= $min) {
+                return $v;
+            }
+        }
+    }
+    return '';
+}
+
+/** Admin tích "không index" (seoNoIndex) cho dự án/căn hộ này? */
+function pplus_seo_admin_noindex(array $sources): bool {
+    foreach ($sources as $src) {
+        if (is_array($src) && !empty($src['seoNoIndex']) && $src['seoNoIndex'] !== 'false' && $src['seoNoIndex'] !== '0') {
+            return true;
+        }
+    }
+    return false;
+}
+
 /** Chon chuoi dau tien <= $max ky tu trong danh sach (tu day du -> ngan); khong co cai nao vua thi lay cai ngan nhat. */
 function pplus_seo_pick_title(array $candidates, int $max = 70): string {
     $candidates = array_values(array_filter(array_map('trim', $candidates), 'strlen'));

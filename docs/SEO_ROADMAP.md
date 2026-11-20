@@ -94,3 +94,21 @@ Cập nhật: 3/11/2026. Chiến lược và số liệu gốc: `SEO_STRATEGY_JA
 3. Chính sách trang mỏng: sau khi có dữ liệu mới, quyết định noindex cho dự án chỉ có 1–2 căn và không có bài viết (hiện chưa làm — chưa có bằng chứng đủ).
 4. Dev A/Back: sitemap vẫn liệt kê dự án noindex (mục 2A/2B), www → 301.
 5. Backlink / Ahrefs Content Gap (chỉ đọc) khi chủ site duyệt.
+
+## 7. Cập nhật tối 20/11/2026 — vệ sinh trang đích, lớp ghi đè từ Admin
+
+**Kiểm toán 206 URL** trong `sitemap_quan.xml` + `sitemap_type.xml` (EN + JA; chi tiết từng dòng: `docs/content/landing-audit-2026-11-20.csv`):
+- **~36 trang đích rác** (`loai` 90/91/92, EN 18 + JA 19): bài tin nội bộ (team building, hiến máu, quyên sách, phỏng vấn…), nội dung 0–18 ký tự → trang chỉ là danh sách căn hộ chung với tiêu đề lạc đề. **28 trang đang `index`** và nằm trong sitemap.
+- 3 alias EN trả 404, 6 trang `Villa-*` trả 410, 1 trang `loai` 5 Admin đã tắt index — vẫn nằm trong sitemap.
+- URL lặp: `sitemap_quan` 319 dòng (201 URL thật), `sitemap_type` 301 dòng (195 URL thật).
+- Lỗi dữ liệu Admin: JA `cau-giay-district` có title "ドンダー区の賃貸アパート" (là tên quận **Đống Đa**, đúng phải là カウザイ区); một số cặp trang trùng tiêu đề/tranh nhau từ khoá (EN `luxury-apartment` vs `luxury-apartment-for-rent-in-ha-noi`, cặp luxury tiếng Nhật); vài trang đích thật còn mỏng (ciputra-area ~1,3K ký tự, times-city-park-hill-area, Zenpark/Zurich ~1K).
+
+**Đã làm ở theme (không cần chủ site sửa Admin):**
+- `inc/landing-hygiene.php`: trang đích tin nội bộ rỗng (`loai` ≥ 90 và < 200 ký tự) → `noindex, follow`; sitemap `quan`/`type` loại alias rác (denylist 25 EN + 23 JA) và URL lặp; các sitemap khác chỉ khử lặp. Local: `sitemap_quan` 319 → 153 URL, `sitemap_type` 301 → 147.
+- **Lớp ghi đè từ Admin cho dự án / căn hộ** — ô nào Admin điền thì dùng, bỏ trống thì dùng tự sinh như hiện tại (title, mô tả, giới thiệu toà nhà, noindex). Theme đã đọc sẵn các trường `seoTitle`, `seoDescription`, `seoIntro`, `seoNoIndex`; chưa có trường thì chạy như cũ. Mô tả viết tay sẵn có trong bài viết dự án nay cũng được dùng. Yêu cầu cho Dev: `docs/DEV_YEU_CAU_TRUONG_SEO_ADMIN.md`.
+
+**Việc tiếp theo:**
+1. Dev A chép gói `capnhat-resi-2026-11-20c.zip` (thay 20b) → đối chiếu dung lượng + `robots`/sitemap.
+2. Chủ site: sửa title JA `cau-giay-district`; quyết định xóa hoặc viết lại ~36 bài tin nội bộ; gửi `DEV_YEU_CAU_TRUONG_SEO_ADMIN.md` cho Dev.
+3. Dev: thêm 4 trường SEO (vi/en/ja) cho Dự án + Căn hộ, lọc sitemap ở gốc (loai ∈ {1,2,3,4,9}, isIndex = true, bỏ 404/410, không lặp, lastmod thật).
+4. Tiêu đề/mô tả trụ B (JA/EN), gộp các cặp trang trùng tiêu đề, bổ sung nội dung trang đích mỏng; đo lại Search Console sau 2–4 tuần.

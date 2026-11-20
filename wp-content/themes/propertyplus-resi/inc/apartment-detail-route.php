@@ -118,7 +118,7 @@ add_filter('pre_get_document_title', function (string $title): string {
     }
     // 20/11/2026: metaTitle do Admin nhap (khong rong) -> dung nguyen; khong co -> title mieu ta loai phong/gia/quan (inc/seo-listing-meta.php), thay cho title API
     // lap ten toa ("LeHome Apartment - Tòa LeHome Apartment - Tầng 4").
-    $meta = trim((string) ($model['dataSelected']['metaTitle'] ?? ''));
+    $meta = function_exists('pplus_seo_admin_text') ? pplus_seo_admin_text([$detail, (array) ($model['dataSelected'] ?? [])], ['seoTitle', 'metaTitle']) : trim((string) ($model['dataSelected']['metaTitle'] ?? ''));
     if ($meta !== '') {
         return $meta;
     }
@@ -135,7 +135,13 @@ add_action('wp_head', function () {
     if (!$detail) {
         return;
     }
-    $description = $model['dataSelected']['metaDescription'] ?? $detail['title'] ?? '';
+    // 20/11/2026: chỉ in mô tả do Admin nhập: seoDescription (nếu Backend có) -> metaDescription -> ô "Mô tả" của căn hộ (>= 60 ký tự; trang đã hiển thị ô này).
+    // Không có -> KHÔNG in gì để inc/seo-head.php sinh mô tả tự động từ dữ liệu căn hộ (trước đây in lại tiêu đề rồi bị thay).
+    $description = function_exists('pplus_seo_admin_text') ? pplus_seo_admin_text([$detail, (array) ($model['dataSelected'] ?? [])], ['seoDescription', 'metaDescription']) : '';
+    if ($description === '' && function_exists('pplus_seo_admin_text')) {
+        $description = pplus_seo_admin_text([$detail], ['description'], 60);
+        $description = ($description !== '' && function_exists('pplus_seo_trim')) ? pplus_seo_trim($description, 170) : $description;
+    }
     if ($description) {
         printf('<meta name="description" content="%s" />' . "\n", esc_attr($description));
     }

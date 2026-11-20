@@ -59,7 +59,7 @@ add_filter('wp_robots', static function (array $robots): array {
     if (!empty($GLOBALS['pplus_project_gone'])) {
         return ['noindex' => true, 'nofollow' => true];
     }
-    if (!empty($GLOBALS['pplus_project_shell'])) {
+    if (!empty($GLOBALS['pplus_project_shell']) || !empty($GLOBALS['pplus_admin_noindex'])) { // 20/11/2026: + ô "không index" do Admin tích (seoNoIndex, nếu Backend có)
         unset($robots['index'], $robots['nofollow']);
         $robots['noindex'] = true;
         $robots['follow']  = true;

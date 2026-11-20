@@ -29,6 +29,9 @@ if (!defined('ABSPATH')) exit;
 
 $model  = pplus_get_apartment_detail_from_query_vars();
 $detail = $model['apartmentDetail'] ?? null;
+if ($detail && function_exists('pplus_seo_admin_noindex') && pplus_seo_admin_noindex([$detail, (array) ($model['dataSelected'] ?? [])])) {
+    $GLOBALS['pplus_admin_noindex'] = true; // 20/11/2026: Admin tích "không index" cho căn hộ này (seoNoIndex)
+}
 
 if (!$detail) {
     status_header(404);
