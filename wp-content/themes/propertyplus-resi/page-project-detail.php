@@ -98,6 +98,18 @@ if ((int) $total_count === 0 && $pplus_article_len < (int) apply_filters('pplus_
 }
 $total_pages    = $total_count > 0 ? (int) ceil($total_count / $per_page) : 0;
 
+// 20/11/2026 - so can + khoang gia THAT cho mo ta tu dong (inc/seo-listing-meta.php; route in meta o wp_head, sau doan nay). Chi khi khong loc/phan trang
+// (ket qua loc khong phai "so can cua du an"). min/max chi la gia that khi lay du danh sach trong 1 trang (du an > $per_page can chi noi so luong).
+if (!$pplus_project_filtered && $paged === 1 && (int) $total_count > 0) {
+    $seo_prices = array_values(array_filter(array_map(static fn ($a) => (float) ($a['price'] ?? 0), $listApartments), static fn ($p) => $p > 0));
+    $GLOBALS['pplus_project_seo_facts'] = [
+        'total'    => (int) $total_count,
+        'min'      => $seo_prices ? min($seo_prices) : 0,
+        'max'      => $seo_prices ? max($seo_prices) : 0,
+        'complete' => (int) $total_count <= $per_page,
+    ];
+}
+
 $toc = pplus_generate_toc((string) ($data['content'] ?? ''));
 
 $map_markers = [];

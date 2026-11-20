@@ -116,7 +116,14 @@ add_filter('pre_get_document_title', function (string $title): string {
     if (!$detail) {
         return $title;
     }
-    return $model['dataSelected']['metaTitle'] ?? $detail['title'] ?? $title;
+    // 20/11/2026: metaTitle do Admin nhap (khong rong) -> dung nguyen; khong co -> title mieu ta loai phong/gia/quan (inc/seo-listing-meta.php), thay cho title API
+    // lap ten toa ("LeHome Apartment - Tòa LeHome Apartment - Tầng 4").
+    $meta = trim((string) ($model['dataSelected']['metaTitle'] ?? ''));
+    if ($meta !== '') {
+        return $meta;
+    }
+    $auto = function_exists('pplus_seo_apartment_title') ? pplus_seo_apartment_title($detail) : '';
+    return $auto !== '' ? $auto : ($detail['title'] ?? $title);
 });
 
 add_action('wp_head', function () {

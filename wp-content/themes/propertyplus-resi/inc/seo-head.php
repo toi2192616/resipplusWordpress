@@ -114,8 +114,10 @@ function pplus_seo_tagline(): string {
 /** Mo ta ngan cho can ho tu cac field that (title da theo ngon ngu hien tai tu API). */
 function pplus_seo_apartment_description(array $d): string {
     $parts = [];
-    if (!empty($d['title'])) {
-        $parts[] = $d['title'];
+    // 20/11/2026: bo phan lap ten toa ("LeHome Apartment - Tòa LeHome Apartment - Tầng 4" -> "LeHome Apartment - Tầng 4").
+    $lead = function_exists('pplus_seo_clean_apartment_title') ? pplus_seo_clean_apartment_title($d) : (string) ($d['title'] ?? '');
+    if ($lead !== '') {
+        $parts[] = $lead;
     }
     $facts = [];
     if (!empty($d['bedRoomQty'])) {
@@ -133,12 +135,22 @@ function pplus_seo_apartment_description(array $d): string {
     if ($facts) {
         $parts[] = implode(', ', $facts);
     }
-    $is_vi = pplus_current_lang() === 'vi';
-    $loc   = array_filter([
-        pplus_apartment_address($d), // theo ngon ngu trang (en: dia chi du an tieng Anh; ja: tieng Anh vi CSDL chua dich)
-        $is_vi ? ($d['districtName'] ?? '') : ($d['districtNameEn'] ?? $d['districtName'] ?? ''),
-        $d['provinceName'] ?? '',
-    ]);
+    // 20/11/2026: dia chi (theo ngon ngu trang; en: dia chi du an tieng Anh; ja: tieng Anh vi CSDL chua dich) + quan + tinh, chi them quan/tinh khi dia chi CHUA chua ten do
+    // (truoc day: "Số 27B Trần Hưng Đạo, Hoàn Kiếm, Hà Nội, Quận Hoàn Kiếm, Hà Nội"; ban en con lan "Hoàn Kiếm district" co dau).
+    $address = trim(pplus_apartment_address($d));
+    if ($address !== '' && pplus_current_lang() !== 'vi' && preg_match('/[^\x00-\x7F]/u', $address) && !(pplus_current_lang() === 'ja' && preg_match('/[぀-ヿ一-鿿]/u', $address))) {
+        $address = pplus_romanize_vi_address($address); // CSDL chua dich dia chi -> khong dau (khong dua tieng Viet co dau vao mo ta en/ja)
+    }
+    // So sanh khong dau, bo khoang trang/dau cau ("Hà Nội" == "Hanoi"), giu chu Nhat.
+    $norm    = static fn (string $s): string => (string) preg_replace('/[^a-z0-9\x{3040}-\x{9fff}]+/u', '', strtolower(remove_accents($s)));
+    $loc     = $address !== '' ? [$address] : [];
+    $bare    = static fn (string $s): string => trim((string) preg_replace('/^(quận|huyện|thị xã)\s+|\s+(district|区)$/iu', '', $s));
+    foreach ([function_exists('pplus_seo_district_label') ? pplus_seo_district_label($d) : '', function_exists('pplus_seo_province_label') ? pplus_seo_province_label($d) : (string) ($d['provinceName'] ?? '')] as $piece) {
+        $piece = trim($piece);
+        if ($piece !== '' && ($address === '' || mb_stripos($norm($address), $norm($bare($piece))) === false)) {
+            $loc[] = $piece;
+        }
+    }
     if ($loc) {
         $parts[] = implode(', ', array_unique($loc));
     }

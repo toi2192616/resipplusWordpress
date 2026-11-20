@@ -119,10 +119,15 @@ add_filter('pre_get_document_title', function (string $title): string {
     if (!$model || empty($model['projectDetail'])) {
         return $title;
     }
-    return $model['dataSelected']['metaTitle']
-        ?? $model['dataSelected']['title']
-        ?? $model['projectDetail']['projectName']
-        ?? $title;
+    // 20/11/2026: metaTitle/title do Admin nhap (khong rong) -> dung nguyen; khong co -> title tu dong tu du lieu du an (inc/seo-listing-meta.php), thay cho "chi ten du an".
+    $ds = is_array($model['dataSelected'] ?? null) ? $model['dataSelected'] : [];
+    foreach (['metaTitle', 'title'] as $k) {
+        if (trim((string) ($ds[$k] ?? '')) !== '') {
+            return trim((string) $ds[$k]);
+        }
+    }
+    $auto = function_exists('pplus_seo_project_title') ? pplus_seo_project_title($model['projectDetail']) : '';
+    return $auto !== '' ? $auto : ($model['projectDetail']['projectName'] ?? $title);
 });
 
 add_action('wp_head', function () {
@@ -133,10 +138,15 @@ add_action('wp_head', function () {
     if (!$model || empty($model['projectDetail'])) {
         return;
     }
-    $description = $model['dataSelected']['metaDescription']
-        ?? $model['dataSelected']['title']
-        ?? $model['projectDetail']['projectName']
-        ?? '';
+    // 20/11/2026: metaDescription do Admin nhap (khong rong) -> dung nguyen; khong co -> mo ta tu dong (dia chi, loai phong, dien tich, so can + khoang gia
+    // do page-project-detail.php tinh), thay cho viec in lai tieu de/ten du an (mo ta 11-27 ky tu).
+    $description = trim((string) ($model['dataSelected']['metaDescription'] ?? ''));
+    if ($description === '' && function_exists('pplus_seo_project_description')) {
+        $description = pplus_seo_project_description($model['projectDetail'], (array) ($GLOBALS['pplus_project_seo_facts'] ?? []));
+    }
+    if ($description === '') {
+        $description = (string) ($model['dataSelected']['title'] ?? $model['projectDetail']['projectName'] ?? '');
+    }
     if ($description) {
         printf('<meta name="description" content="%s" />' . "\n", esc_attr($description));
     }
