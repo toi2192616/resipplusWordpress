@@ -243,15 +243,15 @@ function pplus_seo_project_description(array $pd, array $facts = []): string {
     }
     if ($lang === 'ja') {
         $s   = [];
-        $s[] = $name . 'の賃貸アパート情報。' . ($addr !== '' ? '所在地：' . $addr . '。' : '');
+        $s[] = $name . 'の賃貸アパート情報です。' . ($addr !== '' ? '所在地は' . $addr . 'です。' : '');
         if ($total > 0) {
-            $s[] = '現在' . $total . '件を掲載中' . ($range ? (count($range) === 2 ? '（月額$' . $range[0] . '〜$' . $range[1] . '）' : '（月額$' . $range[0] . '）') : '') . '。';
+            $s[] = '現在' . $total . '件を掲載しております' . ($range ? (count($range) === 2 ? '（月額$' . $range[0] . '〜$' . $range[1] . '）' : '（月額$' . $range[0] . '）') : '') . '。';
         }
-        $spec = array_filter([$beds !== '' ? '間取り：' . $beds : '', $areas !== '' ? '面積：' . $areas : '']);
+        $spec = array_filter([$beds !== '' ? '間取りは' . $beds : '', $areas !== '' ? '面積は' . $areas : '']);
         if ($spec) {
-            $s[] = implode('／', $spec) . '。';
+            $s[] = implode('、', $spec) . 'です。';
         }
-        $s[] = '無料相談・迅速なお見積もり｜Property Plus';
+        $s[] = '無料のご相談・お見積もりを承っております（Property Plus）。';
         return pplus_seo_fit_sentences($s, 130, '');
     }
     $s   = [];

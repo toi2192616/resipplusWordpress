@@ -9,7 +9,7 @@ Search Console 20/11: Google đã thu thập các trang dự án/căn hộ của
 - **Hiện web tự sinh title/mô tả từ dữ liệu** (đã làm, chờ deploy: ví dụ "Căn Hộ Cho Thuê Tại Le Capitole - Quận Đống Đa, Hà Nội | Property Plus"). Cách này đủ tốt cho ~1.600 trang thường, **nhưng với các dự án/căn hộ quan trọng nhân viên muốn tự viết** (từ khóa, điểm bán hàng, tiếng Nhật chuẩn).
 - **Admin hiện không có chỗ nhập SEO ở cấp dự án và căn hộ.** Chỉ khi dự án có "bài viết" (khoảng 2% dự án) mới có `metaTitle`/`metaDescription`/`isIndex`; căn hộ thì `dataSelected` luôn rỗng. Ô "Mô tả" của căn hộ (`description`) có sẵn nhưng 0/15 căn mẫu được điền.
 
-## 2. Đề xuất (Dev làm phần Backend + Admin; phần web đã code sẵn)
+## 2. Đề xuất (phần Backend + Admin do bên kỹ thuật làm — chủ site hoặc Dev; phần web đã code sẵn)
 
 ### 2.1 Trường mới
 Thêm cho **Dự án (Project)** và **Căn hộ (Apartment)**, mỗi trường **riêng cho từng ngôn ngữ vi / en / ja**:
@@ -52,13 +52,13 @@ Thứ tự ưu tiên, **ô nào có giá trị thì dùng, không thì xuống d
 
 Web đã tự lọc ở phía mình (bản deploy sắp tới) nhưng **gốc nên sửa ở bộ sinh sitemap** của Back. Kiểm toán 206 URL trong `sitemap_quan.xml` và `sitemap_type.xml` (file `docs/content/landing-audit-2026-11-20.csv`):
 
-1. **Bài tin nội bộ nằm trong bảng trang đích** (`loai` = 90/91/92): EN 18, JA 19 trang (văn hóa công ty, team building, hiến máu, quyên sách, phỏng vấn lãnh đạo, "Quy tắc bấm chuông cửa"…). **Nội dung rỗng (0–18 ký tự)** nên trang chỉ là danh sách căn hộ chung với tiêu đề lạc đề; 28 trang đang để `index`. → Không đưa vào sitemap: **chỉ lấy `loai` ∈ {1,2,3,4,9}** và `isIndex = true`.
+1. **Bản ghi Hoạt động / Báo chí / Khám phá cũng mở được bằng đường dẫn trang đích** (`loai` = 90/91/92): EN 18, JA 19 trang (văn hóa công ty, team building, hiến máu, quyên sách, phỏng vấn lãnh đạo, "Quy tắc bấm chuông cửa"…). Đây là dữ liệu thật của các mục đó trong Admin, **không xóa**; nhưng ở đường dẫn trang đích chúng có **nội dung rỗng (0–18 ký tự)**, trang chỉ là danh sách căn hộ chung với tiêu đề lạc đề; 28 trang đang để `index`. → Không đưa vào sitemap trang đích: **chỉ lấy `loai` ∈ {1,2,3,4,9}** và `isIndex = true`.
 2. **URL 404/410 trong sitemap**: 3 alias EN 404 (`book-donation-at-the-children-hopital`, `voluntary-blood-donation`, `fdfdf`) và 6 trang `Villa-*` trả 410 (EN 3, JA 3, `loai` = 8) → bỏ.
 3. **URL lặp** ngay trong cùng một file (vd `quan-tay-ho` xuất hiện 3 lần; `sitemap_quan` 319 dòng chỉ 201 URL duy nhất, `sitemap_type` 301 dòng / 195) → mỗi URL một lần.
 4. Trang `loai` = 5 (`03-bedrooms-apartment-for-rent-in-r2-royal-city-ready-to-move-in`) Admin đang tắt index nhưng vẫn nằm trong sitemap → bỏ khi `isIndex = false`.
 5. `lastmod` hiện là cùng một thời điểm cho mọi URL (`2026-11-17T09:54:52`); nên là ngày sửa thật của bản ghi.
 
-Việc dọn dữ liệu (xóa hoặc viết lại các bài tin nội bộ) là quyết định của chủ site; Dev chỉ cần lọc sitemap như trên.
+Dev chỉ cần lọc sitemap như trên; không xóa dữ liệu Hoạt động / Báo chí / Khám phá.
 
 ## 4. Nghiệm thu
 

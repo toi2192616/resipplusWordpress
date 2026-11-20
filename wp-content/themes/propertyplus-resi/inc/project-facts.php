@@ -184,7 +184,7 @@ function pplus_project_faq(array $pd, array $facts, array $rows, array $groups):
         }
         $faq[] = [
             'q' => pplus_pf_t(['Giá thuê căn hộ tại ' . $name . ' là bao nhiêu?', 'How much does it cost to rent an apartment at ' . $name . '?', $name . 'の賃貸アパートの家賃はいくらですか？']),
-            'a' => pplus_pf_t(['Hiện có ' . $total . ' căn đang cho thuê' . $price . '. Giá được cập nhật hằng tháng; liên hệ Property Plus để nhận báo giá mới nhất.', $total . ($total === 1 ? ' apartment is' : ' apartments are') . ' available for rent' . $price . '. Prices are updated monthly; contact Property Plus for the latest quote.', '現在' . $total . '件を掲載中' . $price . '。価格は毎月更新しています。最新のお見積もりはProperty Plusまでお問い合わせください。']),
+            'a' => pplus_pf_t(['Hiện có ' . $total . ' căn đang cho thuê' . $price . '. Giá được cập nhật hằng tháng; liên hệ Property Plus để nhận báo giá mới nhất.', $total . ($total === 1 ? ' apartment is' : ' apartments are') . ' available for rent' . $price . '. Prices are updated monthly; contact Property Plus for the latest quote.', '現在' . $total . '件を掲載しております' . $price . '。価格は毎月更新しております。最新のお見積もりは、Property Plusまでお気軽にお問い合わせください。']),
         ];
     }
     $where = trim((string) ($rows[pplus_pf_t(['Địa chỉ', 'Address', '所在地'])] ?? ''));
@@ -199,7 +199,7 @@ function pplus_project_faq(array $pd, array $facts, array $rows, array $groups):
         }
         $faq[] = [
             'q' => pplus_pf_t([$name . ' ở đâu?', 'Where is ' . $name . '?', $name . 'はどこにありますか？']),
-            'a' => $loc . pplus_pf_t(['.', '.', '。']),
+            'a' => pplus_pf_t([$loc . '.', $loc . '.', $name . 'は、' . $loc . 'にございます。']),
         ];
     }
     $near = [];
@@ -212,7 +212,7 @@ function pplus_project_faq(array $pd, array $facts, array $rows, array $groups):
         $list  = implode(pplus_current_lang() === 'ja' ? '、' : ', ', array_slice($near, 0, 6));
         $faq[] = [
             'q' => pplus_pf_t(['Gần ' . $name . ' có những địa điểm nào?', 'What is near ' . $name . '?', $name . 'の近くには何がありますか？']),
-            'a' => pplus_pf_t(['Gần ' . $name . ' có: ' . $list . '.', 'Near ' . $name . ': ' . $list . '.', $name . 'の周辺：' . $list . '。']),
+            'a' => pplus_pf_t(['Gần ' . $name . ' có: ' . $list . '.', 'Near ' . $name . ': ' . $list . '.', $name . 'の周辺には、' . $list . 'などがございます。']),
         ];
     }
     return count($faq) >= 2 ? $faq : [];
@@ -236,8 +236,8 @@ function pplus_project_facts_intro(array $pd, array $rows): string {
     }
     if ($lang === 'ja') {
         $s = $name . 'は' . trim($prov . ' ' . $dist) . 'にある賃貸アパートです。';
-        $s .= $year !== '' ? '竣工：' . $year . '。' : '';
-        $s .= $areas !== '' ? '専有面積：' . $areas . ($beds !== '' ? '、間取り：' . $beds : '') . '。' : '';
+        $s .= $year !== '' ? '竣工は' . $year . 'です。' : '';
+        $s .= $areas !== '' ? '専有面積は' . $areas . ($beds !== '' ? '、間取りは' . $beds : '') . 'です。' : '';
         return $s;
     }
     $s = $name . ' là tòa nhà căn hộ cho thuê tại ' . trim($dist . ', ' . $prov, ', ') . ($addr !== '' ? ' (' . $addr . ')' : '') . '.';

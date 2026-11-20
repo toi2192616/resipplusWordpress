@@ -98,7 +98,7 @@ Cập nhật: 3/11/2026. Chiến lược và số liệu gốc: `SEO_STRATEGY_JA
 ## 7. Cập nhật tối 20/11/2026 — vệ sinh trang đích, lớp ghi đè từ Admin
 
 **Kiểm toán 206 URL** trong `sitemap_quan.xml` + `sitemap_type.xml` (EN + JA; chi tiết từng dòng: `docs/content/landing-audit-2026-11-20.csv`):
-- **~36 trang đích rác** (`loai` 90/91/92, EN 18 + JA 19): bài tin nội bộ (team building, hiến máu, quyên sách, phỏng vấn…), nội dung 0–18 ký tự → trang chỉ là danh sách căn hộ chung với tiêu đề lạc đề. **28 trang đang `index`** và nằm trong sitemap.
+- **~36 trang đích rỗng** (`loai` 90/91/92, EN 18 + JA 19): bản ghi Hoạt động / Báo chí / Khám phá (team building, hiến máu, quyên sách, phỏng vấn…). **Đây là dữ liệu thật của công ty (Admin: Danh sách hoạt động 6, Bài viết Báo chí 4, Tin tức Blog > Khám phá 63) — không xóa**; vấn đề chỉ là khi mở bằng đường dẫn trang đích thì nội dung 0–18 ký tự → trang chỉ là danh sách căn hộ chung với tiêu đề lạc đề. **28 trang đang `index`** và nằm trong sitemap.
 - 3 alias EN trả 404, 6 trang `Villa-*` trả 410, 1 trang `loai` 5 Admin đã tắt index — vẫn nằm trong sitemap.
 - URL lặp: `sitemap_quan` 319 dòng (201 URL thật), `sitemap_type` 301 dòng (195 URL thật).
 - Lỗi dữ liệu Admin: JA `cau-giay-district` có title "ドンダー区の賃貸アパート" (là tên quận **Đống Đa**, đúng phải là カウザイ区); một số cặp trang trùng tiêu đề/tranh nhau từ khoá (EN `luxury-apartment` vs `luxury-apartment-for-rent-in-ha-noi`, cặp luxury tiếng Nhật); vài trang đích thật còn mỏng (ciputra-area ~1,3K ký tự, times-city-park-hill-area, Zenpark/Zurich ~1K).
@@ -109,6 +109,6 @@ Cập nhật: 3/11/2026. Chiến lược và số liệu gốc: `SEO_STRATEGY_JA
 
 **Việc tiếp theo:**
 1. Dev A chép gói `capnhat-resi-2026-11-20c.zip` (thay 20b) → đối chiếu dung lượng + `robots`/sitemap.
-2. Chủ site: sửa title JA `cau-giay-district`; quyết định xóa hoặc viết lại ~36 bài tin nội bộ; gửi `DEV_YEU_CAU_TRUONG_SEO_ADMIN.md` cho Dev.
+2. **Đã làm trực tiếp trong Admin (20/11 tối, chủ site cho phép + đăng nhập):** title JA `cau-giay-district` (ドンダー区 → カウザイ区の賃貸アパート, đã lên trang thật); trang danh sách Hà Nội (Menu tỉnh thành #1) — EN title "Hanoi Apartment for Rent | Serviced & Luxury Apartments | Property Plus" + mô tả mới, JA title "ハノイの賃貸アパート・サービスアパート｜家賃相場と最新の物件一覧" + mô tả kính ngữ (API đã trả, trang thật cập nhật sau cache ~10 phút); JA Vinhomes Skylake (DataList #1228) sửa nhầm quận カウザイ区 → ナムトゥリエム区. Quy tắc: văn bản tiếng Nhật luôn dùng kính ngữ (です・ます). Còn lại: ~20 title JA dự án thiếu Meta Title/bị cụt ("…の概"), trang trùng tiêu đề, trang mỏng; 3 alias EN 404 tìm trong Khám phá/Hoạt động. Chủ site chỉ cần gửi `DEV_YEU_CAU_TRUONG_SEO_ADMIN.md` cho người sửa code Admin.
 3. Dev: thêm 4 trường SEO (vi/en/ja) cho Dự án + Căn hộ, lọc sitemap ở gốc (loai ∈ {1,2,3,4,9}, isIndex = true, bỏ 404/410, không lặp, lastmod thật).
 4. Tiêu đề/mô tả trụ B (JA/EN), gộp các cặp trang trùng tiêu đề, bổ sung nội dung trang đích mỏng; đo lại Search Console sau 2–4 tuần.
