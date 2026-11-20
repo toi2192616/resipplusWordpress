@@ -124,6 +124,22 @@ function pplus_seo_admin_text(array $sources, array $keys, int $min = 1): string
     return '';
 }
 
+/**
+ * Tiêu đề do biên tập viên nhập cho TRANG DỰ ÁN: ô SEO riêng (seoTitle) -> Meta Title bài viết dự án -> "Tiêu đề" bài viết dự án.
+ * 21/11/2026: khi nhân viên MỞ liên kết sửa của một dự án chưa có bài viết (Admin: Bài viết Dự án > nút sửa = DataList/EditOrCreateVP?id={projectId}&type=4),
+ * Admin tự TẠO bản ghi trống với "Tiêu đề" = tên dự án (vd #1514 Le Capitole) -> "Tiêu đề" chỉ lặp lại tên dự án KHÔNG được coi là đã nhập
+ * (nếu không, tiêu đề tự sinh bị mất và trang quay về chỉ có tên dự án).
+ */
+function pplus_seo_project_admin_title(array $project_detail, array $data_selected): string {
+    $t = pplus_seo_admin_text([$project_detail, $data_selected], ['seoTitle', 'metaTitle']);
+    if ($t !== '') {
+        return $t;
+    }
+    $t    = pplus_seo_admin_text([$data_selected], ['title']);
+    $name = trim((string) ($project_detail['projectName'] ?? ''));
+    return ($t !== '' && mb_strtolower($t) !== mb_strtolower($name)) ? $t : '';
+}
+
 /** Admin tích "không index" (seoNoIndex) cho dự án/căn hộ này? */
 function pplus_seo_admin_noindex(array $sources): bool {
     foreach ($sources as $src) {

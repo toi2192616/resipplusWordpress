@@ -2,6 +2,25 @@
 
 Ngày 20/11/2026. Người đề xuất: SEO Propertyplus (theo ý chủ site: "dự án/căn hộ nào điền trong Admin thì lấy trong Admin, không điền thì lấy mặc định như hiện tại").
 
+## 0. CẬP NHẬT 21/11/2026 — đọc trước (thu hẹp phạm vi yêu cầu)
+
+Đối chiếu lại với Admin thật: **với DỰ ÁN, các ô cần thiết đã có sẵn** trong "Bài viết Dự án" (mỗi dự án có nút sửa → `DataList/EditOrCreateVP?id={projectId}&type=4`; mở lần đầu Admin tự tạo bản ghi trống #id với Tiêu đề = tên dự án). Resi (theme) đã đọc các ô đó qua `Project/Detail → dataSelected`:
+
+| Ô trong Admin (bản ghi bài viết dự án) | Resi dùng làm gì |
+|---|---|
+| **Tiêu đề** | `<title>` trang dự án (khi chưa có Meta Title và khác tên dự án) — ví dụ Vinhomes Metropolis (#26): title = "Căn Hộ Cho Thuê Ở Vinhomes Metropolis - 20 Liễu Giai, Ba Đình" |
+| **Giới thiệu ngắn** | meta description (từ gói 20d, khi ≥ 60 ký tự; trước đó bị bỏ qua, meta description lặp lại tiêu đề) |
+| Tab **Hỗ trợ SEO**: Meta Title, Meta Description | ưu tiên cao nhất cho `<title>` và meta description (chỉ bản tiếng Việt; EN/JA dùng Tiêu đề + Giới thiệu ngắn của dòng ngôn ngữ) |
+| **Nội dung** | bài viết hiển thị dưới danh sách căn hộ |
+| Tiêu đề rút gọn, Hiển thị Menu | KHÔNG phải SEO: tên ngắn ở thẻ/menu; nhóm menu ("Theo tòa nhà" = 12 tòa tuyển chọn trong menu) |
+
+→ **Dev KHÔNG cần thêm `seoTitle` / `seoDescription` / `seoIntro` cho dự án**: nhân viên điền các ô trên là Resi dùng ngay (không phải chép thêm code). Phần còn thật sự thiếu và cần Dev:
+1. **Căn hộ (Apartment):** không có bản ghi bài viết nào (`dataSelected` luôn rỗng) → cần `seoTitle`, `seoDescription` (hoặc dùng ô `Description` sẵn có) như mục 2 bên dưới.
+2. *(tùy chọn)* Dự án: ô **Index** ở tab Hỗ trợ SEO hiện Resi chưa đọc ở trang dự án (chỉ đọc ở trang đích quận/loại). Muốn "không index dự án này" thì Resi cần đọc ô đó — **chưa bật** vì phải kiểm dữ liệu trước (ô chưa tích có thể đang là `false` ở nhiều bản ghi → bật sẽ noindex nhầm hàng loạt). Nếu cần, dùng `seoNoIndex` mới như mục 2.
+3. *(tùy chọn)* Dự án: Meta Title / Meta Description riêng cho EN và JA (hiện chỉ có Tiêu đề + Giới thiệu ngắn ở dòng ngôn ngữ — vẫn dùng được).
+
+**Lưu ý vận hành:** mở nút sửa của dự án chưa có bài viết sẽ tạo bản ghi trống (hiện chưa ảnh hưởng gì). Theme (gói 21f) đã xử lý: Tiêu đề trùng tên dự án được coi là chưa nhập nên tiêu đề tự sinh vẫn dùng.
+
 ## 1. Vì sao cần
 
 Search Console 20/11: Google đã thu thập các trang dự án/căn hộ của Resi nhưng **chưa lập chỉ mục** (nhóm "đã thu thập – chưa lập chỉ mục" tăng 665 → 1.030). Nguyên nhân chính nằm ở nội dung: title chỉ là tên dự án, mô tả 11–27 ký tự, trang mỏng.

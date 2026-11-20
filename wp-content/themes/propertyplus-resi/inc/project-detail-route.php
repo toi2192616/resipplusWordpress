@@ -122,7 +122,7 @@ add_filter('pre_get_document_title', function (string $title): string {
     // 20/11/2026: metaTitle/title do Admin nhap (khong rong) -> dung nguyen; khong co -> title tu dong tu du lieu du an (inc/seo-listing-meta.php), thay cho "chi ten du an".
     // Thứ tự: ô SEO nhập riêng cho dự án (seoTitle, nếu Backend có) -> metaTitle bài viết dự án -> tiêu đề bài viết -> tự động từ dữ liệu.
     $ds  = is_array($model['dataSelected'] ?? null) ? $model['dataSelected'] : [];
-    $adm = function_exists('pplus_seo_admin_text') ? pplus_seo_admin_text([$model['projectDetail'], $ds], ['seoTitle', 'metaTitle', 'title']) : '';
+    $adm = function_exists('pplus_seo_project_admin_title') ? pplus_seo_project_admin_title($model['projectDetail'], $ds) : '';
     if ($adm !== '') {
         return $adm;
     }
