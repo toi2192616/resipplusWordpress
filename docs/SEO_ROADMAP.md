@@ -65,3 +65,32 @@ Cập nhật: 3/11/2026. Chiến lược và số liệu gốc: `SEO_STRATEGY_JA
 - Số từ khoá top 3 / top 10 trong Rank Tracker; traffic organic (mốc đầu 58 lượt/tháng; mục tiêu tháng 6: 600–1.000, ước tính).
 - Số tên miền trỏ về mới (mốc đầu 650).
 - Báo cáo Search Console: trang hợp lệ đã index, lỗi 5xx/404 mới.
+
+## 6. Cập nhật 20/11/2026 — đo lường sau go-live (tuần 2–3)
+
+**Số liệu Search Console (dữ liệu Google trễ đến 17/11, phần lớn là trước/ngay sau go-live):**
+
+| Chỉ số | 3/11 | 13/11 | 20/11 |
+|---|---|---|---|
+| Nhấp / hiển thị, 28 ngày | — | — | 327 / 19,5K (kỳ trước 332 / 18,5K; vị trí TB 12,4 → 13,9) |
+| Nhật Bản, 28 ngày | — | — | 30 nhấp / 1,4K hiển thị; truy vấn: ハノイ 日本人街, 韓国人街, 韓国 (chưa có cụm đầu "賃貸/アパート" đáng kể) |
+| Đã lập chỉ mục | 708 | 720 | **669** |
+| Chưa lập chỉ mục | 4.169 | 4.059 | **4.220** |
+| Đã thu thập – chưa lập chỉ mục | 665 | 793 | **1.030** |
+| Đã phát hiện – chưa lập chỉ mục | 2.416 | 2.422 | 2.398 |
+| Trùng lặp, chưa chọn canonical | 661 | 439 | **341** (giảm đều từ ~860) |
+| Googlebot thu thập/ngày | ~100–250 | — | **tăng vọt lên 600–700 từ ~17/11** (server nhanh lại sau bản cập nhật cron) |
+
+**Chẩn đoán.** Nhóm "đã thu thập – chưa lập chỉ mục" tăng vì Google đã thu thập trang Resi (18/11) nhưng chê chất lượng. So với trang có lượt nhấp (Lotte, The Authentic: 7.400–13.900 ký tự chữ, title 70 ký tự, mô tả ~70), trang bị loại: 1.400–4.700 ký tự, title chỉ là tên dự án ("Le Capitole"), mô tả 11–27 ký tự, title căn hộ lặp tên tòa. Mẫu 16 URL sitemap: 7 "dự án vỏ" noindex; **8/9 dự án cho phép index chỉ có tên làm title + mô tả**. Cột trái `#web-content` trống vì phần lớn dự án không có bài SEO, trong khi API đã trả sẵn (và dịch en/ja) địa chỉ, năm hoàn thành, dịch vụ, tiện ích, tới 89 địa điểm lân cận.
+
+**Đã làm (đã push, chờ Dev A chép — gói `capnhat-resi-2026-11-20b.zip`):**
+- `1b20add` — title + meta description tự động cho trang dự án và căn hộ khi Admin chưa nhập (vi/en/ja, dữ liệu thật; metaTitle/metaDescription Admin giữ nguyên).
+- `db9f7b3` — khối "Thông tin tòa nhà" trên trang dự án (3 ngôn ngữ, nhóm địa điểm lân cận, FAQ + JSON-LD `FAQPage`).
+- Kết quả đo ở local: trang Le Capitole 1.382 → 2.936 ký tự chữ; 15 trang mẫu × 3 ngôn ngữ chạy 200, không lỗi PHP, JSON-LD hợp lệ.
+
+**Việc tiếp theo (theo thứ tự):**
+1. Dev A chép gói → tôi đối chiếu 3 ngôn ngữ + dung lượng file; yêu cầu lập chỉ mục lại 5 URL đại diện (URL Inspection) và theo dõi nhóm "đã thu thập – chưa lập chỉ mục" sau 2–4 tuần (mục tiêu: ngừng tăng rồi giảm).
+2. Cụm đầu tiếng Nhật/Anh (trụ B): tiêu đề trang danh sách trong Admin đang yếu (`/ja/rental-apartment/ha-noi` = "ハノイの賃貸アパート"; `/en/rental-apartment/ha-noi` = "hanoi apartment for rent") — soạn tiêu đề/mô tả + khối nội dung JA/EN (cần chủ site đăng nhập Admin; người bản ngữ duyệt bản tiếng Nhật).
+3. Chính sách trang mỏng: sau khi có dữ liệu mới, quyết định noindex cho dự án chỉ có 1–2 căn và không có bài viết (hiện chưa làm — chưa có bằng chứng đủ).
+4. Dev A/Back: sitemap vẫn liệt kê dự án noindex (mục 2A/2B), www → 301.
+5. Backlink / Ahrefs Content Gap (chỉ đọc) khi chủ site duyệt.
