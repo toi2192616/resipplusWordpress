@@ -12,6 +12,9 @@ $text   = pplus_building_directory_texts($total);
 $built  = (string) (pplus_building_directory_raw()['built'] ?? '');
 
 get_header();
+// Hang goi y nhanh (suggest-header) nhu moi trang khac (about/contact/blog...): ngoai viec hien cac pill quan/loai, no co margin-top 90px nen DAY noi dung xuong duoi
+// menu co dinh (.header = position:absolute, cao 90px tren man hinh > 1024px) - thieu hang nay thi breadcrumb + dau H1 bi menu che (loi 21/11, nguoi dung bao).
+pplus_render_suggest_header();
 ?>
 <div class="container">
     <?php

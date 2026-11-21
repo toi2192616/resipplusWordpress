@@ -48,7 +48,7 @@
   gap: 20px;
   padding: 20px 0;
   border-bottom: 1px solid #0000002e;
-  scroll-margin-top: 90px;
+  scroll-margin-top: 24px; /* menu tren man hinh > 1024px la position:absolute (cuon di cung trang), nen chi can chua mot chut khoang trang khi nhay toi khoi quan */
 }
 .bd-district {
   flex: 0 0 190px;
