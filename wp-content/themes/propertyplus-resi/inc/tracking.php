@@ -21,12 +21,40 @@ if (!defined('ABSPATH')) {
 if (!defined('PPLUS_GOOGLE_SITE_VERIFICATION')) {
     define('PPLUS_GOOGLE_SITE_VERIFICATION', '_EwTjlz4bpbpsE8dEwY3bbIye3ejKDjCV1JlDZRfy1U');
 }
-// 13/11/2026 - TAM TAT GTM theo yeu cau (giam ~650 KB JS cua 4 thu vien Google tren moi trang; bat lai sau khi doi marketing ra soat cac the).
-// HE QUA khi tat: GA4 (G-DX9EDKC16Y) khong ghi luot truy cap/su kien, Google Ads (AW-16624719167, AW-741015465) khong ghi chuyen doi va remarketing.
-// Van GIU the google-site-verification o duoi (Search Console). BAT LAI: define('PPLUS_GTM_ID', 'GTM-WRVHCF8Q'); trong wp-config.php,
-// hoac doi gia tri mac dinh duoi day ve 'GTM-WRVHCF8Q'. Khong xoa code nap GTM ben duoi.
+// 13/11/2026 GTM bi TAM TAT theo yeu cau (giam ~650 KB JS cua 4 thu vien Google tren moi trang) -> 8 ngay GA4 (G-DX9EDKC16Y) khong ghi luot truy cap/su kien va
+// Google Ads (AW-16624719167, AW-741015465) khong ghi chuyen doi/remarketing.
+// 21/11/2026 BAT LAI, kieu NAP TRE de giu phan lon loi ich toc do:
+//   - mac dinh: nap GTM o lan tuong tac dau tien (cuon/cham/phim/chuot) HOAC ~3,5 s sau khi trang tai xong (cai nao den truoc);
+//   - nap NGAY (khong tre) khi khach den tu quang cao/chien dich (URL co gclid, gbraid, wbraid, fbclid, msclkid, utm_*) - de khong mat gan nguon/chuyen doi -
+//     va tren trang cam on sau khi gui form (pplus_form_success) - de khong mat chuyen doi.
+// wp-config.php: define('PPLUS_GTM_DELAY', false); = nap ngay nhu truoc; define('PPLUS_GTM_ID', ''); = tat han (Search Console van giu the xac minh duoi).
 if (!defined('PPLUS_GTM_ID')) {
-    define('PPLUS_GTM_ID', '');
+    define('PPLUS_GTM_ID', 'GTM-WRVHCF8Q');
+}
+if (!defined('PPLUS_GTM_DELAY')) {
+    define('PPLUS_GTM_DELAY', true);
+}
+
+/**
+ * Doan nap GTM (ban rut gon cua doan chuan Google, them che do tre). Tach thanh ham de kiem thu (tools: scratchpad gtm_unit).
+ *
+ * @param bool $delay     true = nap tre (tuong tac dau tien hoac ~3,5 s sau khi tai xong)
+ * @param bool $immediate true = nap ngay du dang o che do tre (trang cam on form)
+ */
+function pplus_gtm_head_script(string $id, bool $delay, bool $immediate): string {
+    $js = "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});"
+        . "function go(){if(go.d)return;go.d=1;var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);}";
+    if (!$delay || $immediate) {
+        $js .= 'go();';
+    } else {
+        $js .= "if(/[?&](gclid|gbraid|wbraid|fbclid|msclkid|utm_[a-z_]+)=/i.test(location.search)){go();return;}"
+            . "var ev=['pointerdown','keydown','scroll','touchstart','mousemove'];"
+            . "function once(){ev.forEach(function(e){w.removeEventListener(e,once)});go();}"
+            . "ev.forEach(function(e){w.addEventListener(e,once,{passive:true})});"
+            . "function later(){setTimeout(go,3500);}"
+            . "d.readyState==='complete'?later():w.addEventListener('load',later);";
+    }
+    return $js . "})(window,document,'script','dataLayer','" . esc_js($id) . "');";
 }
 
 /** GTM co nap tren request nay khong (co ma hop le va khong o che do noindex/server thu nghiem). */
@@ -40,8 +68,8 @@ add_action('wp_head', function () {
         printf('<meta name="google-site-verification" content="%s" />' . "\n", esc_attr(PPLUS_GOOGLE_SITE_VERIFICATION));
     }
     if (pplus_gtm_enabled()) {
-        // Doan chuan cua Google (giong ban dang chay tren web chinh), nap async.
-        printf("<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','%s');</script>\n", esc_js(PPLUS_GTM_ID));
+        // Doan nap GTM (async; che do tre/ngay xem pplus_gtm_head_script()). Trang cam on form luon nap ngay de khong mat chuyen doi.
+        echo '<script>' . pplus_gtm_head_script(PPLUS_GTM_ID, (bool) PPLUS_GTM_DELAY, (bool) get_query_var('pplus_form_success')) . "</script>\n";
     }
 }, 2);
 
