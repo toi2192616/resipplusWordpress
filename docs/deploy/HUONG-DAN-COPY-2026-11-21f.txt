@@ -1,0 +1,92 @@
+BAN CAP NHAT WEB RESI - 21/11/2026 (ban f - CONG DON, 22 file)  commit ecf0a8d tren GitHub, nhanh main
+==============================================================================================
+
+GOI NAY THAY THE cac goi 20, 20b, 20c, 20d, 21e (ban f chi khac 21e o 2 file: inc/seo-listing-meta.php va inc/project-detail-route.php). Chua chep goi nao thi chi can chep goi nay.
+Da chep goi nao roi thi chep de goi nay len (chep de file giong nhau khong sao).
+
+NOI DUNG THAY DOI
+-----------------
+Phan tu cac goi truoc (20 - 20d):
+ 1) Title + meta description tu dong cho trang DU AN va CAN HO khi Admin chua nhap.
+ 2) Khoi "Thong tin toa nha" (+ FAQPage) tren trang du an.
+ 3) Trang dich "tin noi bo" rong -> noindex; sitemap quan/type bo URL rac (404/410/lap).
+ 4) Lop "Admin dien thi dung, bo trong thi tu sinh" (seoTitle/seoDescription/seoIntro/seoNoIndex - chua co thi chay nhu cu).
+ 5) Van phong tieng Nhat tu sinh dung kinh ngu.
+Phan MOI trong goi 21e/21f:
+ 6) Trang "Tat ca toa nha": /vi/buildings, /en/buildings, /ja/buildings - liet ke 564 toa nha dang co can cho thue,
+    nhom theo 11 quan, moi ten la 1 link toi trang du an. Muc dich: cho ~840 trang du an co link noi bo that
+    (hien menu chi co 12 toa; ~2.400 URL dang "da phat hien, chua lap chi muc").
+ 7) Menu "Can ho tai Ha Noi" > cot "Tim theo toa nha": them link "Xem tat ca toa nha >" o cuoi cot.
+ 8) Sitemap con "pages" tu them 3 URL cua trang moi.
+ 9) (21f) Khi nhan vien mo nut sua cua du an chua co bai viet, Admin tu tao ban ghi trong (Tieu de = ten du an): theme coi do la
+    "chua nhap" nen tieu de tu sinh van duoc dung (khong quay ve chi co ten du an).
+ Du lieu danh sach nam trong 1 file tinh (data/building-directory.json), KHONG goi API luc co nguoi truy cap.
+
+CACH LAM (khoang 3 phut)
+------------------------
+Giai nen zip nay DE vao THU MUC GOC web Resi (noi co wp-config.php). Duong dan ben trong da dung san:
+  wp-content/themes/propertyplus-resi/...
+Khong can xoa cache (ten file CSS gop va tham so ?ver= tu doi). Neu PHP bat OPcache voi validate_timestamps=0 thi recycle App Pool.
+Sau khi chep: mo thu 1 lan https://propertyplus.com.vn/vi/buildings (WP tu nap lai duong dan moi o lan truy cap dau).
+
+!! Phai chep DU 22 file. Co 4 file MOI cua trang tat ca toa nha (inc/building-directory.php, page-building-directory.php,
+   assets/css/building-dir-component.css, data/building-directory.json) va 3 file PHP MOI tu cac goi truoc
+   (inc/seo-listing-meta.php, inc/project-facts.php, inc/landing-hygiene.php). functions.php goi cac file PHP moi do:
+   thieu file PHP nao se loi trang. Thieu data/building-directory.json thi trang chi hien "dang cap nhat" va noindex (khong loi).
+
+22 FILE - dung luong sau khi chep phai khop (file CRLF, json giu nguyen):
+  functions.php                                              51.314 byte
+  inc/building-directory.php          (FILE MOI)              9.201 byte
+  page-building-directory.php         (FILE MOI)              3.165 byte
+  assets/css/building-dir-component.css (FILE MOI)            2.316 byte
+  data/building-directory.json        (FILE MOI)            191.230 byte
+  parts/header.php                                           17.527 byte
+  assets/css/header-component.css                            46.855 byte
+  assets/css/component-source/header.less                    58.412 byte
+  inc/url-canonical.php                                      11.421 byte
+  inc/sitemap-admin.php                                       6.317 byte
+  inc/seo-listing-meta.php            (FILE MOI tu goi 20b)  15.552 byte
+  inc/project-facts.php               (FILE MOI tu goi 20b)  17.143 byte
+  inc/landing-hygiene.php             (FILE MOI tu goi 20c)   6.083 byte
+  inc/project-detail-route.php                                8.761 byte
+  inc/apartment-detail-route.php                              7.930 byte
+  inc/reference-index-route.php                               9.226 byte
+  inc/hidden-projects.php                                     5.136 byte
+  inc/seo-head.php                                           27.865 byte
+  page-project-detail.php                                    20.638 byte
+  page-apartment-detail.php                                  40.856 byte
+  assets/css/reference-index-component.css                   16.653 byte
+  assets/css/component-source/reference-index.less           23.153 byte
+
+KIEM TRA SAU KHI CHEP
+---------------------
+ A) Trang tat ca toa nha mo duoc o ca 3 ngon ngu, title dung:
+      curl -s https://propertyplus.com.vn/vi/buildings | findstr /i "<title>"
+      -> Danh Sách Tòa Nhà Cho Thuê Căn Hộ Tại Hà Nội | Property Plus
+      curl -s -o NUL -w "%{http_code}" https://propertyplus.com.vn/en/buildings      -> 200
+      curl -s -o NUL -w "%{http_code}" https://propertyplus.com.vn/ja/buildings      -> 200
+
+ B) Link trong menu (trang chu):
+      curl -s https://propertyplus.com.vn/vi | findstr /i "menu-all-buildings"
+      -> thay 1 dong: <a class="menu-all-buildings" href="https://propertyplus.com.vn/vi/buildings">Xem tất cả tòa nhà ›</a>
+
+ C) Sitemap them 3 URL:
+      curl -s https://propertyplus.com.vn/sitemaps/sitemap_pages.xml | findstr /i "buildings"     -> 3 dong (/vi /en /ja)
+
+ D) Cac kiem tra cua goi truoc van dung:
+      - Trang du an Le Capitole: title "Căn Hộ Cho Thuê Tại Le Capitole - Quận Đống Đa, Hà Nội | Property Plus" va co chuoi pplus-project-facts
+      - robots cua https://propertyplus.com.vn/en/rental-apartment/ha-noi/a-great-day phai la "noindex, follow"
+      - sitemap_quan.xml ~153 URL (truoc 319), khong con a-great-day / Villa- / fdfdf
+
+DANH SACH LAM MOI: du lieu chi gom toa nha co it nhat 1 can dang dang tai thoi diem tao file (21/11/2026). Khi co du an moi,
+Dev B chay lai `php tools/gen-building-directory.php` (khoang 6 phut) va gui lai file data/building-directory.json.
+
+Dev B se tu doi chieu 3 ngon ngu, dung luong file va sitemap tren server sau khi ban chep.
+
+GHI CHU THEM (ban luu trong kho ma GitHub)
+------------------------------------------
+- Day la ban luu cua file HUONG-DAN-COPY.txt trong goi capnhat-resi-2026-11-21f.zip. 22 file trong goi giong HET nhanh main cua GitHub
+  (commit 01d50e2 tro di; code cua goi tu commit ecf0a8d). Ban nao cung duoc: chep tu zip HOAC tu GitHub.
+- Dung luong trong bang tren la cua file trong ZIP (xuong dong CRLF). Neu lay tu GitHub tren may Linux (xuong dong LF) thi dung luong
+  nho hon khoang 1-2% - binh thuong; chi can day du 22 file (file data/building-directory.json giong het o ca hai).
+- Lenh sinh lai du lieu danh sach toa nha (Dev B chay, khong can Dev A): php tools/gen-building-directory.php
