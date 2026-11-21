@@ -183,7 +183,8 @@ async function checkSitemapAdmin(idx) {
   const names = ['products', 'posts', 'pages', 'quan', 'type', ...(hasVilla ? ['villa'] : [])];
   const missing = ['products', 'posts', 'pages', 'quan', 'type'].filter((f) => !listed.some((c) => c.endsWith(`/sitemaps/sitemap_${f}.xml`)));
   check(!missing.length, `Index của Admin liệt kê đủ 5 file con (products, posts, pages, quan, type)${hasVilla ? ' + villa (còn sót — nên bỏ)' : ''}`, `thiếu: ${missing.join(', ')}`);
-  const min = { products: 2400, posts: 150, pages: 20, quan: 250, type: 250, villa: 0 };
+  // 21/11/2026: quan/type da duoc theme loc (bo URL lap/404/410/tin noi bo, inc/landing-hygiene.php): ~153 / ~147 URL that (truoc 319 / 301 dong co lap) -> nguong 100.
+  const min = { products: 2400, posts: 150, pages: 20, quan: 100, type: 100, villa: 0 };
   const sets = {};
   for (const f of names) {
     const r = await http(`/sitemaps/sitemap_${f}.xml`);
