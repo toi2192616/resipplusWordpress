@@ -1,0 +1,22 @@
+BAN VA NHO WEB RESI - 21/11/2026 (ban h - CHI 2 FILE)  commit b1a3758 tren GitHub, nhanh main
+==========================================================================================
+
+DAY LA BAN VA NHO, CHEP THEM SAU goi capnhat-resi-2026-11-21g. (Neu chua chep 21g thi chep 21g truoc, roi chep goi nay de len; hoac chep goi nay
+truoc cung duoc vi 2 file nay da gom san phan CSS menu "Xem tat ca toa nha" cua 21g.)
+
+NOI DUNG THAY DOI
+-----------------
+Trang chu tren may tinh: o "Detail / Your apartment detail" cua thanh tim kiem la o CHI-DOC (bam de mo cua so tim kiem) nen Bootstrap to mau xam,
+lech voi o "Location" mau trang ben canh. Them 1 quy tac CSS de o nay cung mau trang. Khong doi gi khac.
+
+CACH LAM
+--------
+Giai nen zip DE vao THU MUC GOC web Resi (noi co wp-config.php). Khong can xoa cache (ten file CSS gop + ?ver= tu doi).
+
+2 FILE - dung luong sau khi chep phai khop:
+  wp-content/themes/propertyplus-resi/assets/css/header-component.css            47127 byte
+  wp-content/themes/propertyplus-resi/assets/css/component-source/header.less     58684 byte
+
+KIEM TRA
+--------
+Mo https://propertyplus.com.vn/en tren may tinh (man hinh rong > 1024px): hai o "Location..." va "Detail" cung mau trang, khong con o xam.
