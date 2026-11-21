@@ -125,3 +125,10 @@ Cập nhật: 3/11/2026. Chiến lược và số liệu gốc: `SEO_STRATEGY_JA
 - Kiểm thử: 19 test đơn vị (nhóm/sắp xếp/dự án ẩn/văn bản 3 ngôn ngữ/sitemap/canonical), smoke 8 trang, 3 ngôn ngữ HTTP 200; link đích mẫu trên web thật đều 200.
 
 **Việc tiếp theo:** Dev A chép gói 20e; yêu cầu lập chỉ mục lại 3 URL `/…/buildings` trong Search Console; theo dõi nhóm "đã phát hiện, chưa lập chỉ mục" sau 2–4 tuần; sau này cân nhắc đánh dấu tòa đã có bài viết trong danh sách.
+
+## 9. Cập nhật tối 21/11/2026 — trạng thái sau khi Dev A chép gói 21i, bật lại GTM
+
+- **Dev A đã chép gói 21i** (xác nhận bằng dung lượng file tĩnh và dấu hiệu hành vi trên web thật). Bộ rà soát `tools/seo-crawl.mjs` (mẫu 60 URL, trước → sau): lỗi 11 → 5, cảnh báo 385 → 72, dòng trùng sitemap quận 224 → 0, URL noindex trong sitemap ước tính 18 % → 8 %.
+- Kiểm sau deploy (`tools/post-deploy-check.mjs`): 118 đạt / 4 cảnh báo / 3 lỗi — `/vi/` (gạch cuối) chưa 301, `www` trả 200 (canonical đúng), 2 URL dự án noindex trong sitemap (dự án "vỏ"; sẽ lọc khi có danh sách dự án vỏ), ngưỡng sitemap quận/loại trong công cụ đã sửa 250 → 100.
+- **GTM (GA4 + Google Ads) bị tắt từ 13/11** theo yêu cầu giảm 650 KB JS → 8 ngày không ghi lượt truy cập/chuyển đổi. Chủ site giao tôi quyết định: **bật lại kiểu nạp trễ** (tương tác đầu tiên hoặc ~3,5 s sau khi tải xong; nạp NGAY với khách quảng cáo gclid/utm và trang cảm ơn form). Gói 21j (commit 36005b7); hết dữ liệu 13/11 → deploy là khoảng trống không bù được.
+- Việc tiếp theo: gửi lại sitemap trong Search Console + URL Inspection 5 trang đại diện; viết mô tả blog và mô tả trang dịch vụ (Admin); lọc dự án "vỏ" khỏi sitemap sản phẩm; chọn chủ đề đang hot và viết bài JA/EN/VI.

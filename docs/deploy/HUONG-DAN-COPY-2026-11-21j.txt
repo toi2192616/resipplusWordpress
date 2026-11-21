@@ -1,7 +1,7 @@
-BAN CAP NHAT WEB RESI - 21/11/2026 (ban i - TONG HOP CUOI, 22 file)  commit b1a3758 tren GitHub, nhanh main
+BAN CAP NHAT WEB RESI - 21/11/2026 (ban j - TONG HOP CUOI, 23 file)  commit 36005b7 tren GitHub, nhanh main
 ==============================================================================================
 
-GOI NAY LA BAN TONG HOP DUY NHAT: THAY THE tat ca cac goi 20, 20b, 20c, 20d, 21e, 21f, 21g, 21h. CHI CAN CHEP GOI NAY, bo qua cac goi cu.
+GOI NAY LA BAN TONG HOP DUY NHAT: THAY THE tat ca cac goi 20, 20b, 20c, 20d, 21e, 21f, 21g, 21h, 21i. CHI CAN CHEP GOI NAY, bo qua cac goi cu.
 Da chep goi nao roi thi chep de goi nay len (chep de file giong nhau khong sao).
 
 NOI DUNG THAY DOI
@@ -18,6 +18,10 @@ Phan MOI trong goi 21e/21f:
     (hien menu chi co 12 toa; ~2.400 URL dang "da phat hien, chua lap chi muc").
  7) Menu "Can ho tai Ha Noi" > cot "Tim theo toa nha": them link "Xem tat ca toa nha >" o cuoi cot.
  8) Sitemap con "pages" tu them 3 URL cua trang moi.
+ 12) (21j) BAT LAI Google Tag Manager (GTM-WRVHCF8Q = GA4 + Google Ads). GTM da bi tat tam tu 13/11 nen 8 ngay GA4 va Google Ads khong ghi luot truy cap/chuyen doi.
+     Bat lai kieu NAP TRE: nap khi khach tuong tac dau tien hoac ~3,5 giay sau khi trang tai xong; nap NGAY voi khach den tu quang cao (URL co gclid, gbraid,
+     wbraid, fbclid, msclkid, utm_*) va tren trang cam on sau khi gui form. KHONG can sua wp-config.php (mac dinh trong theme da la GTM-WRVHCF8Q).
+     Tuy chon trong wp-config.php: define('PPLUS_GTM_DELAY', false); = nap ngay nhu ban cu; define('PPLUS_GTM_ID', ''); = tat han GTM.
  11) (21h) Trang chu tren may tinh: o "Detail" cua thanh tim kiem (o chi-doc) bi Bootstrap to mau xam, lech voi o "Location" mau trang -> them quy tac CSS cho o nay cung mau trang.
  10) (21g) Trang "Tat ca toa nha": them hang goi y nhanh duoi menu nhu cac trang khac, de breadcrumb va dau tieu de khong bi menu (cao 90px) che tren man hinh may tinh.
  9) (21f) Khi nhan vien mo nut sua cua du an chua co bai viet, Admin tu tao ban ghi trong (Tieu de = ten du an): theme coi do la
@@ -31,13 +35,14 @@ Giai nen zip nay DE vao THU MUC GOC web Resi (noi co wp-config.php). Duong dan b
 Khong can xoa cache (ten file CSS gop va tham so ?ver= tu doi). Neu PHP bat OPcache voi validate_timestamps=0 thi recycle App Pool.
 Sau khi chep: mo thu 1 lan https://propertyplus.com.vn/vi/buildings (WP tu nap lai duong dan moi o lan truy cap dau).
 
-!! Phai chep DU 22 file. Co 4 file MOI cua trang tat ca toa nha (inc/building-directory.php, page-building-directory.php,
+!! Phai chep DU 23 file. Co 4 file MOI cua trang tat ca toa nha (inc/building-directory.php, page-building-directory.php,
    assets/css/building-dir-component.css, data/building-directory.json) va 3 file PHP MOI tu cac goi truoc
    (inc/seo-listing-meta.php, inc/project-facts.php, inc/landing-hygiene.php). functions.php goi cac file PHP moi do:
    thieu file PHP nao se loi trang. Thieu data/building-directory.json thi trang chi hien "dang cap nhat" va noindex (khong loi).
 
-22 FILE - dung luong sau khi chep phai khop (file CRLF, json giu nguyen):
+23 FILE - dung luong sau khi chep phai khop (file CRLF, json giu nguyen):
   functions.php                                              51.314 byte
+  inc/tracking.php                   (DOI - bat lai GTM)      4.923 byte
   inc/building-directory.php          (FILE MOI)              9.201 byte
   page-building-directory.php         (FILE MOI)              3.527 byte
   assets/css/building-dir-component.css (FILE MOI)            2.455 byte
@@ -80,6 +85,11 @@ KIEM TRA SAU KHI CHEP
       - robots cua https://propertyplus.com.vn/en/rental-apartment/ha-noi/a-great-day phai la "noindex, follow"
       - sitemap_quan.xml ~153 URL (truoc 319), khong con a-great-day / Villa- / fdfdf
 
+ E) GTM da bat lai (ban j):
+      curl -s https://propertyplus.com.vn/vi | findstr /i "googletagmanager"
+      -> thay doan script co "gtm.js?id=" va "GTM-WRVHCF8Q" (nap tre) + the noscript iframe ns.html?id=GTM-WRVHCF8Q.
+      Neu wp-config.php co dong define('PPLUS_GTM_ID', ''); thi GTM van TAT - hay xoa dong do.
+
 DANH SACH LAM MOI: du lieu chi gom toa nha co it nhat 1 can dang dang tai thoi diem tao file (21/11/2026). Khi co du an moi,
 Dev B chay lai `php tools/gen-building-directory.php` (khoang 6 phut) va gui lai file data/building-directory.json.
 
@@ -87,8 +97,8 @@ Dev B se tu doi chieu 3 ngon ngu, dung luong file va sitemap tren server sau khi
 
 GHI CHU THEM (ban luu trong kho ma GitHub)
 ------------------------------------------
-- Day la ban luu cua file HUONG-DAN-COPY.txt trong goi capnhat-resi-2026-11-21i.zip. 22 file trong goi giong HET nhanh main cua GitHub
-  (code cua goi tu commit b1a3758). Ban nao cung duoc: chep tu zip HOAC tu GitHub.
+- Day la ban luu cua file HUONG-DAN-COPY.txt trong goi capnhat-resi-2026-11-21j.zip. 23 file trong goi giong HET nhanh main cua GitHub
+  (code cua goi tu commit 36005b7). Ban nao cung duoc: chep tu zip HOAC tu GitHub.
 - Dung luong trong bang tren la cua file trong ZIP (xuong dong CRLF). Neu lay tu GitHub tren may Linux (xuong dong LF) thi dung luong
-  nho hon khoang 1-2% - binh thuong; chi can day du 22 file (file data/building-directory.json giong het o ca hai).
+  nho hon khoang 1-2% - binh thuong; chi can day du 23 file (file data/building-directory.json giong het o ca hai).
 - Lenh sinh lai du lieu danh sach toa nha (Dev B chay, khong can Dev A): php tools/gen-building-directory.php
