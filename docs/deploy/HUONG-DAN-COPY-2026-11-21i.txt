@@ -1,7 +1,7 @@
-BAN CAP NHAT WEB RESI - 21/11/2026 (ban g - CONG DON, 22 file)  commit ade795b tren GitHub, nhanh main
+BAN CAP NHAT WEB RESI - 21/11/2026 (ban i - TONG HOP CUOI, 22 file)  commit b1a3758 tren GitHub, nhanh main
 ==============================================================================================
 
-GOI NAY THAY THE cac goi 20, 20b, 20c, 20d, 21e, 21f (ban g chi khac 21f o 2 file: page-building-directory.php va assets/css/building-dir-component.css - sua loi menu che dau trang "Tat ca toa nha"). Chua chep goi nao thi chi can chep goi nay.
+GOI NAY LA BAN TONG HOP DUY NHAT: THAY THE tat ca cac goi 20, 20b, 20c, 20d, 21e, 21f, 21g, 21h. CHI CAN CHEP GOI NAY, bo qua cac goi cu.
 Da chep goi nao roi thi chep de goi nay len (chep de file giong nhau khong sao).
 
 NOI DUNG THAY DOI
@@ -18,6 +18,7 @@ Phan MOI trong goi 21e/21f:
     (hien menu chi co 12 toa; ~2.400 URL dang "da phat hien, chua lap chi muc").
  7) Menu "Can ho tai Ha Noi" > cot "Tim theo toa nha": them link "Xem tat ca toa nha >" o cuoi cot.
  8) Sitemap con "pages" tu them 3 URL cua trang moi.
+ 11) (21h) Trang chu tren may tinh: o "Detail" cua thanh tim kiem (o chi-doc) bi Bootstrap to mau xam, lech voi o "Location" mau trang -> them quy tac CSS cho o nay cung mau trang.
  10) (21g) Trang "Tat ca toa nha": them hang goi y nhanh duoi menu nhu cac trang khac, de breadcrumb va dau tieu de khong bi menu (cao 90px) che tren man hinh may tinh.
  9) (21f) Khi nhan vien mo nut sua cua du an chua co bai viet, Admin tu tao ban ghi trong (Tieu de = ten du an): theme coi do la
     "chua nhap" nen tieu de tu sinh van duoc dung (khong quay ve chi co ten du an).
@@ -42,8 +43,8 @@ Sau khi chep: mo thu 1 lan https://propertyplus.com.vn/vi/buildings (WP tu nap l
   assets/css/building-dir-component.css (FILE MOI)            2.455 byte
   data/building-directory.json        (FILE MOI)            191.230 byte
   parts/header.php                                           17.527 byte
-  assets/css/header-component.css                            46.855 byte
-  assets/css/component-source/header.less                    58.412 byte
+  assets/css/header-component.css                            47.127 byte
+  assets/css/component-source/header.less                    58.684 byte
   inc/url-canonical.php                                      11.421 byte
   inc/sitemap-admin.php                                       6.317 byte
   inc/seo-listing-meta.php            (FILE MOI tu goi 20b)  15.552 byte
@@ -86,8 +87,8 @@ Dev B se tu doi chieu 3 ngon ngu, dung luong file va sitemap tren server sau khi
 
 GHI CHU THEM (ban luu trong kho ma GitHub)
 ------------------------------------------
-- Day la ban luu cua file HUONG-DAN-COPY.txt trong goi capnhat-resi-2026-11-21g.zip. 22 file trong goi giong HET nhanh main cua GitHub
-  (code cua goi tu commit ade795b). Ban nao cung duoc: chep tu zip HOAC tu GitHub.
+- Day la ban luu cua file HUONG-DAN-COPY.txt trong goi capnhat-resi-2026-11-21i.zip. 22 file trong goi giong HET nhanh main cua GitHub
+  (code cua goi tu commit b1a3758). Ban nao cung duoc: chep tu zip HOAC tu GitHub.
 - Dung luong trong bang tren la cua file trong ZIP (xuong dong CRLF). Neu lay tu GitHub tren may Linux (xuong dong LF) thi dung luong
   nho hon khoang 1-2% - binh thuong; chi can day du 22 file (file data/building-directory.json giong het o ca hai).
 - Lenh sinh lai du lieu danh sach toa nha (Dev B chay, khong can Dev A): php tools/gen-building-directory.php
