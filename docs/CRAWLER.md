@@ -39,6 +39,11 @@ Kết quả nằm ở `crawl-reports/<host>-<ngày-giờ>/` (thư mục này đ�
 | P011 | warn | nội dung chữ quá ít theo loại trang (dự án 900, trang đích 700, blog 800…) | Admin (viết bài) |
 | P012 | error | lộ chữ `null` / `undefined` / `NaN` ra nội dung hoặc meta | theme / dữ liệu |
 | P013 / P014 | warn | `<html lang>` khác tiền tố; title sai ngôn ngữ (vd /ja không có chữ Nhật) | Admin / theme |
+| O001 | warn | thiếu thẻ chia sẻ mạng xã hội `og:title` / `og:image` | theme |
+| V001 | error | thiếu meta viewport (không thân thiện di động) | theme |
+| A001 | warn | từ 3 ảnh trở lên thiếu `alt` | Admin / theme |
+| X001 | error | mixed content (tài nguyên `http://` trên trang https) | theme / Admin |
+| H010 | warn | HTML > 20 KB không được nén gzip/br (domain thật) | hạ tầng (Cloudflare/IIS) |
 | S001 / S002 | error / warn | JSON-LD hỏng / thiếu BreadcrumbList | theme |
 | L001 / L004 / L005 | warn | thiếu hreflang / thiếu x-default / hreflang không trỏ về chính trang | theme |
 | U001 | warn / info | đuôi URL vô nghĩa (`-`, `--`) / gạch kép, gạch cuối (URL cũ đã index thì KHÔNG đổi) | Admin (quy trình chuyển hướng trước) |

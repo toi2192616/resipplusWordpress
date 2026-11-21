@@ -109,7 +109,7 @@ function attrs(tag) {
   return o;
 }
 function parsePage(html, pageUrl) {
-  const p = { title: '', description: null, robots: [], canonical: null, h1: [], htmlLang: '', hreflang: [], jsonld: [], jsonldErrors: 0, links: [], text: '', imgNoAlt: 0, noscriptOnly: false };
+  const p = { title: '', description: null, robots: [], canonical: null, h1: [], htmlLang: '', hreflang: [], jsonld: [], jsonldErrors: 0, links: [], text: '', imgNoAlt: 0, noscriptOnly: false, og: {}, viewport: false, mixed: [] };
   const t = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
   p.title = t ? squash(t[1].replace(/<[^>]*>/g, '')) : '';
   for (const m of html.matchAll(/<meta\s[^>]*>/gi)) {
@@ -117,7 +117,11 @@ function parsePage(html, pageUrl) {
     const name = (a.name || a.property || '').toLowerCase();
     if (name === 'description' && p.description === null) p.description = squash(a.content || '');
     if (name === 'robots' || name === 'googlebot') p.robots.push((a.content || '').toLowerCase());
+    if (name === 'viewport') p.viewport = true;
+    if (name.startsWith('og:')) p.og[name] = a.content || '';
   }
+  // mixed content: tài nguyên con (ảnh/script/css/iframe) tải qua http:// trên trang https
+  if (/^https:/i.test(pageUrl)) for (const m of html.matchAll(/<(?:img|script|iframe|source|link)\s[^>]*?(?:src|href)=["'](http:\/\/[^"']+)["']/gi)) if (!/rel=["'](?:canonical|alternate|dns-prefetch|preconnect)/i.test(m[0])) p.mixed.push(m[1]);
   for (const m of html.matchAll(/<link\s[^>]*>/gi)) {
     const a = attrs(m[0]);
     const rel = (a.rel || '').toLowerCase();
@@ -255,6 +259,12 @@ function checkPage(rec) {
   if (lang === 'ja' && title && !hasCJK(title)) add('P014', 'warn', url, `trang /ja nhưng title không có chữ Nhật: "${title}"`, { sitemap });
   if (lang === 'vi' && title && /[぀-ヿ]/.test(title)) add('P014', 'warn', url, `trang /vi nhưng title có chữ Nhật: "${title}"`, { sitemap });
   if (lang === 'en' && title && /[ạảãàáâậầấẩẫăắằặẳẵẹẻẽèéêệềếểễịỉĩìíọỏõòóôộồốổỗơợờớởỡụủũùúưựừứửữỳỵỷỹđ]/i.test(title)) add('P014', 'warn', url, `trang /en nhưng title có dấu tiếng Việt: "${title}"`, { sitemap });
+  // --- chia sẻ mạng xã hội, di động, ảnh, bảo mật nội dung, nén
+  if (!noindex && type !== 'other' && (!p.og['og:title'] || !p.og['og:image'])) add('O001', 'warn', url, `thiếu thẻ chia sẻ ${!p.og['og:title'] ? 'og:title ' : ''}${!p.og['og:image'] ? 'og:image' : ''}`.trim(), { sitemap });
+  if (!p.viewport) add('V001', 'error', url, 'thiếu meta viewport (trang không thân thiện di động)', { sitemap });
+  if (p.imgNoAlt >= 3) add('A001', 'warn', url, `${p.imgNoAlt} ảnh không có thuộc tính alt`, { sitemap });
+  if (p.mixed.length) add('X001', 'error', url, `mixed content: ${p.mixed.length} tài nguyên http:// trên trang https (vd ${p.mixed[0].slice(0, 70)})`, { sitemap });
+  if (!LOCAL && f.html.length > 20000 && !f.headers.get('content-encoding')) add('H010', 'warn', url, `HTML ${Math.round(f.html.length / 1024)} KB không được nén (gzip/br)`, { sitemap });
   // --- dữ liệu có cấu trúc
   if (p.jsonldErrors) add('S001', 'error', url, `${p.jsonldErrors} khối JSON-LD không đọc được`, { sitemap });
   if (!noindex && type !== 'home' && !p.jsonld.some((x) => /BreadcrumbList/.test(String(x['@type'])))) add('S002', 'warn', url, 'không có BreadcrumbList', { sitemap });
