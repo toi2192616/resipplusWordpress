@@ -75,17 +75,41 @@ add_filter('template_include', function (string $template): string {
     return $template;
 });
 
+/**
+ * Tieu de + mo ta trang danh sach bai viet theo ngon ngu (26/11/2026: truoc day /ja/blogs la "Blog - PropertyPlus" - khong co chu Nhat,
+ * va mo ta dung chung tagline voi nhieu trang khac). Chu de trong mo ta = cac chuyen muc/bai that dang co. Tieng Nhat dung kinh ngu.
+ */
+function pplus_blog_list_seo_texts(?string $lang = null): array {
+    $texts = [
+        'vi' => [
+            'title'       => 'Tin Tức, Cẩm Nang Thuê Căn Hộ Tại Hà Nội | Property Plus',
+            'description' => 'Cẩm nang thuê căn hộ và sinh sống tại Hà Nội: thủ tục nhập cảnh, tạm trú cho người nước ngoài, khu vực nên ở, ăn uống, mua sắm và văn hóa Việt Nam.',
+        ],
+        'en' => [
+            'title'       => 'Hanoi Rental and Expat Living Guides | Property Plus',
+            'description' => 'Guides to renting and living in Hanoi: entry and residence procedures for foreigners, where to stay, dining, shopping and Vietnamese culture.',
+        ],
+        'ja' => [
+            'title'       => 'ハノイの賃貸・生活ガイド（ブログ）｜Property Plus',
+            'description' => 'ハノイでのお部屋探しと暮らしに役立つ情報をご紹介しております。入国・在留の手続き、住むエリア、グルメ、ショッピング、ベトナムの文化などをご覧いただけます。',
+        ],
+    ];
+    return $texts[$lang ?: pplus_current_lang()] ?? $texts['vi'];
+}
+
 add_filter('pre_get_document_title', function (string $title): string {
     if (!get_query_var('pplus_blog_list')) {
         return $title;
     }
-    return pplus_t('Tin tức', 'Blog') . ' - PropertyPlus';
+    return pplus_blog_list_seo_texts()['title'];
 });
 
 add_action('wp_head', function () {
     if (!get_query_var('pplus_blog_list')) {
         return;
     }
+    // inc/seo-head.php thay the da co the description thi khong in them cau du phong.
+    printf('<meta name="description" content="%s" />' . "\n", esc_attr(pplus_blog_list_seo_texts()['description']));
     printf('<meta name="robots" content="%s" />' . "\n", esc_attr('index, follow'));
 }, 1);
 
@@ -125,6 +149,82 @@ add_filter('pre_get_document_title', function (string $title): string {
     return $selected['metaTitle'] ?? ($selected['title'] ?? $title);
 });
 
+/** Chuoi mo ta tu Admin da lam sach: bo the/khoang trang thua; chuoi bi dan 2 lan lien nhau ("AA") -> giu 1; trung tieu de -> coi nhu trong. */
+function pplus_blog_clean_admin_description(string $text, string $title): string {
+    $norm  = static fn (string $s): string => trim((string) preg_replace('/[\s\x{00A0}\x{3000}]+/u', ' ', html_entity_decode(wp_strip_all_tags($s), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+    $text  = $norm($text);
+    $len   = mb_strlen($text);
+    if ($len >= 40) {
+        $half  = intdiv($len, 2);
+        $first = trim(mb_substr($text, 0, $half));
+        if ($first === trim(mb_substr($text, $len - $half))) {
+            $text = $first;
+        }
+    }
+    return mb_strtolower($text) === mb_strtolower($norm($title)) ? '' : $text;
+}
+
+/**
+ * Doan mo dau cua bai (doan <p> dau tien du dai; muc luc nam trong <ol>/<li> nen khong bi lay) cat gon lam mo ta.
+ * Do chuoi bang stripos (khong regex .*?) vi noi dung blog co the 2-6 MB do anh nhung base64.
+ */
+function pplus_blog_content_excerpt(string $html, string $lang): string {
+    $ja     = $lang === 'ja';
+    $min    = $ja ? 30 : 60;
+    $max    = $ja ? 110 : 160;
+    $offset = 0;
+    for ($i = 0; $i < 40; $i++) {
+        $start = stripos($html, '<p', $offset);
+        if ($start === false) {
+            break;
+        }
+        $end = stripos($html, '</p>', $start);
+        if ($end === false) {
+            break;
+        }
+        $offset = $end + 4;
+        $next   = $html[$start + 2] ?? '';
+        if ($next !== '>' && !ctype_space($next)) {
+            $offset = $start + 2; // the khac bat dau bang "<p..." (vd <pre>, <picture>)
+            continue;
+        }
+        $text = html_entity_decode(strip_tags(substr($html, $start, $end - $start)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = trim((string) preg_replace('/[\s\x{00A0}\x{3000}]+/u', ' ', $text));
+        if (mb_strlen($text) < $min || mb_stripos($text, 'Mục lục') === 0) {
+            continue;
+        }
+        if (mb_strlen($text) <= $max) {
+            return $text;
+        }
+        // Uu tien cat o cuoi cau (du dai); khong co thi cat theo tu (tieng Nhat: cat thang) + "…".
+        $cut = mb_substr($text, 0, $max);
+        if (preg_match($ja ? '/^.*[。！？]/u' : '/^.*[.!?](?=\s|$)/u', $cut, $m) && mb_strlen($m[0]) >= ($ja ? 40 : 80)) {
+            return $m[0];
+        }
+        if (!$ja) {
+            $sp  = mb_strrpos($cut, ' ');
+            $cut = $sp !== false && $sp > $max * 0.6 ? mb_substr($cut, 0, $sp) : $cut;
+        }
+        return rtrim($cut, " ,.;:、-") . '…';
+    }
+    return '';
+}
+
+/**
+ * Mo ta tim kiem cua 1 bai blog (26/11/2026). Thu tu: Meta Description trong Admin -> Gioi thieu ngan (subTitle) -> doan mo dau cua bai.
+ * Truoc day bai en/ja bo trong o tom tat dung chung cau gioi thieu cong ty -> nhieu trang trung mo ta tren Google.
+ */
+function pplus_blog_meta_description(array $post, ?string $lang = null): string {
+    $title = (string) ($post['title'] ?? '');
+    foreach (['metaDescription', 'subTitle'] as $field) {
+        $text = pplus_blog_clean_admin_description((string) ($post[$field] ?? ''), $title);
+        if ($text !== '') {
+            return $text;
+        }
+    }
+    return pplus_blog_content_excerpt((string) ($post['content'] ?? ''), $lang ?: pplus_current_lang());
+}
+
 add_action('wp_head', function () {
     if (!get_query_var('pplus_blog_detail')) {
         return;
@@ -134,7 +234,7 @@ add_action('wp_head', function () {
     if (!$selected) {
         return;
     }
-    $description = $selected['metaDescription'] ?? $selected['subTitle'] ?? '';
+    $description = pplus_blog_meta_description((array) $selected);
     if ($description) {
         printf('<meta name="description" content="%s" />' . "\n", esc_attr($description));
     }

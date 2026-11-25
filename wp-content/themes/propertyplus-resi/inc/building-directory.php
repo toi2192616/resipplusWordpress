@@ -187,6 +187,48 @@ add_filter('wp_robots', static function (array $robots): array {
     return $robots;
 }, 99);
 
+/**
+ * Bo khoi sitemap con "products" cac trang du an "vo" (0 can dang dang + bai viet < 200 ky tu -> trang tu noindex, xem page-project-detail.php),
+ * theo danh sach tung ngon ngu trong data/building-directory.json ("shell", tao boi tools/gen-building-directory.php). Chi dong URL du an
+ * "/{lang}/{cho-thue-can-ho|rental-apartment}/{tinh}/{quan}/{alias}-{id}" (URL can ho ket thuc "/{id}" khong khop). Du an MOI chua co trong
+ * danh sach van nam trong sitemap. An toan: thieu du lieu -> giu nguyen; neu se bo > 60% URL (du lieu bat thuong) -> giu nguyen.
+ */
+function pplus_sitemap_drop_shell_projects(string $xml): string {
+    $shell = pplus_building_directory_raw()['shell'] ?? null;
+    if (!is_array($shell) || strpos($xml, '</url>') === false) {
+        return $xml;
+    }
+    $sets = [];
+    foreach (['vi', 'en', 'ja'] as $l) {
+        $sets[$l] = array_flip(array_map('intval', (array) ($shell[$l] ?? [])));
+    }
+    $parts   = explode('</url>', $xml);
+    $tail    = array_pop($parts); // phan sau </url> cuoi cung (thuong la "</urlset>")
+    $kept    = '';
+    $total   = 0;
+    $dropped = 0;
+    foreach ($parts as $part) {
+        $pos = strrpos($part, '<url>');
+        if ($pos === false) {
+            $kept .= $part . '</url>';
+            continue;
+        }
+        $total++;
+        $block = substr($part, $pos);
+        // alias co the RONG ("/-280", slug JA loi trong du lieu) nen dung "*" truoc "-{id}".
+        if (preg_match('#<loc>\s*https?://[^/<]+/(vi|en|ja)/(?:cho-thue-can-ho|rental-apartment)/[^/<]+/[^/<]*/[^/<]*-(\d+)\s*</loc>#', $block, $m) && isset($sets[$m[1]][(int) $m[2]])) {
+            $dropped++;
+            $kept .= rtrim(substr($part, 0, $pos), " \t"); // giu phan truoc <url> (khai bao XML/<urlset> o khoi dau tien)
+            continue;
+        }
+        $kept .= $part . '</url>';
+    }
+    if ($dropped === 0 || ($total > 0 && $dropped / $total > 0.6)) {
+        return $xml;
+    }
+    return $kept . $tail;
+}
+
 /** Them 3 URL cua trang vao sitemap con "pages" (noi dung lay tu Admin, inc/sitemap-admin.php) neu chua co. */
 function pplus_sitemap_add_building_directory(string $xml): string {
     if (strpos($xml, '</urlset>') === false || !pplus_building_directory_raw()) {

@@ -184,7 +184,8 @@ async function checkSitemapAdmin(idx) {
   const missing = ['products', 'posts', 'pages', 'quan', 'type'].filter((f) => !listed.some((c) => c.endsWith(`/sitemaps/sitemap_${f}.xml`)));
   check(!missing.length, `Index của Admin liệt kê đủ 5 file con (products, posts, pages, quan, type)${hasVilla ? ' + villa (còn sót — nên bỏ)' : ''}`, `thiếu: ${missing.join(', ')}`);
   // 21/11/2026: quan/type da duoc theme loc (bo URL lap/404/410/tin noi bo, inc/landing-hygiene.php): ~153 / ~147 URL that (truoc 319 / 301 dong co lap) -> nguong 100.
-  const min = { products: 2400, posts: 150, pages: 20, quan: 100, type: 100, villa: 0 };
+  // 26/11/2026: products da bo trang du an "vo" tu noindex (inc/building-directory.php): ~1.713 URL (571 x 3 ngon ngu; truoc 2.538) -> nguong 1500.
+  const min = { products: 1500, posts: 150, pages: 20, quan: 100, type: 100, villa: 0 };
   const sets = {};
   for (const f of names) {
     const r = await http(`/sitemaps/sitemap_${f}.xml`);

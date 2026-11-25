@@ -1,11 +1,23 @@
-BAN CAP NHAT WEB RESI - 21/11/2026 (ban j - TONG HOP CUOI, 23 file)  commit 36005b7 tren GitHub, nhanh main
+BAN CAP NHAT WEB RESI - 26/11/2026 (ban 26a - TONG HOP CUOI, 24 file)  nhanh main tren GitHub
 ==============================================================================================
 
-GOI NAY LA BAN TONG HOP DUY NHAT: THAY THE tat ca cac goi 20, 20b, 20c, 20d, 21e, 21f, 21g, 21h, 21i. CHI CAN CHEP GOI NAY, bo qua cac goi cu.
+GOI NAY LA BAN TONG HOP DUY NHAT: THAY THE tat ca cac goi 20, 20b, 20c, 20d, 21e, 21f, 21g, 21h, 21i, 21j. CHI CAN CHEP GOI NAY, bo qua cac goi cu.
+Server DA CHAY 21j: goi nay chi khac 21j o 5 file (inc/blog-routes.php, inc/building-directory.php, inc/seo-head.php, inc/sitemap-admin.php,
+data/building-directory.json) - chep ca goi cho chac.
 Da chep goi nao roi thi chep de goi nay len (chep de file giong nhau khong sao).
 
 NOI DUNG THAY DOI
 -----------------
+MOI trong goi 26a:
+ 13) Sitemap du an (sitemap_products.xml) bo cac du an "vo" (khong con can nao va chua co bai viet - cac trang nay von da tu noindex):
+     2.538 -> khoang 1.713 URL (571 x 3 ngon ngu). Google khong phai quet ~825 trang trong nua.
+     Da kiem 18/18 URL mau bi bo: dung la dang noindex. Du an co bai viet (Vinhomes Skylake, Vinhomes Riverside...) van giu.
+ 14) Trang danh sach bai viet /vi/blogs, /en/blogs, /ja/blogs: tieu de + mo ta rieng tung ngon ngu (truoc: /ja/blogs la "Blog - PropertyPlus",
+     mo ta la cau gioi thieu cong ty).
+ 15) Trang chi tiet bai viet: neu Admin bo trong phan tom tat thi mo ta lay tu doan mo dau cua chinh bai do (truoc: nhieu bai en/ja cung
+     dung 1 cau gioi thieu cong ty). Admin da nhap thi van uu tien Admin. Mo ta bi dan 2 lan lien nhau thi chi giu 1.
+ Lam moi data/building-directory.json (26/11): van 564 toa nha, them danh sach du an vo.
+
 Phan tu cac goi truoc (20 - 20d):
  1) Title + meta description tu dong cho trang DU AN va CAN HO khi Admin chua nhap.
  2) Khoi "Thong tin toa nha" (+ FAQPage) tren trang du an.
@@ -35,23 +47,23 @@ Giai nen zip nay DE vao THU MUC GOC web Resi (noi co wp-config.php). Duong dan b
 Khong can xoa cache (ten file CSS gop va tham so ?ver= tu doi). Neu PHP bat OPcache voi validate_timestamps=0 thi recycle App Pool.
 Sau khi chep: mo thu 1 lan https://propertyplus.com.vn/vi/buildings (WP tu nap lai duong dan moi o lan truy cap dau).
 
-!! Phai chep DU 23 file. Co 4 file MOI cua trang tat ca toa nha (inc/building-directory.php, page-building-directory.php,
+!! Phai chep DU 24 file. Co 4 file MOI cua trang tat ca toa nha (inc/building-directory.php, page-building-directory.php,
    assets/css/building-dir-component.css, data/building-directory.json) va 3 file PHP MOI tu cac goi truoc
    (inc/seo-listing-meta.php, inc/project-facts.php, inc/landing-hygiene.php). functions.php goi cac file PHP moi do:
    thieu file PHP nao se loi trang. Thieu data/building-directory.json thi trang chi hien "dang cap nhat" va noindex (khong loi).
 
-23 FILE - dung luong sau khi chep phai khop (file CRLF, json giu nguyen):
+24 FILE - dung luong sau khi chep phai khop (file CRLF, json giu nguyen):
   functions.php                                              51.314 byte
   inc/tracking.php                   (DOI - bat lai GTM)      4.923 byte
-  inc/building-directory.php          (FILE MOI)              9.201 byte
+  inc/building-directory.php          (DOI o 26a)            11.208 byte
   page-building-directory.php         (FILE MOI)              3.527 byte
   assets/css/building-dir-component.css (FILE MOI)            2.455 byte
-  data/building-directory.json        (FILE MOI)            191.230 byte
+  data/building-directory.json        (DOI o 26a)           194.977 byte
   parts/header.php                                           17.527 byte
   assets/css/header-component.css                            47.127 byte
   assets/css/component-source/header.less                    58.684 byte
   inc/url-canonical.php                                      11.421 byte
-  inc/sitemap-admin.php                                       6.317 byte
+  inc/sitemap-admin.php               (DOI o 26a)             6.571 byte
   inc/seo-listing-meta.php            (FILE MOI tu goi 20b)  15.552 byte
   inc/project-facts.php               (FILE MOI tu goi 20b)  17.143 byte
   inc/landing-hygiene.php             (FILE MOI tu goi 20c)   6.083 byte
@@ -59,7 +71,8 @@ Sau khi chep: mo thu 1 lan https://propertyplus.com.vn/vi/buildings (WP tu nap l
   inc/apartment-detail-route.php                              7.930 byte
   inc/reference-index-route.php                               9.226 byte
   inc/hidden-projects.php                                     5.136 byte
-  inc/seo-head.php                                           27.865 byte
+  inc/seo-head.php                    (DOI o 26a)            27.891 byte
+  inc/blog-routes.php                 (MOI TRONG GOI)        11.796 byte
   page-project-detail.php                                    20.638 byte
   page-apartment-detail.php                                  40.856 byte
   assets/css/reference-index-component.css                   16.653 byte
@@ -85,20 +98,27 @@ KIEM TRA SAU KHI CHEP
       - robots cua https://propertyplus.com.vn/en/rental-apartment/ha-noi/a-great-day phai la "noindex, follow"
       - sitemap_quan.xml ~153 URL (truoc 319), khong con a-great-day / Villa- / fdfdf
 
+ F) Phan moi 26a (sau khi chep; neu chua doi thi doi toi 10 phut cho bo dem):
+      curl -s https://propertyplus.com.vn/sitemaps/sitemap_products.xml | find /c "<loc>"        -> khoang 1713 (truoc 2538)
+      curl -s https://propertyplus.com.vn/ja/blogs | findstr /i "<title>"
+      -> ハノイの賃貸・生活ガイド（ブログ）｜Property Plus
+      Mo https://propertyplus.com.vn/ja/blog/Top-3-areas-with-a-large-Korean-community-in-Hanoi-106 -> xem ma nguon: the description
+      bat dau bang "現在、ハノイにいる韓国人コミュニティ" (khong con cau gioi thieu cong ty).
+
  E) GTM da bat lai (ban j):
       curl -s https://propertyplus.com.vn/vi | findstr /i "googletagmanager"
       -> thay doan script co "gtm.js?id=" va "GTM-WRVHCF8Q" (nap tre) + the noscript iframe ns.html?id=GTM-WRVHCF8Q.
       Neu wp-config.php co dong define('PPLUS_GTM_ID', ''); thi GTM van TAT - hay xoa dong do.
 
-DANH SACH LAM MOI: du lieu chi gom toa nha co it nhat 1 can dang dang tai thoi diem tao file (21/11/2026). Khi co du an moi,
-Dev B chay lai `php tools/gen-building-directory.php` (khoang 6 phut) va gui lai file data/building-directory.json.
+DANH SACH LAM MOI: du lieu chi gom toa nha co it nhat 1 can dang dang tai thoi diem tao file (26/11/2026). Khi co du an moi,
+Dev B chay lai `php tools/gen-building-directory.php` (khoang 25 phut, gom buoc kiem du an vo) va gui lai file data/building-directory.json.
 
 Dev B se tu doi chieu 3 ngon ngu, dung luong file va sitemap tren server sau khi ban chep.
 
 GHI CHU THEM (ban luu trong kho ma GitHub)
-------------------------------------------
-- Day la ban luu cua file HUONG-DAN-COPY.txt trong goi capnhat-resi-2026-11-21j.zip. 23 file trong goi giong HET nhanh main cua GitHub
-  (code cua goi tu commit 36005b7). Ban nao cung duoc: chep tu zip HOAC tu GitHub.
+-------------------------------------------
+- Day la ban luu cua file HUONG-DAN-COPY.txt trong goi capnhat-resi-2026-11-26a.zip. 24 file trong goi giong HET nhanh main cua GitHub.
+  Ban nao cung duoc: chep tu zip HOAC tu GitHub.
 - Dung luong trong bang tren la cua file trong ZIP (xuong dong CRLF). Neu lay tu GitHub tren may Linux (xuong dong LF) thi dung luong
-  nho hon khoang 1-2% - binh thuong; chi can day du 23 file (file data/building-directory.json giong het o ca hai).
-- Lenh sinh lai du lieu danh sach toa nha (Dev B chay, khong can Dev A): php tools/gen-building-directory.php
+  nho hon khoang 1-2% - binh thuong; chi can day du 24 file (file data/building-directory.json giong het o ca hai).
+- Lenh sinh lai du lieu danh sach toa nha + du an vo (Dev B chay, khong can Dev A): php tools/gen-building-directory.php

@@ -105,6 +105,9 @@ add_action('template_redirect', function () {
     if ($which === 'products' && function_exists('pplus_sitemap_drop_hidden_projects')) {
         $body = pplus_sitemap_drop_hidden_projects($body); // 11/11/2026: du an da go (inc/hidden-projects.php) khong nam trong sitemap du Admin con liet ke
     }
+    if ($which === 'products' && function_exists('pplus_sitemap_drop_shell_projects')) {
+        $body = pplus_sitemap_drop_shell_projects($body); // 26/11/2026: du an "vo" (trang tu noindex) khong nam trong sitemap (inc/building-directory.php)
+    }
     if ($which !== 'index' && function_exists('pplus_sitemap_clean_urls')) {
         $body = pplus_sitemap_clean_urls($body, $which); // 20/11/2026: bỏ URL lặp + (quan/type) bỏ tin nội bộ, 404/410, trang đã tắt index (inc/landing-hygiene.php)
     }

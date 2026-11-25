@@ -108,8 +108,34 @@ while (true) {
 }
 echo "apartments scanned: $total, projects with >= 1 apartment: " . count($withApts) . "\n";
 
+/** GET JSON tu API (thu lai vai lan); null neu loi. */
+function api_get_json(string $path, int $tries = 4): ?array {
+    $ctx = stream_context_create(['http' => ['method' => 'GET', 'header' => "Accept: application/json\r\n", 'timeout' => 90, 'ignore_errors' => true]]);
+    for ($i = 1; $i <= $tries; $i++) {
+        $raw = @file_get_contents(API_BASE . $path, false, $ctx);
+        $j   = $raw ? json_decode($raw, true) : null;
+        if (is_array($j) && isset($j['result'])) {
+            return $j['result'];
+        }
+        fwrite(STDERR, "  retry $i $path\n");
+        sleep(2 * $i);
+    }
+    return null;
+}
+
+/** So ky tu chu cua bai viet du an (content + description) - CUNG cach tinh voi page-project-detail.php (nguong 200). */
+function article_chars(?array $result): int {
+    $ds = $result['dataSelected'] ?? null;
+    if (!is_array($ds)) {
+        return 0;
+    }
+    $text = html_entity_decode(strip_tags(preg_replace('#<(script|style)\b.*?</\1>#is', ' ', (string) ($ds['content'] ?? '') . ' ' . (string) ($ds['description'] ?? ''))), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    return mb_strlen(trim((string) preg_replace('/\s+/u', ' ', $text)));
+}
+
 // 2) Danh sach du an theo tung ngon ngu.
-$data = ['built' => date('Y-m-d'), 'with_apartments' => count($withApts)];
+$data   = ['built' => date('Y-m-d'), 'with_apartments' => count($withApts)];
+$allIds = []; // moi du an (ke ca khong co can) - de tinh du an "vo"
 foreach (['vi', 'en', 'ja'] as $lang) {
     echo "== projects ($lang)\n";
     $list  = [];
@@ -126,6 +152,9 @@ foreach (['vi', 'en', 'ja'] as $lang) {
             $id   = (int) ($it['projectId'] ?? 0);
             $href = trim((string) ($it['urlHerf'] ?? ''), '/');
             $name = trim((string) ($it['projectName'] ?? ''));
+            if ($id > 0) {
+                $allIds[$id] = true;
+            }
             if ($id <= 0 || $name === '' || $href === '' || strpos($href, '//') !== false || empty($withApts[$id])) {
                 continue;
             }
@@ -137,6 +166,40 @@ foreach (['vi', 'en', 'ja'] as $lang) {
     echo "  $lang: $seen projects seen, " . count($list) . " kept\n";
     $data[$lang] = $list;
 }
+
+// 3) Du an "vo" theo tung ngon ngu (0 can dang dang VA bai viet < 200 ky tu): trang tu noindex -> bo khoi sitemap san pham (inc/building-directory.php).
+//    Khong co ban ghi bai viet o ban Viet -> khong the co ban EN/JA -> vo ca 3. Co ban ghi -> kiem rieng tung ngon ngu. Goi chi tiet loi -> KHONG coi la vo (giu trong sitemap).
+//    Sitemap san pham co them vai du an ma API danh sach KHONG tra ve (vd du an ngoai Ha Noi) -> kiem ca cac id do.
+$sm = @file_get_contents(API_BASE . '/sitemaps/sitemap_products.xml', false, stream_context_create(['http' => ['timeout' => 120]]));
+if ($sm && preg_match_all('#<loc>\s*https?://[^/<]+/(?:vi|en|ja)/(?:cho-thue-can-ho|rental-apartment)/[^/<]+/[^/<]*/[^/<]*-(\d+)\s*</loc>#', $sm, $sm_ids)) {
+    $before = count($allIds);
+    foreach ($sm_ids[1] as $sid) { $allIds[(int) $sid] = true; }
+    echo 'sitemap_products: ' . (count($allIds) - $before) . " extra project ids not in the list API\n";
+} else {
+    fwrite(STDERR, "WARNING: cannot read sitemap_products.xml - projects missing from the list API are not checked\n");
+}
+$candidates = array_values(array_diff(array_keys($allIds), array_keys($withApts)));
+sort($candidates);
+echo "== shell check: " . count($candidates) . " projects without apartments\n";
+$shell = ['vi' => [], 'en' => [], 'ja' => []];
+$done  = 0;
+foreach ($candidates as $id) {
+    $vi = api_get_json("/vi/Project/Detail?id=$id");
+    if ($vi !== null) {
+        if (!is_array($vi['dataSelected'] ?? null)) {
+            foreach (['vi', 'en', 'ja'] as $l) { $shell[$l][] = $id; }
+        } else {
+            if (article_chars($vi) < 200) { $shell['vi'][] = $id; }
+            foreach (['en', 'ja'] as $l) {
+                $r = api_get_json("/$l/Project/Detail?id=$id");
+                if ($r !== null && article_chars($r) < 200) { $shell[$l][] = $id; }
+            }
+        }
+    }
+    if (++$done % 25 === 0) { echo "  checked $done / " . count($candidates) . "\n"; }
+}
+echo "shell projects: vi " . count($shell['vi']) . ", en " . count($shell['en']) . ", ja " . count($shell['ja']) . "\n";
+$data['shell'] = $shell;
 
 $data = normalize_districts($data);
 file_put_contents($out, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));

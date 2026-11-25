@@ -462,7 +462,7 @@ add_action('wp_head', function () {
                 '@type'            => 'BlogPosting',
                 '@id'              => $url . '#article',
                 'headline'         => pplus_seo_trim((string) ($bd['title'] ?? $title), 110),
-                'description'      => pplus_seo_trim((string) ($bd['metaDescription'] ?? $bd['subTitle'] ?? $description), 300),
+                'description'      => pplus_seo_trim($description, 300), // = the meta description da in (inc/blog-routes.php pplus_blog_meta_description)
                 'mainEntityOfPage' => ['@id' => $url . '#webpage'],
                 'image'            => [$image],
                 'inLanguage'       => $lang_tag,
