@@ -1,0 +1,61 @@
+BAN CAP NHAT WEB RESI - 27/11/2026 (ban 27a - 5 file)  nhanh main tren GitHub (commit 24fb944)
+=============================================================================================
+
+Server DA CHAY ban 26a (Dev B kiem 27/11: dat) nen goi nay CHI CO 5 FILE thay doi. Khong can chep lai cac goi cu.
+
+NOI DUNG THAY DOI
+-----------------
+ 1) 7 trang (Ve chung toi, 2 trang Chu nha, 4 trang Dich vu) x 3 ngon ngu: moi trang co mo ta tim kiem rieng
+    (truoc: ca 21 trang dung chung 1 cau gioi thieu cong ty).
+ 2) Sua vai chu dich may tren menu / tab / tieu de:
+      Tieng Nhat: "Dang ky cho thue nha", "Loi ich cua chu nha", tieu de trang Ve chung toi, 2 tieu de trong form dang ky.
+      Tieng Anh : "Register Leasing" -> "List Your Apartment",  "Owner benefit" -> "Owner Benefits".
+    Duong dan (URL) KHONG doi. Neu sau nay ai sua cac chu nay trong tu dien cua backend thi web dung ban cua backend.
+ 3) https://www.propertyplus.com.vn (dang mo nguyen ca web) -> chuyen huong 301 ve https://propertyplus.com.vn,
+    giu nguyen duong dan va tham so.
+ 4) Mo ta bai blog: bo dau gach dau dong o dau cau.
+
+CACH LAM (khoang 2 phut)
+------------------------
+Truoc khi chep: nen sao luu 5 file dang chay (de can thi chep nguoc lai).
+Giai nen zip nay DE vao THU MUC GOC web Resi (noi co wp-config.php). Duong dan ben trong da dung san:
+  wp-content/themes/propertyplus-resi/inc/...
+Khong can xoa cache. Neu PHP bat OPcache voi validate_timestamps=0 thi recycle App Pool.
+
+5 FILE - dung luong sau khi chep phai khop:
+  inc/api-client.php        102.382 byte
+  inc/blog-routes.php        12.078 byte
+  inc/i18n-extra.php         16.501 byte
+  inc/seo-head.php           34.077 byte
+  inc/url-canonical.php      13.110 byte
+
+KIEM TRA NGAY SAU KHI CHEP (quan trong: lam A va B truoc)
+--------------------------------------------------------
+ A) Ten mien chinh van mo binh thuong:
+      curl -s -o NUL -w "%{http_code}" https://propertyplus.com.vn/vi        -> 200
+    !! Neu ra 301/302 hoac trinh duyet bao "chuyen huong qua nhieu lan": them vao wp-config.php dong
+         define('PPLUS_WWW_REDIRECT', false);
+       roi bao Dev B.
+
+ B) www chuyen ve ten mien chinh:
+      curl -s -o NUL -D - https://www.propertyplus.com.vn/vi
+      -> HTTP 301, dong "location: https://propertyplus.com.vn/vi", dong "x-redirect-by: PropertyPlus-WWW"
+
+ C) Mo ta rieng:
+      curl -s https://propertyplus.com.vn/en/service/housekeeping-service-2 | findstr /c:"5-star housekeeping"
+      -> co ket qua
+
+ D) Chu moi tren trang chu nha:
+      curl -s https://propertyplus.com.vn/en/owner/register-Leasing | findstr /i "<title>"
+      -> List Your Apartment | Property Plus
+    Mo https://propertyplus.com.vn/ja/owner/register-Leasing : tab va menu phai la 賃貸物件のご登録
+    (neu mo file nay bang Notepad ma khong thay chu Nhat: mo bang ma UTF-8).
+
+Xong thi bao Dev B de doi chieu ca 21 trang tren web that.
+
+GHI CHU THEM (ban luu trong kho ma GitHub)
+-------------------------------------------
+- Day la ban luu cua file HUONG-DAN-COPY.txt trong goi capnhat-resi-2026-11-27a.zip. 5 file trong goi giong HET nhanh main (commit 24fb944).
+  Chep tu zip HOAC tu GitHub deu duoc.
+- Dung luong trong bang la cua file trong ZIP (xuong dong CRLF).
+- Quay lai ban cu: chep lai 5 file nay tu commit 4de34df.
