@@ -111,6 +111,69 @@ function pplus_seo_tagline(): string {
     return pplus_localize('Property plus là công ty môi giới bất động sản tại Hà Nội, chuyên tư vấn, quản lý, cho thuê căn hộ và căn hộ dịch vụ cao cấp cho người nước ngoài thuê.');
 }
 
+/**
+ * Mo ta rieng cho 7 trang tinh (27/11/2026) - truoc do ca 7 trang x 3 ngon ngu dung chung cau gioi thieu cong ty.
+ * Moi cau viet theo DUNG noi dung dang co tren trang (parts/owner-*.php, parts/service-*.php, page-about.php) - sua noi dung trang thi sua cau o day.
+ * Tieng Nhat dung kinh ngu.
+ *
+ * @return array<string,array{vi:string,en:string,ja:string}>
+ */
+function pplus_seo_static_page_descriptions(): array {
+    return [
+        'about' => [
+            'vi' => 'Property Plus (thành lập năm 2011) tư vấn, quản lý và cho thuê căn hộ, căn hộ dịch vụ cao cấp cho người nước ngoài tại Hà Nội. Xem tầm nhìn và đội ngũ.',
+            'en' => 'Founded in 2011, Property Plus advises on, manages and leases apartments and premium serviced apartments for foreigners in Hanoi. Meet our team.',
+            'ja' => '2011年設立のプロパティプラスは、ハノイで外国人の方向けのアパート・高級サービスアパートのご紹介と管理を行っております。弊社の強みや理念、スタッフをご紹介いたします。',
+        ],
+        'owner-1' => [
+            'vi' => 'Cho thuê căn hộ cùng Property Plus: bảo dưỡng định kỳ, dọn phòng hàng tuần, tư vấn giá thuê, hỗ trợ thủ tục đăng ký kinh doanh, thuế và tạm trú.',
+            'en' => 'Services for landlords: periodic maintenance, weekly housekeeping, rental price advice and help with business registration, taxes and residence paperwork.',
+            'ja' => 'オーナー様向けのサービスをご紹介いたします。定期メンテナンスや毎週の清掃、適正な家賃のご提案に加え、事業登録・納税・一時滞在登録のお手続きもサポートいたします。',
+        ],
+        'owner-2' => [
+            'vi' => 'Đăng ký cho thuê nhà với Property Plus: điền tên dự án, diện tích, số phòng, nội thất, giá mong muốn và tải ảnh căn hộ. Gửi ngay trên web.',
+            'en' => 'List your apartment with Property Plus: enter the project, size, rooms, furniture and asking rent (VND, USD or JPY), add photos and send it online.',
+            'ja' => '賃貸物件のご登録フォームです。プロジェクト名や面積、寝室数、家具の有無、ご希望の家賃（VND・USD・JPY）をご入力のうえ、お写真を添えてお送りいただけます。',
+        ],
+        'service-1' => [
+            'vi' => 'Dịch vụ quản lý của Property Plus: chăm sóc khách hàng, giải quyết thủ tục lưu trú, thanh toán hóa đơn đúng hạn. Hotline Anh - Nhật - Việt 24/7.',
+            'en' => 'Property Plus management service: customer care, residence paperwork and on-time bill payment, with a 24/7 hotline in English, Japanese and Vietnamese.',
+            'ja' => 'プロパティプラスの管理サービスです。ご入居中のサポート、在留に関する行政手続きや各種お支払いのお手伝いのほか、英語・日本語・ベトナム語の24時間ホットラインをご用意しております。',
+        ],
+        'service-2' => [
+            'vi' => 'Dịch vụ dọn phòng theo quy trình 5 sao: giặt là, đổ rác, dọn phòng ngủ và thay ga, diệt khuẩn phòng tắm, dọn bếp, hút bụi. Bảo mật thông tin.',
+            'en' => '5-star housekeeping: laundry, rubbish removal, bedroom cleaning with fresh bed linen, bathroom disinfection, kitchen cleaning and vacuuming.',
+            'ja' => '5つ星基準のハウスキーピングサービスです。お洗濯、ゴミ処理、寝室の清掃とシーツ交換、浴室・トイレの除菌、食器洗いを含むキッチン清掃、掃除機がけを承ります。',
+        ],
+        'service-3' => [
+            'vi' => 'Dịch vụ kỹ thuật - bảo dưỡng căn hộ: kiểm tra trước khi nhận phòng, bảo dưỡng định kỳ 3–12 tháng (nước, điều hòa, thiết bị...), sửa chữa 24/7.',
+            'en' => 'Apartment maintenance: a full check before move-in, scheduled servicing every 3 to 12 months (water, air conditioning and more) and 24/7 repairs.',
+            'ja' => 'メンテナンスサービスをご紹介いたします。ご入居前の設備確認、給水設備やエアコンなどの定期メンテナンス（3～12ヶ月ごと）、24時間365日の修理対応を行っております。',
+        ],
+        'service-4' => [
+            'vi' => 'Đăng ký dịch vụ cho căn hộ đang ở: chọn số buổi dọn phòng mỗi tuần, internet, truyền hình (có kênh Nhật, Hàn), nước uống và ngôn ngữ hỗ trợ.',
+            'en' => 'Register services for your apartment: weekly housekeeping, internet, TV (including Japanese and Korean channels), drinking water and support language.',
+            'ja' => 'お住まいのお部屋向けサービスのお申込みフォームです。ハウスキーピングの回数、インターネット、テレビ番組（日本・韓国の番組を含む）、飲料水、サポート言語をお選びいただけます。',
+        ],
+    ];
+}
+
+/** Mo ta cua trang tinh hien tai ('' = khong phai 1 trong 7 trang -> dung quy tac du phong cu). */
+function pplus_seo_static_page_description(string $type): string {
+    $key = '';
+    if ($type === 'about') {
+        $key = 'about';
+    } elseif ($type === 'owner' && function_exists('pplus_get_owner_from_query_vars')) {
+        $model = pplus_get_owner_from_query_vars();
+        $key   = $model ? 'owner-' . $model['type_site'] : '';
+    } elseif ($type === 'service' && function_exists('pplus_get_service_from_query_vars')) {
+        $model = pplus_get_service_from_query_vars();
+        $key   = $model ? 'service-' . $model['type_site'] : '';
+    }
+    $texts = pplus_seo_static_page_descriptions()[$key] ?? [];
+    return (string) ($texts[pplus_current_lang()] ?? '');
+}
+
 /** Mo ta ngan cho can ho tu cac field that (title da theo ngon ngu hien tai tu API). */
 function pplus_seo_apartment_description(array $d): string {
     $parts = [];
@@ -270,7 +333,8 @@ add_action('wp_head', function () {
                 'Contact Property Plus for free advice and fast quotes on apartments for rent in Hanoi. Hotline 08 5666 2566, 4th floor Kinh Do Building, 292 Tay Son, Dong Da.'
             );
         } else {
-            $description = pplus_seo_tagline();
+            $static      = pplus_seo_static_page_description($type); // gioi thieu, chu nha, dich vu
+            $description = $static !== '' ? $static : pplus_seo_tagline();
         }
         if ($description !== '' && stripos($buf, 'name="description"') === false) {
             $emit_desc = '<meta name="description" content="' . esc_attr(pplus_seo_trim($description, 200)) . '" />' . "\n";

@@ -216,13 +216,15 @@ function pplus_blog_content_excerpt(string $html, string $lang): string {
  */
 function pplus_blog_meta_description(array $post, ?string $lang = null): string {
     $title = (string) ($post['title'] ?? '');
+    // 27/11/2026: bai mo dau bang gach dau dong ("- Ho chieu ...") -> bo ky hieu dau dong o dau mo ta.
+    $unbullet = static fn (string $s): string => (string) preg_replace('/^(?:[\-–—•●▪・*]+(?:[\s\x{00A0}\x{3000}]+|(?=[^\d\s])))+/u', '', $s);
     foreach (['metaDescription', 'subTitle'] as $field) {
         $text = pplus_blog_clean_admin_description((string) ($post[$field] ?? ''), $title);
         if ($text !== '') {
-            return $text;
+            return $unbullet($text);
         }
     }
-    return pplus_blog_content_excerpt((string) ($post['content'] ?? ''), $lang ?: pplus_current_lang());
+    return $unbullet(pplus_blog_content_excerpt((string) ($post['content'] ?? ''), $lang ?: pplus_current_lang()));
 }
 
 add_action('wp_head', function () {

@@ -142,3 +142,41 @@ function pplus_extra_dictionary(string $lang): array {
     }
     return $all[$lang] ?? [];
 }
+
+/**
+ * Sua cac nhan DICH MAY trong tu dien API (27/11/2026) - hien tren menu, tab, breadcrumb, H1 va <title> cua trang chu nha/gioi thieu
+ * (vd tieng Nhat "Dang ky cho thue nha" dang la "家賃にサインアップ" = "dang ky vao tien thue nha").
+ * CHI thay khi tu dien API VAN CON DUNG chuoi cu: khi nao ban quan tri sua trong CSDL tu dien thi web dung ban cua ho (dong o day tu het tac dung).
+ * Khong dua khoa alias URL (vd 'dang-ky-chu-nha') vao day - doi alias la doi duong dan.
+ *
+ * @return array<string,array{0:string,1:string}> khoa tieng Viet => [chuoi cu trong API, chuoi thay the]
+ */
+function pplus_dictionary_corrections(string $lang): array {
+    $all = [
+        'ja' => [
+            'Đăng ký cho thuê nhà'                          => ['家賃にサインアップ', '賃貸物件のご登録'],
+            'Lợi ích của chủ nhà'                           => ['住宅所有者のメリット', 'オーナー様のメリット'],
+            'Công ty bất động sản ở Hà Nội | Property Plus' => ['ハノイにおける不動産会社', 'ハノイの不動産会社｜Property Plus'],
+            'Đăng cho thuê nhanh với với những thông tin ngắn gọn tại đây.' => ['簡易情報　省略情報の速く投稿', '簡単な情報のご入力で、すぐに物件をご登録いただけます。'],
+            'Căn hộ của bạn thế nào?' => ['どんなアパートですか。', 'お部屋の情報をご入力ください。'],
+        ],
+        'en' => [
+            'Đăng ký cho thuê nhà' => ['Register Leasing', 'List Your Apartment'],
+            'Lợi ích của chủ nhà'  => ['Owner benefit', 'Owner Benefits'],
+        ],
+    ];
+    return $all[$lang] ?? [];
+}
+
+/**
+ * @param array<string,string> $map tu dien API (khoa tieng Viet => ban dich)
+ * @return array<string,string>
+ */
+function pplus_apply_dictionary_corrections(array $map, string $lang): array {
+    foreach (pplus_dictionary_corrections($lang) as $key => [$old, $new]) {
+        if (isset($map[$key]) && trim($map[$key]) === $old) {
+            $map[$key] = $new;
+        }
+    }
+    return $map;
+}

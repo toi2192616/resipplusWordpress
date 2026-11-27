@@ -243,7 +243,8 @@ function pplus_lang_dictionary(string $lang): array {
             $map[(string) $row['name']] = (string) ($row['value'] ?? $row['name']);
         }
     }
-    return $cache[$lang] = $map;
+    // 27/11/2026: thay vai nhan dich may trong tu dien (inc/i18n-extra.php); function_exists de chep thieu file cung khong loi trang.
+    return $cache[$lang] = function_exists('pplus_apply_dictionary_corrections') ? pplus_apply_dictionary_corrections($map, $lang) : $map;
 }
 
 /**

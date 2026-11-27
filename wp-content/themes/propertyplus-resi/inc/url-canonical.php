@@ -149,6 +149,25 @@ function pplus_villa_root_to_apartment_root(string $canonical_path): string {
 }
 
 /**
+ * 27/11/2026: "www.<ten mien chinh>" dang tra nguyen ca web (200) -> can 301 ve ten mien chinh. Ham thuan.
+ * Chi tra ve goc dich ("https://ten-mien-chinh") khi host cua request DUNG BANG "www." + host cua dia chi trang chu; moi truong hop khac tra ''
+ * (ke ca khi trang chu cau hinh sang www hoac suy tu host cua request) nen khong the tao vong lap chuyen huong.
+ * Tat bang define('PPLUS_WWW_REDIRECT', false) trong wp-config.php.
+ */
+function pplus_apex_for_www_request(string $request_host, string $home_url): string {
+    if (defined('PPLUS_WWW_REDIRECT') && !PPLUS_WWW_REDIRECT) {
+        return '';
+    }
+    $parts     = parse_url($home_url);
+    $home_host = strtolower((string) ($parts['host'] ?? ''));
+    $host      = rtrim(strtolower((string) preg_replace('/:\d+$/', '', trim($request_host))), '.');
+    if ($home_host === '' || strpos($home_host, 'www.') === 0 || $host !== 'www.' . $home_host) {
+        return '';
+    }
+    return ($parts['scheme'] ?? 'https') . '://' . $home_host . (isset($parts['port']) ? ':' . $parts['port'] : '');
+}
+
+/**
  * Neu request hien tai KHONG o dang chuan thi 301 sang dang chuan (giu nguyen query string). Chay RAT SOM (luc nap
  * theme, truoc khi WP parse request / goi API) nen khong ton chi phi render.
  * Chi ap dung: GET/HEAD, khong phai admin/ajax/cron/REST, duong dan la route cua site (pplus_canonical_path != null).
@@ -175,6 +194,19 @@ function pplus_redirect_to_canonical_request(): void {
     $legacy = function_exists('pplus_legacy_redirect_target') ? pplus_legacy_redirect_target($path) : null;
     if ($legacy !== null) {
         wp_redirect(home_url($legacy) . $tail, 301, 'PropertyPlus-Legacy');
+        exit;
+    }
+    // www -> ten mien chinh, giu duong dan + query; neu duong dan cung chua o dang chuan thi di thang toi dang chuan (1 hop).
+    $apex = pplus_apex_for_www_request((string) ($_SERVER['HTTP_HOST'] ?? ''), (string) home_url());
+    if ($apex !== '') {
+        $target = $path;
+        if (strpos(basename($path), '.') === false) {
+            $c = pplus_canonical_path($path, 'en');
+            if ($c !== null) {
+                $target = pplus_villa_root_to_apartment_root($c);
+            }
+        }
+        wp_redirect($apex . $target . $tail, 301, 'PropertyPlus-WWW');
         exit;
     }
     // Tep tinh / sitemap: co dau "." o doan cuoi (".xml", ".css"...) -> khong phai route cua site, bo qua.
