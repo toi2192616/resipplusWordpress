@@ -119,9 +119,8 @@ async function checkRobotsAndIndexing() {
     check(!/noindex/i.test(h.robots), 'Trang chủ không có <meta robots noindex>', `meta robots = "${h.robots}" — còn bật noindex hoặc cache HTML cũ chưa xoá?`);
     // Giữ các thứ web Angular cũ đang có: xác minh Search Console + theo dõi truy cập (inc/tracking.php).
     check(/<meta[^>]+name=["']google-site-verification["'][^>]+content=["']_EwTjlz4bpbpsE8dEwY3bbIye3ejKDjCV1JlDZRfy1U["']/i.test(home.text), 'Có thẻ google-site-verification của web chính (giữ xác minh Search Console)', 'thiếu thẻ — có thể MẤT xác minh quyền sở hữu Search Console. Kiểm inc/tracking.php / hằng PPLUS_GOOGLE_SITE_VERIFICATION');
-    // 13/11/2026: GTM đang TẮT TẠM theo yêu cầu (inc/tracking.php, PPLUS_GTM_ID mặc định rỗng) -> chỉ cảnh báo; nếu đã bật lại thì phải đúng container.
+    // GTM đã bật lại từ gói 21j (tắt tạm 13/11/2026): thiếu GTM -> cảnh báo; có GTM thì phải đúng container.
     const gtmOn = /googletagmanager\.com\/gtm\.js/.test(home.text);
-    check(!gtmOn, 'Google Tag Manager đang tắt tạm (13/11/2026)', 'ĐÃ BẬT lại GTM — nhớ kiểm container', 'warn');
     if (gtmOn) {
       check(/GTM-WRVHCF8Q/.test(home.text), 'GTM đúng container GTM-WRVHCF8Q', 'GTM nạp nhưng không phải GTM-WRVHCF8Q — kiểm hằng PPLUS_GTM_ID');
     } else {
