@@ -53,3 +53,46 @@ Dữ liệu dùng để viết: địa chỉ, số tầng, loại phòng, diện
 - Trang giới thiệu Lotte: đang trên Google → **đã yêu cầu lập chỉ mục lại**.
 
 Đề xuất (cần chủ site đồng ý, sửa trong code theme): trang giới thiệu và trang dự án chung 1 bản ghi thì khai **một** canonical. Ưu tiên trỏ về trang dự án (có căn đang cho thuê, nằm trong sitemap và trang "Tất cả tòa nhà"); trang giới thiệu vẫn mở được, không 404, không đổi đường dẫn. Làm thử với vài tòa, đo 2–4 tuần rồi mới áp dụng rộng.
+
+## Dịch bổ sung blog (27/11, chiều tối) — 26 ô tóm tắt + 3 chỗ sửa lỗi
+
+Kiểm qua API: 26/26 dòng đúng, chữ trong bài không đổi (trừ 1 câu ở #103). Khôi phục ô tóm tắt = xóa trống (trước đó đều trống). Nội dung mới: `blog-i18n-2026-11-27.json`.
+
+| Bài | Ngôn ngữ | Ô | Cũ | Mới |
+|---|---|---|---|---|
+| 103 | en | tóm tắt | *(trống)* | Looking for an apartment to rent in Hanoi? Don't miss these six useful tips for foreigners. |
+| 103 | en | 1 câu chú thích ảnh | Kết nối với Property Plus để tìm kiếm bất động sản phù hợp tại Hà Nội | Connect with Property Plus to find the right property in Hanoi |
+| 103 | ja | tóm tắt | *(trống)* | ハノイで賃貸アパートをお探しの外国人の方に、ぜひ知っておいていただきたい6つのポイントをご紹介いたします。 |
+| 104 | en | tóm tắt | *(trống)* | To choose the type of rental home in Hanoi that best suits your needs, explore the information below with Property Plus. |
+| 104 | ja | tóm tắt | *(trống)* | ご希望に合った住まいの種類をお選びいただけるよう、ハノイで住宅を借りる際に知っておきたい情報をご紹介いたします。 |
+| 106 | en | tóm tắt | *(trống)* | Where do most Koreans in Hanoi live, and what do these areas offer them? Find out here. |
+| 106 | ja | tóm tắt | *(trống)* | ハノイにお住まいの韓国人の方は主にどのエリアに暮らし、そこにはどのような便利な施設があるのでしょうか。詳しくご紹介いたします。 |
+| 107 | en | tóm tắt | *(trống)* | Which areas of Hanoi are ideal places to live, with many foreign residents? Property Plus answers in this article. |
+| 108 | en | tóm tắt | *(trống)* | In Vietnam, can a tenant end a lease early on their own? Find out in this article. |
+| 108 | ja | tóm tắt | *(trống)* | ベトナムでは、借主が賃貸借契約を期間の途中で一方的に解約することはできるのでしょうか。本記事でご説明いたします。 |
+| 109 | en | tóm tắt | *(trống)* | Here are some areas of Hanoi with Japanese communities. Compare them and choose the place that suits you best. |
+| 109 | ja | tóm tắt | *(trống)* | ハノイで日本人の方が多くお住まいのエリアをご紹介いたします。ご希望に合うお住まい探しのご参考になさってください。 |
+| 110 | en | tóm tắt | *(trống)* | What should foreigners keep in mind to rent a Hanoi apartment with the right location, price and living environment? |
+| 110 | ja | tóm tắt | *(trống)* | 立地や家賃、住環境がご希望に合うお部屋を借りるために、外国人の方に注意していただきたい点をご紹介いたします。 |
+| 111 | en | tóm tắt | *(trống)* | A guide for foreigners to finding a rental apartment in Hanoi that meets their needs, without wasting time. |
+| 111 | ja | tóm tắt | *(trống)* | 外国人の方がハノイでご希望に合う賃貸アパートをスムーズに見つけるための方法をご紹介いたします。 |
+| 112 | en | tóm tắt | *(trống)* | A lease is a key document when renting an apartment. What should you check to protect your rights? |
+| 112 | en | tiêu đề | How to find apartments in Hanoi for foreigners | Apartment Lease Contracts: What to Check to Protect Your Rights |
+| 112 | ja | tóm tắt | *(trống)* | 賃貸借契約書は、お部屋を借りる際の大切な書類です。ご自身の権利を守るために確認すべき点をご紹介いたします。 |
+| 112 | ja | tiêu đề | 福利を確保するためのマンション賃貸契約の注意点 | ご自身の権利を守るためのアパート賃貸借契約の注意点 |
+| 113 | en | tóm tắt | *(trống)* | Finding a rental apartment that allows pets isn't easy. Here is how to go about finding one. |
+| 113 | ja | tóm tắt | *(trống)* | ペットと一緒に暮らせる賃貸アパートを見つけるのは簡単ではありません。お部屋探しの方法をご紹介いたします。 |
+| 217 | ja | tóm tắt | *(trống)* | 我が家のような快適さ、充実した設備、ホテルのようなサービスなど、サービスアパートがおすすめの5つの理由をご紹介いたします。 |
+| 224 | ja | tóm tắt | *(trống)* | 金継ぎは、割れた陶磁器を漆で修復し、金や銀、プラチナの粉で装飾する伝統技法です。その魅力をご紹介いたします。 |
+| 225 | ja | tóm tắt | *(trống)* | かまどの神様をお送りするベトナムの行事「オンコン・オンタオ」の由来と意味をご紹介いたします。 |
+| 231 | ja | tóm tắt | *(trống)* | 新型コロナウイルス流行後、観光が再開された時期の情報をもとに、ベトナム旅行の安全性と注意点をご紹介いたします。 |
+| 234 | en | tóm tắt | *(trống)* | Planning to move to Vietnam? What foreigners should know first, from safety, language and living costs to finding a home. |
+| 236 | en | tóm tắt | *(trống)* | A look at some of the newest apartments for rent in Hanoi, with their locations and on-site amenities (2022). |
+| 236 | ja | tóm tắt | *(trống)* | ハノイの新しい賃貸アパートの一部を、立地や敷地内の施設とあわせてご紹介いたします（2022年版）。 |
+
+### Kết quả rà bài thiếu bản dịch (27/11)
+
+- Blog: 63/63 bài có nội dung tiếng Anh và tiếng Nhật (7 bài JA bị máy gắn cờ là bài chỉ có link video hoặc có địa chỉ viết tiếng Anh).
+- Trang khu vực: 142 trang EN/JA trong `sitemap_quan` + `sitemap_type` và 12 trang trên menu đều đúng ngôn ngữ.
+- Bài viết dự án: lấy MẪU 60 tòa (5 tòa trên menu có mã dự án + 55 ngẫu nhiên): 7 tòa có bài tiếng Việt, cả 7 đủ EN/JA; 53 tòa chưa có bài ở tiếng nào. Chưa quét toàn bộ (~1.700 lượt đọc API, cần chủ site đồng ý). Trang khu vực chỉ có bản Việt sẽ không nằm trong sitemap EN/JA nên cách rà này không thấy.
+- Trang căn hộ (mẫu 12 căn × EN/JA): chữ Việt còn lại là tên/địa chỉ địa điểm lân cận.
