@@ -1,0 +1,65 @@
+BAN CAP NHAT WEB RESI - 28/11/2026 (ban 28d - 3 file)  nhanh main tren GitHub
+==============================================================================
+
+Server dang chay ban 28a (da kiem tren web that luc 15h 28/11: dat du 5 muc A-E).
+Goi nay THAY THE goi 28b va 28c (chua chep thi BO, chi chep goi nay). CHEP NGAY HOM NAY.
+
+VIEC GAP CUA BACKEND (KHONG nam trong goi nay - can xu ly truoc/ cung luc)
+-------------------------------------------------------------------------
+Luc 15:30 ngay 28/11, 2 API cua backend web Can ho tra HTTP 301 ve /Error:
+    POST https://admin.propertyplus.com.vn/vi/Apartment/_GetApartments
+         noi dung: {"skip":0,"price_sort_type":2,"apartmentTypeList":"1,2"}
+    POST https://admin.propertyplus.com.vn/vi/Project/_GetProjects
+         noi dung: {"skip":0}
+API chi tiet can ho cung loi (301 -> /Error):
+    GET  https://admin.propertyplus.com.vn/vi/Apartment/_GetDetail?id=3046&province=ha-noi&district=quan-ba-dinh&project=sakamoto-1-building
+API /vi/Project/_Project?id=2 tra 302 ve trang dang nhap (du an 2 co that). /vi/Project/Detail?id=2 va Home/HeaderInvokeAsync van chay.
+Dung 2 noi dung nay da chay tot ngay 26/11. API cua web Van phong (admin.propertyplus.vn) van tra 200.
+Anh huong tren web that: TRANG CAN HO chua co cache tra 404 (thu 3/3 can dang hien trong danh sach); loc gia / sang trang
+chua co cache thi ra 0 can; co trang du an hien 0 can va bi gan noindex; co trang mat 47-90 giay moi mo. Can xem log loi backend, hom nay co cap nhat backend / co so du lieu khong,
+va kiem ca FORM lien he (cung gui bang POST - Dev B chua thu).
+
+NOI DUNG SUA TRONG GOI
+----------------------
+ 0) inc/api-client.php: backend roi vao /Error thi coi la loi TAM THOI -> trang thieu du lieu chinh tra 503 + Retry-After
+    (Google giu trang) thay vi 404 (Google bo trang). Noi dung khong ton tai that van tra 404.
+ 1) page-project-detail.php + inc/api-client.php: API danh sach can ho LOI thi KHONG coi la du an het can
+    -> khong con gan noindex nham. (Du an that su 0 can va khong co bai viet van noindex nhu cu.)
+ 2) inc/api-client.php: viec lam moi cache cho qua 5 phut ma WP-Cron chua chay thi luot xem ke tiep tu lam moi
+    (toi da 2 muc moi luot). Ly do: trang quan Ba Dinh ban EN hien link cu it nhat 3 gio (12:04-15:01 ngay 28/11).
+ 3) inc/render-helpers.php: do kich thuoc anh (trang Ve chung toi) tren IIS chi chay toi da 1,5 giay moi luot.
+
+CACH LAM (khoang 2 phut)
+------------------------
+Truoc khi chep: sao luu 3 file dang chay.
+Giai nen zip nay DE vao THU MUC GOC web Resi (noi co wp-config.php). Duong dan ben trong da dung san.
+Chep DU 3 file trong 1 lan. Khong can xoa cache theme. Neu PHP bat OPcache voi validate_timestamps=0 thi recycle App Pool.
+
+3 FILE - dung luong sau khi chep phai khop:
+  wp-content/themes/propertyplus-resi/inc/api-client.php       104.502 byte
+  wp-content/themes/propertyplus-resi/inc/render-helpers.php    54.070 byte
+  wp-content/themes/propertyplus-resi/page-project-detail.php   20.811 byte
+
+KIEM TRA SAU KHI CHEP
+---------------------
+  https://propertyplus.com.vn/vi                                          -> mo binh thuong
+  https://propertyplus.com.vn/vi/ve-chung-toi                             -> mo binh thuong
+  https://propertyplus.com.vn/en/rental-apartment/ha-noi/ba-dinh-district/ngoc-khanh-plaza-48 -> mo binh thuong
+  Neu backend CHUA sua: mo https://propertyplus.com.vn/vi/cho-thue-can-ho/ha-noi/quan-ba-dinh/sakamoto-1-building/3046
+  bang  curl -s -o NUL -w "%{http_code}"  -> 503 (truoc khi chep la 404). Backend sua xong -> 200.
+Xong thi bao Dev B de doi chieu.
+
+VIEC DEV A NEN XEM THEM (tren may chu, khong nam trong goi)
+-----------------------------------------------------------
+ A) WP Super Cache dang bat. Duong dan CO "/" cuoi (vd /vi/) dang tra ban luu san voi ma 200, bo qua lenh 301 cua theme;
+    duong dan chuan (khong "/") van tao moi moi luot. Neu khong chu y bat plugin nay thi nen tat roi xoa cache cua no.
+ B) Tac vu nen nen do MAY CHU hen gio chay (muc 2 trong GO_LIVE_CHECKLIST.md). Windows Task Scheduler: moi 5 phut chay
+        php.exe  "<thu muc goc web>\wp-cron.php"
+    KHONG goi qua dia chi web (hom 28/11 goi https://propertyplus.com.vn/wp-cron.php: hon 120 giay khong tra loi).
+    CHI them define('DISABLE_WP_CRON', true); SAU KHI tac vu hen gio da chay duoc.
+ C) Xem log PHP / IIS khoang 15:02-15:10 ngay 28/11: trang /en/rental-apartment/ha-noi/ba-dinh-district khong tra loi
+    (qua 60 va qua 90 giay) 2 lan. Ngay truoc do (khoang 15:02) Dev B co goi wp-cron.php qua web 1 lan.
+
+QUAY LAI BAN CU
+---------------
+Chep lai 3 file da sao luu.

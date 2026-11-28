@@ -503,10 +503,26 @@ function pplus_api_http(string $method, string $url, ?array $payload, int $timeo
     }
     $body = json_decode(wp_remote_retrieve_body($response), true);
     if (!is_array($body)) {
-        pplus_api_note_failure('api-error');
+        // 28/11/2026: chuyen huong qua "/Error" = backend gap ngoai le (loi TAM THOI) -> 'api-failure' de trang thieu du lieu tra 503,
+        // khong tra 404 lam Google bo trang. Noi dung khong ton tai van la 302 thang toi trang dang nhap ('api-error', giu 404).
+        pplus_api_note_failure(pplus_api_hit_error_page($response) ? 'api-failure' : 'api-error');
         return null;
     }
     return $body;
+}
+
+/** true khi chuoi chuyen huong cua 1 response di qua trang "/Error" cua backend .NET. */
+function pplus_api_hit_error_page($response): bool {
+    $http = is_array($response) ? ($response['http_response'] ?? null) : null;
+    if (!is_object($http) || !method_exists($http, 'get_response_object')) {
+        return false;
+    }
+    foreach ((array) ($http->get_response_object()->history ?? []) as $hop) {
+        if (preg_match('#^(https?://[^/]+)?/Error/?($|\?)#i', (string) ($hop->headers['location'] ?? ''))) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /** Ghi nho loai loi cua lan goi API gan nhat + danh dau response hien tai (xem inc/response-headers.php). */
