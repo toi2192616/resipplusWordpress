@@ -415,6 +415,32 @@ async function checkPages() {
 
 // ----------------------------------------------------------------------------------------------- 5. tìm kiếm
 async function checkSearch() {
+  // 28/11/2026: sự cố backend (menu mất tên tòa, mất menu "Loại căn hộ", danh sách ra 0 căn, trang căn hộ 404) mà bộ kiểm cũ vẫn báo đạt, vì
+  // các trang vẫn trả 200 và nội dung hay được xem còn nằm trong cache. Mục này kiểm đúng các dấu hiệu đó, kể cả dữ liệu KHÔNG có cache.
+  section('4b. Menu đủ tên + danh sách và trang căn hộ không có cache (phát hiện lỗi API backend)');
+  for (const p of ['/vi', '/en/about-us', '/ja/blogs']) {
+    const r = await http(p);
+    const names = [...r.text.matchAll(/<a class="district-name" href="[^"]*">([\s\S]*?)<\/a>/g)].map((m) => m[1].replace(/<[^>]+>/g, '').trim());
+    const empty = names.filter((n) => !n).length;
+    const typeMenu = r.text.match(/<ul class="dropdown-menu-office-style">\s*<div class="menu-quan-title">[\s\S]*?<\/ul>/);
+    const types = typeMenu ? (typeMenu[0].match(/<li class="li-orther">/g) || []).length : 0;
+    check(r.status === 200 && names.length >= 40 && empty === 0, `Menu ${p}: link tòa nhà/khu vực đủ tên`, `HTTP ${r.status}, ${names.length} link, ${empty} link trống tên`);
+    check(types > 0, `Menu ${p}: có danh sách "Loại căn hộ"`, 'danh sách trống');
+  }
+  const price = 300 + Math.floor(Math.random() * 300); // giá lọc ngẫu nhiên = truy vấn chưa có cache -> theme phải gọi API thật
+  const cold = await http(`/vi/cho-thue-can-ho/ha-noi/quan-ba-dinh?price_from=${price}`, { retry503: false });
+  const cards = [...cold.text.matchAll(/class="item-office[^"]*" href="([^"]+)"/g)].map((m) => m[1]);
+  check(cards.length > 0, `Danh sách quận Ba Đình lọc từ $${price} (không có cache) có căn hộ`, `HTTP ${cold.status}, 0 căn — API danh sách của backend có thể đang lỗi`);
+  const listed = await http('/vi/cho-thue-can-ho/ha-noi/quan-ba-dinh');
+  const links = [...new Set([...listed.text.matchAll(/class="item-office[^"]*" href="([^"]+)"/g)].map((m) => m[1]))].filter((u) => /\/\d+$/.test(u));
+  const badApts = [];
+  for (const u of links.slice(-3)) { // 3 căn cuối danh sách: ít người xem nhất nên dễ không có cache
+    const r = await http(pathOf(u), { retry503: false });
+    if (r.status !== 200) badApts.push(`${r.status} ${pathOf(u)}`);
+    await sleep(1000);
+  }
+  check(links.length > 0 && badApts.length === 0, 'Căn hộ đang hiện trong danh sách mở được (3 căn)', links.length ? badApts.join(' | ') : 'không lấy được link căn hộ nào');
+
   section('5. Tìm kiếm (gợi ý dự án qua REST)');
   for (const [lang, q] of [['vi', 'kim ma'], ['en', 'somerset'], ['ja', 'lotte']]) {
     const r = await http(`/wp-json/pplus/v1/search-group?q=${encodeURIComponent(q)}&lang=${lang}`);
