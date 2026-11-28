@@ -1134,11 +1134,13 @@ function pplus_get_apartment_list(array $filter, int $skip, int $price_sort_type
 
     $candidates = [];
     $total_count = 0;
+    $api_failed = false; // 28/11/2026: phan biet "API loi" voi "that su 0 can" (xem 'failed' o gia tri tra ve)
     for ($i = 0; $i < $api_calls; $i++) {
         $page_filter = $filter;
         $page_filter['skip'] = $skip + ($i * $api_page_size);
         $page_filter['price_sort_type'] = $price_sort_type;
         $result = pplus_api_post_json("{$lang}/Apartment/_GetApartments", $page_filter, 300);
+        $api_failed = $api_failed || !isset($result['result']);
         $candidates = array_merge($candidates, $result['result']['listApartments'] ?? []);
         $total_count = max($total_count, (int) ($result['result']['total_count'] ?? 0));
     }
@@ -1157,6 +1159,7 @@ function pplus_get_apartment_list(array $filter, int $skip, int $price_sort_type
         return [
             'listApartments' => $page_items,
             'total_count'    => $total_count,
+            'failed'         => $api_failed && !$page_items,
         ];
     }
 
@@ -1180,6 +1183,7 @@ function pplus_get_apartment_list(array $filter, int $skip, int $price_sort_type
     return [
         'listApartments' => $page_items,
         'total_count'    => $total_count,
+        'failed'         => $api_failed && !$page_items,
     ];
 }
 

@@ -93,7 +93,8 @@ $pplus_article_len = 0;
 if (!empty($model['dataSelected']) && is_array($model['dataSelected'])) {
     $pplus_article_len = mb_strlen(trim((string) preg_replace('/\s+/u', ' ', wp_strip_all_tags((string) ($model['dataSelected']['content'] ?? '') . ' ' . (string) ($model['dataSelected']['description'] ?? '')))));
 }
-if ((int) $total_count === 0 && $pplus_article_len < (int) apply_filters('pplus_project_min_article_chars', 200) && !$pplus_project_filtered) {
+// 28/11/2026: API danh sach can ho loi (backend tra 301 -> /Error) thi $total_count = 0 nhung KHONG phai du an het can -> khong duoc noindex.
+if (empty($listing['failed']) && (int) $total_count === 0 && $pplus_article_len < (int) apply_filters('pplus_project_min_article_chars', 200) && !$pplus_project_filtered) {
     $GLOBALS['pplus_project_shell'] = true;
 }
 $total_pages    = $total_count > 0 ? (int) ceil($total_count / $per_page) : 0;
