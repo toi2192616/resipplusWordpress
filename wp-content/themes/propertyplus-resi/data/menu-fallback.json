@@ -1,0 +1,353 @@
+{
+ "en": {
+  "apartmentLuxury": [
+   {
+    "alias": "condo",
+    "subTitle": "Condominium",
+    "img": "Files/FileData/Căn hộ chung cư icon gợi ý.jpg"
+   },
+   {
+    "alias": "serviced-apartment",
+    "subTitle": "Serviced Apartment",
+    "img": "Files/FileData/Icon-Service apartment.jpg"
+   },
+   {
+    "alias": "luxury-apartment",
+    "subTitle": "Luxury Apartment",
+    "img": "Files/FileData/Icon-Luxury Apartment.jpg"
+   },
+   {
+    "alias": "west-lake-area",
+    "subTitle": "West Lake Area",
+    "img": "Files/FileData/Hồ Tây icon gợi ý.jpg"
+   },
+   {
+    "alias": "truc-bac-area",
+    "subTitle": "Truc Bach Area",
+    "img": "Files/FileData/Trúc bạch lake.jpg"
+   },
+   {
+    "alias": "lake-view",
+    "subTitle": "Lake View Apartment",
+    "img": "Files/FileData/Lake view icon gợi ý.jpeg"
+   },
+   {
+    "alias": "Japanese-area ",
+    "subTitle": "Japanese Area",
+    "img": "Files/FileData/Phố Người Nhật.jpg"
+   },
+   {
+    "alias": "easy-access-to-japanese-school-hanoi",
+    "subTitle": "Near Japanese School Hanoi",
+    "img": "Files/FileData/Icon-Thuận tiện đi trường nhật.jpg"
+   },
+   {
+    "alias": "easy-access-to-industrial-parks",
+    "subTitle": "Easy Access To Industrial Parks",
+    "img": "Files/FileData/Thuận tiện đi khu CN.jpg"
+   },
+   {
+    "alias": "shopping-area",
+    "subTitle": "Close To Shopping Area",
+    "img": "Files/FileData/Thuận tiện đi mua sắm.jpg"
+   },
+   {
+    "alias": "gym-swimming-pool",
+    "subTitle": "With Gym & Swimming Pool",
+    "img": "Files/FileData/Gym & bể bơi.jpg"
+   },
+   {
+    "alias": "cheap-apartments",
+    "subTitle": "Cheap Apartments",
+    "img": "Files/FileData/Căn hộ giá rẻ icon gợi ý.jpg"
+   }
+  ],
+  "apartmentType": [
+   {
+    "alias": "studio-apartment-hanoi",
+    "subTitle": "Studio",
+    "img": "Files/FileData/Studio.jpg"
+   },
+   {
+    "alias": "1-bedroom-apartment-hanoi",
+    "subTitle": "01 Bedroom",
+    "img": "Files/FileData/01 phòng ngủ icon gợi ý.jpg"
+   },
+   {
+    "alias": "2-bedroom-apartment-hanoi",
+    "subTitle": "02 Bedrooms",
+    "img": "Files/FileData/02 phòng ngủ icon gợi ý.jpg"
+   },
+   {
+    "alias": "3-bedroom-apartment-hanoi",
+    "subTitle": "03 Bedrooms",
+    "img": "Files/FileData/03 phòng ngủ icon gợi ý.jpg"
+   },
+   {
+    "alias": "4-bedroom-apartment-hanoi",
+    "subTitle": "04 Bedrooms",
+    "img": "Files/FileData/04 phòng ngủ icon gợi ý.jpg"
+   }
+  ],
+  "buildingNames": {
+   "26": "Vinhomes Metropolis",
+   "1502": "Masteri Waterfront Ocean Park 1",
+   "1505": "The Zurich Ocean Park 1",
+   "1508": "The Zenpark Ocean Park 1",
+   "116": "Starlake Tay Ho Tay",
+   "94": "Park Hill",
+   "1219": "Times City",
+   "91": "Royal City",
+   "1228": "Vinhomes Skylake",
+   "86": "Vinhomes Gardenia",
+   "103": "Indochina Plaza Hanoi",
+   "56": "Ciputra Apartment Hanoi",
+   "59": "Lotte The Residence Hanoi",
+   "53": "Fraser Suites",
+   "1261": "Fraser Residence",
+   "1216": "D Le Roi Soleil Hanoi",
+   "55": "Oakwood Residence Tay Ho",
+   "68": "Lancaster Hanoi",
+   "82": "Pan Pacific",
+   "1264": "The Authentic",
+   "107": "Somerset Grand Hanoi",
+   "1243": "Somerset West Lake Hanoi",
+   "1246": "Somerset Hoa Binh Hanoi",
+   "64": "Somerset West Point Hanoi"
+  }
+ },
+ "vi": {
+  "apartmentLuxury": [
+   {
+    "alias": "can-ho-chung-cu",
+    "subTitle": "Căn Hộ Chung Cư",
+    "img": "Files/FileData/Căn hộ chung cư icon gợi ý.jpg"
+   },
+   {
+    "alias": "can-ho-dich-vu",
+    "subTitle": "Căn Hộ Dịch Vụ",
+    "img": "Files/FileData/Icon-Service apartment.jpg"
+   },
+   {
+    "alias": "can-ho-cao-cap",
+    "subTitle": "Căn Hộ Cao Cấp",
+    "img": "Files/FileData/Icon-Luxury Apartment.jpg"
+   },
+   {
+    "alias": "ho-tay",
+    "subTitle": "Căn Hộ Hồ Tây",
+    "img": "Files/FileData/Hồ Tây icon gợi ý.jpg"
+   },
+   {
+    "alias": "truc-bach",
+    "subTitle": "Hồ Trúc Bạch",
+    "img": "Files/FileData/Trúc bạch lake.jpg"
+   },
+   {
+    "alias": "view-ho",
+    "subTitle": "Căn Hộ View Hồ",
+    "img": "Files/FileData/Lake view icon gợi ý.jpeg"
+   },
+   {
+    "alias": "pho-nguoi-nhat",
+    "subTitle": "Phố Người Nhật",
+    "img": "Files/FileData/Phố Người Nhật.jpg"
+   },
+   {
+    "alias": "thuan-tien-di-truong-quoc-te-nhat",
+    "subTitle": "Gần Trường Nhật",
+    "img": "Files/FileData/Icon-Thuận tiện đi trường nhật.jpg"
+   },
+   {
+    "alias": "thuan-tien-di-khu-cong-nghiep",
+    "subTitle": "Thuận Tiện Đi Khu CN",
+    "img": "Files/FileData/Thuận tiện đi khu CN.jpg"
+   },
+   {
+    "alias": "mua-sam",
+    "subTitle": "Gần Khu Vực Mua Sắm",
+    "img": "Files/FileData/Thuận tiện đi mua sắm.jpg"
+   },
+   {
+    "alias": "be-boi-gym",
+    "subTitle": "Căn Hộ Có Bể Bơi & Gym",
+    "img": "Files/FileData/Gym & bể bơi.jpg"
+   },
+   {
+    "alias": "can-ho-gia-re",
+    "subTitle": "Căn Hộ Giá Rẻ",
+    "img": "Files/FileData/Căn hộ giá rẻ icon gợi ý.jpg"
+   }
+  ],
+  "apartmentType": [
+   {
+    "alias": "studio",
+    "subTitle": "Studio",
+    "img": "Files/FileData/Studio.jpg"
+   },
+   {
+    "alias": "01-phong-ngu",
+    "subTitle": "01 Phòng Ngủ",
+    "img": "Files/FileData/01 phòng ngủ icon gợi ý.jpg"
+   },
+   {
+    "alias": "2-phong-ngu",
+    "subTitle": "02 Phòng Ngủ",
+    "img": "Files/FileData/02 phòng ngủ icon gợi ý.jpg"
+   },
+   {
+    "alias": "3-phong-ngu",
+    "subTitle": "03 Phòng Ngủ",
+    "img": "Files/FileData/03 phòng ngủ icon gợi ý.jpg"
+   },
+   {
+    "alias": "04-phong-ngu",
+    "subTitle": "04 Phòng Ngủ",
+    "img": "Files/FileData/04 phòng ngủ icon gợi ý.jpg"
+   }
+  ],
+  "buildingNames": {
+   "26": "Vinhomes Metropolis",
+   "1502": "Masteri Waterfront Ocean Park 1",
+   "1505": "The Zurich Ocean Park 1",
+   "1508": "The Zenpark Ocean Park 1",
+   "116": "Starlake Tây Hồ Tây",
+   "94": "Park Hill",
+   "1219": "Times City",
+   "91": "Royal City",
+   "1228": "Vinhomes Skylake",
+   "86": "Vinhomes Gardenia",
+   "103": "Indochina Plaza Hanoi",
+   "56": "Ciputra Apartment Hanoi",
+   "59": "Lotte The Residence Hanoi",
+   "53": "Fraser Suites",
+   "1261": "Fraser Residence",
+   "1216": "D'. Le Roi Soleil",
+   "55": "Oakwood Residence",
+   "68": "Lancaster Hanoi",
+   "82": "Pan Pacific",
+   "1264": "The Authentic Haseko",
+   "107": "Somerset Grand Hanoi",
+   "1243": "Somerset West Lake Hanoi",
+   "1246": "Somerset Hoa Binh Hanoi",
+   "64": "Somerset West Point Hanoi"
+  }
+ },
+ "ja": {
+  "apartmentLuxury": [
+   {
+    "alias": "condo",
+    "subTitle": "コンドミニアム",
+    "img": "Files/FileData/Căn hộ chung cư icon gợi ý.jpg"
+   },
+   {
+    "alias": "serviced-apartment",
+    "subTitle": "サービスアパート",
+    "img": "Files/FileData/Icon-Service apartment.jpg"
+   },
+   {
+    "alias": "luxury-apartment",
+    "subTitle": "高級アパート",
+    "img": "Files/FileData/Icon-Luxury Apartment.jpg"
+   },
+   {
+    "alias": "west-lake-area",
+    "subTitle": "西湖エリア",
+    "img": "Files/FileData/Hồ Tây icon gợi ý.jpg"
+   },
+   {
+    "alias": "truc-bac-area",
+    "subTitle": "チュクバックエリア",
+    "img": "Files/FileData/Trúc bạch lake.jpg"
+   },
+   {
+    "alias": "lake-view",
+    "subTitle": "レイクビュー アパート",
+    "img": "Files/FileData/Lake view icon gợi ý.jpeg"
+   },
+   {
+    "alias": "Japanese-area ",
+    "subTitle": "日本人エリア",
+    "img": "Files/FileData/Phố Người Nhật.jpg"
+   },
+   {
+    "alias": "Easy-access-to-Japanese-School-Hanoi",
+    "subTitle": "ハノイ日本人学校へのアクセスが良い",
+    "img": "Files/FileData/Icon-Thuận tiện đi trường nhật.jpg"
+   },
+   {
+    "alias": "easy-access-to-industrial-parks",
+    "subTitle": "工業団地へのアクセスが良い",
+    "img": "Files/FileData/Thuận tiện đi khu CN.jpg"
+   },
+   {
+    "alias": "shopping-area",
+    "subTitle": "ショッピングエリアに近い",
+    "img": "Files/FileData/Thuận tiện đi mua sắm.jpg"
+   },
+   {
+    "alias": "gym-swimming-pool",
+    "subTitle": "ジムとプール付きのアパートメント",
+    "img": "Files/FileData/Gym & bể bơi.jpg"
+   },
+   {
+    "alias": "cheap-apartments",
+    "subTitle": "格安アパート",
+    "img": "Files/FileData/Căn hộ giá rẻ icon gợi ý.jpg"
+   }
+  ],
+  "apartmentType": [
+   {
+    "alias": "studio-apartment-hanoi",
+    "subTitle": "スタジオ",
+    "img": "Files/FileData/Studio.jpg"
+   },
+   {
+    "alias": "1-bedroom-apartment-hanoi",
+    "subTitle": "1 ベッドルーム",
+    "img": "Files/FileData/01 phòng ngủ icon gợi ý.jpg"
+   },
+   {
+    "alias": "2-bedroom-apartment-hanoi",
+    "subTitle": "2ベッドルーム",
+    "img": "Files/FileData/02 phòng ngủ icon gợi ý.jpg"
+   },
+   {
+    "alias": "3-bedroom-apartment-hanoi",
+    "subTitle": "3ベッドルーム",
+    "img": "Files/FileData/03 phòng ngủ icon gợi ý.jpg"
+   },
+   {
+    "alias": "4-bedroom-apartment-hanoi",
+    "subTitle": "4ベッドルーム",
+    "img": "Files/FileData/04 phòng ngủ icon gợi ý.jpg"
+   }
+  ],
+  "buildingNames": {
+   "26": "メトロ ポリス ハノイ",
+   "1502": "Masteri Waterfront Hanoi",
+   "1505": "The Zurich Ocean Park 1",
+   "1508": "The Zenpark Ocean Park 1",
+   "116": "スターレイクタイホータイ",
+   "94": "パーク ヒル",
+   "1219": "タイムズ シティ",
+   "91": "ロイヤル シティ",
+   "1228": "ビンホーム スカイレイク",
+   "86": "ガーデニア ハノイ",
+   "103": "インドチャイナプラザ ハノイ",
+   "56": "シプチャー ハノイ",
+   "59": "ロッテ レジデンス ハノイ",
+   "53": "フレイザースイーツ ハノイ",
+   "1261": "フレイザー レジデンス ハノイ",
+   "1216": "ド・ル・ロア・ソレイユ",
+   "55": "オークウッドレジデンス ハノイ",
+   "68": "ハノイ ランカスター",
+   "82": "パン パシフィック",
+   "1264": "オーセンティック・ハセコ",
+   "107": "サマセット グランド ハノイ",
+   "1243": "サマセット ウェスト レイク ハノイ",
+   "1246": "サマ セット ホアビン ハノイ",
+   "64": "サマー セット ウエスト ポイント ハノイ"
+  }
+ }
+}

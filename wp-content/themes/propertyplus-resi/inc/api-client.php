@@ -731,9 +731,48 @@ function pplus_get_header_data(): ?array {
     // nua du co, vd 1 doan code cu duoc khoi phuc nham hoac copy lai vo tinh.
     if (is_array($result)) {
         unset($result['apartmentVilla']);
+        $result = pplus_header_fill_gaps($result, $lang);
     }
 
     return $cache[$lang] = $result;
+}
+
+/** Ban du phong menu (data/menu-fallback.json, trich tu web that truoc su co 28/11/2026) cua 1 ngon ngu; chi doc file khi thuc su can. */
+function pplus_menu_fallback(string $lang): array {
+    static $all = null;
+    if ($all === null) {
+        $file    = dirname(__DIR__) . '/data/menu-fallback.json';
+        $decoded = is_readable($file) ? json_decode((string) file_get_contents($file), true) : null;
+        $all     = is_array($decoded) ? $decoded : [];
+    }
+    return (array) ($all[$lang] ?? []);
+}
+
+/**
+ * 28/11/2026: backend tra menu THIEU nhung van HTTP 200 (API noi bo "lay du an theo ma" loi -> project = null o ca 24 toa, va 2 danh sach loai can
+ * ho bi bo qua = null) -> menu chi con mui ten. Bu tai cho: ten toa = ten cu trong ban du phong (theo ma ban ghi), khong co thi "subTitle"/"title"
+ * co san trong chinh du lieu; 2 danh sach loai can ho lay ban du phong. Du lieu backend du thi ham nay KHONG doi gi.
+ */
+function pplus_header_fill_gaps(array $header, string $lang): array {
+    foreach (['projectList', 'projectListLuxury'] as $list) {
+        foreach ((array) ($header[$list] ?? []) as $i => $item) {
+            if (trim((string) ($item['project']['projectName'] ?? '')) !== '') {
+                continue;
+            }
+            $name = trim((string) (pplus_menu_fallback($lang)['buildingNames'][(string) ($item['id'] ?? '')] ?? ''))
+                ?: (trim((string) ($item['subTitle'] ?? '')) ?: trim((string) ($item['title'] ?? '')));
+            if ($name !== '') {
+                $project = is_array($item['project'] ?? null) ? $item['project'] : [];
+                $header[$list][$i]['project'] = array_merge($project, ['projectName' => $name]);
+            }
+        }
+    }
+    foreach (['apartmentLuxury', 'apartmentType'] as $list) {
+        if (empty($header[$list]) && !empty(pplus_menu_fallback($lang)[$list])) {
+            $header[$list] = pplus_menu_fallback($lang)[$list];
+        }
+    }
+    return $header;
 }
 
 /**
