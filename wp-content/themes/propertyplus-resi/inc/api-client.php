@@ -549,6 +549,10 @@ function pplus_api_cached(string $method, string $url, ?array $payload, int $ttl
                 return $entry['b'];
             }
             $inline_refreshes++;
+            // 28/11/2026: go su kien cron dang cho cua chinh khoa nay (neu co - truong hop qua han) de khong chiem cho trong hang doi.
+            if (wp_next_scheduled('pplus_api_refresh', [$key, $method, $url, $payload, $ttl, $timeout])) {
+                wp_clear_scheduled_hook('pplus_api_refresh', [$key, $method, $url, $payload, $ttl, $timeout]);
+            }
             $fresh = pplus_api_http($method, $url, $payload, $timeout);
             delete_transient($key . '_lock');
             if ($fresh !== null) {
@@ -581,7 +585,8 @@ function pplus_api_cached(string $method, string $url, ?array $payload, int $ttl
 
 /**
  * Lam moi 1 khoa cache: chay sau khi da tra trang (neu ha tang cho phep) hoac qua WP-Cron.
- * @return bool true = da xep hang (hoac request khac dang lam moi); false = KHONG xep duoc -> noi goi tu lam moi ngay.
+ * @return bool true = da xep hang (hoac request khac dang lam moi); false = KHONG xep duoc, hoac su kien da cho qua PPLUS_API_REFRESH_MAX_WAIT
+ *              -> noi goi tu lam moi ngay.
  *
  * 17/11/2026: tren IIS/FastCGI KHONG co fastcgi_finish_request() nen moi khoa het han lai them 1 su kien "pplus_api_refresh" vao option "cron" (autoload,
  * nap o MOI request). Neu WP-Cron khong chay kip, su kien chong chat (local: 913 su kien = 1,4 MB sau 1 ngay thu) -> moi request nap + giai ma cron khong lo,
@@ -612,8 +617,11 @@ function pplus_api_queue_refresh(string $key, string $method, string $url, ?arra
         return true;
     }
     $args = [$key, $method, $url, $payload, $ttl, $timeout];
-    if (wp_next_scheduled('pplus_api_refresh', $args)) {
-        return true; // da co su kien cho cung khoa
+    $pending_at = wp_next_scheduled('pplus_api_refresh', $args);
+    if ($pending_at) {
+        // 28/11/2026 (web that: trang quan ban EN hien noi dung cu it nhat 3 gio du Admin da sua): su kien qua han lau = WP-Cron khong chay kip
+        // -> khong cho nua, noi goi lam moi ngay. WP-Cron chay binh thuong thi su kien khong bao gio qua han nen hanh vi nhu cu.
+        return (time() - (int) $pending_at) < PPLUS_API_REFRESH_MAX_WAIT;
     }
     if (pplus_cron_pending_count('pplus_api_refresh') >= PPLUS_API_REFRESH_MAX_PENDING) {
         return false; // hang doi day: GIU khoa _lock, noi goi lam moi ngay roi tha khoa (request khac cung luc van nhan ban cu)
@@ -647,6 +655,7 @@ function pplus_cron_pending_count(string $hook): int {
 }
 
 const PPLUS_API_REFRESH_MAX_PENDING = 40; // toi da su kien pplus_api_refresh cho cung luc (qua nguong: lam moi ngay tai request)
+const PPLUS_API_REFRESH_MAX_WAIT    = 300; // giay: su kien cho lau hon muc nay (WP-Cron khong chay) -> lam moi ngay tai request ke tiep
 
 /**
  * Tu don hang doi cron bi chong (17/11/2026): cu 10 phut kiem 1 lan; neu su kien lam moi API / doi WebP cho qua nhieu (WP-Cron khong chay kip tren server

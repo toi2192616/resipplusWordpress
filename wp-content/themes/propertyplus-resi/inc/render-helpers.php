@@ -939,8 +939,9 @@ function pplus_render_pagination(int $current, int $total, string $url_format): 
  * 312x373, 400x300, 2048x1536...) nen khong the doan - phai do that.
  *
  * Cach lam: kich thuoc luu trong option "pplus_img_dims" (khong autoload). Lan dau gap 1 URL chua co
- * thi tra '' (nhu cu) va do SAU KHI da tra trang xong (shutdown + fastcgi_finish_request), nen khong
- * lam cham request. Tu lan sau trang co du width/height. Do that bai thi thu lai sau 1 ngay.
+ * thi tra '' (nhu cu) va do o cuoi request (shutdown). Co fastcgi_finish_request (PHP-FPM) thi do sau khi
+ * da tra trang; IIS khong co ham nay nen gioi han thoi gian do moi luot. Tu lan sau trang co du width/height.
+ * Do that bai thi thu lai sau 1 ngay.
  */
 function pplus_img_dim_attrs(string $url): string {
     if ($url === '') {
@@ -979,7 +980,8 @@ function pplus_img_dim_queue(string $url): void {
         if (!$queue) {
             return;
         }
-        if (function_exists('fastcgi_finish_request')) {
+        $after_response = function_exists('fastcgi_finish_request');
+        if ($after_response) {
             fastcgi_finish_request(); // nguoi dung da nhan du trang, phan do ben duoi khong anh huong toc do
         }
         @set_time_limit(30);
@@ -987,14 +989,15 @@ function pplus_img_dim_queue(string $url): void {
         if (!is_array($map)) {
             $map = [];
         }
-        $deadline = microtime(true) + 12;
+        // 28/11/2026: tren IIS khong co fastcgi_finish_request() nen nguoi xem PHAI CHO phan nay -> chi do trong 1,5s moi luot (do dan qua nhieu luot xem).
+        $deadline = microtime(true) + ($after_response ? 12 : 1.5);
         foreach (array_keys($queue) as $u) {
             if (microtime(true) > $deadline) {
                 break;
             }
             $w = $h = 0;
             $res = wp_remote_get($u, [
-                'timeout' => 3,
+                'timeout' => $after_response ? 3 : 2,
                 'redirection' => 2,
                 'headers' => ['Range' => 'bytes=0-262143'],
                 'limit_response_size' => 262144, // chi can phan dau file de doc kich thuoc

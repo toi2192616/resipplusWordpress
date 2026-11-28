@@ -1,0 +1,49 @@
+BAN CAP NHAT WEB RESI - 28/11/2026 (ban 28b - 2 file)  nhanh main tren GitHub
+==============================================================================
+
+Server dang chay ban 28a (da kiem tren web that luc 15h 28/11: dat du 5 muc A-E).
+Ban nay CHI co 2 file. Khong gap: chep luc nao tien.
+
+VAN DE
+------
+Trang quan Ba Dinh ban tieng Anh hien link cu IT NHAT 3 GIO (12:04 - 15:01 ngay 28/11) du Admin da sua dung,
+trong khi cache cua theme chi co han 10 phut. Nghia la viec lam moi cache o nen (WP-Cron) khong hoan thanh dung han.
+
+NOI DUNG SUA
+------------
+ 1) inc/api-client.php: neu viec lam moi cache da cho qua 5 phut ma WP-Cron chua chay, luot xem ke tiep TU LAM MOI
+    (toi da 2 muc moi luot). WP-Cron chay binh thuong thi web hoat dong y nhu cu.
+ 2) inc/render-helpers.php: phan do kich thuoc anh (trang Ve chung toi) tren IIS bat nguoi xem phai cho, toi da
+    khoang 15 giay; nay moi luot chi do trong 1,5 giay.
+
+CACH LAM (khoang 2 phut)
+------------------------
+Truoc khi chep: sao luu 2 file dang chay.
+Giai nen zip nay DE vao THU MUC GOC web Resi (noi co wp-config.php). Duong dan ben trong da dung san.
+Chep du 2 file. Khong can xoa cache. Neu PHP bat OPcache voi validate_timestamps=0 thi recycle App Pool.
+
+2 FILE - dung luong sau khi chep phai khop:
+  wp-content/themes/propertyplus-resi/inc/api-client.php       103.292 byte
+  wp-content/themes/propertyplus-resi/inc/render-helpers.php    54.070 byte
+
+KIEM TRA SAU KHI CHEP
+---------------------
+  https://propertyplus.com.vn/vi                                          -> mo binh thuong
+  https://propertyplus.com.vn/vi/ve-chung-toi                             -> mo binh thuong
+  https://propertyplus.com.vn/en/rental-apartment/ha-noi/ba-dinh-district -> mo binh thuong
+Xong thi bao Dev B de doi chieu.
+
+VIEC DEV A NEN XEM THEM (tren may chu, khong nam trong goi)
+-----------------------------------------------------------
+ A) Tac vu nen nen do MAY CHU hen gio chay, khong trong vao luot xem trang (muc 2 trong GO_LIVE_CHECKLIST.md).
+    Xem Windows Task Scheduler da co tac vu nao chay wp-cron.php chua. Neu chua: tao tac vu chay moi 5 phut:
+        chuong trinh: duong dan toi php.exe        tham so: "<thu muc goc web>\wp-cron.php"
+    KHONG goi qua dia chi web (hom 28/11 goi https://propertyplus.com.vn/wp-cron.php: hon 120 giay khong tra loi).
+    CHI them define('DISABLE_WP_CRON', true); vao wp-config.php SAU KHI tac vu hen gio da chay duoc.
+ B) Xem log PHP / IIS khoang 15:02 - 15:10 ngay 28/11: trang /en/rental-apartment/ha-noi/ba-dinh-district
+    khong tra loi (qua 60 giay va qua 90 giay) o 2 lan thu, sau do binh thuong (1,5 - 2 giay). Chua ro nguyen nhan.
+    Thoi diem nay ngay sau khi Dev B goi wp-cron.php qua web mot lan (khoang 15:02), nen co the lien quan.
+
+QUAY LAI BAN CU
+---------------
+Chep lai 2 file da sao luu.
