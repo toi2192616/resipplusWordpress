@@ -146,3 +146,9 @@ Cập nhật: 3/11/2026. Chiến lược và số liệu gốc: `SEO_STRATEGY_JA
 - **26a đã chạy trên web thật** (27/11): sitemap dự án 1.713 URL, tiêu đề `/…/blogs` đúng 3 ngôn ngữ, `tools/post-deploy-check.mjs` 123 đạt / 2 cảnh báo / 0 lỗi; đã nộp lại `sitemap_products.xml`, Google đọc cùng ngày (1.713).
 - **Gói 27a** (commit 24fb944, 5 file, chờ Dev A chép): mô tả riêng cho 21 trang (giới thiệu, chủ nhà, dịch vụ × 3 ngôn ngữ) viết theo nội dung đang có trên trang — trước đó dùng chung câu giới thiệu công ty (do theme, **không phải Admin** như ghi ở mục 9); sửa 7 chuỗi dịch máy trong từ điển API (chỉ thay khi API còn chuỗi cũ); `www` → 301 tên miền chính; bỏ gạch đầu dòng ở mô tả blog.
 - **Còn lại:** SEO theo tên tòa nhà (Lotte The Residence, The Authentic Haseko, Grandeur Palace, Five Residences, Fraser Suites); đo lại Search Console 30/11; bài hướng dẫn JA/EN theo truy vấn thật; 2–9/12 xem lại trang Le Capitole; khoảng 10/12 so lượng khách thật trước/sau khi đổi web (mốc trước 11/11; web Angular cũ mất ~6–8 s mới hiện nội dung theo chủ site).
+
+## 12. Cập nhật 28/11/2026 — gói 28a (thay 27a), rà bản dịch toàn bộ dự án
+
+- **Gói 28a** (commit afd32f9, 11 file, chờ Dev A chép; thay 27a): canonical trang dự án về đường dẫn chính thức; sửa câu mô tả tự sinh; **thử gộp Lotte** (trang tổng quan VI/EN 301 → trang dự án, menu + sitemap theo; tắt bằng `PPLUS_MERGE_LANDINGS=false`). Đo sau 2–4 tuần kể từ khi lên web: trang dự án Lotte được lập chỉ mục lại chưa, nhấp/hiển thị so với 3 tháng trước (dự án 42 nhấp, tổng quan 3). Kết quả tốt mới mở rộng sang tòa khác.
+- **Bản dịch:** 37 tòa có bài đều đủ vi/en/ja; đã bổ sung 31 ô "Giới thiệu ngắn". Chi tiết: `docs/content/admin-changes-2026-11-28.md`.
+- Còn lại: đo lập chỉ mục 30/11; bài hướng dẫn JA/EN theo truy vấn thật (tuần sau); đường dẫn dự án tiếng Nhật dạng `--80` (cần sửa trước khi gộp bản JA).

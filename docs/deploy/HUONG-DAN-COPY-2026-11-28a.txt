@@ -1,0 +1,75 @@
+BAN CAP NHAT WEB RESI - 28/11/2026 (ban 28a - 11 file)  nhanh main tren GitHub (commit afd32f9)
+==============================================================================================
+
+GOI NAY THAY THE goi 27a (27a chua chep thi BO, chi can chep goi nay). Server dang chay ban 26a.
+Neu da lo chep 27a roi thi cu chep de goi nay len.
+
+NOI DUNG THAY DOI
+-----------------
+Tu goi 27a:
+ 1) 21 trang (Ve chung toi, Chu nha x2, Dich vu x4, moi trang 3 ngon ngu): mo ta tim kiem rieng.
+ 2) Sua chu dich may tren menu/tab/tieu de (Nhat: dang ky cho thue, loi ich chu nha...; Anh: "List Your Apartment", "Owner Benefits").
+ 3) www.propertyplus.com.vn -> 301 ve propertyplus.com.vn (giu duong dan + tham so).
+ 4) Mo ta bai blog: bo dau gach dau dong o dau cau.
+Moi trong 28a:
+ 5) Trang du an mo bang duong dan cu (hoac duong dan quan sai ngon ngu) se khai "canonical" ve duong dan chinh thuc
+    (truoc: duong dan cu va moi cung tu nhan la trang chinh).
+ 6) Mo ta tu sinh cua trang du an: sua loi cau "...m2。です", "m2..", "phong ngu., dien tich"; ban Anh/Nhat hien lai so phong ngu.
+ 7) THU NGHIEM gop trang LOTTE: trang "tong quan" ban Viet va Anh tu chuyen (301) sang trang du an Lotte;
+    menu "Can ho Cao cap" tro thang trang du an; sitemap quan/type bo trang tong quan tieng Anh.
+    Ban tieng Nhat giu nguyen. Cac toa khac khong doi.
+
+CACH LAM (khoang 3 phut)
+------------------------
+Truoc khi chep: sao luu 11 file dang chay.
+Giai nen zip nay DE vao THU MUC GOC web Resi (noi co wp-config.php). Duong dan ben trong da dung san:
+  wp-content/themes/propertyplus-resi/...
+!! Chep DU 11 file trong 1 lan. Khong can xoa cache. Neu PHP bat OPcache voi validate_timestamps=0 thi recycle App Pool.
+
+11 FILE - dung luong sau khi chep phai khop:
+  inc/api-client.php            102.382 byte
+  inc/blog-routes.php            12.078 byte
+  inc/building-directory.php     13.583 byte
+  inc/i18n-extra.php             16.501 byte
+  inc/project-detail-route.php    9.168 byte
+  inc/project-facts.php          17.277 byte
+  inc/seo-head.php               34.600 byte
+  inc/seo-listing-meta.php       16.098 byte
+  inc/sitemap-admin.php           6.840 byte
+  inc/url-canonical.php          16.068 byte
+  parts/header.php               17.959 byte
+
+KIEM TRA NGAY SAU KHI CHEP (lam A truoc)
+----------------------------------------
+ A) Ten mien chinh mo binh thuong:
+      curl -s -o NUL -w "%{http_code}" https://propertyplus.com.vn/vi                       -> 200
+    !! Neu ra 301/302 hoac trinh duyet bao "chuyen huong qua nhieu lan": them vao wp-config.php
+         define('PPLUS_WWW_REDIRECT', false);
+       roi bao Dev B.
+
+ B) www chuyen ve ten mien chinh:
+      curl -s -o NUL -D - https://www.propertyplus.com.vn/vi
+      -> HTTP 301, "location: https://propertyplus.com.vn/vi", "x-redirect-by: PropertyPlus-WWW"
+
+ C) Gop Lotte:
+      curl -s -o NUL -D - https://propertyplus.com.vn/vi/cho-thue-can-ho/ha-noi/tong-quan-ve-can-ho-cho-thue-o-lotte-the-residence-ha-noi
+      -> HTTP 301, "location: .../vi/cho-thue-can-ho/ha-noi/quan-ba-dinh/lotte-the-residence-hanoi-80",
+         "x-redirect-by: PropertyPlus-Merge"
+      Mo trang dich: hien binh thuong (200). Menu "Can ho Cao cap" > Lotte mo thang trang du an.
+    !! Neu can quay lai nhu cu: them vao wp-config.php  define('PPLUS_MERGE_LANDINGS', false);
+
+ D) Duong dan cu:
+      curl -s https://propertyplus.com.vn/vi/cho-thue-can-ho/ha-noi/quan-long-bien/the-authentic-280 | findstr /i "canonical"
+      -> .../quan-long-bien/the-authentic-haseko-280
+
+ E) Mo ta rieng + chu moi:
+      curl -s https://propertyplus.com.vn/en/service/housekeeping-service-2 | findstr /c:"5-star housekeeping"   -> co ket qua
+      curl -s https://propertyplus.com.vn/en/owner/register-Leasing | findstr /i "<title>"
+      -> List Your Apartment | Property Plus
+
+Xong thi bao Dev B de doi chieu lai toan bo tren web that.
+
+GHI CHU THEM (ban luu trong kho ma GitHub)
+-------------------------------------------
+- Ban luu cua HUONG-DAN-COPY.txt trong capnhat-resi-2026-11-28a.zip. 11 file giong HET nhanh main (commit afd32f9).
+- Quay lai ban cu: chep lai 11 file nay tu commit 8bffa88 (ban 26a dang chay).
