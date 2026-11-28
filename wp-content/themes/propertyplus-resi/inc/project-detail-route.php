@@ -174,6 +174,13 @@ add_filter('pplus_language_switch_url', function (string $default, string $targe
         return $default;
     }
     [, , $province, $district, $project] = $segs;
+    // 28/11/2026: co duong dan chinh thuc cua ngon ngu dich (tu sitemap) -> dung luon, de hreflang/nut doi ngon ngu khop canonical.
+    if (function_exists('pplus_project_official_path') && preg_match('#-(\d+)$#', $project, $pm)) {
+        $official = pplus_project_official_path((int) $pm[1], $target_lang);
+        if ($official !== null) {
+            return home_url($official);
+        }
+    }
     $target_district = pplus_area_alias_for_lang(rawurldecode($province), rawurldecode($district), $target_lang);
     if ($target_district === null) {
         return $default;

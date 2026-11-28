@@ -149,6 +149,49 @@ function pplus_villa_root_to_apartment_root(string $canonical_path): string {
 }
 
 /**
+ * 28/11/2026: trang "tong quan" (landing) va trang du an cua cung 1 toa dung CHUNG 1 ban ghi Admin (cung tieu de, mo ta, bai viet, cung can ho)
+ * -> Google coi la trung va tu chon 1 trang (Lotte: chon trang tong quan, bo trang du an). Gop lam 1: trang tong quan 301 sang trang du an, menu
+ * tro thang trang du an. THU NGHIEM: chi Lotte (du an 80), ban VI + EN. Ban JA chua gop vi duong dan du an JA dang la "--80" (can sua truoc).
+ * Them toa: them 1 muc vao bang duoi. Tat het: define('PPLUS_MERGE_LANDINGS', false) trong wp-config.php.
+ *
+ * @return array<string,string> duong dan trang tong quan => duong dan trang du an (deu co tien to ngon ngu)
+ */
+function pplus_merged_landings(): array {
+    if (defined('PPLUS_MERGE_LANDINGS') && !PPLUS_MERGE_LANDINGS) {
+        return [];
+    }
+    return [
+        // Lotte The Residence Hanoi (du an 80, ban ghi Admin 59)
+        '/vi/cho-thue-can-ho/ha-noi/tong-quan-ve-can-ho-cho-thue-o-lotte-the-residence-ha-noi' => '/vi/cho-thue-can-ho/ha-noi/quan-ba-dinh/lotte-the-residence-hanoi-80',
+        '/en/rental-apartment/ha-noi/Overview-of-apartment-for-rent-in-Lotte-The-Residence-Hanoi' => '/en/rental-apartment/ha-noi/ba-dinh-district/lotte-the-residence-hanoi-80',
+    ];
+}
+
+/** Trang dich cua 1 duong dan da gop (khong phan biet hoa/thuong, bo "/" cuoi, giai ma %XX); null = khong thuoc bang. */
+function pplus_merged_landing_target(string $path): ?string {
+    $want = strtolower(rtrim(rawurldecode($path), '/'));
+    foreach (pplus_merged_landings() as $from => $to) {
+        if (strtolower($from) === $want) {
+            return $to;
+        }
+    }
+    return null;
+}
+
+/** Bo khoi sitemap (quan/type) cac trang tong quan da gop - URL do gio tra 301, khong nen nam trong sitemap. Ham thuan. */
+function pplus_sitemap_drop_merged_landings(string $xml): string {
+    if (!pplus_merged_landings() || strpos($xml, '</url>') === false) {
+        return $xml;
+    }
+    return (string) preg_replace_callback('#[ \t]*<url>(?:(?!</url>).)*?</url>[ \t]*\r?\n?#s', static function (array $m): string {
+        if (preg_match('#<loc>\s*https?://[^/<]+(/[^<]*?)\s*</loc>#', $m[0], $loc) && pplus_merged_landing_target(html_entity_decode($loc[1], ENT_QUOTES | ENT_XML1, 'UTF-8')) !== null) {
+            return '';
+        }
+        return $m[0];
+    }, $xml);
+}
+
+/**
  * 27/11/2026: "www.<ten mien chinh>" dang tra nguyen ca web (200) -> can 301 ve ten mien chinh. Ham thuan.
  * Chi tra ve goc dich ("https://ten-mien-chinh") khi host cua request DUNG BANG "www." + host cua dia chi trang chu; moi truong hop khac tra ''
  * (ke ca khi trang chu cau hinh sang www hoac suy tu host cua request) nen khong the tao vong lap chuyen huong.
@@ -206,6 +249,7 @@ function pplus_redirect_to_canonical_request(): void {
                 $target = pplus_villa_root_to_apartment_root($c);
             }
         }
+        $target = pplus_merged_landing_target($target) ?? $target; // trang tong quan da gop: di thang trang du an (1 hop)
         wp_redirect($apex . $target . $tail, 301, 'PropertyPlus-WWW');
         exit;
     }
@@ -220,6 +264,12 @@ function pplus_redirect_to_canonical_request(): void {
         // van phuc vu ~280 URL kieu nay (sitemap_villa.xml), da so la TRANG CAN HO bi gan nham goc biet thu -> 301 sang trang tuong ung o
         // goc can ho (1 hop, khong can goi API). Biet thu that -> trang dich tu tra 404 (dung quyet dinh bo san pham).
         $canonical = pplus_villa_root_to_apartment_root($canonical);
+    }
+    // Trang tong quan da gop voi trang du an (pplus_merged_landings) -> 301 sang trang du an, giu query.
+    $merged = pplus_merged_landing_target($canonical ?? $path);
+    if ($merged !== null) {
+        wp_redirect(home_url($merged) . $tail, 301, 'PropertyPlus-Merge');
+        exit;
     }
     if ($canonical === null || $canonical === $path) {
         return;

@@ -58,6 +58,13 @@ function pplus_seo_business(): array {
  */
 function pplus_seo_canonical_url(): string {
     $canonical = pplus_canonical_path(pplus_original_path(), pplus_current_lang()) ?? pplus_original_path();
+    // 28/11/2026: trang du an mo bang alias cu/alias quan sai -> canonical tro ve duong dan chinh thuc (inc/building-directory.php).
+    if (get_query_var('pplus_project_detail') && function_exists('pplus_project_official_path') && preg_match('#-(\d+)$#', rtrim($canonical, '/'), $pm)) {
+        $official = pplus_project_official_path((int) $pm[1], pplus_current_lang());
+        if ($official !== null && rawurldecode($official) !== rawurldecode($canonical)) {
+            $canonical = $official;
+        }
+    }
     $url       = home_url($canonical);
     $paged     = (int) ($_GET['paged'] ?? 0);
     // Chi trang DANH SACH co phan trang that moi giu ?paged=N; trang khac ("/?paged=5"...) bo tham so rac.

@@ -69,11 +69,19 @@ function pplus_seo_bed_label(int $n): string {
 }
 
 /**
+ * 28/11/2026: du lieu du an hay co dau cau thua o cuoi ("64 m2 ~ 180 m2.", "04 phòng ngủ.", ban JA ket thuc bang "。") -> ghep vao cau thanh
+ * "180 m2。です", "m2..", "phòng ngủ., diện tích"; token cuoi "04 phòng ngủ." con lam mat ca thong tin phong ngu o en/ja. Cat dau cau cuoi chuoi.
+ */
+function pplus_seo_trim_value(string $v): string {
+    return (string) preg_replace('/[\s\x{00A0}\x{3000}.。,，、;；:：]+$/u', '', trim($v));
+}
+
+/**
  * Chuoi loai phong cua DU AN ("Studio, 1 phòng ngủ" - CSDL chi co tieng Viet) -> ngon ngu trang. Gap token la thi bo ca chuoi
  * ('' ) de khong dua tieng Viet vao mo ta en/ja.
  */
 function pplus_seo_beds_list(string $raw): string {
-    $raw  = trim($raw);
+    $raw  = pplus_seo_trim_value($raw);
     $lang = pplus_current_lang();
     if ($raw === '' || $lang === 'vi') {
         return $raw;
@@ -234,8 +242,9 @@ function pplus_seo_project_description(array $pd, array $facts = []): string {
             $addr = pplus_romanize_vi_address($addr);
         }
     }
+    $addr  = pplus_seo_trim_value($addr);
     $beds  = pplus_seo_beds_list((string) ($pd['beedRoom'] ?? ''));
-    $areas = trim((string) ($pd['areas'] ?? ''));
+    $areas = pplus_seo_trim_value((string) ($pd['areas'] ?? ''));
     $total = (int) ($facts['total'] ?? 0);
     $min   = (float) ($facts['min'] ?? 0);
     $max   = (float) ($facts['max'] ?? 0);

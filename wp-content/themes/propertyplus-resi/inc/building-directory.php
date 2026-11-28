@@ -229,6 +229,54 @@ function pplus_sitemap_drop_shell_projects(string $xml): string {
     return $kept . $tail;
 }
 
+/**
+ * Duong dan CHINH THUC cua trang du an theo id + ngon ngu (28/11/2026). Route du an nhan MOI alias mien la dung id, nen alias cu / alias quan sai
+ * ngon ngu (vd "/vi/.../the-authentic-280", "/vi/.../ba-dinh-district/...") tung tu khai canonical rieng -> trung noi dung (Google don luot hien
+ * thi vao URL cu). Nguon: sitemap du an cua Admin dang duoc theme luu (inc/sitemap-admin.php) - luon khop URL gui cho Google, KHONG goi them API;
+ * chua co ban luu thi dung data/building-directory.json. Khong tim thay -> null (giu canonical nhu cu).
+ *
+ * @return string|null duong dan day du co tien to ngon ngu, vd "/vi/cho-thue-can-ho/ha-noi/quan-ba-dinh/lotte-the-residence-hanoi-80"
+ */
+function pplus_project_official_path(int $pid, string $lang): ?string {
+    if ($pid <= 0 || !in_array($lang, ['vi', 'en', 'ja'], true)) {
+        return null;
+    }
+    static $from_sitemap = null;
+    if ($from_sitemap === null) {
+        $from_sitemap = [];
+        $cached       = function_exists('get_transient') ? get_transient('pplus_admsm_products') : false;
+        $body         = is_array($cached) ? (string) ($cached['body'] ?? '') : '';
+        if ($body !== '') {
+            $from_sitemap = pplus_project_paths_from_sitemap($body);
+        }
+    }
+    if (isset($from_sitemap[$lang][$pid])) {
+        return $from_sitemap[$lang][$pid];
+    }
+    foreach ((array) (pplus_building_directory_raw()[$lang] ?? []) as $row) {
+        if ((int) ($row[0] ?? 0) === $pid) {
+            $path = trim((string) ($row[3] ?? ''), '/');
+            return (substr_count($path, '/') === 3 && strpos($path, '//') === false) ? '/' . $lang . '/' . $path : null;
+        }
+    }
+    return null;
+}
+
+/**
+ * Ham thuan: tach duong dan trang du an "/{lang}/{goc}/{tinh}/{quan}/{alias}-{id}" tu noi dung sitemap du an (URL thieu quan "//" bi bo qua).
+ *
+ * @return array<string,array<int,string>> [lang][id] => duong dan
+ */
+function pplus_project_paths_from_sitemap(string $xml): array {
+    $map = [];
+    if (preg_match_all('#<loc>\s*https?://[^/<\s]+(/(vi|en|ja)/(?:cho-thue-can-ho|rental-apartment)/[^/<]+/[^/<]+/[^/<]*-(\d+))\s*</loc>#', $xml, $all, PREG_SET_ORDER)) {
+        foreach ($all as $m) {
+            $map[$m[2]][(int) $m[3]] = html_entity_decode(trim($m[1]), ENT_QUOTES | ENT_XML1, 'UTF-8');
+        }
+    }
+    return $map;
+}
+
 /** Them 3 URL cua trang vao sitemap con "pages" (noi dung lay tu Admin, inc/sitemap-admin.php) neu chua co. */
 function pplus_sitemap_add_building_directory(string $xml): string {
     if (strpos($xml, '</urlset>') === false || !pplus_building_directory_raw()) {

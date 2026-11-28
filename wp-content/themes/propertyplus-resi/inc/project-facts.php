@@ -96,6 +96,7 @@ function pplus_project_fact_rows(array $pd): array {
             $addr = pplus_romanize_vi_address($addr);
         }
     }
+    $addr = pplus_seo_trim_value($addr);
     if ($addr !== '') {
         $rows[pplus_pf_t(['Địa chỉ', 'Address', '所在地'])] = $addr;
     }
@@ -118,7 +119,7 @@ function pplus_project_fact_rows(array $pd): array {
             }
         }
     }
-    $areas = trim((string) ($pd['areas'] ?? ''));
+    $areas = pplus_seo_trim_value((string) ($pd['areas'] ?? '')); // 28/11: bo dau cau thua ("180 m2." -> cau gioi thieu + FAQ khong bi "..")
     if (!pplus_pf_is_blank($areas)) {
         $rows[pplus_pf_t(['Diện tích căn hộ', 'Apartment size', '専有面積'])] = $areas;
     }

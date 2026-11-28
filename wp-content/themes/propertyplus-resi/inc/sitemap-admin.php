@@ -111,6 +111,9 @@ add_action('template_redirect', function () {
     if ($which !== 'index' && function_exists('pplus_sitemap_clean_urls')) {
         $body = pplus_sitemap_clean_urls($body, $which); // 20/11/2026: bỏ URL lặp + (quan/type) bỏ tin nội bộ, 404/410, trang đã tắt index (inc/landing-hygiene.php)
     }
+    if (($which === 'quan' || $which === 'type') && function_exists('pplus_sitemap_drop_merged_landings')) {
+        $body = pplus_sitemap_drop_merged_landings($body); // 28/11/2026: trang tong quan da gop (301) khong nam trong sitemap (inc/url-canonical.php)
+    }
     if ($which === 'pages' && function_exists('pplus_sitemap_add_building_directory')) {
         $body = pplus_sitemap_add_building_directory($body); // 21/11/2026: trang "Tat ca toa nha" /{lang}/buildings (inc/building-directory.php)
     }

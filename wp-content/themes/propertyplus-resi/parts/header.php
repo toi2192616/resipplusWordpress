@@ -22,6 +22,12 @@ $is_home      = is_front_page();
 // slug tinh mac dinh cua menu (Angular hard-code 'ha-noi')
 $hn = 'ha-noi';
 
+// 28/11/2026: toa da gop trang tong quan vao trang du an (inc/url-canonical.php pplus_merged_landings) -> menu tro thang trang du an.
+$building_href = static function (string $url): string {
+    $target = function_exists('pplus_merged_landing_target') ? pplus_merged_landing_target((string) wp_parse_url($url, PHP_URL_PATH)) : null;
+    return $target !== null ? home_url($target) : $url;
+};
+
 /** In 1 nhom <li> menu quan/loai (dataLists / apartmentLuxury / apartmentType / apartmentVilla). */
 $render_alias_items = static function (array $items, string $base_slug) {
     foreach ($items as $item) {
@@ -98,7 +104,7 @@ $render_alias_items = static function (array $items, string $base_slug) {
                       <?php foreach ((array) ($header['projectList'] ?? []) as $item) :
                         $alias = (string) ($item['alias'] ?? '');
                         $name  = (string) ($item['project']['projectName'] ?? ''); ?>
-                        <li class="menu-quan"><a class="district-name" href="<?php echo esc_url(pplus_lang_url($apartment . '/ha-noi/' . $alias)); ?>"><?php echo esc_html($name); ?><i class="icon-menu-link"></i></a></li>
+                        <li class="menu-quan"><a class="district-name" href="<?php echo esc_url($building_href(pplus_lang_url($apartment . '/ha-noi/' . $alias))); ?>"><?php echo esc_html($name); ?><i class="icon-menu-link"></i></a></li>
                       <?php endforeach; ?>
                     </ul>
                     <?php // 21/11/2026: link toi trang "Tat ca toa nha" (cot nay chi liet ke vai toa tuyen chon; trang do co moi du an co can cho thue, theo quan). ?>
@@ -110,7 +116,7 @@ $render_alias_items = static function (array $items, string $base_slug) {
                       <?php foreach ((array) ($header['projectListLuxury'] ?? []) as $item) :
                         $alias = (string) ($item['alias'] ?? '');
                         $name  = (string) ($item['project']['projectName'] ?? ''); ?>
-                        <li class="menu-quan"><a class="district-name" href="<?php echo esc_url(pplus_lang_url($apartment . '/ha-noi/' . $alias)); ?>"><?php echo esc_html($name); ?><i class="icon-menu-link"></i></a></li>
+                        <li class="menu-quan"><a class="district-name" href="<?php echo esc_url($building_href(pplus_lang_url($apartment . '/ha-noi/' . $alias))); ?>"><?php echo esc_html($name); ?><i class="icon-menu-link"></i></a></li>
                       <?php endforeach; ?>
                     </ul>
                   </div>
