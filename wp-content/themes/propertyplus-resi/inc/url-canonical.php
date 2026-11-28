@@ -183,12 +183,14 @@ function pplus_sitemap_drop_merged_landings(string $xml): string {
     if (!pplus_merged_landings() || strpos($xml, '</url>') === false) {
         return $xml;
     }
-    return (string) preg_replace_callback('#[ \t]*<url>(?:(?!</url>).)*?</url>[ \t]*\r?\n?#s', static function (array $m): string {
+    $out = preg_replace_callback('#[ \t]*<url>(?:(?!</url>).)*?</url>[ \t]*\r?\n?#s', static function (array $m): string {
         if (preg_match('#<loc>\s*https?://[^/<]+(/[^<]*?)\s*</loc>#', $m[0], $loc) && pplus_merged_landing_target(html_entity_decode($loc[1], ENT_QUOTES | ENT_XML1, 'UTF-8')) !== null) {
             return '';
         }
         return $m[0];
     }, $xml);
+    // Loi regex (null) hoac ket qua mat the dong -> giu nguyen, khong bao gio tra sitemap hong/rong.
+    return (is_string($out) && strpos($out, '</urlset>') !== false) ? $out : $xml;
 }
 
 /**
